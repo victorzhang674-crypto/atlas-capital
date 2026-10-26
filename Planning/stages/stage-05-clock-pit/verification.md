@@ -13,6 +13,7 @@ Fill this in **only** with output from commands actually run in this stage's fin
   - Stage tests verbose (`test_calendar.py`, `test_clock.py`, `test_pit.py`, `test_config.py`) → 178 passed, exit 0 · raw: [artifacts/stage-tests-verbose.txt](artifacts/stage-tests-verbose.txt)
   - Wall-clock grep over `src/` and `tests/` → the only executable call is `src/atlas/core/clock.py:106` (`datetime.now(UTC)` in `LiveClock.now`); every other hit is a docstring, a comment or a string snippet inside `test_clock.py` · raw: [artifacts/wallclock-grep.txt](artifacts/wallclock-grep.txt)
   - Docstring check → 34 public names checked (calendar, clock, pit, `CalendarConfig`); missing: none · raw: [artifacts/docstrings.txt](artifacts/docstrings.txt)
+  - Follow-up on merged `main` (`47e5ddd`, fast-forward from `5979a34`): `uv run pytest -q` → 512 passed; `ruff check` → All checks passed!; `ruff format --check` → 61 files already formatted; `mypy src/atlas` → Success (35 files); `uv run pytest tests/unit/core -q && uv run ruff check .` → 487 passed, All checks passed!; `make check` → exit=0; checkout clean before and after · raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt)
   - Gate check (start of stage) → `uv run pytest -q` 426 passed · raw: [artifacts/gate-check-pytest.txt](artifacts/gate-check-pytest.txt)
 - Acceptance criteria (brief.md):
   - [x] **A grep or ruff check shows no direct wall-clock calls outside `clock.py`.** Evidence:

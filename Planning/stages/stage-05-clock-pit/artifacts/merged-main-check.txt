@@ -1,0 +1,119 @@
+# Stage 05 follow-up: fast-forward + verification on merged main · 2026-10-26 15:46 EDT
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/stage-5-detailed-plan-5c356f
+Updating 5979a34..47e5ddd
+Fast-forward
+ Planning/PROGRESS.md                               |  47 +++-
+ .../stage-05-clock-pit/artifacts/docstrings.txt    |   5 +
+ .../artifacts/gate-check-pytest.txt                |   8 +
+ .../stage-05-clock-pit/artifacts/lint-type.txt     |  11 +
+ .../stage-05-clock-pit/artifacts/make-check.txt    |  18 ++
+ .../stages/stage-05-clock-pit/artifacts/pytest.txt |  11 +
+ .../artifacts/stage-tests-verbose.txt              | 191 ++++++++++++++++
+ .../stages/stage-05-clock-pit/artifacts/verify.txt |  15 ++
+ .../artifacts/wallclock-grep.txt                   |  23 ++
+ Planning/stages/stage-05-clock-pit/plan.md         | 231 +++++++++++++++++++
+ Planning/stages/stage-05-clock-pit/verification.md |  44 ++++
+ Planning/stages/stage-05-clock-pit/worklog.md      |  66 ++++++
+ config/fund.yaml                                   |   7 +
+ pyproject.toml                                     |  34 ++-
+ src/atlas/core/calendar.py                         | 123 ++++++++++
+ src/atlas/core/clock.py                            | 140 ++++++++++++
+ src/atlas/core/config.py                           |  27 ++-
+ src/atlas/core/pit.py                              | 150 +++++++++++++
+ tests/conftest.py                                  |  12 +
+ tests/unit/core/test_calendar.py                   | 115 ++++++++++
+ tests/unit/core/test_clock.py                      | 237 ++++++++++++++++++++
+ tests/unit/core/test_config.py                     |  24 +-
+ tests/unit/core/test_pit.py                        | 248 +++++++++++++++++++++
+ uv.lock                                            | 139 ++++++++++++
+ 24 files changed, 1916 insertions(+), 10 deletions(-)
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/docstrings.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/gate-check-pytest.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/lint-type.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/pytest.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/stage-tests-verbose.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/verify.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/wallclock-grep.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/plan.md
+ create mode 100644 Planning/stages/stage-05-clock-pit/verification.md
+ create mode 100644 Planning/stages/stage-05-clock-pit/worklog.md
+ create mode 100644 src/atlas/core/calendar.py
+ create mode 100644 src/atlas/core/clock.py
+ create mode 100644 src/atlas/core/pit.py
+ create mode 100644 tests/unit/core/test_calendar.py
+ create mode 100644 tests/unit/core/test_clock.py
+ create mode 100644 tests/unit/core/test_pit.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Desktop/Trading Agents · branch main · HEAD 47e5ddd
+
+$ uv sync --group dev   (new runtime deps: exchange-calendars, pandas)
+ + six==1.17.0
+ + toolz==1.2.0
+ + tzdata==2026.5
+exit=0
+
+$ uv run pytest -q
+........................................................................ [ 14%]
+........................................................................ [ 28%]
+........................................................................ [ 42%]
+........................................................................ [ 56%]
+........................................................................ [ 70%]
+........................................................................ [ 84%]
+........................................................................ [ 98%]
+........                                                                 [100%]
+512 passed in 2.19s
+exit=0
+
+$ uv run ruff check .
+   Building atlas-capital @ file:///Users/zzjsmacbookair/Desktop/Trading%20Agents
+      Built atlas-capital @ file:///Users/zzjsmacbookair/Desktop/Trading%20Agents
+Uninstalled 1 package in 0.92ms
+Installed 1 package in 1ms
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+61 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 35 source files
+exit=0
+
+$ uv run pytest tests/unit/core -q && uv run ruff check .
+........................................................................ [ 14%]
+........................................................................ [ 29%]
+........................................................................ [ 44%]
+........................................................................ [ 59%]
+........................................................................ [ 73%]
+........................................................................ [ 88%]
+.......................................................                  [100%]
+487 passed in 1.98s
+All checks passed!
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+61 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 35 source files
+uv run pytest -q
+........................................................................ [ 14%]
+........................................................................ [ 28%]
+........................................................................ [ 42%]
+........................................................................ [ 56%]
+........................................................................ [ 70%]
+........................................................................ [ 84%]
+........................................................................ [ 98%]
+........                                                                 [100%]
+512 passed in 1.92s
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
