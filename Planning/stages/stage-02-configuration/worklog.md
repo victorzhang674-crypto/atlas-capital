@@ -77,3 +77,7 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - The four deviations from the brief (extra `profile`/`secrets` fields; secret names only on `Secrets`; pod files define the pod set; read-only collections): "continue with the recommended choice." All four approved, so no code change.
 - Unchanged: the four deferred minor review findings stay in the Backlog (owner's instruction). No code or test files changed in this follow-up.
 - Files: `artifacts/merged-main-check.txt`, `verification.md`, `worklog.md`, `Planning/PROGRESS.md`.
+
+## 2026-10-26 — Follow-up: audit items recorded
+- Did: a post-DONE audit against the planning files (fresh run on `b2cbc3c`: 117 passed, ruff/format/mypy clean, `make check` exit 0) found three Stage 02 items missing from the Decisions log: (1) two `stage-02:` commits against the DoD's one-commit rule; (2) `LLMConfig.provider` (singular) where the brief says "providers"; (3) the DoD's "every config key with a default" met at the collection level, while fields inside one pod, tier or universe are required. The owner approved all three as they are; each is now a row in PROGRESS.md › Decisions log quoting the owner's words.
+- Files: `Planning/PROGRESS.md`, `worklog.md`. No code or test changes.
