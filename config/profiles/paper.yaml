@@ -1,0 +1,7 @@
+# Profile: paper — Alpaca paper trading (never live money; spec A4).
+
+# LLM spend while paper trading.
+llm:
+  # Spend caps.
+  budgets:
+    daily_usd: 5.0  # live/paper daily LLM budget in USD (spec A8)

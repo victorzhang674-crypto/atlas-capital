@@ -1,0 +1,6 @@
+# Profile: backtest — historical simulation. Overrides the base layers.
+
+# Backtest window, restated here so a backtest's window is explicit (spec A7).
+backtest:
+  start: 2018-01-01  # first session
+  in_sample_end: 2021-12-31  # in-sample to 2021-12, out-of-sample from 2022

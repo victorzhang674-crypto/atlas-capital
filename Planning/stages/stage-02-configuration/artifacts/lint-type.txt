@@ -1,0 +1,12 @@
+$ uv run ruff check .   # 2026-10-26 01:57 EDT
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .   # 2026-10-26 01:57 EDT
+28 files already formatted
+exit=0
+
+$ uv run mypy src/atlas   # 2026-10-26 01:57 EDT
+Success: no issues found in 20 source files
+exit=0
+

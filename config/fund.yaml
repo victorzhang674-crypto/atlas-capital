@@ -1,0 +1,46 @@
+# Atlas Capital — fund mandate and operating settings (base layer).
+# Read by atlas.core.config.load_config. Layer order, lowest first: code defaults < this file
+# < limits.yaml < universe.yaml < pods/*.yaml < profiles/<profile>.yaml < .env < ATLAS__* env
+# vars < explicit overrides. Secrets never go here; they come only from env vars or .env.
+
+# The fund mandate.
+fund:
+  name: Atlas Capital  # display name used in reports
+  base_currency: USD  # reporting currency; only USD is supported in v1
+  initial_capital: 10000000  # simulated starting NAV in base currency (spec A6: $10M)
+  benchmark: SPY  # primary benchmark ticker (spec A9)
+
+# Where data lives and who provides it.
+data:
+  lake_path: data  # data lake directory, relative to the repo root (gitignored)
+  # Provider per data family (spec §11; free sources only, spec A3).
+  providers:
+    prices: yfinance  # daily bars: yfinance | alpaca
+    fundamentals: sec_edgar  # point-in-time XBRL companyfacts (Stage 09)
+    macro: fred  # FRED / ALFRED with vintages (Stage 10)
+    news: alpaca  # timestamped news: alpaca | yahoo (Stage 11)
+
+# LLM gateway values (consumed by Stage 24).
+llm:
+  provider: anthropic  # anthropic | openai_compatible (spec A2)
+  # Model id per tier (spec §11).
+  tiers:
+    deep: claude-opus-5-5  # long-form reasoning: research, debate, IC
+    quick: claude-haiku-5-5  # cheap, fast calls: extraction, summaries
+  # Spend caps; exceeding one raises BudgetExceeded and callers fail safe (Stage 24).
+  budgets:
+    daily_usd: 5.0  # USD per day, live/paper (spec A8)
+    per_run_usd: 25.0  # USD per backtest run; provisional, revisit in Stage 24/56
+    per_agent_call_max_tokens: 8000  # output token cap per call; provisional, revisit in Stage 24
+
+# Backtest window and simulated costs.
+backtest:
+  start: 2018-01-01  # first session (spec A7)
+  in_sample_end: 2021-12-31  # last in-sample session; out-of-sample from 2022 (spec A7)
+  end: null  # last session; null = latest available
+  # Simulated trading costs (Stage 51 refines these).
+  costs:
+    half_spread_bps: 5.0  # half bid-ask spread in basis points; Stage 51 adds market-cap buckets
+    impact_k: 0.1  # square-root impact coefficient k in k*sigma*sqrt(Q/ADV)
+    commission_per_share: 0  # USD per share (Alpaca-like zero commission)
+    borrow_gc_annual: 0.003  # general-collateral borrow fee for shorts, annual fraction (0.3%)

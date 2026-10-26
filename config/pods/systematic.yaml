@@ -1,0 +1,10 @@
+# Pod: Systematic Factor (spec §8). This file is the body of `pods.systematic`; the file name is the pod id.
+# The files in pods/ ARE the pod set: each file is a full definition, and deleting a file
+# removes that pod. Risk budgets of all pods must sum to 1.0; a disabled pod's budget stays
+# unused. Profiles may override single keys (e.g. pods: {statarb: {enabled: false}}).
+
+name: Systematic Factor  # display name
+enabled: true  # set false to switch the pod off
+risk_budget: 0.25  # 25% of the fund risk budget (initial; the CIO reallocates later)
+rebalance: weekly  # weekly composite rebalance: daily | weekly | event
+universe: sp500  # universe id from universe.yaml

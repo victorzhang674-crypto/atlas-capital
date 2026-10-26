@@ -1,0 +1,652 @@
+"""Typed fund configuration: mandate, risk limits, pods, data, LLM and backtest settings.
+
+Units: weights, exposures and limits are fractions of NAV (0.05 = 5%); drawdown thresholds
+and short caps are positive magnitudes (0.05 means a -5% drawdown); money is `Decimal` in
+the base currency; dates are trading-calendar `date`s.
+"""
+
+import hashlib
+import json
+import math
+import os
+import re
+from collections.abc import Iterator, Mapping
+from datetime import date
+from decimal import Decimal
+from itertools import pairwise
+from pathlib import Path
+from typing import Annotated, Any, Literal, Self
+
+import yaml
+from dotenv import dotenv_values
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    ConfigDict,
+    Field,
+    SecretStr,
+    SerializerFunctionWrapHandler,
+    ValidationError,
+    WrapSerializer,
+    model_validator,
+)
+from pydantic_settings import (
+    BaseSettings,
+    DotEnvSettingsSource,
+    EnvSettingsSource,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+)
+from pydantic_settings.exceptions import SettingsError
+
+from atlas.core.errors import ConfigError
+
+Profile = Literal["dev", "backtest", "paper"]
+PROFILES: tuple[Profile, ...] = ("dev", "backtest", "paper")
+
+# Bounded float types. Upper bounds catch a percent typed where a fraction belongs (5 vs 0.05).
+_Frac = Annotated[float, Field(gt=0, le=1)]  # (0, 1]
+_OpenFrac = Annotated[float, Field(gt=0, lt=1)]  # (0, 1)
+_Confidence = Annotated[float, Field(gt=0.5, lt=1)]  # (0.5, 1)
+_NonNeg = Annotated[float, Field(ge=0)]
+
+
+class _Frozen(BaseModel):
+    """Immutable model that rejects unknown keys. List fields are tuples for the same reason."""
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+
+class _FrozenDict[K, V](Mapping[K, V]):
+    """Read-only mapping (unlike `MappingProxyType` it pickles and deep-copies)."""
+
+    __slots__ = ("_data",)
+
+    def __init__(self, data: Mapping[K, V]) -> None:
+        self._data = dict(data)
+
+    def __getitem__(self, key: K) -> V:
+        return self._data[key]
+
+    def __iter__(self) -> Iterator[K]:
+        return iter(self._data)
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self._data!r})"
+
+    def __reduce__(self) -> tuple[Any, ...]:
+        return (type(self), (self._data,))
+
+
+def _freeze[V](value: Mapping[str, V]) -> _FrozenDict[str, V]:
+    return _FrozenDict(value)
+
+
+def _thaw(value: Mapping[str, Any], handler: SerializerFunctionWrapHandler) -> Any:
+    return handler(dict(value))
+
+
+class FundConfig(_Frozen):
+    """The fund mandate. `initial_capital` is in the base currency (spec A6)."""
+
+    name: str = "Atlas Capital"
+    base_currency: Literal["USD"] = "USD"
+    initial_capital: Decimal = Decimal("10000000")
+    benchmark: str = "SPY"
+
+
+class DrawdownTier(_Frozen):
+    """One fund drawdown circuit breaker (spec §9).
+
+    `drawdown` is a positive fraction from the high-water mark (0.05 = -5%); `degross_frac`
+    is the fraction of gross exposure to remove; `halt` stops trading until the owner resets.
+    """
+
+    drawdown: _OpenFrac
+    degross_frac: Annotated[float, Field(ge=0, le=1)]
+    block_new_names: bool
+    halt: bool
+
+
+class PodStops(_Frozen):
+    """Pod drawdown stops (spec §9), as positive fractions from the pod's high-water mark."""
+
+    halve_budget_at: _OpenFrac = 0.08
+    budget_multiplier: _OpenFrac = 0.5
+    freeze_at: _OpenFrac = 0.12
+
+    @model_validator(mode="after")
+    def _halve_before_freeze(self) -> Self:
+        if self.halve_budget_at >= self.freeze_at:
+            raise ValueError(
+                f"halve_budget_at ({self.halve_budget_at}) must be less than "
+                f"freeze_at ({self.freeze_at})"
+            )
+        return self
+
+
+def _default_drawdown_tiers() -> tuple[DrawdownTier, ...]:
+    return (
+        DrawdownTier(drawdown=0.05, degross_frac=0.25, block_new_names=False, halt=False),
+        DrawdownTier(drawdown=0.10, degross_frac=0.50, block_new_names=True, halt=False),
+        DrawdownTier(drawdown=0.15, degross_frac=1.00, block_new_names=True, halt=True),
+    )
+
+
+class LimitsConfig(_Frozen):
+    """Every risk limit in spec §9. Exposures are fractions of NAV; VaR/CVaR/stress are
+    1-day losses as fractions of NAV; style exposure is in cross-sectional sigmas."""
+
+    target_vol_annual: _OpenFrac = 0.10
+    max_gross: Annotated[float, Field(gt=0, le=5)] = 2.00
+    net_min: Annotated[float, Field(ge=-1, le=1)] = -0.10
+    net_max: Annotated[float, Field(ge=-1, le=1)] = 0.40
+    beta_min: Annotated[float, Field(ge=-2, le=2)] = -0.10
+    beta_max: Annotated[float, Field(ge=-2, le=2)] = 0.30
+    max_single_long: _Frac = 0.05
+    max_single_short: _Frac = 0.03
+    max_sector_net: _Frac = 0.15
+    max_style_exposure_sigma: Annotated[float, Field(gt=0, le=5)] = 0.5
+    max_order_adv_frac: _Frac = 0.05
+    adv_window_days: Annotated[int, Field(ge=1)] = 20
+    max_liquidation_days: Annotated[float, Field(gt=0)] = 3.0
+    liquidation_adv_frac: _Frac = 0.10
+    var_confidence: _Confidence = 0.95
+    max_var: _OpenFrac = 0.015
+    cvar_confidence: _Confidence = 0.975
+    max_cvar: _OpenFrac = 0.025
+    max_stress_loss: _OpenFrac = 0.15
+    drawdown_tiers: tuple[DrawdownTier, ...] = Field(default_factory=_default_drawdown_tiers)
+    pod_stops: PodStops = Field(default_factory=PodStops)
+
+    @model_validator(mode="after")
+    def _check_ranges_and_tiers(self) -> Self:
+        if self.net_min >= self.net_max:
+            raise ValueError(f"net_min ({self.net_min}) must be less than net_max ({self.net_max})")
+        if self.beta_min >= self.beta_max:
+            raise ValueError(
+                f"beta_min ({self.beta_min}) must be less than beta_max ({self.beta_max})"
+            )
+        tiers = self.drawdown_tiers
+        if not tiers:
+            raise ValueError("drawdown_tiers must not be empty")
+        if any(a.drawdown >= b.drawdown for a, b in pairwise(tiers)):
+            raise ValueError("drawdown_tiers: drawdown thresholds must be strictly increasing")
+        if any(a.degross_frac > b.degross_frac for a, b in pairwise(tiers)):
+            raise ValueError("drawdown_tiers: degross_frac must be non-decreasing")
+        return self
+
+
+class PodConfig(_Frozen):
+    """One strategy pod (spec §8). `risk_budget` is a fraction of the fund's risk budget;
+    `universe` is a key of `DataConfig.universes`."""
+
+    name: str
+    enabled: bool = True
+    risk_budget: Annotated[float, Field(ge=0, le=1)]
+    rebalance: Literal["daily", "weekly", "event"]
+    universe: str
+
+
+# Read-only `Mapping` fields: validated into a `_FrozenDict`, dumped as a plain dict.
+_PodMap = Annotated[Mapping[str, PodConfig], AfterValidator(_freeze), WrapSerializer(_thaw)]
+
+
+def _default_pods() -> _FrozenDict[str, PodConfig]:
+    def pod(name: str, budget: float, rebalance: str, universe: str) -> PodConfig:
+        return PodConfig.model_validate(
+            {"name": name, "risk_budget": budget, "rebalance": rebalance, "universe": universe}
+        )
+
+    return _FrozenDict(
+        {
+            "fundamental_ls": pod("Fundamental L/S", 0.30, "weekly", "sp500"),
+            "systematic": pod("Systematic Factor", 0.25, "weekly", "sp500"),
+            "statarb": pod("Stat-Arb", 0.15, "daily", "sp500"),
+            "global_macro": pod("Global Macro", 0.20, "weekly", "macro_etfs"),
+            "event_driven": pod("Event-Driven", 0.10, "event", "sp500"),
+        }
+    )
+
+
+class UniverseConfig(_Frozen):
+    """A named universe: either an index (membership resolved point-in-time by Stage 08)
+    or a static ticker list."""
+
+    description: str
+    index: str | None = None
+    tickers: tuple[str, ...] = ()
+
+    @model_validator(mode="after")
+    def _index_xor_tickers(self) -> Self:
+        if (self.index is None) == (not self.tickers):
+            raise ValueError("exactly one of index or tickers must be set")
+        duplicates = sorted({t for t in self.tickers if self.tickers.count(t) > 1})
+        if duplicates:
+            raise ValueError(f"duplicate tickers: {', '.join(duplicates)}")
+        return self
+
+
+_MACRO_ETFS = (
+    "SPY",
+    "QQQ",
+    "IWM",
+    "EFA",
+    "EEM",
+    "XLB",
+    "XLC",
+    "XLE",
+    "XLF",
+    "XLI",
+    "XLK",
+    "XLP",
+    "XLRE",
+    "XLU",
+    "XLV",
+    "XLY",
+    "TLT",
+    "IEF",
+    "SHY",
+    "LQD",
+    "HYG",
+    "GLD",
+    "SLV",
+    "USO",
+    "DBC",
+    "UUP",
+    "FXE",
+    "FXY",
+    "VNQ",
+    "BIL",
+)
+
+
+_UniverseMap = Annotated[
+    Mapping[str, UniverseConfig], AfterValidator(_freeze), WrapSerializer(_thaw)
+]
+
+
+def _default_universes() -> _FrozenDict[str, UniverseConfig]:
+    return _FrozenDict(
+        {
+            "sp500": UniverseConfig(
+                description="S&P 500 constituents (point-in-time membership from Stage 08)",
+                index="SP500",
+            ),
+            "macro_etfs": UniverseConfig(
+                description="Liquid macro ETFs: regions, sectors, rates, credit, commodities, FX",
+                tickers=_MACRO_ETFS,
+            ),
+        }
+    )
+
+
+class DataProviders(_Frozen):
+    """Which provider serves each data family."""
+
+    prices: Literal["yfinance", "alpaca"] = "yfinance"
+    fundamentals: Literal["sec_edgar"] = "sec_edgar"
+    macro: Literal["fred"] = "fred"
+    news: Literal["alpaca", "yahoo"] = "alpaca"
+
+
+class DataConfig(_Frozen):
+    """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
+
+    lake_path: Path = Path("data")
+    providers: DataProviders = Field(default_factory=DataProviders)
+    universes: _UniverseMap = Field(default_factory=_default_universes)
+
+
+class LLMTiers(_Frozen):
+    """Model id per tier (spec §11)."""
+
+    deep: str = "claude-opus-5-5"
+    quick: str = "claude-haiku-5-5"
+
+
+class LLMBudgets(_Frozen):
+    """LLM spend caps in USD (spec A8) and a per-call output token cap."""
+
+    daily_usd: Annotated[float, Field(gt=0)] = 5.0
+    per_run_usd: Annotated[float, Field(gt=0)] = 25.0
+    per_agent_call_max_tokens: Annotated[int, Field(gt=0)] = 8000
+
+
+class LLMConfig(_Frozen):
+    """LLM gateway values; consumed by Stage 24."""
+
+    provider: Literal["anthropic", "openai_compatible"] = "anthropic"
+    tiers: LLMTiers = Field(default_factory=LLMTiers)
+    budgets: LLMBudgets = Field(default_factory=LLMBudgets)
+
+
+class CostConfig(_Frozen):
+    """Simulated trading costs. Spreads in basis points, `impact_k` is the square-root impact
+    coefficient, commission in base currency per share, borrow as an annual fraction."""
+
+    half_spread_bps: _NonNeg = 5.0
+    impact_k: _NonNeg = 0.1
+    commission_per_share: Annotated[Decimal, Field(ge=0)] = Decimal("0")
+    borrow_gc_annual: _NonNeg = 0.003
+
+
+class BacktestConfig(_Frozen):
+    """Backtest window (spec A7). `end=None` means the latest available session."""
+
+    start: date = date(2018, 1, 1)
+    in_sample_end: date = date(2021, 12, 31)
+    end: date | None = None
+    costs: CostConfig = Field(default_factory=CostConfig)
+
+    @model_validator(mode="after")
+    def _ordered_window(self) -> Self:
+        if self.start >= self.in_sample_end:
+            raise ValueError(
+                f"start ({self.start}) must be before in_sample_end ({self.in_sample_end})"
+            )
+        if self.end is not None and self.in_sample_end >= self.end:
+            raise ValueError(
+                f"in_sample_end ({self.in_sample_end}) must be before end ({self.end})"
+            )
+        return self
+
+
+class Secrets(_Frozen):
+    """API credentials, read only from the environment or `.env`. Never logged or hashed."""
+
+    anthropic_api_key: SecretStr | None = None
+    alpaca_api_key_id: SecretStr | None = None
+    alpaca_api_secret_key: SecretStr | None = None
+    fred_api_key: SecretStr | None = None
+    sec_user_agent: SecretStr | None = None
+
+
+class AtlasConfig(BaseSettings):
+    """The whole configuration. Build it with `load_config()`; `AtlasConfig()` alone gives
+    the code defaults and reads nothing from the environment."""
+
+    model_config = SettingsConfigDict(
+        env_prefix="ATLAS__", env_nested_delimiter="__", frozen=True, extra="forbid"
+    )
+
+    profile: Profile = "dev"
+    fund: FundConfig = Field(default_factory=FundConfig)
+    limits: LimitsConfig = Field(default_factory=LimitsConfig)
+    pods: _PodMap = Field(default_factory=_default_pods)
+    data: DataConfig = Field(default_factory=DataConfig)
+    llm: LLMConfig = Field(default_factory=LLMConfig)
+    backtest: BacktestConfig = Field(default_factory=BacktestConfig)
+    secrets: Secrets = Field(default_factory=Secrets)
+
+    @model_validator(mode="after")
+    def _check_pods(self) -> Self:
+        total = math.fsum(pod.risk_budget for pod in self.pods.values())
+        if not math.isclose(total, 1.0, abs_tol=1e-9):
+            per_pod = {pod_id: pod.risk_budget for pod_id, pod in self.pods.items()}
+            raise ValueError(f"pod risk budgets sum to {total:.6g}, expected 1.0: {per_pod}")
+        for pod_id, pod in self.pods.items():
+            if pod.universe not in self.data.universes:
+                known = ", ".join(sorted(self.data.universes))
+                raise ValueError(
+                    f"pods.{pod_id}.universe: unknown universe {pod.universe!r}; known: {known}"
+                )
+        return self
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        """Only explicit init values; `load_config` assembles every other layer itself."""
+        return (init_settings,)
+
+
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """`yaml.SafeLoader` that rejects a key repeated within one mapping."""
+
+
+def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.Node) -> dict[Any, Any]:
+    if not isinstance(node, yaml.MappingNode):
+        raise yaml.constructor.ConstructorError(
+            None, None, f"expected a mapping, got {type(node).__name__}", node.start_mark
+        )
+    loader.flatten_mapping(node)
+    seen: set[Any] = set()
+    for key_node, _ in node.value:
+        key = loader.construct_object(key_node)
+        try:
+            hash(key)
+        except TypeError:
+            raise yaml.constructor.ConstructorError(
+                None, None, f"unhashable key {key!r}", key_node.start_mark
+            ) from None
+        if key in seen:
+            raise yaml.constructor.ConstructorError(
+                None, None, f"duplicate key {key!r}", key_node.start_mark
+            )
+        seen.add(key)
+    return loader.construct_mapping(node)
+
+
+_UniqueKeyLoader.add_constructor(
+    yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _construct_unique_mapping
+)
+
+
+def _read_yaml(path: Path) -> dict[str, Any]:
+    """Parse one YAML file; a missing or empty file is an empty layer."""
+    if not path.is_file():
+        return {}
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as exc:
+        raise ConfigError(f"{path}: not valid UTF-8 text ({exc.reason})") from exc
+    except OSError as exc:
+        raise ConfigError(f"{path}: cannot read: {exc.strerror}") from exc
+    try:
+        # _UniqueKeyLoader is a SafeLoader subclass, so this is a safe load.
+        data = yaml.load(text, Loader=_UniqueKeyLoader)
+    except yaml.MarkedYAMLError as exc:
+        line = exc.problem_mark.line + 1 if exc.problem_mark is not None else "?"
+        raise ConfigError(f"{path}: invalid YAML at line {line}: {exc.problem}") from exc
+    except yaml.YAMLError as exc:
+        raise ConfigError(f"{path}: invalid YAML: {exc}") from exc
+    if data is None:
+        return {}
+    if not isinstance(data, dict):
+        raise ConfigError(f"{path}: top level must be a mapping, got {type(data).__name__}")
+    return data
+
+
+def _deep_merge(*layers: Mapping[str, Any]) -> dict[str, Any]:
+    """Merge layers left to right: mappings merge recursively, lists and scalars replace."""
+    merged: dict[str, Any] = {}
+    for layer in layers:
+        for key, value in layer.items():
+            if isinstance(value, Mapping):
+                current = merged.get(key)
+                merged[key] = _deep_merge(current if isinstance(current, Mapping) else {}, value)
+            else:
+                merged[key] = value
+    return merged
+
+
+_ENV_PREFIX = "ATLAS__"
+# Top-level keys that YAML, env vars and overrides may set.
+_SECTIONS = frozenset({"fund", "limits", "pods", "data", "llm", "backtest"})
+_RESERVED = {
+    "secrets": "'secrets' may only come from environment variables or .env",
+    "profile": "'profile' may only come from load_config(profile=...)",
+}
+
+
+def _check_reserved(layer: Mapping[str, Any], source: str) -> None:
+    for key, why in _RESERVED.items():
+        if key in layer:
+            raise ConfigError(f"{source}: {why}")
+
+
+def _check_env_names(names: list[str], source: str) -> None:
+    """Reject `ATLAS__<x>__...` names whose section `<x>` is not a config section."""
+    for name in names:
+        if not name.upper().startswith(_ENV_PREFIX):
+            continue
+        section = name[len(_ENV_PREFIX) :].split("__", 1)[0].lower()
+        if section in _RESERVED:
+            raise ConfigError(f"{source}: {name} is not allowed; {_RESERVED[section]}")
+        if section not in _SECTIONS:
+            valid = ", ".join(sorted(_SECTIONS))
+            raise ConfigError(f"{source}: {name} names no config section; valid: {valid}")
+
+
+def _env_layers(dotenv_path: Path) -> list[dict[str, Any]]:
+    """The `.env` layer then the process-env layer, from `ATLAS__` variables only."""
+    file_vars = dotenv_values(dotenv_path) if dotenv_path.is_file() else {}
+    _check_env_names(list(file_vars), str(dotenv_path))
+    _check_env_names(list(os.environ), "environment")
+    options: dict[str, Any] = {
+        "env_prefix": _ENV_PREFIX,
+        "env_nested_delimiter": "__",
+        "case_sensitive": False,
+    }
+    dotenv = _run_source(
+        DotEnvSettingsSource(AtlasConfig, env_file=dotenv_path, **options), dotenv_path
+    )
+    env = _run_source(EnvSettingsSource(AtlasConfig, **options), "environment")
+    # The .env source also returns unprefixed keys (e.g. fred_api_key); keep config sections.
+    return [{k: v for k, v in dotenv.items() if k in _SECTIONS}, env]
+
+
+def _run_source(source: PydanticBaseSettingsSource, origin: object) -> dict[str, Any]:
+    """Call a pydantic-settings source, turning its JSON parse errors into `ConfigError`."""
+    try:
+        return source()
+    except SettingsError as exc:
+        # The message names the field, never the value: 'error parsing value for field "x" ...'
+        match = re.search(r'field "(\w+)"', str(exc))
+        section = match.group(1).upper() if match else "<SECTION>"
+        raise ConfigError(f"{origin}: an ATLAS__{section}__* value is not valid JSON") from exc
+
+
+def _read_secrets(dotenv_path: Path) -> Secrets:
+    """Each `Secrets` field from the env var of the same name (upper case), else from `.env`.
+
+    Empty values (as copied from `.env.example`) count as unset.
+    """
+    file_vars = dotenv_values(dotenv_path) if dotenv_path.is_file() else {}
+    env = {k.upper(): v for k, v in os.environ.items()}
+    dotenv = {k.upper(): v for k, v in file_vars.items()}
+    values: dict[str, str] = {}
+    for field in Secrets.model_fields:
+        value = env.get(field.upper()) or dotenv.get(field.upper())
+        if value:
+            values[field] = value
+    return Secrets.model_validate(values)
+
+
+def _yaml_layers(config_dir: Path, profile: str) -> list[dict[str, Any]]:
+    """The YAML layers in merge order, each shaped like the `AtlasConfig` tree."""
+    fund_layer = _read_yaml(config_dir / "fund.yaml")
+    _check_reserved(fund_layer, str(config_dir / "fund.yaml"))
+    layers = [
+        fund_layer,
+        {"limits": _read_yaml(config_dir / "limits.yaml")},
+        {"data": {"universes": _read_yaml(config_dir / "universe.yaml")}},
+    ]
+    pods_dir = config_dir / "pods"
+    if pods_dir.is_dir():
+        for path in sorted(pods_dir.glob("*.yaml")):
+            layers.append({"pods": {path.stem: _read_yaml(path)}})
+    profile_path = config_dir / "profiles" / f"{profile}.yaml"
+    profile_layer = _read_yaml(profile_path)
+    _check_reserved(profile_layer, str(profile_path))
+    layers.append(profile_layer)
+    return layers
+
+
+def _default_layer(config_dir: Path) -> dict[str, Any]:
+    """The code defaults as a merge layer.
+
+    Pod files and universe.yaml define whole collections: when any `pods/*.yaml` exists
+    the default pods are dropped (deleting a file removes that pod), and a non-empty
+    universe.yaml replaces the default universes. Later layers still merge into entries.
+    """
+    defaults = AtlasConfig().model_dump(exclude={"secrets"})
+    pods_dir = config_dir / "pods"
+    if pods_dir.is_dir() and any(pods_dir.glob("*.yaml")):
+        del defaults["pods"]
+    if _read_yaml(config_dir / "universe.yaml"):
+        del defaults["data"]["universes"]
+    return defaults
+
+
+def _format_errors(exc: ValidationError, profile: str) -> str:
+    lines = [f"Invalid configuration (profile {profile!r}):"]
+    for err in exc.errors():
+        loc = ".".join(str(part) for part in err["loc"]) or "<root>"
+        lines.append(f"  {loc}: {err['msg']}")
+    return "\n".join(lines)
+
+
+def load_config(
+    profile: str = "dev",
+    overrides: dict[str, Any] | None = None,
+    config_dir: Path | None = None,
+) -> AtlasConfig:
+    """Load and validate the configuration for `profile`.
+
+    Layers, lowest first: code defaults < fund.yaml < limits.yaml < universe.yaml <
+    pods/*.yaml < profiles/<profile>.yaml < `.env` < `ATLAS__*` env vars < `overrides`.
+    Mappings merge key by key and lists are replaced, except that the pod files and
+    universe.yaml define whole collections (see `_default_layer`); `.yml` files are rejected.
+    `config_dir` defaults to `./config`; `.env` is read from its parent directory. Secrets
+    come only from env vars or `.env`. Raises `ConfigError` naming the file, variable or
+    dotted key at fault (never a value).
+    """
+    if profile not in PROFILES:
+        raise ConfigError(f"Unknown profile {profile!r}; expected one of: {', '.join(PROFILES)}")
+    config_dir = Path.cwd() / "config" if config_dir is None else Path(config_dir)
+    if not config_dir.is_dir():
+        raise ConfigError(f"config directory not found: {config_dir}")
+    stray = sorted(config_dir.rglob("*.yml"))
+    if stray:
+        raise ConfigError(f"{stray[0]}: use the .yaml extension; .yml files are not read")
+
+    overrides = overrides or {}
+    _check_reserved(overrides, "overrides")
+    dotenv_path = config_dir.parent / ".env"
+
+    defaults = _default_layer(config_dir)
+    data = _deep_merge(
+        defaults,
+        *_yaml_layers(config_dir, profile),
+        *_env_layers(dotenv_path),
+        overrides,
+        {"profile": profile},
+    )
+    try:
+        return AtlasConfig(**data, secrets=_read_secrets(dotenv_path))
+    except ValidationError as exc:
+        # `from None`: the formatted message keeps every location and reason, while the
+        # original error would echo input values, e.g. a secret pasted into a YAML file.
+        raise ConfigError(_format_errors(exc, profile)) from None
+
+
+def config_fingerprint(cfg: AtlasConfig) -> str:
+    """Stable 12-hex-char tag of every non-secret setting, for labelling runs.
+
+    SHA-256 of the canonical JSON dump (sorted keys) with `secrets` excluded, so the same
+    settings give the same tag on any machine and in any process.
+    """
+    payload = json.dumps(
+        cfg.model_dump(mode="json", exclude={"secrets"}), sort_keys=True, separators=(",", ":")
+    )
+    return hashlib.sha256(payload.encode()).hexdigest()[:12]

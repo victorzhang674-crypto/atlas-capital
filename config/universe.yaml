@@ -1,0 +1,48 @@
+# Named universes (body of `data.universes`). Pods refer to them by id.
+# Each universe sets exactly one of `index` (point-in-time membership, Stage 08) or `tickers`.
+# This file replaces the built-in universe set: each entry is a full definition.
+
+# S&P 500 equities, used by the fundamental, systematic, stat-arb and event-driven pods.
+sp500:
+  description: S&P 500 constituents (point-in-time membership from Stage 08)  # shown in reports
+  index: SP500  # index id resolved point-in-time by Stage 08
+  tickers: []  # unused for an index universe
+
+# About 30 liquid ETFs for the global macro pod (spec A1; list from the Stage 08 brief).
+macro_etfs:
+  description: "Liquid macro ETFs: regions, sectors, rates, credit, commodities, FX"  # shown in reports
+  index: null  # static list, no index
+  # Equity: US broad, Nasdaq-100, small caps, developed ex-US, emerging; then the 11 sector
+  # SPDRs; rates (long, intermediate, short Treasuries); credit (IG, HY); gold, silver, oil,
+  # broad commodities; USD, EUR, JPY; US REITs; T-bills (cash proxy).
+  tickers:
+    - SPY
+    - QQQ
+    - IWM
+    - EFA
+    - EEM
+    - XLB
+    - XLC
+    - XLE
+    - XLF
+    - XLI
+    - XLK
+    - XLP
+    - XLRE
+    - XLU
+    - XLV
+    - XLY
+    - TLT
+    - IEF
+    - SHY
+    - LQD
+    - HYG
+    - GLD
+    - SLV
+    - USO
+    - DBC
+    - UUP
+    - FXE
+    - FXY
+    - VNQ
+    - BIL

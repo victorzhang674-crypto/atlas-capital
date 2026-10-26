@@ -1,0 +1,7 @@
+# Profile: dev — local development. Overrides the base layers; any top-level section allowed.
+
+# LLM spend for local development.
+llm:
+  # Spend caps.
+  budgets:
+    daily_usd: 1.0  # keep local experiments cheap (USD per day)

@@ -1,0 +1,46 @@
+# Fund risk limits (spec §9). This file is the body of `limits`.
+# Units: fractions of NAV (0.05 = 5%); drawdowns and short caps are positive magnitudes.
+# Bounds are enforced: e.g. a single-name cap above 1 (a percent typed as 5) is rejected.
+
+target_vol_annual: 0.10  # target annualised fund volatility (10%)
+max_gross: 2.00  # gross exposure cap: sum of |weights| <= 200% NAV
+net_min: -0.10  # net exposure floor (-10% NAV)
+net_max: 0.40  # net exposure cap (+40% NAV)
+beta_min: -0.10  # ex-ante beta to SPY, lower bound
+beta_max: 0.30  # ex-ante beta to SPY, upper bound
+max_single_long: 0.05  # largest long position (5% NAV)
+max_single_short: 0.03  # largest short position, as a magnitude (3% NAV)
+max_sector_net: 0.15  # sector net exposure cap, either side (+/-15% NAV)
+max_style_exposure_sigma: 0.5  # style factor exposure cap, each, in cross-sectional sigmas
+max_order_adv_frac: 0.05  # order size cap as a fraction of average daily volume (5% ADV)
+adv_window_days: 20  # sessions in the ADV average
+max_liquidation_days: 3.0  # a position must liquidate within this many sessions...
+liquidation_adv_frac: 0.10  # ...trading at most this fraction of ADV per session (10%)
+var_confidence: 0.95  # confidence level of the 1-day historical VaR
+max_var: 0.015  # 1-day 95% VaR cap (1.5% NAV)
+cvar_confidence: 0.975  # confidence level of the 1-day CVaR (expected shortfall)
+max_cvar: 0.025  # 1-day 97.5% CVaR cap (2.5% NAV)
+max_stress_loss: 0.15  # worst historical stress scenario loss cap (15% NAV)
+
+# Fund drawdown circuit breakers, strictly increasing by drawdown (Stage 45 runs them).
+# drawdown: from the high-water mark; degross_frac: share of gross to cut;
+# block_new_names: no new positions; halt: stop trading until the owner resets.
+drawdown_tiers:
+  - drawdown: 0.05  # -5%: de-gross 25%
+    degross_frac: 0.25  # cut a quarter of gross exposure
+    block_new_names: false  # new names still allowed
+    halt: false  # keep trading
+  - drawdown: 0.10  # -10%: de-gross 50%, no new names
+    degross_frac: 0.50  # cut half of gross exposure
+    block_new_names: true  # no new names
+    halt: false  # keep trading
+  - drawdown: 0.15  # -15%: flatten to the hedged core and halt
+    degross_frac: 1.00  # remove all non-core exposure
+    block_new_names: true  # no new names
+    halt: true  # halt; only the owner can reset
+
+# Pod stops, as drawdowns from each pod's own high-water mark.
+pod_stops:
+  halve_budget_at: 0.08  # -8%: pod risk budget is multiplied by budget_multiplier
+  budget_multiplier: 0.5  # halve the budget
+  freeze_at: 0.12  # -12%: pod frozen

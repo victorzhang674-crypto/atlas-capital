@@ -1,0 +1,24 @@
+# Stage 02 — Configuration system & fund mandate · Verification evidence
+
+Fill this in **only** with output from commands actually run in this stage's final chat (Project.md Rule 1). Save full raw outputs under `artifacts/` and quote the key lines here.
+
+#### Verification evidence — Stage 02 — 2026-10-26
+- Commands run (this chat, after the final fix pass):
+  - `uv run pytest -q` → 117 passed, 0 failed, 0 deselected, exit=0 · raw: artifacts/pytest.txt
+  - `uv run ruff check .` → All checks passed!, exit=0 · raw: artifacts/lint-type.txt
+  - `uv run ruff format --check .` → 28 files already formatted, exit=0 · raw: artifacts/lint-type.txt
+  - `uv run mypy src/atlas` → Success: no issues found in 20 source files, exit=0 (strict on `atlas.core.*`) · raw: artifacts/lint-type.txt
+  - `uv run pytest tests/unit/core/test_config.py -q` (brief's Verify) → 92 passed, exit=0 · raw: artifacts/verify-test-config.txt
+  - `make check` → ruff clean, 28 files formatted, mypy Success, 117 passed, exit=0 · raw: artifacts/make-check.txt
+  - `uv run pytest tests/unit/core/test_config.py -v` filtered to the criterion tests → 51 PASSED, 0 FAILED · raw: artifacts/acceptance-tests.txt
+  - `load_config("backtest")` from the repo root (no `.env` present) → profile backtest, every §9 limit, 3 drawdown tiers, pod stops, 5 pods (budgets 0.30/0.25/0.15/0.20/0.10), universes sp500 (index) + macro_etfs (30 tickers), LLM, backtest window and costs; no secrets set; exit=0 · raw: artifacts/load-config-backtest.txt
+  - Public docstring check over `atlas.core.config` and `atlas.core.errors` → `public items without docstring: []` · raw: artifacts/docstrings.txt
+- Acceptance criteria (brief.md):
+  - [x] `load_config("backtest")` returns a fully populated config — evidence: `test_repo_backtest_profile_fully_populated` PASSED (repo YAML equals the code defaults for fund, limits, pods, data, backtest); `test_every_repo_profile_loads[dev|backtest|paper]` PASSED; artifacts/load-config-backtest.txt
+  - [x] Invalid YAML raises `ConfigError` naming the bad key — evidence: `test_invalid_value_names_dotted_key` (`pods.statarb.risk_budget`), `test_unknown_key_names_dotted_key` (`limits.max_gros`), `test_malformed_yaml_names_file_and_line`, `test_duplicate_yaml_key_raises` (`duplicate key 'max_gross'`), `test_non_mapping_yaml_raises`, `test_invalid_config_raises[*]` (14 cases) — all PASSED
+  - [x] Every limit in spec §9 exists as a typed field — evidence: `test_limits_cover_spec_section_9[*]` (19 fields, value and `float`/`int` annotation) and `test_drawdown_tiers_and_pod_stops_defaults` (drawdown circuit breakers, pod stops) PASSED
+  - [x] Brief *Tests* list — defaults: `test_defaults_without_files`, `test_load_config_empty_dir_equals_defaults`; layering: `test_layer_order`, `test_lists_are_replaced_not_merged`, `test_dotenv_layer_below_process_env`; each validator: `test_invalid_config_raises[*]`, `test_percent_instead_of_fraction_rejected`; env override: `test_env_overrides_nested_key`, `test_env_json_list_value`; fingerprint stability: `test_fingerprint_*` (6 tests, including a fresh process and secrets ignored); secrets never in `repr()`: `test_secrets_never_in_repr_or_dump`, `test_secret_typed_into_yaml_never_reaches_traceback` — all PASSED
+  - [x] Definition of Done extras — every config key is in YAML with a comment and in code with a default: `test_every_config_key_is_written_in_yaml`, `test_every_yaml_key_has_a_comment` (108 key lines, 11 files; it was shown to fail on a planted uncommented key) PASSED; docstrings state units: artifacts/docstrings.txt plus a read of `config.py`
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED
