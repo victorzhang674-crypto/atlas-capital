@@ -1,0 +1,29 @@
+$ uv run python <section 7 coverage over atlas.core.types, cross-checked against artifacts/stage-tests-verbose.txt>
+== spec §7 contracts
+AnalystReport      atlas.core.types.research        roundtrip=PASSED immutable=PASSED fields=['ticker', 'as_of', 'analyst', 'summary', 'signals', 'risks', 'confidence']
+InvestmentThesis   atlas.core.types.research        roundtrip=PASSED immutable=PASSED fields=['id', 'ticker', 'as_of', 'direction', 'exp_return', 'horizon_days', 'conviction', 'catalysts', 'kill_criteria', 'evidence', 'status']
+PodProposal        atlas.core.types.portfolio       roundtrip=PASSED immutable=PASSED fields=['id', 'pod', 'as_of', 'views', 'target_weights', 'rationale']
+CapitalAllocation  atlas.core.types.portfolio       roundtrip=PASSED immutable=PASSED fields=['as_of', 'pod_weights', 'risk_budgets', 'rationale']
+TargetPortfolio    atlas.core.types.portfolio       roundtrip=PASSED immutable=PASSED fields=['as_of', 'weights', 'hedges', 'expected_vol', 'expected_beta']
+RiskDecision       atlas.core.types.portfolio       roundtrip=PASSED immutable=PASSED fields=['status', 'adjusted_weights', 'breaches', 'metrics']
+Order              atlas.core.types.trading         roundtrip=PASSED immutable=PASSED fields=['id', 'symbol', 'side', 'quantity', 'order_type', 'time_in_force', 'limit_price', 'status', 'filled_quantity', 'pods', 'as_of', 'created_at', 'parent_id']
+Fill               atlas.core.types.trading         roundtrip=PASSED immutable=PASSED fields=['id', 'order_id', 'symbol', 'side', 'quantity', 'price', 'commission', 'ts', 'as_of']
+Position           atlas.core.types.trading         roundtrip=PASSED immutable=PASSED fields=['symbol', 'quantity', 'avg_cost', 'pod']
+LedgerEntry        atlas.core.types.performance     roundtrip=PASSED immutable=PASSED fields=['id', 'as_of', 'account', 'side', 'amount', 'ref']
+NAVRecord          atlas.core.types.performance     roundtrip=PASSED immutable=PASSED fields=['date', 'nav', 'cash', 'long_market_value', 'short_market_value', 'nav_per_share']
+Prediction         atlas.core.types.performance     roundtrip=PASSED immutable=PASSED fields=['id', 'source_agent', 'made_at', 'target', 'horizon_days', 'forecast', 'settled_at', 'outcome', 'score']
+== other brief contracts
+Instrument         atlas.core.types.instruments     roundtrip=PASSED immutable=PASSED fields=['symbol', 'asset_class', 'exchange', 'sector', 'industry', 'currency', 'is_shortable']
+Bar                atlas.core.types.market          roundtrip=PASSED immutable=PASSED fields=['symbol', 'date', 'open', 'high', 'low', 'close', 'adj_close', 'volume']
+Signal             atlas.core.types.research        roundtrip=PASSED immutable=PASSED fields=['name', 'direction', 'strength', 'evidence_ids']
+Evidence           atlas.core.types.research        roundtrip=PASSED immutable=PASSED fields=['id', 'source', 'as_of', 'text', 'url']
+MacroOutlook       atlas.core.types.research        roundtrip=PASSED immutable=PASSED fields=['as_of', 'regime_summary', 'growth', 'inflation', 'policy', 'credit', 'risks', 'asset_views', 'sector_tilts', 'risk_appetite', 'evidence']
+DebateTurn         atlas.core.types.research        roundtrip=PASSED immutable=PASSED fields=['speaker', 'claims', 'concessions', 'questions_for_other_side']
+ReturnDistribution atlas.core.types.research        roundtrip=PASSED immutable=PASSED fields=['p10', 'p50', 'p90']
+View               atlas.core.types.portfolio       roundtrip=PASSED immutable=PASSED fields=['ticker', 'exp_return', 'confidence', 'horizon_days']
+ComplianceResult   atlas.core.types.portfolio       roundtrip=PASSED immutable=PASSED fields=['approved_orders', 'blocked', 'warnings']
+Lesson             atlas.core.types.performance     roundtrip=PASSED immutable=PASSED fields=['id', 'agent', 'created_at', 'text', 'tags', 'source_episode_ids', 'quality_score']
+enums: ['AssetClass', 'Direction', 'ThesisStatus', 'Side', 'OrderType', 'TimeInForce', 'OrderStatus', 'RiskStatus', 'Severity', 'EntrySide', 'DebateRole']
+new_id('th') -> th_01M5WQW2K4ZRRVRYB951NAKNWS
+ALL COVERED: True
+exit=0

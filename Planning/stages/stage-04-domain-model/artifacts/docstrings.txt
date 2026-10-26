@@ -1,0 +1,4 @@
+$ uv run python <docstring check over atlas.core.types.*>
+modules checked: 9
+public items without docstring: []
+exit=0

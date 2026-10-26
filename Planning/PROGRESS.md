@@ -4,9 +4,9 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 04 — Core domain model — `NOT STARTED`
-- **Stages done:** 3 / 66
-- **Last updated:** 2026-10-26 (Stage 03 DONE)
+- **Current stage:** 05 — Clock, trading calendar & point-in-time guard — `NOT STARTED`
+- **Stages done:** 4 / 66
+- **Last updated:** 2026-10-26 (Stage 04 DONE)
 
 ## Stage checklist
 
@@ -14,7 +14,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - [x] **01** [Project scaffolding & toolchain](stages/stage-01-project-scaffolding/brief.md)
 - [x] **02** [Configuration system & fund mandate](stages/stage-02-configuration/brief.md)
 - [x] **03** [Logging, run context & audit trail](stages/stage-03-logging-audit/brief.md)
-- [ ] **04** [Core domain model](stages/stage-04-domain-model/brief.md)
+- [x] **04** [Core domain model](stages/stage-04-domain-model/brief.md)
 - [ ] **05** [Clock, trading calendar & point-in-time guard](stages/stage-05-clock-pit/brief.md)
 - [ ] **06** [Storage layer (DuckDB + Parquet lake)](stages/stage-06-storage/brief.md)
 
@@ -131,6 +131,17 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-26 | 03 | D10: plan builds canonical JSON (brief task 5) before `AuditLog` (brief task 4) | The hash depends on it; same content; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
 | 2026-10-26 | 03 | D11: `run_dir(lake_path, run_id)` = `<lake>/runs/<run_id>`, `audit_path(...)` = `run_dir/audit.jsonl`; `lake_path` is `cfg.data.lake_path` | The brief's `data/runs/<run_id>/audit.jsonl` without hard-coding `data`; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
 | 2026-10-26 | 03 | Approved as is: Stage 03 has two commits, `bb1eca1 stage-03: Logging, run context & audit trail` and `stage-03: follow-up records`, against the Definition of Done's "one git commit" per stage. The follow-up holds records only, from the post-DONE audit: the commit and merge entries in the worklog, the merged-`main` verification (artifacts/merged-main-check.txt) and three process deviations (executing-plans/TDD skills followed by hand, not loaded; no owner plan review before execution, as the kick-off prompt says to execute; plan Task 6's commit box ticked before the commit). Owner's words: "according to the planning markdown files, please determine whether everything has been completed or not and audit; if not, please help me to fix all the remaining gaps of this stage" | Found by the post-DONE audit; owner request in chat; see [stage-03 worklog](stages/stage-03-logging-audit/worklog.md) |
+| 2026-10-26 | 04 | Collision C1: spec §7 lists `LedgerEntry`; the brief's In-scope list omits it. Followed the spec (rank 3 over the brief): Stage 04 creates the `LedgerEntry` contract with Stage 52's fields (account, debit/credit, amount, ref); the ledger maths stays in Stage 52 | Rule 3 precedence; the brief's acceptance criterion requires every §7 contract |
+| 2026-10-26 | 04 | Collision C2: brief says "IDs are ULIDs with prefixes"; Stages 11/26 need stable, source-derived evidence ids (`news:<article_id>`). ULID ids only for objects Atlas mints; `Evidence.id` is a non-empty source key | Later briefs depend on re-ingest-stable evidence ids; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | D1: `new_id(prefix)` = `<prefix>_<ULID>` (prefix `^[a-z]{2,5}$`); `IdPrefix` th/prop/ord/fill/pred/les/led; typed id fields validate the prefix and are required (no default factory) | A record reloaded without its id must fail, not get a new one; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | D2: `PodProposal` has an `id` (spec §3 principle 5) though §7 omits it; `ICDecision`/`RiskMemo` (§6 only) are left to Stages 49/47 | Principle 5; owners of those contracts define their fields; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | D3: `float` for analytics (bar prices, weights, returns, confidence); `Decimal` for share quantities, trade prices, commissions, cash, NAV and ledger amounts; NaN/inf rejected everywhere | Stage protocol §4 money rule; Stage 52 needs exact amounts; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | D4/D5: canonical symbol `BRK.B` (`normalize_symbol`, `vendor_symbol` back to `BRK-B`); symbol-keyed maps reject keys that collide after normalising; §7 contracts keep `ticker`, brief types keep `symbol` | One form inside Atlas; field names follow the higher-ranked source; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | D6: `TargetPortfolio` helpers act on the whole book (`weights` + `hedges`); `diff(other)` = self − other without zero entries | Limits apply to everything held; Stage 43 keeps hedges separate; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | D7: `OrderStatus` = Stage 50's eight states with `is_terminal`; `Order` checks record consistency (filled qty vs status), not transitions | Transitions are Stage 50 behaviour; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | D8: `MacroOutlook`, `DebateTurn`, `Lesson`, `ComplianceResult` take the fields their owning briefs (33, 35, 27, 48) spell out; fields later briefs add to §7 contracts are deferred to those stages (YAGNI) | Avoid guessing; avoid a contract change later where the brief already fixes it; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | D9: `atlas.core.types.base.FrozenDict` is a public copy of `config.py`'s private `_FrozenDict`; `config.py` untouched; dedupe in Backlog | Keep Stage 02 code unchanged in this stage; see [stage-04 plan › Design decisions](stages/stage-04-domain-model/plan.md) |
+| 2026-10-26 | 04 | Review fix pass: `AtlasModel.model_copy(update=...)` re-validates; `FrozenDict` is hashable; `Real`/`UnitInterval`/`HorizonDays` reject bool. Eight "declined to judge" items ruled as standing (NAV identity → Stage 52; RESIZE/REJECT without breaches allowed; compliance id cross-check → Stage 48; thesis direction vs p50 → Stage 36; explicit `is_shortable=False` for CASH; epoch ints as UTC; JSON duplicate keys last-wins; hedges net against stocks per D6) | Whole-branch review by a fresh reviewer; see [stage-04 worklog](stages/stage-04-domain-model/worklog.md) |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -146,6 +157,15 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 02 review, minor) Drawdown tiers do not check that `halt` / `block_new_names` escalate (a halting tier followed by a non-halting one is accepted)
 - (Stage 03) The audit hash chain has no external anchor: rewriting the whole file with freshly computed hashes still passes `verify_chain`. Anchor the last hash somewhere else (e.g. the Stage 06 DuckDB mirror or the Stage 55 run summary)
 - (Stage 03) `AuditLog` supports one writer process per file (threads are fine); add a file lock (`fcntl.flock`) if several processes ever share one run's log
+- (Stage 04, D9) `atlas.core.types.base.FrozenDict` duplicates `atlas.core.config._FrozenDict`; make config import the public one
+- (Stage 04 review, minor) Strings inside tuples and map keys are unchecked: empty evidence ids / kill criteria / risks, duplicate `Order.pods`, `sector_tilts` keys `""` or case-duplicates, empty pod names in `CapitalAllocation`, `Position.pod=""` — use `NonEmptyStr` items and keys
+- (Stage 04 review, minor) `normalize_symbol` upper-cases non-ASCII (`ß` → `SS`); reject non-ASCII input
+- (Stage 04 review, minor) Id pattern accepts impossible ULIDs (first character 8–Z); tighten to `[0-7]`
+- (Stage 04 review, minor) `Order` accepts REJECTED with fills and `parent_id == id`; `Prediction.outcome` has no `ge=-1` bound
+- (Stage 04 review, minor) `exp_return` is annualised in `View` but over-the-horizon in `InvestmentThesis`/`Forecast`; rename (`exp_return_annual`) or cross-reference before Stages 38/41
+- (Stage 04 review, minor) `new_id` (like Stage 03's run/event ids) uses ULID randomness and wall-clock time with no seed/clock parameter, so ids differ across backtest reruns; consider routing through Stage 05's clock
+- (Stage 04 review, minor) Tests: `test_roundtrip_missing_id_fails` omits `PodProposal`; the Order/Fill cases of `test_decimal_fields_reject_nan` also trip `gt=0`
+- (Stage 04, D8) Fields later briefs add to Stage 04 contracts are not built yet: `AnalystReport.low_quality` (26), report catalysts (31), `PodProposal.exits` (38), `View` source (41), `stop_level` (43), order urgency and idempotency key (50), `Instrument` name/first/last trade dates (08); `ICDecision` (49), `RiskMemo` (47), `StatusUpdate` (50) are owned by those stages
 
 ## Handoff notes
 
@@ -233,4 +253,29 @@ Full block and raw output: [verification.md](stages/stage-03-logging-audit/verif
 - Acceptance criteria:
   - [x] Every audit event is chained and verifiable — evidence: `test_record_chains_events`, `test_reopen_continues_chain`, ten tamper/truncation tests, `test_concurrent_threads_keep_chain_valid`; artifacts/acceptance-demo.txt
   - [x] Logs carry the run_id — evidence: `test_every_file_line_is_json_with_run_id` (incl. third-party stdlib lines), `test_console_is_pretty_text`; artifacts/acceptance-demo.txt
+- Waivers: none
+
+### Stage 04 — Core domain model — DONE 2026-10-26
+- Folder: [stages/stage-04-domain-model/](stages/stage-04-domain-model/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: package `atlas.core.types` — `base` (`AtlasModel`, `FrozenDict`, `FrozenMap`, `Real`, `UnitInterval`, `NonEmptyStr`, `UtcDatetime`), `ids` (`IdPrefix`, `new_id`, `ThesisId`/`ProposalId`/`OrderId`/`FillId`/`PredictionId`/`LessonId`/`LedgerId`), `instruments` (`normalize_symbol`, `vendor_symbol`, `Symbol`, `SymbolWeights`, `AssetClass`, `Instrument`), `market` (`Bar`), `research` (`Direction`, `Signal`, `Evidence`, `AnalystReport`, `AssetView`, `MacroOutlook`, `DebateRole`, `Claim`, `DebateTurn`, `ReturnDistribution`, `Catalyst`, `ThesisStatus`, `InvestmentThesis`, `HorizonDays`), `portfolio` (`View`, `PodProposal`, `CapitalAllocation`, `TargetPortfolio`, `RiskStatus`, `Breach`, `RiskDecision`, `Severity`, `Violation`, `ComplianceResult`), `trading` (`Side`, `OrderType`, `TimeInForce`, `OrderStatus`, `Order`, `Fill`, `Position`), `performance` (`Forecast`, `Prediction`, `Lesson`, `NAVRecord`, `EntrySide`, `LedgerEntry`). 241 tests in `tests/unit/core/types/test_types_*.py`. No new dependencies, no config keys
+- Key interfaces: `from atlas.core.types import X` (everything is in `__all__`); `new_id(IdPrefix.THESIS) -> "th_<ULID>"`; `TargetPortfolio.book()/gross()/net()/long_leg()/short_leg()/diff(other)` act on `weights + hedges`; `OrderStatus.is_terminal`; `Order.remaining_quantity`/`signed_quantity`; `Fill.notional`; `Position.market_value(price)`; `NAVRecord.gross_exposure()/net_exposure()`; `Prediction.is_settled`; `ComplianceResult.passed`; `Direction.sign`, `Side.sign`
+- Decisions: Decisions log rows dated 2026-10-26, stage 04 (C1, C2, D1–D9, review fix pass)
+- Collisions with the overall plan: C1 (`LedgerEntry` in spec §7 but not the brief → created, spec wins); C2 (brief's "IDs are ULIDs" vs Stages 11/26's source-derived evidence ids → ULIDs only for minted ids)
+- Deviations from brief: none in scope. Additions: `PodProposal.id` (spec §3 principle 5), `LedgerEntry` (C1), helper types (`Real`, `HorizonDays`, `AssetView`, `Claim`, `Catalyst`, `Breach`, `Violation`, `Forecast`, `EntrySide`, `DebateRole`, `RiskStatus`, `Severity`), `AtlasModel.model_copy` re-validation (review fix)
+- Known gaps → backlog: review minors and the D8 deferred fields (see Backlog, "Stage 04")
+- Next stage should know: every contract is a frozen `AtlasModel` (`extra="forbid"`, NaN/inf rejected); change one with `model_copy(update={...})`, which re-validates (never mutate). Sequences are tuples; mapping fields are `FrozenDict`s (read-only, hashable, dump as dicts). Symbols are normalised to `BRK.B` on input everywhere; use `vendor_symbol(s, "-")` for yfinance. Money, share quantities and trade prices are `Decimal`; weights/returns/confidence are `float` (bool rejected on LLM-facing fields). Timestamps (`UtcDatetime`) must be tz-aware and are stored in UTC; trading days are `date`. Ids are required on reload (no default factory): mint with `new_id(IdPrefix.X)`. `Evidence.id` is a source key such as `news:<id>`, not a ULID. `View.exp_return` is annualised while `InvestmentThesis.exp_return`/`Forecast.returns` are over the horizon (Backlog). There is still no `atlas.core.clock`: Stage 05 creates it; `Order.created_at`, `Fill.ts`, `Prediction.made_at`, `Lesson.created_at` are passed in by callers, and the wall-clock grep over `src/` and `tests/` is empty. Tests in `tests/unit/` have no `__init__.py`, so new test basenames must be unique (this stage uses `test_types_*.py`). In this sandbox, a new worktree needs `UV_PROJECT_ENVIRONMENT=.venv.nosync uv sync --group dev` + `ln -s .venv.nosync .venv` and `UV_CACHE_DIR="$TMPDIR/uv-cache"` (and PyPI reachable for the sync)
+
+#### Verification evidence — Stage 04 — 2026-10-26
+Full block and raw output: [verification.md](stages/stage-04-domain-model/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 426 passed, 0 failed, 0 deselected
+  - `uv run ruff check .` → All checks passed!
+  - `uv run ruff format --check .` → 55 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 32 source files
+  - `uv run pytest tests/unit/core/types -q && uv run mypy src/atlas/core` (brief's Verify) → 241 passed; Success: no issues found in 15 source files
+  - `make check` → lint/format/mypy clean, 426 passed, exit=0
+  - §7 coverage → every contract `roundtrip=PASSED immutable=PASSED`, ALL COVERED: True (artifacts/section7-coverage.txt)
+- Acceptance criteria:
+  - [x] Every contract in spec §7 exists, validated and round-trippable — evidence: artifacts/section7-coverage.txt; `test_every_model_has_a_sample`, `test_json_roundtrip[*]` (29 models), validation tests listed in verification.md
+  - [x] mypy strict passes for `core/types` — evidence: `uv run mypy src/atlas/core` → Success (artifacts/verify.txt)
 - Waivers: none
