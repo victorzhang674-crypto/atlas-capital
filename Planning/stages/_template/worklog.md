@@ -1,0 +1,9 @@
+# Stage NN — <title> · Work log
+
+Append entries in order. Record failures and dead ends as honestly as successes.
+
+## YYYY-MM-DD HH:MM — <task or step>
+- Did: …
+- Ran: `<command>` → <result>
+- Problems / fixes: …
+- Next: …
