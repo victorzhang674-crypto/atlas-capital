@@ -4,14 +4,14 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 01 — Project scaffolding & toolchain — `IN PROGRESS`
-- **Stages done:** 0 / 66
-- **Last updated:** 2026-10-25 (Stage 01 started)
+- **Current stage:** 02 — Configuration system & fund mandate — `NOT STARTED`
+- **Stages done:** 1 / 66
+- **Last updated:** 2026-10-26 (Stage 01 DONE)
 
 ## Stage checklist
 
 ### Phase 0 Foundation
-- [ ] **01** [Project scaffolding & toolchain](stages/stage-01-project-scaffolding/brief.md)
+- [x] **01** [Project scaffolding & toolchain](stages/stage-01-project-scaffolding/brief.md)
 - [ ] **02** [Configuration system & fund mandate](stages/stage-02-configuration/brief.md)
 - [ ] **03** [Logging, run context & audit trail](stages/stage-03-logging-audit/brief.md)
 - [ ] **04** [Core domain model](stages/stage-04-domain-model/brief.md)
@@ -105,6 +105,12 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-25 | 00 | Removed "stages may run early/in parallel" wording from the roadmap; execution is strictly 01 → 66 | Owner's instruction (Project.md Rule 4), approved in chat |
 | 2026-10-25 | 00 | Added Project.md Rule 2A: each stage's records (`brief.md`, `plan.md`, `worklog.md`, `verification.md`, `artifacts/`) live in `stages/stage-NN-<slug>/`, copied from `stages/_template/`; code stays in shared `src/atlas/` and `tests/`. Briefs 02–66 moved into their folders; roadmap links updated | Owner's instruction: all non-planning work is done in the stage folder (records per stage, chosen by the owner over code per stage) |
 | 2026-10-25 | 01 | Stage 01, which began before Rule 2A, was migrated after its session ended: brief → `stages/stage-01-project-scaffolding/brief.md`, plan `stage-plans/stage-01-plan.md` → `stages/stage-01-project-scaffolding/plan.md` (spec path in its header updated); `stage-plans/` deleted; transition note removed from Project.md; all tracker links point to `brief.md` | Owner's instruction, completing the Rule 2A transition |
+| 2026-10-25 | 01 | Brief's "core" dependency group is `[project].dependencies` (empty for now); `dev`, `quant`, `llm`, `ui` are PEP 735 `[dependency-groups]`, the last three declared empty | Runtime deps must live in `[project].dependencies` for the package to install; brief wording kept in spirit |
+| 2026-10-25 | 01 | Only the 17 top-level subpackages from spec §12 created; nested ones (`data/providers`, `quant/features`, `agents/prompts`, …) are created by the stage that first needs them | YAGNI; brief asks for "empty subpackages", no nested contents |
+| 2026-10-25 | 01 | Distribution name `atlas-capital`, import package `atlas`, hatchling backend with `packages = ["src/atlas"]`; `uv.lock` committed | Clear dist name; lock file needed for "green on a clean clone" |
+| 2026-10-25 | 01 | Acceptance "CLAUDE.md still begins with the `@Project.md` import" read as: the pre-existing header (title, sentence, import) stays byte-identical and precedes the appended digest | The file never literally started with the import; header untouched; pinned by `test_claude_md_imports_project_rules_first` |
+| 2026-10-25 | 01 | Tooling never rewrites governing docs: ruff `extend-exclude = ["Planning", "Project.md"]`; pre-commit whitespace hooks `exclude: ^(Project\.md\|Planning/)`. Hooks are not installed into `.git/hooks` | ruff 0.17 formats Python blocks inside Markdown and tried to reflow `Planning/**/brief.md`; `Project.md` must stay unchanged |
+| 2026-10-26 | 01 | Collision: stage plan Task 8 recorded evidence only in `PROGRESS.md`; `Project.md` §1.5 (rank 1, changed mid-stage) requires `verification.md` + `artifacts/` in the stage folder too. Followed `Project.md` | Rule 3 precedence |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -123,3 +129,29 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - Key decisions: hybrid LLM + quant architecture; deterministic risk engine with final veto; five pods; Python 3.12/uv/LangGraph/DuckDB/cvxpy; Alpaca paper only
 - Superpowers plugin was not installed during planning; the method (brainstorm → spec → staged plan) was followed by hand
 - Next stage should know: the project root is `/Users/zzjsmacbookair/Desktop/Trading Agents`; there is no git repo yet (Stage 01 runs `git init` and commits `Project.md`, `CLAUDE.md` and `Planning/` first). `CLAUDE.md` already exists and imports `@Project.md`; Stage 01 appends to it and must not remove the import
+
+### Stage 01 — Project scaffolding & toolchain — DONE 2026-10-26
+- Folder: [stages/stage-01-project-scaffolding/](stages/stage-01-project-scaffolding/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: uv project `atlas-capital` (Python 3.12, src layout), package `atlas` with 17 empty subpackages, ruff/mypy/pytest config in `pyproject.toml`, `Makefile` (`install test lint fmt fmt-check type check`), `.pre-commit-config.yaml`, `.gitignore`, `README.md` quick start, conventions digest appended to `CLAUDE.md`
+- Key interfaces: `atlas.__version__ == "0.1.0"`; importable `atlas.{core,data,quant,llm,agents,portfolio,risk,compliance,execution,accounting,performance,orchestration,backtest,live,reporting,dashboard,cli}`; session fixture `repo_root() -> Path` in `tests/conftest.py`; markers `live`, `llm`, `integration` deselected by default with `--strict-markers`
+- Decisions: see Decisions log rows dated 2026-10-25/26, stage 01
+- Collisions with the overall plan: none with the roadmap or spec; one with the stage plan (evidence location), resolved in favour of `Project.md` §1.5
+- Deviations from brief: none in scope; ruff also excludes `Planning/` and `Project.md` (not in the brief, needed to keep `Project.md` unchanged)
+- Known gaps → backlog: none
+- Incident: an unchecked piped command amended the commit while `make check` was failing (iCloud had hidden the venv's `.pth` files). Root cause fixed and full verification re-run; details in the stage worklog
+- Next stage should know: Stage 02 adds the first runtime deps (pydantic, pyyaml) to `[project].dependencies` and creates `config/`. In this sandbox, `uv` and `pre-commit` need `UV_CACHE_DIR="$TMPDIR/uv-cache"` and `PRE_COMMIT_HOME="$TMPDIR/pre-commit"` (home caches are not writable); nothing in the repo depends on that. New subpackage dirs under `src/atlas/` must have an `__init__.py` and be added to `SUBPACKAGES` in `tests/unit/test_package_layout.py` only if they are top-level. **The project is on the iCloud-synced Desktop:** the venv lives in `.venv.nosync` (iCloud skips `*.nosync`) and `.venv` is a symlink to it. If `import atlas` ever fails with `ModuleNotFoundError`, check `ls -lO .venv.nosync/lib/python3.12/site-packages/*.pth` for `hidden` and rebuild with `rm -rf .venv.nosync && UV_PROJECT_ENVIRONMENT=.venv.nosync uv sync --group dev`. Moving the repo off iCloud is the durable fix (owner's call). `.gitignore` ignores the lake only at the repo root (`/data/`) so `src/atlas/data/` stays tracked
+
+#### Verification evidence — Stage 01 — 2026-10-26
+Full block and raw output: [verification.md](stages/stage-01-project-scaffolding/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 25 passed, 0 failed, 0 deselected
+  - `uv run ruff check .` → All checks passed!
+  - `uv run ruff format --check .` → 25 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 18 source files
+  - `make check` (working tree) → 25 passed, lint/format/mypy clean (re-run after the venv fix; an earlier run failed with `ModuleNotFoundError`, see worklog)
+  - `uv sync --group dev && make check && git log --oneline` (fresh clone) → 25 passed, lint/format/mypy clean, log shows `planning: …` and `stage-01: …`, exit=0
+- Acceptance criteria:
+  - [x] `make check` green on a clean clone after `uv sync` — evidence: artifacts/clean-clone-verify.txt
+  - [x] `git log` shows the planning commit and the stage-01 commit — evidence: same file
+  - [x] `CLAUDE.md` still begins with the `@Project.md` import; `Project.md` unchanged — evidence: `test_claude_md_imports_project_rules_first`; artifacts/docs-unchanged.txt
+- Waivers: none

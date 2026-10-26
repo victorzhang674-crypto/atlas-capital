@@ -1,0 +1,10 @@
+$ git diff --stat 956d5f7 HEAD -- Project.md
+exit=0
+$ git diff 956d5f7 HEAD -- CLAUDE.md | grep -c "^-[^-]"
+0
+$ head -5 CLAUDE.md
+# Atlas Capital — instructions for the AI
+
+The governing rules below are imported automatically. Follow them before and during **every** task.
+
+@Project.md
