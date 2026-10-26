@@ -1,0 +1,15 @@
+$ uv run pytest tests/unit/core -q && uv run ruff check .
+   Building atlas-capital @ file:///Users/zzjsmacbookair/Desktop/Trading%20Agents/.claude/worktrees/stage-5-detailed-plan-5c356f
+      Built atlas-capital @ file:///Users/zzjsmacbookair/Desktop/Trading%20Agents/.claude/worktrees/stage-5-detailed-plan-5c356f
+Uninstalled 1 package in 1ms
+Installed 1 package in 3ms
+........................................................................ [ 14%]
+........................................................................ [ 29%]
+........................................................................ [ 44%]
+........................................................................ [ 59%]
+........................................................................ [ 73%]
+........................................................................ [ 88%]
+.......................................................                  [100%]
+487 passed in 3.71s
+All checks passed!
+exit=0

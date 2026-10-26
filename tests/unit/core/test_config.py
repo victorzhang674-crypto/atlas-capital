@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import sys
 import traceback
-from datetime import date
+from datetime import date, time
 from decimal import Decimal
 from pathlib import Path
 
@@ -17,6 +17,7 @@ from pydantic import SecretStr, ValidationError
 
 from atlas.core.config import (
     AtlasConfig,
+    CalendarConfig,
     FundConfig,
     LimitsConfig,
     PodStops,
@@ -312,6 +313,9 @@ INVALID = [
     ({"backtest": {"end": "2020-01-01"}}, r"in_sample_end .* end"),
     ({"limits": {"max_gross": 0}}, r"limits\.max_gross"),
     ({"limits": {"var_confidence": 1.2}}, r"limits\.var_confidence"),
+    ({"calendar": {"start": "2031-01-01"}}, r"calendar.*start .* end"),
+    ({"calendar": {"bar_publish_lag_minutes": -1}}, r"calendar\.bar_publish_lag_minutes"),
+    ({"calendar": {"decision_time": "08:00:00+00:00"}}, r"calendar.*decision_time.*naive"),
 ]
 
 
@@ -319,6 +323,21 @@ INVALID = [
 def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
     with pytest.raises(ConfigError, match=pattern):
         load_config(overrides=overrides, config_dir=write_config(tmp_path, {}))
+
+
+def test_calendar_defaults() -> None:  # Stage 05 D1
+    assert AtlasConfig().calendar == CalendarConfig(
+        start=date(2000, 1, 1),
+        end=date(2030, 12, 31),
+        decision_time=time(8, 0),
+        bar_publish_lag_minutes=15,
+    )
+
+
+def test_calendar_env_override(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ATLAS__CALENDAR__BAR_PUBLISH_LAG_MINUTES", "20")
+    cfg = load_config(config_dir=write_config(tmp_path, {}))
+    assert cfg.calendar.bar_publish_lag_minutes == 20
 
 
 def test_percent_instead_of_fraction_rejected(tmp_path: Path) -> None:  # Review focus 3
@@ -505,12 +524,13 @@ def test_repo_backtest_profile_fully_populated(repo_root: Path, tmp_path: Path) 
     cfg = load_config("backtest", config_dir=_repo_config_copy(repo_root, tmp_path))
     defaults = AtlasConfig()
     assert cfg.profile == "backtest"
-    assert (cfg.fund, cfg.limits, cfg.pods, cfg.data, cfg.backtest) == (
+    assert (cfg.fund, cfg.limits, cfg.pods, cfg.data, cfg.backtest, cfg.calendar) == (
         defaults.fund,
         defaults.limits,
         defaults.pods,
         defaults.data,
         defaults.backtest,
+        defaults.calendar,
     )
     assert set(cfg.pods) == {
         "fundamental_ls",

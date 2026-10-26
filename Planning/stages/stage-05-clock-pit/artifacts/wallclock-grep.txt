@@ -1,0 +1,23 @@
+$ grep -rnE 'datetime\.now|date\.today|\.utcnow|time\.time\(|time\.time_ns|Timestamp\.(now|today|utcnow)|localtime|gmtime|ctime|asctime|strftime|clock_gettime|["'\''](now|today)["'\'']' src tests --include='*.py'
+src/atlas/core/clock.py:1:"""The single source of "now" for Atlas.
+src/atlas/core/clock.py:4:(TID251) bans the known wall-clock APIs (`datetime.now`, `date.today`, `time.time`,
+src/atlas/core/clock.py:5:`time.localtime`, `pandas.Timestamp.now`, ...) everywhere except this module, and a test scans
+src/atlas/core/clock.py:6:`src/` and `tests/` for the string forms (`pd.Timestamp("now")`, `np.datetime64("today")`).
+src/atlas/core/clock.py:106:        return datetime.now(UTC)
+tests/unit/core/test_clock.py:163:    "from datetime import datetime\n\ndatetime.now()\n",
+tests/unit/core/test_clock.py:164:    "from datetime import date\n\ndate.today()\n",
+tests/unit/core/test_clock.py:165:    "import time\n\ntime.time()\n",
+tests/unit/core/test_clock.py:166:    "import datetime as dt\n\ndt.datetime.utcnow()\n",
+tests/unit/core/test_clock.py:167:    "import pandas as pd\n\npd.Timestamp.now()\n",
+tests/unit/core/test_clock.py:168:    "import time\n\ntime.localtime()\n",
+tests/unit/core/test_clock.py:169:    "import time\n\ntime.gmtime()\n",
+tests/unit/core/test_clock.py:170:    "import time\n\ntime.ctime()\n",
+tests/unit/core/test_clock.py:171:    "import time\n\ntime.asctime()\n",
+tests/unit/core/test_clock.py:172:    'import time\n\ntime.strftime("%Y")\n',
+tests/unit/core/test_clock.py:173:    "import time\n\ntime.clock_gettime(time.CLOCK_REALTIME)\n",
+tests/unit/core/test_clock.py:174:    "import time\n\ntime.clock_gettime_ns(time.CLOCK_REALTIME)\n",
+tests/unit/core/test_clock.py:203:# String forms read the wall clock too ("now"/"today" parsed by pandas/numpy); ruff cannot see
+tests/unit/core/test_clock.py:216:            isinstance(v, ast.Constant) and str(v.value).strip().lower() in {"now", "today"}
+tests/unit/core/test_clock.py:227:        'pd.Timestamp("now")\npd.to_datetime("today")\nnp.datetime64("now")\n'
+tests/unit/core/test_clock.py:228:        'pd.date_range(end="today", periods=3)\npd.Timestamp("2024-03-01")\n'
+exit=0

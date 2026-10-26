@@ -4,9 +4,9 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 05 — Clock, trading calendar & point-in-time guard — `NOT STARTED`
-- **Stages done:** 4 / 66
-- **Last updated:** 2026-10-26 (Stage 04 DONE)
+- **Current stage:** 06 — Storage layer (DuckDB + Parquet lake) — `NOT STARTED`
+- **Stages done:** 5 / 66
+- **Last updated:** 2026-10-26 (Stage 05 DONE)
 
 ## Stage checklist
 
@@ -15,7 +15,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - [x] **02** [Configuration system & fund mandate](stages/stage-02-configuration/brief.md)
 - [x] **03** [Logging, run context & audit trail](stages/stage-03-logging-audit/brief.md)
 - [x] **04** [Core domain model](stages/stage-04-domain-model/brief.md)
-- [ ] **05** [Clock, trading calendar & point-in-time guard](stages/stage-05-clock-pit/brief.md)
+- [x] **05** [Clock, trading calendar & point-in-time guard](stages/stage-05-clock-pit/brief.md)
 - [ ] **06** [Storage layer (DuckDB + Parquet lake)](stages/stage-06-storage/brief.md)
 
 ### Phase 1 Data Platform → M1
@@ -144,6 +144,16 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-26 | 04 | Review fix pass: `AtlasModel.model_copy(update=...)` re-validates; `FrozenDict` is hashable; `Real`/`UnitInterval`/`HorizonDays` reject bool. Eight "declined to judge" items ruled as standing (NAV identity → Stage 52; RESIZE/REJECT without breaches allowed; compliance id cross-check → Stage 48; thesis direction vs p50 → Stage 36; explicit `is_shortable=False` for CASH; epoch ints as UTC; JSON duplicate keys last-wins; hedges net against stocks per D6) | Whole-branch review by a fresh reviewer; see [stage-04 worklog](stages/stage-04-domain-model/worklog.md) |
 | 2026-10-26 | 04 | Approved as is: Stage 04 has two commits, `f73fba5 stage-04: Core domain model` and `stage-04: follow-up records`, against the Definition of Done's "one git commit" per stage. The follow-up holds records only: the merged-`main` verification (artifacts/merged-main-check.{txt,sh}), its evidence lines and the commit/merge worklog entries. The fast-forward and the check ran in the owner's Terminal panel because this session's sandbox cannot write to the main checkout. Owner's words: "Record the merged-main make check in Stage 04's verification.md, worklog and PROGRESS.md as a records-only follow-up commit on main, like Stages 02 and 03." | Owner request in chat after DONE; same pattern as Stages 02 and 03; see [stage-04 worklog](stages/stage-04-domain-model/worklog.md) |
 | 2026-10-26 | 04 | Approved as is: Stage 04 has a third commit, `stage-04: correct model count in records`, records only: the post-DONE audit found the exported-model count written as 29 (four places) where the code, the round-trip test collection and the verbose log show 28; corrected in place, evidence unchanged. Owner's words: "Correct the model count from 29 to 28 in Stage 04's verification.md, worklog and PROGRESS.md as a records-only follow-up commit, and fast-forward main to it." | Post-DONE audit requested by the owner; Rule 1.6 honest reporting; see [stage-04 worklog](stages/stage-04-domain-model/worklog.md) |
+| 2026-10-26 | 05 | Collision C1 (brief vs brief, same rank): Stage 05 says a daily bar for D is available at "D 16:00 ET + 15 min"; Stage 07 says "`available_at` = session close + 15 min (calendar from Stage 05)". `bar_available_at(D) = session_close(D) + lag`: 16:15 ET on every regular session, 13:15 ET on early closes | Same on regular days; correct on early closes, which is what Stage 07 consumes; see [stage-05 plan › Collisions](stages/stage-05-clock-pit/plan.md) |
+| 2026-10-26 | 05 | D1/D1a: new config section `calendar` (`start` 2000-01-01, `end` 2030-12-31, `decision_time` "08:00" ET, `bar_publish_lag_minutes` 15) in `config/fund.yaml`; `TradingCalendar(config=cfg.calendar)` carries it to `SimClock` (decision time) and `bar_available_at` (lag); `AsOf.for_session(day, config=cfg.calendar)` | No hard-coded thresholds; pinned bounds keep `exchange_calendars` off its wall-clock default; D1a from the review (the loaded config had no effect); see [stage-05 plan](stages/stage-05-clock-pit/plan.md) |
+| 2026-10-26 | 05 | D2/D3: `TradingCalendar` takes and returns `date`, open/close as UTC `datetime`; `next/prev_session` strictly after/before; `offset` needs a session; out-of-bounds → `ValueError`; `market_date(ts)` (New York date) lives in `calendar.py` so `pit` never imports `clock` | One unambiguous convention; see [stage-05 plan](stages/stage-05-clock-pit/plan.md) |
+| 2026-10-26 | 05 | D4/D4a/D5: `SimClock(start)` starts at a session's decision time (or an aware instant), never moves backwards; `advance(n)` = n-th session decision instant strictly after `now()` (review fix: a 06:30 clock no longer skips the 08:00 decision); `LiveClock.now()` is the only wall-clock call in Atlas | Backtest safety; Stage 61's SimClock-driven schedule; see [stage-05 plan](stages/stage-05-clock-pit/plan.md) |
+| 2026-10-26 | 05 | D6: `get_clock()` raises `AtlasError` when no clock is installed (no silent `LiveClock` default); `use_clock()` nests and restores. Owner's answer: "Raise an error (Recommended)" | Fail safe: a backtest that forgot its clock must crash, not read wall time; owner decision in chat |
+| 2026-10-26 | 05 | D7–D9/D8a: `AsOf(day, cutoff)` frozen, hashable `AtlasModel` (cutoff UTC, must fall on `day` in New York); known ⇔ `available_at < cutoff` (strict); `AVAILABILITY_RULES` table; `bar_available_at` rejects a negative lag; `pit_filter` returns a copy, drops `NaT`; `assert_no_lookahead` raises `LookAheadError` iff `pit_filter` would drop a row; a missing or non-`DatetimeTZDtype` column → `DataError` | Brief: data known strictly before the cutoff; unknown availability is never known; see [stage-05 plan](stages/stage-05-clock-pit/plan.md) |
+| 2026-10-26 | 05 | D10/D10a: wall-clock ban = ruff TID251 `banned-api` (16 APIs incl. the `time.localtime/gmtime/strftime/clock_gettime` family and `pandas.Timestamp.now/today/utcnow`) with a per-file ignore for `src/atlas/core/clock.py`, plus an AST test for `"now"`/`"today"` string forms; DTZ not enabled | Brief's banned-API rule; D10a from the review (ban gaps) |
+| 2026-10-26 | 05 | D11: routing ULID ids / `AuditEvent.ts` / structlog timestamps through the clock stays in Backlog | Not in the brief's In-scope list (Rule 2.4) |
+| 2026-10-26 | 05 | Ruling R1: `exchange_calendars` 4.13 emits a pandas-3.1 `Pandas4Warning` while building XNYS; that category only is silenced around the build in `_xnys` | Library-internal deprecation; keeps test output clean; see [stage-05 worklog](stages/stage-05-clock-pit/worklog.md) |
+| 2026-10-26 | 05 | Review fix pass: fresh reviewer (Opus) verdict "With fixes", Critical none; Important I1 (config had no effect), I2 (ban gaps), I3 (`advance` skipped today's decision) and re-graded Minor 2 (negative lag = look-ahead) fixed test-first; four minors deferred to Backlog; "declined to judge" items ruled as standing (ULID/structlog wall clock → D11; `AsOf` on non-sessions; vintage selection → 09/10/13; `ArrowDtype` rejected → Stage 06 note; async `use_clock`; `SimClock` across threads; `catch_warnings` thread safety) | See [stage-05 worklog](stages/stage-05-clock-pit/worklog.md) |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -168,6 +178,10 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 04 review, minor) `new_id` (like Stage 03's run/event ids) uses ULID randomness and wall-clock time with no seed/clock parameter, so ids differ across backtest reruns; consider routing through Stage 05's clock
 - (Stage 04 review, minor) Tests: `test_roundtrip_missing_id_fails` omits `PodProposal`; the Order/Fill cases of `test_decimal_fields_reject_nan` also trip `gt=0`
 - (Stage 04, D8) Fields later briefs add to Stage 04 contracts are not built yet: `AnalystReport.low_quality` (26), report catalysts (31), `PodProposal.exits` (38), `View` source (41), `stop_level` (43), order urgency and idempotency key (50), `Instrument` name/first/last trade dates (08); `ICDecision` (49), `RiskMemo` (47), `StatusUpdate` (50) are owned by those stages
+- (Stage 05 review, minor) `pyproject.toml` declares `pandas>=2.2`, but `atlas.core.calendar` imports `pandas.errors.Pandas4Warning` (pandas 3 only); the lock pins 3.1.0. Raise the floor to `pandas>=3.0` (and `pandas-stubs`) or guard the import
+- (Stage 05 review, minor) `TradingCalendar` methods given a `datetime` (a `date` subclass) raise a confusing `TypeError`; reject `datetime` in `_check` with a hint to `market_date()`
+- (Stage 05 review, minor) `SimClock(start=<aware instant>)` accepts an instant outside the calendar bounds; the error only appears on the first `advance()`; check bounds in `__init__`
+- (Stage 05 review, minor) Untested but working: `SimClock.advance` across the November DST fall-back; an early-close decision time between 13:15 and 16:15 ET; `pit_filter` with duplicate index labels — pin with tests
 
 ## Handoff notes
 
@@ -281,4 +295,29 @@ Full block and raw output: [verification.md](stages/stage-04-domain-model/verifi
 - Acceptance criteria:
   - [x] Every contract in spec §7 exists, validated and round-trippable — evidence: artifacts/section7-coverage.txt; `test_every_model_has_a_sample`, `test_json_roundtrip[*]` (28 models), validation tests listed in verification.md
   - [x] mypy strict passes for `core/types` — evidence: `uv run mypy src/atlas/core` → Success (artifacts/verify.txt)
+- Waivers: none
+
+### Stage 05 — Clock, trading calendar & point-in-time guard — DONE 2026-10-26
+- Folder: [stages/stage-05-clock-pit/](stages/stage-05-clock-pit/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: `atlas.core.calendar` (`MARKET_TZ`, `market_date`, `TradingCalendar`), `atlas.core.clock` (`Clock`, `SimClock`, `LiveClock`, `get_clock`, `use_clock`), `atlas.core.pit` (`AsOf`, `AVAILABILITY_RULES`, `bar_available_at`, `to_available_at`, `pit_filter`, `assert_no_lookahead`); config section `calendar` (`CalendarConfig`); ruff TID251 wall-clock ban; shared `sim_clock` fixture in `tests/conftest.py`. 86 new tests (`tests/unit/core/test_{calendar,clock,pit}.py` + 7 config cases). Runtime deps exchange-calendars 4.13.2, pandas 3.1.0 (numpy 2.5.4); dev dep pandas-stubs
+- Key interfaces: `cal = TradingCalendar(config=cfg.calendar)`; `cal.is_session(d)`, `cal.sessions(a, b)` (inclusive tuple), `cal.next_session(d)`/`prev_session(d)` (strict), `cal.offset(d, n)`, `cal.session_open(d)`/`session_close(d)` (UTC), `cal.is_early_close(d)`; `with use_clock(SimClock(start=date(2020, 1, 2), calendar=cal)) as clock: get_clock().now()`, `clock.advance()`, `clock.set(ts)`; `AsOf.for_session(day, config=cfg.calendar)` → `.day`, `.cutoff` (UTC), `.knows(ts)`; `bar_available_at(day, cal)`; `to_available_at(ts)`; `pit_filter(df, as_of, time_col="available_at")`; `assert_no_lookahead(df, as_of)`
+- Decisions: Decisions log rows dated 2026-10-26, stage 05 (C1, D1–D11 with D1a/D4a/D8a/D10a, R1, review fix pass)
+- Collisions with the overall plan: none with the roadmap or spec; C1 between the Stage 05 and Stage 07 briefs (bar availability = session close + lag)
+- Deviations from brief: none in scope. Additions: `market_date`, `is_early_close`, `to_available_at`, `AVAILABILITY_RULES`, the `calendar` config section, the `sim_clock` fixture, the AST string-form scan
+- Known gaps → backlog: four review minors (see Backlog, "Stage 05"); D11 (ULID/structlog wall clock) stays open
+- Next stage should know: every stored table's `available_at` must load as a numpy-backed `DatetimeTZDtype` column (`datetime64[ns|us, UTC]`); a pyarrow `timestamp[tz]` (`ArrowDtype`) column or a naive one is rejected by `pit_filter` with `DataError`, so read Parquet without `dtype_backend="pyarrow"` or convert. Stage 07 sets bar `available_at` with `bar_available_at(day, cal)` (16:15 ET, 13:15 ET on early closes) and SEC/news/FRED timestamps with `to_available_at(ts)`. Always build `TradingCalendar(config=cfg.calendar)` / `AsOf.for_session(..., config=cfg.calendar)` from the loaded config; the bare constructors use the built-in defaults. Code never reads the wall clock: get time from `get_clock()`; tests use the `sim_clock` fixture; `ruff check .` fails on `datetime.now()`/`date.today()`/`time.time()` etc., and `test_no_string_clock_reads_outside_clock_module` fails on `pd.Timestamp("now")`-style strings. pandas is 3.x (string dtype default, strict format inference in `to_datetime`). In this sandbox, a new worktree needs `UV_PROJECT_ENVIRONMENT=.venv.nosync uv sync --group dev` + `ln -s .venv.nosync .venv` and `UV_CACHE_DIR="$TMPDIR/uv-cache"` (and PyPI reachable for the sync)
+
+#### Verification evidence — Stage 05 — 2026-10-26
+Full block and raw output: [verification.md](stages/stage-05-clock-pit/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 512 passed, 0 failed, 0 deselected
+  - `uv run ruff check .` → All checks passed! (TID251 ban active)
+  - `uv run ruff format --check .` → 61 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 35 source files
+  - `uv run pytest tests/unit/core -q && uv run ruff check .` (brief's Verify) → 487 passed; All checks passed!
+  - `make check` → lint/format/mypy clean, 512 passed, exit=0
+  - Wall-clock grep → only executable call `src/atlas/core/clock.py:106` (artifacts/wallclock-grep.txt)
+- Acceptance criteria:
+  - [x] No direct wall-clock calls outside `clock.py` — evidence: `ruff check .` clean with TID251 (16 banned APIs); `test_ruff_bans_wall_clock_outside_clock_module` 12/12; `test_ruff_allows_wall_clock_in_clock_module`; `test_no_string_clock_reads_outside_clock_module`; artifacts/wallclock-grep.txt
+  - [x] PIT boundary tests pass — evidence: `test_bar_not_visible_same_morning`, `test_bar_visible_next_session_morning`, `test_knows_is_strict`, `test_pit_filter_keeps_only_known_rows`, `test_injected_future_bar_is_caught` (artifacts/stage-tests-verbose.txt)
 - Waivers: none

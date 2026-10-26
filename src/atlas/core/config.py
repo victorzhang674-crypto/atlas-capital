@@ -11,7 +11,7 @@ import math
 import os
 import re
 from collections.abc import Iterator, Mapping
-from datetime import date
+from datetime import date, time
 from decimal import Decimal
 from itertools import pairwise
 from pathlib import Path
@@ -355,6 +355,28 @@ class BacktestConfig(_Frozen):
         return self
 
 
+class CalendarConfig(_Frozen):
+    """Trading calendar bounds and point-in-time timing (Stage 05).
+
+    `start`/`end` bound the XNYS calendar (inclusive dates). `decision_time` is a naive
+    wall-clock time read in America/New_York: the daily decision cutoff. A daily bar is known
+    `bar_publish_lag_minutes` minutes after its session's close.
+    """
+
+    start: date = date(2000, 1, 1)
+    end: date = date(2030, 12, 31)
+    decision_time: time = time(8, 0)
+    bar_publish_lag_minutes: Annotated[int, Field(ge=0)] = 15
+
+    @model_validator(mode="after")
+    def _check(self) -> Self:
+        if self.start >= self.end:
+            raise ValueError(f"start ({self.start}) must be before end ({self.end})")
+        if self.decision_time.tzinfo is not None:
+            raise ValueError("decision_time must be naive (it is read in America/New_York)")
+        return self
+
+
 class Secrets(_Frozen):
     """API credentials, read only from the environment or `.env`. Never logged or hashed."""
 
@@ -380,6 +402,7 @@ class AtlasConfig(BaseSettings):
     data: DataConfig = Field(default_factory=DataConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
     backtest: BacktestConfig = Field(default_factory=BacktestConfig)
+    calendar: CalendarConfig = Field(default_factory=CalendarConfig)
     secrets: Secrets = Field(default_factory=Secrets)
 
     @model_validator(mode="after")
@@ -481,7 +504,7 @@ def _deep_merge(*layers: Mapping[str, Any]) -> dict[str, Any]:
 
 _ENV_PREFIX = "ATLAS__"
 # Top-level keys that YAML, env vars and overrides may set.
-_SECTIONS = frozenset({"fund", "limits", "pods", "data", "llm", "backtest"})
+_SECTIONS = frozenset({"fund", "limits", "pods", "data", "llm", "backtest", "calendar"})
 _RESERVED = {
     "secrets": "'secrets' may only come from environment variables or .env",
     "profile": "'profile' may only come from load_config(profile=...)",

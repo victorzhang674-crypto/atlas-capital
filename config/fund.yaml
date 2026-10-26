@@ -44,3 +44,10 @@ backtest:
     impact_k: 0.1  # square-root impact coefficient k in k*sigma*sqrt(Q/ADV)
     commission_per_share: 0  # USD per share (Alpaca-like zero commission)
     borrow_gc_annual: 0.003  # general-collateral borrow fee for shorts, annual fraction (0.3%)
+
+# Trading calendar and point-in-time timing (Stage 05).
+calendar:
+  start: 2000-01-01  # first date the XNYS trading calendar covers
+  end: 2030-12-31  # last date the XNYS trading calendar covers
+  decision_time: "08:00"  # daily decision cutoff, America/New_York (pre-market); quoted for YAML
+  bar_publish_lag_minutes: 15  # a daily bar is known this many minutes after the session close

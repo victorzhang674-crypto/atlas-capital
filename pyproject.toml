@@ -5,8 +5,10 @@ description = "Atlas Capital: a multi-agent hedge fund simulator (research and p
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 # The "core" runtime dependencies (pydantic/pydantic-settings/pyyaml/python-dotenv from Stage 02;
-# structlog/python-ulid from Stage 03).
+# structlog/python-ulid from Stage 03; exchange-calendars/pandas from Stage 05).
 dependencies = [
+    "exchange-calendars>=4.5",
+    "pandas>=2.2",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
     "python-dotenv>=1.0",
@@ -31,6 +33,7 @@ dev = [
     "hypothesis>=6.100",
     "pre-commit>=3.8",
     "types-pyyaml>=6.0",
+    "pandas-stubs>=2.2",
 ]
 # Heavy groups are declared now and filled by the stage that first needs them.
 quant = []
@@ -55,7 +58,29 @@ src = ["src", "tests"]
 extend-exclude = ["Planning", "Project.md"]
 
 [tool.ruff.lint]
-select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF"]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF", "TID"]
+
+# Stage 05: one source of "now". Wall-clock reads are allowed only in atlas.core.clock.
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"datetime.datetime.now".msg = "Use atlas.core.clock.get_clock().now() instead"
+"datetime.datetime.utcnow".msg = "Use atlas.core.clock.get_clock().now() instead"
+"datetime.datetime.today".msg = "Use atlas.core.clock.get_clock().today() instead"
+"datetime.date.today".msg = "Use atlas.core.clock.get_clock().today() instead"
+"time.time".msg = "Use atlas.core.clock.get_clock().now() instead"
+"time.time_ns".msg = "Use atlas.core.clock.get_clock().now() instead"
+"pandas.Timestamp.now".msg = "Use atlas.core.clock.get_clock().now() instead"
+"pandas.Timestamp.today".msg = "Use atlas.core.clock.get_clock().today() instead"
+"pandas.Timestamp.utcnow".msg = "Use atlas.core.clock.get_clock().now() instead"
+"time.localtime".msg = "Use atlas.core.clock.get_clock().now() instead"
+"time.gmtime".msg = "Use atlas.core.clock.get_clock().now() instead"
+"time.ctime".msg = "Use atlas.core.clock.get_clock().now() instead"
+"time.asctime".msg = "Use atlas.core.clock.get_clock().now() instead"
+"time.strftime".msg = "Format get_clock().now() instead"
+"time.clock_gettime".msg = "Use atlas.core.clock.get_clock().now() instead"
+"time.clock_gettime_ns".msg = "Use atlas.core.clock.get_clock().now() instead"
+
+[tool.ruff.lint.per-file-ignores]
+"src/atlas/core/clock.py" = ["TID251"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -77,3 +102,8 @@ disallow_any_generics = true
 warn_return_any = true
 no_implicit_reexport = true
 strict_equality = true
+
+# exchange_calendars ships no type information (no py.typed, no stubs).
+[[tool.mypy.overrides]]
+module = ["exchange_calendars"]
+ignore_missing_imports = true

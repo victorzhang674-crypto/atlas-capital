@@ -1,0 +1,5 @@
+$ python doccheck.py (public names of calendar, clock, pit + CalendarConfig)
+module docstrings: True
+MARKET_TZ / AVAILABILITY_RULES documented in source: True True
+checked 34 public names; missing docstrings: none
+exit=0
