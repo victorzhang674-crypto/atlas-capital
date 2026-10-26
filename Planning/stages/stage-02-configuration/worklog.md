@@ -68,3 +68,12 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Deferred minors (→ PROGRESS backlog): `initial_capital` ≤ 0 and `.inf` accepted; equal Decimals (1.0e7 vs 10000000) fingerprint differently; YAML merge keys with overrides rejected as duplicates; halt/block escalation across tiers not validated.
 - Ran: `uv run pytest tests/unit/core/test_config.py -q` → 92 passed; ruff/format clean; mypy Success; full suite 117 passed.
 - Next: Task 7.
+
+## 2026-10-26 — Follow-up after DONE: merged-main evidence and owner decisions
+- Did: Stage 02 was fast-forwarded into `main` (`9c0a9fd..f0db607`) from the owner's Terminal panel, because this session's sandbox cannot write to the main checkout. The `make check` on merged main had been seen only in that panel, so the full verification was re-run there by a script (`uv run pytest -q`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy src/atlas`, `make check`, each with its exit code; checkout clean before and after), and the raw output was copied into `artifacts/merged-main-check.txt`.
+- Ran (main checkout, `f0db607`, 2026-10-26 02:09 EDT): pytest → 117 passed; ruff → All checks passed!; format → 28 files already formatted; mypy → Success: no issues found in 20 source files; `make check` → all clean, 117 passed; every exit=0.
+- Owner decisions (recorded in PROGRESS.md › Decisions log):
+  - `errors.py` collision: "Confirm as is (Recommended)". `errors.py` keeps only `AtlasError` + `ConfigError`, Stage 03 adds the rest, and Stage 03's brief is not edited. The handoff note now lists exactly what exists.
+  - The four deviations from the brief (extra `profile`/`secrets` fields; secret names only on `Secrets`; pod files define the pod set; read-only collections): "continue with the recommended choice." All four approved, so no code change.
+- Unchanged: the four deferred minor review findings stay in the Backlog (owner's instruction). No code or test files changed in this follow-up.
+- Files: `artifacts/merged-main-check.txt`, `verification.md`, `worklog.md`, `Planning/PROGRESS.md`.

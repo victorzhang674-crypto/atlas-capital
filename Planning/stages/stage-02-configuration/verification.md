@@ -10,6 +10,7 @@ Fill this in **only** with output from commands actually run in this stage's fin
   - `uv run mypy src/atlas` → Success: no issues found in 20 source files, exit=0 (strict on `atlas.core.*`) · raw: artifacts/lint-type.txt
   - `uv run pytest tests/unit/core/test_config.py -q` (brief's Verify) → 92 passed, exit=0 · raw: artifacts/verify-test-config.txt
   - `make check` → ruff clean, 28 files formatted, mypy Success, 117 passed, exit=0 · raw: artifacts/make-check.txt
+  - Follow-up, on merged `main` (main checkout, `f0db607`, clean before and after; 2026-10-26 02:09 EDT): `uv run pytest -q` → 117 passed · `uv run ruff check .` → All checks passed! · `uv run ruff format --check .` → 28 files already formatted · `uv run mypy src/atlas` → Success: no issues found in 20 source files · `make check` → all four clean, 117 passed; every command exit=0 · raw: artifacts/merged-main-check.txt
   - `uv run pytest tests/unit/core/test_config.py -v` filtered to the criterion tests → 51 PASSED, 0 FAILED · raw: artifacts/acceptance-tests.txt
   - `load_config("backtest")` from the repo root (no `.env` present) → profile backtest, every §9 limit, 3 drawdown tiers, pod stops, 5 pods (budgets 0.30/0.25/0.15/0.20/0.10), universes sp500 (index) + macro_etfs (30 tickers), LLM, backtest window and costs; no secrets set; exit=0 · raw: artifacts/load-config-backtest.txt
   - Public docstring check over `atlas.core.config` and `atlas.core.errors` → `public items without docstring: []` · raw: artifacts/docstrings.txt
