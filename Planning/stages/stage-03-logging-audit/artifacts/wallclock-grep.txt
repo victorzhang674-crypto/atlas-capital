@@ -1,0 +1,5 @@
+# 2026-10-26 13:49 EDT
+$ grep -rnE 'datetime\.now|date\.today|time\.time|utcnow' src/atlas
+grep exit=1 (1 = no match)
+$ grep -rnE 'datetime\.now|date\.today|time\.time|utcnow' tests
+grep exit=1 (1 = no match)

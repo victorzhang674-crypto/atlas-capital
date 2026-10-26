@@ -1,0 +1,10 @@
+# 2026-10-26 13:48 EDT · worktree bold-austin-66fcbc @ 38438a9 + uncommitted Stage 03 changes
+$ uv run ruff check .
+All checks passed!
+exit=0
+$ uv run ruff format --check .
+35 files already formatted
+exit=0
+$ uv run mypy src/atlas
+Success: no issues found in 23 source files
+exit=0

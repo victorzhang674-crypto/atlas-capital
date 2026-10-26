@@ -4,12 +4,15 @@ version = "0.1.0"
 description = "Atlas Capital: a multi-agent hedge fund simulator (research and paper trading only)."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-# The "core" runtime dependencies (pydantic/pydantic-settings/pyyaml/python-dotenv from Stage 02).
+# The "core" runtime dependencies (pydantic/pydantic-settings/pyyaml/python-dotenv from Stage 02;
+# structlog/python-ulid from Stage 03).
 dependencies = [
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
     "python-dotenv>=1.0",
+    "python-ulid>=3.0",
     "pyyaml>=6.0",
+    "structlog>=24.1",
 ]
 
 [build-system]

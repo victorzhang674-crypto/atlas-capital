@@ -1,0 +1,54 @@
+# 2026-10-26 13:49 EDT
+$ uv run python demo.py   (script in $TMPDIR; source copied below)
+run_id: 01M5WN93590TB6EJFN24W2ZMFQ | mode: backtest | config_fingerprint: 407f4e0d6ec0
+log lines: 4; every line carries this run_id: True
+   {"as_of": "2024-01-02", "event": "run started", "level": "info", "logger": "atlas.demo", "mode": "backtest", "run_id": "01M5WN93590TB6EJFN24W2ZMFQ", "timestamp": "2026-10-26T17:49:06.603351Z"}
+   {"as_of": "2024-01-02", "event": "risk decision", "event_id": "01M5WN935BZCRAXNXR2EMNNYVK", "level": "info", "logger": "atlas.demo", "mode": "backtest", "run_id": "01M5WN93590TB6EJFN24W2ZMFQ", "stage": "risk", "timestamp": "2026-10-26T17:49:06.603662Z"}
+   {"as_of": "2024-01-03", "event": "risk decision", "event_id": "01M5WN935BZCRAXNXR2EMNNYVM", "level": "info", "logger": "atlas.demo", "mode": "backtest", "run_id": "01M5WN93590TB6EJFN24W2ZMFQ", "stage": "risk", "timestamp": "2026-10-26T17:49:06.603923Z"}
+   {"as_of": "2024-01-02", "event": "run finished", "level": "info", "logger": "atlas.demo", "mode": "backtest", "run_id": "01M5WN93590TB6EJFN24W2ZMFQ", "timestamp": "2026-10-26T17:49:06.604229Z"}
+audit events: 4 at runs/01M5WN93590TB6EJFN24W2ZMFQ/audit.jsonl
+   RUN_STARTED    as_of=2024-01-02 prev=000000000000 hash=907ef1bad45c
+   RISK_DECISION  as_of=2024-01-02 prev=907ef1bad45c hash=594445bd8577
+   RISK_DECISION  as_of=2024-01-03 prev=594445bd8577 hash=dd9fdeaeef10
+   RUN_FINISHED   as_of=2024-01-02 prev=dd9fdeaeef10 hash=406e2333a5b5
+verify_chain (untouched): True
+verify_chain (one payload edited): False
+exit=0
+
+--- demo.py ---
+"""Stage 03 acceptance demo: one run logs and records audit events; tamper → verify False."""
+import io, json, sys, tempfile
+from datetime import date
+from pathlib import Path
+from atlas.core.audit import AuditLog, EventType, audit_path
+from atlas.core.config import AtlasConfig
+from atlas.core.logging import configure_logging, get_logger, reset_logging
+from atlas.core.run_context import run_context, run_dir
+
+lake = Path(tempfile.mkdtemp())
+log = get_logger("atlas.demo")
+with run_context(config=AtlasConfig(profile="backtest"), as_of=date(2024, 1, 2)) as ctx:
+    configure_logging(log_file=run_dir(lake, ctx.run_id) / "atlas.log", console=io.StringIO())
+    audit = AuditLog(audit_path(lake, ctx.run_id))
+    audit.record(EventType.RUN_STARTED, "fund", {"profile": ctx.mode})
+    log.info("run started")
+    for day in (date(2024, 1, 2), date(2024, 1, 3)):
+        with run_context(as_of=day, stage="risk"):
+            event = audit.record(EventType.RISK_DECISION, "risk_engine", {"approved": True})
+            log.info("risk decision", event_id=event.event_id)
+    audit.record(EventType.RUN_FINISHED, "fund", {})
+    log.info("run finished")
+reset_logging()
+print("run_id:", ctx.run_id, "| mode:", ctx.mode, "| config_fingerprint:", ctx.config_fingerprint)
+lines = (run_dir(lake, ctx.run_id) / "atlas.log").read_text().splitlines()
+print(f"log lines: {len(lines)}; every line carries this run_id:",
+      all(json.loads(l)["run_id"] == ctx.run_id for l in lines))
+for l in lines: print("  ", l)
+path = audit_path(lake, ctx.run_id)
+events = path.read_text().splitlines()
+print(f"audit events: {len(events)} at runs/{ctx.run_id}/audit.jsonl")
+for e in events:
+    d = json.loads(e); print(f"   {d['event_type']:<14} as_of={d['as_of']} prev={d['prev_hash'][:12]} hash={d['hash'][:12]}")
+print("verify_chain (untouched):", AuditLog.verify_chain(path))
+path.write_text(path.read_text().replace('"approved":true', '"approved":false', 1))
+print("verify_chain (one payload edited):", AuditLog.verify_chain(path))

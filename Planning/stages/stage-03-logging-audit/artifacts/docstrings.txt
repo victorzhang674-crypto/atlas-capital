@@ -1,0 +1,49 @@
+# 2026-10-26 13:49 EDT
+$ uv run python docstrings.py   (script in $TMPDIR; source copied below)
+checked:
+  atlas.core.errors.AtlasError
+  atlas.core.errors.ConfigError
+  atlas.core.errors.LookAheadError
+  atlas.core.errors.DataError
+  atlas.core.errors.LLMError
+  atlas.core.errors.RiskLimitError
+  atlas.core.errors.ComplianceError
+  atlas.core.run_context.RunContext
+  atlas.core.run_context.current_run_context
+  atlas.core.run_context.run_context
+  atlas.core.run_context.run_dir
+  atlas.core.logging.add_run_context
+  atlas.core.logging.configure_logging
+  atlas.core.logging.reset_logging
+  atlas.core.logging.get_logger
+  atlas.core.audit.EventType
+  atlas.core.audit.canonical_json
+  atlas.core.audit.AuditEvent
+  atlas.core.audit.AuditLog
+  atlas.core.audit.AuditLog.__init__
+  atlas.core.audit.AuditLog.path
+  atlas.core.audit.AuditLog.record
+  atlas.core.audit.AuditLog.verify_chain
+  atlas.core.audit.audit_path
+public items without docstring: []
+exit=0
+
+--- docstrings.py ---
+import importlib, inspect
+missing, checked = [], []
+for name in ["atlas.core.errors", "atlas.core.run_context", "atlas.core.logging", "atlas.core.audit"]:
+    mod = importlib.import_module(name)
+    if not (mod.__doc__ or "").strip(): missing.append(name)
+    for attr, obj in vars(mod).items():
+        if attr.startswith("_") or getattr(obj, "__module__", None) != name: continue
+        if not (inspect.isclass(obj) or inspect.isfunction(obj)): continue
+        checked.append(f"{name}.{attr}")
+        if not (obj.__doc__ or "").strip(): missing.append(f"{name}.{attr}")
+        if inspect.isclass(obj) and not issubclass(obj, BaseException):
+            for m, f in vars(obj).items():
+                f = f.__func__ if isinstance(f, (staticmethod, classmethod)) else (f.fget if isinstance(f, property) else f)
+                if m.startswith("_") and m != "__init__" or not callable(f) or getattr(f, "__module__", None) != name: continue
+                checked.append(f"{name}.{attr}.{m}")
+                if not (f.__doc__ or "").strip(): missing.append(f"{name}.{attr}.{m}")
+print("checked:", *checked, sep="\n  ")
+print("public items without docstring:", missing)

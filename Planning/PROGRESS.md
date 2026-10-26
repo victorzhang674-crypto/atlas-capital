@@ -4,16 +4,16 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 03 — Logging, run context & audit trail — `NOT STARTED`
-- **Stages done:** 2 / 66
-- **Last updated:** 2026-10-26 (Stage 02 DONE)
+- **Current stage:** 04 — Core domain model — `NOT STARTED`
+- **Stages done:** 3 / 66
+- **Last updated:** 2026-10-26 (Stage 03 DONE)
 
 ## Stage checklist
 
 ### Phase 0 Foundation
 - [x] **01** [Project scaffolding & toolchain](stages/stage-01-project-scaffolding/brief.md)
 - [x] **02** [Configuration system & fund mandate](stages/stage-02-configuration/brief.md)
-- [ ] **03** [Logging, run context & audit trail](stages/stage-03-logging-audit/brief.md)
+- [x] **03** [Logging, run context & audit trail](stages/stage-03-logging-audit/brief.md)
 - [ ] **04** [Core domain model](stages/stage-04-domain-model/brief.md)
 - [ ] **05** [Clock, trading calendar & point-in-time guard](stages/stage-05-clock-pit/brief.md)
 - [ ] **06** [Storage layer (DuckDB + Parquet lake)](stages/stage-06-storage/brief.md)
@@ -122,6 +122,14 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-26 | 02 | Approved as is: Stage 02 has two commits, `f0db607 stage-02: Configuration system & fund mandate` and `b2cbc3c stage-02: follow-up records` (plus this records-only follow-up), against the Definition of Done's "one git commit" per stage. The follow-ups hold records only (evidence and owner decisions), made at the owner's request after DONE. Owner's words: "Record the three unlogged Stage 02 items in the PROGRESS.md Decisions log (approved as they are), as a records-only follow-up, and fast-forward main." | Found by the post-DONE audit; owner decision in chat |
 | 2026-10-26 | 02 | Approved as is: `LLMConfig.provider` is one default-provider field (`anthropic` \| `openai_compatible`), where the brief lists "providers"; Stage 24 may widen it. Owner's words: "Record the three unlogged Stage 02 items in the PROGRESS.md Decisions log (approved as they are), as a records-only follow-up, and fast-forward main." | Found by the post-DONE audit; owner decision in chat |
 | 2026-10-26 | 02 | Approved as is: the DoD's "every config key … with a default" is met at the collection level. `AtlasConfig()` is fully populated (every built-in pod, drawdown tier and universe is fully defined in code), while fields inside one entry (`PodConfig.name`/`risk_budget`/`rebalance`/`universe`, `DrawdownTier` fields, `UniverseConfig.description`) are deliberately required, matching "each pod file is a full definition". Owner's words: "Record the three unlogged Stage 02 items in the PROGRESS.md Decisions log (approved as they are), as a records-only follow-up, and fast-forward main." | Found by the post-DONE audit; owner decision in chat |
+| 2026-10-26 | 03 | D1: the five new errors (`LookAheadError`, `DataError`, `LLMError`, `RiskLimitError`, `ComplianceError`) subclass `AtlasError` directly; `LookAheadError` is not a `DataError` | A handler that tolerates bad data must never swallow a look-ahead bug; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
+| 2026-10-26 | 03 | D2: no wall-clock call in Atlas code. `AuditEvent.ts` is the timestamp inside the event's ULID (`ULID().datetime`, UTC, ms); log timestamps come from structlog's `TimeStamper(utc=True)`; no `core/clock.py` is created. Tension: stage protocol §4 forbids `datetime.now()` outside `atlas.core.clock`, which Stage 05 creates, while the brief needs `ts`. Resolved without breaking either and without building Stage 05 early (Rule 4) | Conventions + Rule 4; Stage 05 may route these through its `Clock`; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
+| 2026-10-26 | 03 | D3/D4: `RunContext` is a frozen Pydantic model (`run_id` 26-char ULID, `mode: Profile`, `as_of`, `config_fingerprint`, `stage`). `run_context()` at top level opens a new run (`mode` from `config.profile`, else `"dev"`; mismatch → `AtlasError`); nested it is a child scope that may change only `as_of`/`stage` | One run has one id, mode and config; a backtest moves `as_of`, the fund day moves `stage`; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
+| 2026-10-26 | 03 | D5: logging is structlog on stdlib `logging`; one processor chain (run fields, level, logger, UTC ISO timestamp) also used as `foreign_pre_chain`, so third-party lines carry `run_id`; JSON file handler, pretty console; `configure_logging` idempotent, `reset_logging`; log level is a parameter, not a config key | "Logs carry the run_id" must hold for library logs too; no new config key needed; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
+| 2026-10-26 | 03 | D6/D7: `canonical_json` = sorted keys, compact, UTF-8, no NaN/inf; `Decimal` → exact string, aware `datetime` → UTC ISO (naive rejected), `date` → ISO, `Enum` → value, model → fields, anything else `TypeError`. `hash = sha256(prev_hash + canonical_json(event without hash))`, genesis `"0"*64`; payload stored JSON-native so the file alone re-derives every hash | Deterministic bytes; money keeps its digits; ambiguous types fail loudly; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
+| 2026-10-26 | 03 | D8/D9: `AuditLog(path)` verifies an existing file's whole chain and refuses a broken one (`AtlasError`); per-file lock + last hash shared by every instance in the process; flush + fsync per line; a failed write makes the log unusable; `record()` needs an active run context; `verify_chain`: missing → False, empty → True, no final newline → False. One writer process per file | Fail safe: never extend a tampered or half-written log; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
+| 2026-10-26 | 03 | D10: plan builds canonical JSON (brief task 5) before `AuditLog` (brief task 4) | The hash depends on it; same content; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
+| 2026-10-26 | 03 | D11: `run_dir(lake_path, run_id)` = `<lake>/runs/<run_id>`, `audit_path(...)` = `run_dir/audit.jsonl`; `lake_path` is `cfg.data.lake_path` | The brief's `data/runs/<run_id>/audit.jsonl` without hard-coding `data`; see [stage-03 plan › Design decisions](stages/stage-03-logging-audit/plan.md) |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -135,6 +143,8 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 02 review, minor) Equal Decimals written differently (`1.0e7` vs `10000000`) give different `config_fingerprint`s — normalise Decimals before hashing
 - (Stage 02 review, minor) YAML merge keys (`<<: *anchor` plus an override) are rejected as duplicate keys — support or document
 - (Stage 02 review, minor) Drawdown tiers do not check that `halt` / `block_new_names` escalate (a halting tier followed by a non-halting one is accepted)
+- (Stage 03) The audit hash chain has no external anchor: rewriting the whole file with freshly computed hashes still passes `verify_chain`. Anchor the last hash somewhere else (e.g. the Stage 06 DuckDB mirror or the Stage 55 run summary)
+- (Stage 03) `AuditLog` supports one writer process per file (threads are fine); add a file lock (`fcntl.flock`) if several processes ever share one run's log
 
 ## Handoff notes
 
@@ -195,4 +205,29 @@ Full block and raw output: [verification.md](stages/stage-02-configuration/verif
   - [x] `load_config("backtest")` returns a fully populated config — evidence: `test_repo_backtest_profile_fully_populated`; artifacts/load-config-backtest.txt
   - [x] Invalid YAML raises `ConfigError` naming the bad key — evidence: `test_invalid_value_names_dotted_key`, `test_unknown_key_names_dotted_key`, `test_malformed_yaml_names_file_and_line`, `test_duplicate_yaml_key_raises`, `test_invalid_config_raises[*]`
   - [x] Every limit in spec §9 exists as a typed field — evidence: `test_limits_cover_spec_section_9[*]`, `test_drawdown_tiers_and_pod_stops_defaults`
+- Waivers: none
+
+### Stage 03 — Logging, run context & audit trail — DONE 2026-10-26
+- Folder: [stages/stage-03-logging-audit/](stages/stage-03-logging-audit/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: `atlas.core.errors` (adds `LookAheadError`, `DataError`, `LLMError`, `RiskLimitError`, `ComplianceError`, all direct `AtlasError` subclasses); `atlas.core.run_context` (`RunContext`, `run_context()`, `current_run_context()`, `run_dir()`); `atlas.core.logging` (`configure_logging`, `reset_logging`, `get_logger`, `add_run_context`); `atlas.core.audit` (`canonical_json`, `EventType`, `AuditEvent`, `AuditLog`, `GENESIS_HASH`, `audit_path`). 68 tests in `tests/unit/core/test_{errors,run_context,logging,audit}.py`. Runtime deps structlog 26.1.0, python-ulid 4.0.1
+- Key interfaces: `with run_context(mode="backtest", as_of=date(2024, 1, 2)) as ctx:` or `run_context(config=cfg, as_of=...)` (mode = `cfg.profile`, fingerprint = `config_fingerprint(cfg)`); nested `run_context(as_of=..., stage=...)` keeps `run_id`/`mode`/fingerprint; `current_run_context() -> RunContext | None`; `configure_logging(*, level="INFO", log_file=None, console=None)`; `get_logger(__name__)`; `AuditLog(path).record(EventType.X, actor, payload) -> AuditEvent`; `AuditLog.verify_chain(path) -> bool`; `audit_path(cfg.data.lake_path, ctx.run_id)`; `canonical_json(obj) -> str`
+- Decisions: Decisions log rows dated 2026-10-26, stage 03 (D1–D11)
+- Collisions with the overall plan: none with the roadmap or spec; one tension inside the conventions (wall-clock rule vs `AuditEvent.ts`), resolved by D2 without Stage 05 code
+- Deviations from brief: none in scope. Additions: `current_run_context()`, `run_dir()`, `audit_path()`, `reset_logging()`, `GENESIS_HASH`; `run_context(config=...)` as well as `mode=`; `AuditLog` refuses to open a file whose chain is broken
+- Known gaps → backlog: no external anchor for the chain; one writer process per audit file (see Backlog, "Stage 03")
+- Next stage should know: Stage 04's `new_id(prefix)` should build on python-ulid (already a dependency); Stage 03's `run_id`/`event_id` are bare 26-char ULIDs (no prefix). `RunContext` and `AuditEvent` are frozen Pydantic models with `extra="forbid"`. `record()` raises `AtlasError` outside a run context, and normalises the payload with `canonical_json` first (`Decimal` → string, aware datetimes → UTC ISO; NaN/inf, naive datetimes and sets raise). Event kinds are a `StrEnum`; later stages add members (Stage 26 `AGENT_REPORT`, Stage 60 `RECON_BREAK`). A new `threading.Thread` has no run context: start it with `contextvars.copy_context().run`. Logging tests must call `reset_logging()` in teardown (handlers sit on the root logger). There is still no `atlas.core.clock`: the only time sources are python-ulid and structlog internals, and the grep for `datetime.now|date.today|time.time|utcnow` over `src/` and `tests/` is empty, ready for Stage 05's banned-API rule. Stage 06 mirrors `AuditLog` into DuckDB: read the JSONL lines, they are the source of truth. In this sandbox, a new worktree needs `UV_PROJECT_ENVIRONMENT=.venv.nosync uv sync --group dev` + `ln -s .venv.nosync .venv` and `UV_CACHE_DIR="$TMPDIR/uv-cache"`
+
+#### Verification evidence — Stage 03 — 2026-10-26
+Full block and raw output: [verification.md](stages/stage-03-logging-audit/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 185 passed, 0 failed, 0 deselected
+  - `uv run ruff check .` → All checks passed!
+  - `uv run ruff format --check .` → 35 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 23 source files
+  - `uv run pytest tests/unit/core -q` (brief's Verify) → 160 passed
+  - `make check` → lint/format/mypy clean, 185 passed, exit=0
+  - Acceptance demo → every log line carries the run_id: True; 4 chained events; `verify_chain` True untouched, False after one payload edit
+- Acceptance criteria:
+  - [x] Every audit event is chained and verifiable — evidence: `test_record_chains_events`, `test_reopen_continues_chain`, ten tamper/truncation tests, `test_concurrent_threads_keep_chain_valid`; artifacts/acceptance-demo.txt
+  - [x] Logs carry the run_id — evidence: `test_every_file_line_is_json_with_run_id` (incl. third-party stdlib lines), `test_console_is_pretty_text`; artifacts/acceptance-demo.txt
 - Waivers: none
