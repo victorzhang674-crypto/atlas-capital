@@ -1,0 +1,43 @@
+# Stage 07: verification on merged main (read-only) · 2026-10-27
+# Main checkout: /Users/zzjsmacbookair/Desktop/Trading Agents · run from this session's sandbox, which cannot write there, so:
+#   python = Stage 07 worktree venv (same uv.lock as main at c0e529f); PYTHONPATH=<main>/src (imports main's code);
+#   no bytecode, pytest cache off, ruff/mypy caches in $TMPDIR. 'make check' = its four commands run directly (make would write caches).
+
+$ git log --oneline -3
+c0e529f stage-07: audit follow-up (split history, error boundary, clock, cached routing)
+59c23f2 stage-07: Price data providers (yfinance, Alpaca)
+e9dca25 stage-06: merged-main check records
+
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ python -c "import atlas; print(atlas.__file__)"
+/Users/zzjsmacbookair/Desktop/Trading Agents/src/atlas/__init__.py
+
+$ uv run pytest -q
+727 passed, 2 deselected in 6.13s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+91 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 47 source files
+exit=0
+
+$ uv run pytest tests/unit/data -q   (brief's Verify)
+100 passed, 2 deselected in 1.80s
+exit=0
+
+$ uv run pytest tests/unit/data -m live -rs   (optional)
+SKIPPED [1] tests/unit/data/test_price_live.py:40: ALPACA_API_KEY_ID / ALPACA_API_SECRET_KEY not set
+1 passed, 1 skipped, 100 deselected in 12.48s
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0

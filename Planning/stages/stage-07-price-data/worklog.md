@@ -93,3 +93,10 @@ Method: every test name in plan.md checked against the code and the final verbos
 - Records: plan D2 (items 1, 2), D4 (item 9), D9 (item 5) and the global constraint (item 4) carry dated "Audit note" annotations; PROGRESS handoff now lists the corrected/replaced tests (item 6). Items 3 (no `conftest.py`) and 7 (red = collection error) stay as recorded in the audit; not part of the approved follow-up.
 - Ran: see verification.md "Follow-up": `uv run pytest -q` → 727 passed, 2 deselected; ruff, format, mypy clean; brief's Verify → 100 passed (also with `-W error`); `-m live` → yfinance PASSED, Alpaca SKIPPED; `make check` exit 0; docstrings none missing; real-data ingest unchanged.
 - Code files changed: `src/atlas/data/providers/{__init__,base,yfinance_provider,fallback,cache}.py`; tests `tests/unit/data/test_price_{yfinance,ingest,cache,fallback}.py`.
+
+## 2026-10-27 — Merged-main check (owner request)
+- Owner's words: "Fast-forward main to the Stage 07 branch and re-run the checks on main, as for Stages 02–06."
+- My `git merge --ff-only` in the main checkout failed: the sandbox only lets this session write inside its worktree (`error: unable to unlink old 'Planning/PROGRESS.md': Operation not permitted`). Nothing changed (`main` still `e9dca25`, checkout clean). Not worked around; asked the owner to run it.
+- First report "I ran the fast-forward on main" → `main` still `e9dca25`, reflog had no Stage 07 entry; ran no checks, recorded nothing, asked again. Second report → `main` at `c0e529f` (reflog `main@{0}: merge claude/stage-7-planning-implementation-de524c: Fast-forward`), main checkout files equal `c0e529f`.
+- Ran read-only against the main checkout (worktree venv, `PYTHONPATH=<main>/src`, caches in `$TMPDIR`): 727 passed; ruff, format, mypy clean; brief's Verify 100 passed; live yfinance PASSED, Alpaca SKIPPED; checkout clean before and after · raw: artifacts/merged-main-check.txt
+- Note: the main checkout's own `.venv.nosync` was not touched; run `uv sync --group dev` there before using it (Stage 07 added yfinance, httpx, respx).

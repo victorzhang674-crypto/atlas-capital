@@ -6,7 +6,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 - **Current stage:** 08 — Universe & historical index membership — `NOT STARTED`
 - **Stages done:** 7 / 66
-- **Last updated:** 2026-10-27 (Stage 07 DONE; audit follow-up)
+- **Last updated:** 2026-10-27 (Stage 07 DONE; audit follow-up; merged into main)
 
 ## Stage checklist
 
@@ -181,6 +181,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-27 | 07 | Fixtures: yfinance fixtures (AAPL, SPY, SIVB, split histories) are real recordings (yfinance 1.7.0, 2026-10-27); Alpaca fixtures are built in the documented v2 response shape from the recorded numbers, because no Alpaca keys were available; the Alpaca live smoke test is written but skipped here | Honest provenance; README in `tests/fixtures/prices/` |
 | 2026-10-27 | 07 | Approved: a second Stage 07 commit, `stage-07: audit follow-up (split history, error boundary, clock, cached routing)`, against the one-commit-per-stage default. It fixes audit items 1, 4, 8, 9 test-first and the records of items 2, 5, 6. Owner's words (message truncated at 300 characters in transit): "Yes: in one follow-up commit on the stage branch, fix audit items 1, 4, 8 and 9 test-first (drop and log a symbol with no split history, as the plan says; document the yfinance exception boundary; document the clock requirement; route cached actions by the cached bars' vendor), fix the records for i" | Found by the post-DONE audit; same procedure as Stage 06; see [stage-07 worklog](stages/stage-07-price-data/worklog.md) |
 | 2026-10-27 | 07 | Test replaced: `test_split_history_missing_for_traded_symbol_raises` → `test_symbol_without_split_history_is_dropped_and_logged`. The old test pinned a deviation from plan D2 (raise instead of "left out (logged)"); the plan outranks it, so the test was wrong | Project.md Rule 1.6; audit item 1 |
+| 2026-10-27 | 07 | Approved: a third, records-only Stage 07 commit, `stage-07: merged-main check records` (merged-main evidence, this row, a worklog entry), after the owner fast-forwarded `main` to `c0e529f` (the sandbox blocks this session from writing to the main checkout). Checks run read-only against the main checkout. Owner's words: "Fast-forward main to the Stage 07 branch and re-run the checks on main, as for Stages 02–06." | Same procedure as Stages 05–06; see [stage-07 worklog](stages/stage-07-price-data/worklog.md) |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -417,6 +418,7 @@ Full block and raw output: [verification.md](stages/stage-07-price-data/verifica
   - Real-data ingest check (real Yahoo, run twice) → `rows=84 action_rows=3 ok=('AAPL', 'SPY') failed=('SIVB',) mismatches=0` both runs
   - First full run was not green (670 passed, 52 errors: Stage 06 storage fixture vs the real `prices_daily`); fixed in the fixture, recorded in the worklog and Decisions log
   - Follow-up after the post-DONE audit (base `59c23f2`): `uv run pytest -q` → 727 passed, 2 deselected; `ruff check` → All checks passed!; `ruff format --check` → 91 files already formatted; `mypy src/atlas` → Success (47 files); brief's Verify → 100 passed (also with `-W error`); `-m live` → yfinance PASSED, Alpaca SKIPPED; `make check` → exit 0; real-data ingest unchanged · raw: [artifacts/followup-*.txt](stages/stage-07-price-data/artifacts/)
+  - On merged `main` (`c0e529f`, fast-forward from `e9dca25` run by the owner; checks read-only against the main checkout): `pytest -q` → 727 passed; `ruff check` → All checks passed!; `ruff format --check` → 91 files already formatted; `mypy src/atlas` → Success (47 files); brief's Verify → 100 passed; `-m live` → yfinance PASSED, Alpaca SKIPPED; checkout clean before and after · raw: [artifacts/merged-main-check.txt](stages/stage-07-price-data/artifacts/merged-main-check.txt)
 - Acceptance criteria:
   - [x] Ingest of the fixtures yields correct split-adjusted series — evidence: `test_ingest_fixtures_writes_prices_and_actions`, `test_aapl_split_adjusted_series_is_continuous` (124.8075 → 129.04, +3.39% across the 4:1 split), `test_aapl_recomputed_matches_vendor_within_tolerance` (0 mismatches > 0.5%), `test_ingest_fixtures_have_no_mismatches`
   - [x] Re-running is idempotent — evidence: `test_reingest_is_idempotent`, `test_reingest_replaces_changed_values`; real-data runs 1 and 2 identical

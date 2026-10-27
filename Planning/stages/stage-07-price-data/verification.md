@@ -39,3 +39,12 @@ Owner-approved follow-up (audit items 1, 4, 8, 9 fixed; records for items 2, 5, 
 - Acceptance criteria unchanged and still evidenced: every test named above PASSED again in `followup-verify-tests-unit-data.txt`.
 
 **Result (follow-up):** ALL CRITERIA VERIFIED
+
+#### On merged `main` — 2026-10-27
+`main` fast-forwarded by the owner from `e9dca25` to `c0e529f` (the sandbox blocks this session from writing to the main checkout; reflog: `main@{0}: merge claude/stage-7-planning-implementation-de524c: Fast-forward`). Checks run read-only against the main checkout: Stage 07 worktree venv (same `uv.lock`), `PYTHONPATH=<main>/src` (confirmed `atlas` imported from the main checkout), no bytecode, caches in `$TMPDIR`; `make check` = its four commands run directly.
+- `pytest -q` → 727 passed, 2 deselected, exit 0
+- `ruff check .` → All checks passed!; `ruff format --check .` → 91 files already formatted; `mypy src/atlas` → Success: no issues found in 47 source files
+- `pytest tests/unit/data -q` (brief's Verify) → 100 passed, 2 deselected
+- `pytest tests/unit/data -m live` → yfinance PASSED, Alpaca SKIPPED (no keys)
+- `git status --short` empty before and after
+- raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt)
