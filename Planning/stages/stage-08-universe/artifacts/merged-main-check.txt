@@ -1,0 +1,58 @@
+# Stage 08: verification on merged main (read-only) · 2026-10-27
+# Main checkout: /Users/zzjsmacbookair/Desktop/Trading Agents · this session's sandbox cannot write there, so:
+#   python = Stage 08 worktree venv (same uv.lock as main at 5e78327); PYTHONPATH=<main>/src (imports main's code);
+#   no bytecode, pytest cache off, ruff/mypy caches in $TMPDIR. 'make check' = its four commands run directly.
+
+$ git log --oneline -3
+5e78327 stage-08: Universe & historical index membership
+c1afe56 planning: add Project.md Rule 6A (AI does and verifies all git operations)
+87db012 stage-07: merge-main records
+
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git branch --merged main
++ claude/stage-8-planning-implementation-fba07a
+* main
+
+$ python -c "import atlas; print(atlas.__file__)"
+/Users/zzjsmacbookair/Desktop/Trading Agents/src/atlas/__init__.py
+
+$ pytest -q
+791 passed, 3 deselected in 8.73s
+exit=
+
+$ ruff check .
+All checks passed!
+exit=0
+
+$ ruff format --check .
+97 files already formatted
+exit=
+
+$ mypy src/atlas
+Success: no issues found in 49 source files
+exit=
+
+$ pytest tests/unit/data/test_universe.py -q   (brief's Verify)
+55 passed, 1 deselected in 1.96s
+exit=
+
+$ git status --short   (after; empty = clean)
+exit=0
+
+# Re-run of the four commands above whose exit codes were lost (zsh has no PIPESTATUS):
+$ pytest -q
+791 passed, 3 deselected in 8.09s
+exit=0
+$ ruff format --check .
+97 files already formatted
+exit=0
+$ mypy src/atlas
+Success: no issues found in 49 source files
+exit=0
+$ pytest tests/unit/data/test_universe.py -q
+55 passed, 1 deselected in 2.18s
+exit=0
+$ git status --short --untracked-files=all   (after)
+exit=0

@@ -219,7 +219,9 @@ def refresh_universe_reference(
     ticker_map: TickerMap | None = None,
 ) -> ReferenceReport:
     """Rebuild `index_membership` (index `SP500`) and `instruments` from the two source pages
-    and overwrite both tables (idempotent).
+    (idempotent). The `SP500` rows of `index_membership` are replaced and rows of other
+    indices kept; `instruments` rows are upserted by symbol, so instruments of other indices
+    stay.
 
     `ticker_map` defaults to `load_ticker_map(config.data.reference.ticker_changes_file)`;
     ETFs are the tickers of every ticker-list universe in `config.data.universes`; first and
@@ -243,8 +245,10 @@ def refresh_universe_reference(
         ticker_map=tmap,
         trade_dates=trade_date_ranges(lake),
     )
-    lake.write_table(INDEX_MEMBERSHIP.name, build.intervals, mode="overwrite")
-    lake.write_table(INSTRUMENTS.name, instruments_frame(instruments), mode="overwrite")
+    lake.write_table(
+        INDEX_MEMBERSHIP.name, _replace_index(lake, build.intervals, "SP500"), mode="overwrite"
+    )
+    lake.write_table(INSTRUMENTS.name, instruments_frame(instruments), mode="upsert")
     report = ReferenceReport(
         instruments=len(instruments),
         intervals=len(build.intervals),
@@ -400,6 +404,17 @@ class Universe:
         while not point.knows(bar_available_at(latest, cal)):
             latest = cal.prev_session(latest)
         return cal.offset(latest, -self._cfg.data.tradable.max_stale_sessions)
+
+
+def _replace_index(lake: Lake, intervals: pd.DataFrame, index_id: str) -> pd.DataFrame:
+    """The whole `index_membership` table with the rows of `index_id` replaced by
+    `intervals`, sorted by primary key."""
+    if not lake.has_table(INDEX_MEMBERSHIP.name):
+        return intervals
+    stored = lake.read_table(INDEX_MEMBERSHIP.name)
+    kept = stored[stored["index_id"] != index_id]
+    frame = pd.concat([kept, intervals], ignore_index=True) if len(kept) else intervals
+    return frame.sort_values(list(INDEX_MEMBERSHIP.primary_key), ignore_index=True)
 
 
 def _opt(value: object) -> str | None:

@@ -671,5 +671,113 @@ def test_acceptance_tradable_uses_only_data_before_as_of(sp500_lake: Lake, tmp_p
 
 def test_data_limitations_doc(repo_root: Path) -> None:
     text = (repo_root / "docs" / "data-limitations.md").read_text(encoding="utf-8").lower()
-    for word in ("survivorship", "delisted", "ticker", "gics", "anomal", "announce"):
+    for word in (
+        "survivorship",
+        "delisted",
+        "ticker",
+        "gics",
+        "anomal",
+        "announce",
+        "first_trade_date",  # A7: trade dates are as fresh as the last refresh
+    ):
         assert word in text, word
+
+
+# --- Audit follow-up (A2, A7, A8) ---------------------------------------------------------------
+
+
+def test_refresh_keeps_other_indices(tmp_lake: Lake, repo_ticker_map: TickerMap) -> None:  # A8
+    other = pd.DataFrame(
+        {
+            "index_id": ["NDX", "NDX"],
+            "symbol": ["AAPL", "ZZZZ"],
+            "start_date": [D(2001, 1, 2), D(2015, 1, 2)],
+            "end_date": pd.Series([None, D(2020, 1, 2)], dtype=object),
+        }
+    )
+    tmp_lake.write_table("index_membership", other, mode="overwrite")
+    tmp_lake.write_table(
+        "instruments",
+        instruments_frame([Instrument(symbol="ZZZZ", asset_class=AssetClass.EQUITY, name="Z")]),
+        mode="overwrite",
+    )
+    for _ in range(2):  # a second refresh is idempotent too
+        report = refresh_universe_reference(
+            tmp_lake, constituents_html(), changes_html(), ticker_map=repo_ticker_map
+        )
+        stored = tmp_lake.read_table("index_membership")
+        assert len(stored[stored["index_id"] == "SP500"]) == report.intervals == 877
+        pd.testing.assert_frame_equal(
+            stored[stored["index_id"] == "NDX"].reset_index(drop=True), other
+        )
+        symbols = {i.symbol for i in read_instruments(tmp_lake)}
+        assert "ZZZZ" in symbols  # an instrument of the other index survives
+        assert len(symbols) == 858 + 30 + 1
+
+
+_HEAD = ["Symbol", "Security", "GICS Sector", "GICS Sub-Industry", "Date added"]
+
+
+def _table(table_id: str, head: Sequence[str], rows: Sequence[Sequence[str]]) -> str:
+    cells = "".join(f"<th>{h}</th>" for h in head)
+    body = "".join("<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows)
+    return f"<table id='{table_id}'><tr>{cells}</tr>{body}</table>"
+
+
+def _page(*tables: str) -> str:
+    return f"<html><body>{''.join(tables)}</body></html>"
+
+
+def test_parse_constituents_guards() -> None:  # A2
+    row = ["AAA", "A Inc", "Tech", "Software", "2020-01-02"]
+    ok = parse_constituents(_page(_table("constituents", _HEAD, [row])))
+    assert ok["symbol"].tolist() == ["AAA"]
+    assert ok["exchange"].tolist() == [None]  # no quote link
+    linked = ["<a href='https://example.com/quote/AAA'>AAA</a>", *row[1:]]
+    assert parse_constituents(_page(_table("constituents", _HEAD, [linked])))[
+        "exchange"
+    ].tolist() == [None]  # a link to an unknown host
+    with pytest.raises(DataError, match=r"lacks columns \['GICS Sector'\]"):
+        parse_constituents(
+            _page(
+                _table(
+                    "constituents", [h for h in _HEAD if h != "GICS Sector"], [row[:2] + row[3:]]
+                )
+            )
+        )
+    with pytest.raises(DataError, match="without a symbol"):
+        parse_constituents(_page(_table("constituents", _HEAD, [row, ["", *row[1:]]])))
+    with pytest.raises(DataError, match=r"twice: \['AAA'\]"):
+        parse_constituents(_page(_table("constituents", _HEAD, [row, row])))
+    with pytest.raises(DataError, match="found 2"):
+        table = _table("constituents", _HEAD, [row])
+        parse_constituents(_page(table, table))
+
+
+def test_parse_changes_unexpected_header_raises() -> None:  # A2
+    html = _page(_table("changes", ["Date", "Ticker", "Name"], [["June 1, 2020", "AAA", "A"]]))
+    with pytest.raises(DataError, match="unexpected header"):
+        parse_changes(html)
+
+
+def test_build_instruments_rejects_etf_that_is_a_member() -> None:  # A2
+    build = build_membership(constituents("SPY", "AAA"), changes())
+    with pytest.raises(DataError, match="ETF SPY is also an index member"):
+        build_instruments(
+            constituents("SPY", "AAA"), changes(), build.intervals, etf_symbols=["SPY"]
+        )
+
+
+def test_build_instruments_skips_bad_log_ticker() -> None:  # A2
+    rows = changes((D(2020, 1, 2), "B$D", "C"))
+    build = build_membership(constituents("A"), rows)
+    insts = build_instruments(constituents("A"), rows, build.intervals, etf_symbols=[])
+    assert [(i.symbol, i.name) for i in insts] == [("A", "A"), ("C", "C Corp")]
+
+
+def test_empty_inputs_give_empty_lists(tmp_lake: Lake) -> None:  # A2
+    assert members_on(build_membership(constituents(), changes()).intervals, D(2020, 1, 2)) == []
+    _membership(tmp_lake, ["A"])  # members from 2000-01-03
+    universe = Universe(tmp_lake)
+    assert universe.members(D(1999, 12, 31)) == []
+    assert universe.tradable(D(1999, 12, 31)) == []

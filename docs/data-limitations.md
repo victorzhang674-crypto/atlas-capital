@@ -50,6 +50,10 @@ so a 2019 backtest sees AIV, CELG, ETFC, …, not today's list), but not all of 
    Discretionary; 2023: payments companies moved to Financials), so sector-neutral or
    sector-tilted backtests before those dates use the later sectors. Former members have no
    sector or exchange at all (the change log names the security only).
+   `first_trade_date` / `last_trade_date` come from the prices in the lake **when the
+   reference data was last refreshed**: null if prices were ingested later, and stale until
+   the next `refresh_universe_reference`. `tradable()` reads `prices_daily` directly, so it
+   never depends on them.
 8. **One snapshot.** The fixtures record one day (constituents revision 1382178819, change
    log revision 1379179365). Re-running `refresh_universe_reference` on a later live snapshot
    rebuilds the whole history from that snapshot; Wikipedia edits can change past intervals.

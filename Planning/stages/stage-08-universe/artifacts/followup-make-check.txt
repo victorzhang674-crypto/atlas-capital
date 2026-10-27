@@ -1,0 +1,42 @@
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+97 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 49 source files
+uv run pytest -q
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 27%]
+........................................................................ [ 36%]
+........................................................................ [ 45%]
+........................................................................ [ 54%]
+........................................................................ [ 63%]
+........................................................................ [ 72%]
+........................................................................ [ 81%]
+........................................................................ [ 90%]
+........................................................................ [ 99%]
+.....                                                                    [100%]
+797 passed, 3 deselected in 9.00s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "install_extension"
+ - leaked function ""
+ - leaked function "unregister_filesystem"
+ - leaked function "remove_function"
+ - leaked function "_check_text"
+ - leaked function "__new__"
+ - leaked function ""
+ - leaked function "get_profiling_information"
+ - leaked function "interrupt"
+ - leaked function "tf"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.html

@@ -1,0 +1,5 @@
+src/atlas/core/types/instruments.py      58      1    98%   47
+src/atlas/data/reference.py             200     10    95%   79, 106, 110, 134, 148, 151, 167, 316-317, 368
+src/atlas/data/universe.py              163      2    99%   194, 350
+TOTAL                                   421     13    97%
+88 passed, 1 deselected in 3.50s
