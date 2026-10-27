@@ -4,9 +4,9 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 07 — Price data providers (yfinance, Alpaca) — `NOT STARTED`
-- **Stages done:** 6 / 66
-- **Last updated:** 2026-10-27 (Stage 06 DONE; audit follow-up; merged into main)
+- **Current stage:** 08 — Universe & historical index membership — `NOT STARTED`
+- **Stages done:** 7 / 66
+- **Last updated:** 2026-10-27 (Stage 07 DONE)
 
 ## Stage checklist
 
@@ -19,7 +19,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - [x] **06** [Storage layer (DuckDB + Parquet lake)](stages/stage-06-storage/brief.md)
 
 ### Phase 1 Data Platform → M1
-- [ ] **07** [Price data providers (yfinance, Alpaca)](stages/stage-07-price-data/brief.md)
+- [x] **07** [Price data providers (yfinance, Alpaca)](stages/stage-07-price-data/brief.md)
 - [ ] **08** [Universe & historical index membership](stages/stage-08-universe/brief.md)
 - [ ] **09** [Point-in-time fundamentals (SEC EDGAR)](stages/stage-09-fundamentals/brief.md)
 - [ ] **10** [Macro data (FRED / ALFRED)](stages/stage-10-macro/brief.md)
@@ -174,6 +174,11 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-27 | 06 | Approved: Stage 06 has two commits, `10e7394 stage-06: Storage layer (DuckDB + Parquet lake)` and `stage-06: audit follow-up (log assertions, log-key fix)`, against the Definition of Done's "one git commit" per stage. The follow-up adds the plan's missing log-line test, the log-key fix it exposed and the post-DONE audit records. Owner's words: "Yes: add an assertion that write_table and mirror_audit_log log one info line, and record the audit findings in the Stage 06 worklog, as one follow-up commit on the stage branch." | Found by the post-DONE audit; owner decision in chat; see [stage-06 worklog](stages/stage-06-storage/worklog.md) |
 | 2026-10-27 | 06 | Log keys renamed: `lake.write` logs the write mode as `write_mode` (was `mode`) and `audit.mirror` logs the mirrored run as `mirrored_run_id` (was `run_id`), because Stage 03's `add_run_context` overwrites `mode`/`run_id`/`as_of`/`stage` with the current run's values. Found by the new log tests (red first: `'dev' == 'append'`; `KeyError: 'mirrored_run_id'`) | Bug fix test-first; general clash → Backlog; see [stage-06 worklog](stages/stage-06-storage/worklog.md) |
 | 2026-10-27 | 06 | Approved: a third, records-only Stage 06 commit, `stage-06: merged-main check records` (merged-main evidence lines, this row, a worklog entry), after `main` was fast-forwarded to `b640a80`. Owner's words: "Fast-forward main to the Stage 06 branch and re-run the checks on main, as for Stages 02–05." | Same procedure as Stage 05's follow-up records; owner request in chat |
+| 2026-10-27 | 07 | Stage 07 executed straight after its plan (native inline TDD, no subagents), as the owner asked in chat: "firstly generate the plans for Stage 7 then carefully implement the plans and complete the plans", then audit plan vs work | Owner instruction; see [stage-07 plan](stages/stage-07-price-data/plan.md) |
+| 2026-10-27 | 07 | Collisions check: none with the roadmap or the spec. Two interpretations recorded: (1) the brief's Goal says "with caching" but no In-scope line names a cache; spec §16 lists "provider interface + cache + fallback" → a small on-disk `CachedPriceProvider` is built (D6); (2) `available_at` for `corporate_actions` = `bar_available_at` of the ex-date session (first session on or after `ex_date`): the action is never known before the bar that shows it | See [stage-07 plan › Collisions](stages/stage-07-price-data/plan.md) |
+| 2026-10-27 | 07 | D1–D10 (plan): raw prices are reconstructed from Yahoo's split-adjusted numbers with the full split history (probed: Yahoo's Close/Volume/Dividends are split-adjusted); yfinance batch/end-exclusive/NaN-padding handling; Alpaca raw + all bars, corporate actions with a 90-day query look-ahead; fallback fills missing symbols and routes actions to the provider that served the prices; `build_price_provider`; per-symbol cache that never caches an empty answer; table layouts (`vendor` column added to `corporate_actions`); per-symbol failure isolation; CRSP-style adjustment cross-check rescaled to the last bar; `PriceDataConfig` in `config/fund.yaml › data.prices` | See [stage-07 plan › Design decisions](stages/stage-07-price-data/plan.md) |
+| 2026-10-27 | 07 | Stage 06 test fixture changed: `tests/unit/core/storage/conftest.py::lake` now builds a lake with its own `SchemaRegistry([prices_schema])` instead of registering the stand-in `prices_daily` schema on a copy of `DEFAULT_REGISTRY`. Importing `atlas.data.prices` registers the real `prices_daily`, so the old fixture raised `ValueError: a different schema is already registered as 'prices_daily'` (52 errors in the full suite, order-dependent). No assertion changed; storage tests still 115 passed | Project.md Rule 1.6: the fixture's assumption (empty `DEFAULT_REGISTRY`) became wrong, not the tests; see [stage-07 worklog](stages/stage-07-price-data/worklog.md) |
+| 2026-10-27 | 07 | Fixtures: yfinance fixtures (AAPL, SPY, SIVB, split histories) are real recordings (yfinance 1.7.0, 2026-10-27); Alpaca fixtures are built in the documented v2 response shape from the recorded numbers, because no Alpaca keys were available; the Alpaca live smoke test is written but skipped here | Honest provenance; README in `tests/fixtures/prices/` |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -208,6 +213,13 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 06) A full `uv run pytest -q` ends with `nanobind: leaked … _duckdb.DuckDBPyConnection …` lines at interpreter shutdown (exit code 0, results unaffected). Seen only when hypothesis `@given` tests run after a duckdb connection was opened in the same process (likely hypothesis 6.170's module-constant scan); revisit after a duckdb/hypothesis upgrade
 - (Stage 06) `pyproject.toml` floors (`duckdb>=1.1`, `pyarrow>=17`) are untested below the locked duckdb 2.0.0 / pyarrow 26.0.0; the storage tests also assume pandas 3 (`str` dtype), like the Stage 05 pandas-floor item
 - (Stage 06 audit) `atlas.core.logging.add_run_context` silently overwrites log keys named `run_id`, `mode`, `as_of` or `stage` with the current run's values (Stage 06 hit it with `mode=` and `run_id=`). Consider making it keep or warn on an existing key, or a lint/test that bans those names in `_log.*(...)` calls
+- (Stage 07) Alpaca adapter is tested only against built (not recorded) fixtures, and its live smoke test was skipped (no keys). Run `uv run pytest tests/unit/data -m live` with paper data keys and re-record the Alpaca fixtures from real responses
+- (Stage 07) Alpaca's free IEX feed reports IEX-only volume, unlike Yahoo's consolidated volume; a fallback that mixes vendors gives inconsistent volume (and slightly different prices) across symbols. Stage 13 quality scoring should flag the vendor mix; consider SIP or one vendor per symbol history
+- (Stage 07) `adj_close` embeds actions after the bar's date (vendor value at fetch time): not point-in-time. Features (Stage 15) and DataView (Stage 13) should derive returns from raw prices + `corporate_actions`; `atlas.data.prices.adjustment_factors` already does it
+- (Stage 07) Not mapped: Alpaca stock dividends, spin-offs and other corporate action kinds; yfinance's `Capital Gains` column (fund distributions). Needed by Stage 52 accounting for ETFs with capital-gain distributions
+- (Stage 07) `corporate_actions.available_at` uses the ex-date bar (conservative); announcement/declaration dates are not captured, so an action is "known" later than in reality. Add `declared_at` if an event-driven pod needs announced splits/dividends (Stage 12/39)
+- (Stage 07) Raw vendor payloads are not archived under `raw/<vendor>/` (the on-disk cache under `cache/` serves repeat fetches). Consider archiving raw payloads in the Stage 14 backfill for audit/replay
+- (Stage 07) `YFinanceProvider` memoises downloads per instance without a size bound; fine for one ingest run, but a long-lived process should create a new provider per run (or add an LRU bound)
 
 ## Handoff notes
 
@@ -376,4 +388,32 @@ Full block and raw output: [verification.md](stages/stage-06-storage/verificatio
 - Acceptance criteria:
   - [x] 1M-row synthetic upsert completes in under 5 s locally — evidence: `test_upsert_one_million_rows_under_five_seconds` PASSED (asserts `< 5.0` s; measured 0.60 s; earlier 0.59/0.61/0.58 s)
   - [x] All tests green — evidence: `uv run pytest -q` 626 passed, `make check` exit 0, brief's Verify 114 passed
+- Waivers: none
+
+### Stage 07 — Price data providers (yfinance, Alpaca) — DONE 2026-10-27
+- Folder: [stages/stage-07-price-data/](stages/stage-07-price-data/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: `atlas.data.providers` — `base.py` (`PriceProvider` protocol, `DAILY_COLUMNS`/`ACTION_COLUMNS`, `normalize_daily/actions`, `empty_daily/actions`, `check_request`, `RetryPolicy`, `call_with_retry`, `Throttle`), `yfinance_provider.py` (`YFinanceProvider`), `alpaca_provider.py` (`AlpacaPriceProvider`), `fallback.py` (`FallbackPriceProvider`, `build_price_provider`), `cache.py` (`CachedPriceProvider`); `atlas.data.prices` (`PRICES_DAILY`, `CORPORATE_ACTIONS`, `IngestReport`, `AdjustmentMismatch`, `ingest_prices`, `adjustment_factors`, `cross_check_adjustment`); `PriceDataConfig` (`cfg.data.prices`, `config/fund.yaml › data.prices`). 95 new tests (+2 live, deselected) in `tests/unit/data/test_price_*.py` with `price_helpers.py`; fixtures in `tests/fixtures/prices/` (README). Runtime deps yfinance 1.7.0, httpx 0.28.1; dev dep respx 0.23.1
+- Key interfaces: `provider.fetch_daily(symbols, start, end)` / `fetch_actions(...)` → contract frames (both bounds inclusive; raw OHLC USD, raw `volume` int64, vendor `adj_close`; actions `type ∈ {split, dividend}`, `ratio` new/old, raw `amount`); `build_price_provider(cfg)` → yfinance, or a `FallbackPriceProvider` with Alpaca when both keys are set; `CachedPriceProvider(provider, lake.cache_dir / "prices")`; `ingest_prices(lake, provider, symbols, start, end, *, calendar=TradingCalendar(config=cfg.calendar), config=cfg.data.prices) -> IngestReport(rows, action_rows, symbols_ok, symbols_failed, failure_reasons, mismatches)`; tables `prices_daily` (PK symbol+date, partitioned by year) and `corporate_actions` (PK symbol+ex_date+type)
+- Decisions: Decisions log rows dated 2026-10-27, stage 07 (execution, collisions check, D1–D10, Stage 06 fixture change, fixture provenance)
+- Collisions with the overall plan: none (two interpretations recorded: cache from Goal/spec §16; actions `available_at` = ex-date bar)
+- Deviations from brief: none in scope. Additions: `CachedPriceProvider` (Goal "caching"), `build_price_provider`, `vendor` column on `corporate_actions`, `IngestReport.action_rows`/`failure_reasons`, `adjustment_factors`/`cross_check_adjustment` as public functions, `PriceDataConfig`. Changed a Stage 06 test fixture (isolated registry; no assertion touched)
+- Known gaps → backlog: Alpaca verified only on built fixtures (live test skipped, no keys); IEX vs consolidated volume; `adj_close` not point-in-time; unmapped action kinds and capital gains; no announcement dates; raw payloads not archived; unbounded per-instance memo (see Backlog, "Stage 07")
+- Next stage should know: importing `atlas.data.prices` registers `prices_daily` and `corporate_actions` in `DEFAULT_REGISTRY` (so a test that registers its own schema under those names must use its own `SchemaRegistry`, as the storage tests now do). Prices in the lake are **raw**; use `adjustment_factors(daily, actions)` for split-adjusted (`split_adj_close`) or total-return (`calc_adj_close`) series, never the vendor `adj_close` for point-in-time work. Symbols are canonical (`BRK.B`); providers leave out symbols they have no data for (delisted) instead of raising, and raise `DataError` only for vendor failures; `ingest_prices` never raises for one bad symbol (see `report.symbols_failed` / `failure_reasons`). Stage 08's delisted-name handling can use `report.symbols_failed` (reason "no price data returned"). yfinance un-adjustment needs the full split history (`yf.Ticker(s).splits`), so every symbol with rows costs one extra request; `batch_size`/throttle/retries come from `cfg.data.prices`. Tests: `tests/unit/data/price_helpers.py` has `FakePriceProvider`, `daily_rows`, `FakeYFinance`, `load_yf_symbol`; live tests are `@pytest.mark.live`. In this sandbox, a new worktree needs `UV_PROJECT_ENVIRONMENT=.venv.nosync uv sync --group dev` + `ln -s .venv.nosync .venv` and `UV_CACHE_DIR="$TMPDIR/uv-cache"`; Yahoo is reachable through the proxy via yfinance (bare curl gets 429)
+
+#### Verification evidence — Stage 07 — 2026-10-27
+Full block and raw output: [verification.md](stages/stage-07-price-data/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 722 passed, 0 failed, 2 deselected (live)
+  - `uv run ruff check .` → All checks passed!
+  - `uv run ruff format --check .` → 91 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 47 source files
+  - `uv run pytest tests/unit/data -q` (brief's Verify) → 95 passed, 2 deselected
+  - `uv run pytest tests/unit/data -m live -v -rs` (optional) → yfinance PASSED (real Yahoo); Alpaca SKIPPED (no keys)
+  - `make check` → exit 0; acceptance tests with `-W error` → 12 passed; docstrings → none missing
+  - Real-data ingest check (real Yahoo, run twice) → `rows=84 action_rows=3 ok=('AAPL', 'SPY') failed=('SIVB',) mismatches=0` both runs
+  - First full run was not green (670 passed, 52 errors: Stage 06 storage fixture vs the real `prices_daily`); fixed in the fixture, recorded in the worklog and Decisions log
+- Acceptance criteria:
+  - [x] Ingest of the fixtures yields correct split-adjusted series — evidence: `test_ingest_fixtures_writes_prices_and_actions`, `test_aapl_split_adjusted_series_is_continuous` (124.8075 → 129.04, +3.39% across the 4:1 split), `test_aapl_recomputed_matches_vendor_within_tolerance` (0 mismatches > 0.5%), `test_ingest_fixtures_have_no_mismatches`
+  - [x] Re-running is idempotent — evidence: `test_reingest_is_idempotent`, `test_reingest_replaces_changed_values`; real-data runs 1 and 2 identical
+  - [x] A failed symbol never aborts the batch — evidence: `test_failed_symbol_never_aborts_batch`, `test_batch_error_retries_symbol_by_symbol`, `test_invalid_rows_fail_only_that_symbol`, `test_bar_on_non_session_fails_symbol`, `test_actions_error_fails_symbol`, `test_delisted_symbol_is_absent_not_an_error`
 - Waivers: none

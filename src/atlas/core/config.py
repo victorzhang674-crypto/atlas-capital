@@ -293,11 +293,33 @@ class DataProviders(_Frozen):
     news: Literal["alpaca", "yahoo"] = "alpaca"
 
 
+class PriceDataConfig(_Frozen):
+    """Daily price fetching and checks (Stage 07).
+
+    `batch_size` symbols per vendor request; a failed request is retried `max_retries` times,
+    waiting `backoff_seconds` (doubling each retry); `min_request_interval_seconds` is the pause
+    between vendor requests (rate limit); `request_timeout_seconds` bounds one HTTP request.
+    `alpaca_feed` is the Alpaca data feed (`iex` on the free tier). `adj_mismatch_tolerance`
+    is the fraction above which our recomputed adjusted close and the vendor's are recorded
+    as a mismatch (0.005 = 0.5%).
+    """
+
+    batch_size: Annotated[int, Field(gt=0)] = 50
+    max_retries: Annotated[int, Field(ge=0)] = 3
+    backoff_seconds: _NonNeg = 1.0
+    min_request_interval_seconds: _NonNeg = 0.5
+    request_timeout_seconds: Annotated[float, Field(gt=0)] = 30.0
+    alpaca_feed: Literal["iex", "sip"] = "iex"
+    alpaca_data_url: str = "https://data.alpaca.markets"
+    adj_mismatch_tolerance: _OpenFrac = 0.005
+
+
 class DataConfig(_Frozen):
     """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
 
     lake_path: Path = Path("data")
     providers: DataProviders = Field(default_factory=DataProviders)
+    prices: PriceDataConfig = Field(default_factory=PriceDataConfig)
     universes: _UniverseMap = Field(default_factory=_default_universes)
 
 

@@ -1,0 +1,13 @@
+{'symbol': 'SIVB', 'reason': 'no price data returned', 'event': 'prices.symbol_failed', 'level': 'warning', 'logger': 'atlas.data.prices', 'timestamp': '2026-10-27T19:21:02.632324Z'}
+{'symbol': 'SIVB', 'reason': 'no price data returned', 'event': 'prices.symbol_failed', 'level': 'warning', 'logger': 'atlas.data.prices', 'timestamp': '2026-10-27T19:21:26.037600Z'}
+run 1: rows=84 action_rows=3 ok=('AAPL', 'SPY') failed=('SIVB',) mismatches=0
+  reasons: {'SIVB': 'no price data returned'}
+run 2: rows=84 action_rows=3 ok=('AAPL', 'SPY') failed=('SIVB',) mismatches=0
+  reasons: {'SIVB': 'no price data returned'}
+AAPL 2020-08-28: raw close=499.2300 split_adj_close=124.8075 vendor adj_close=120.9557 available_at=2020-08-28 20:15:00+00:00
+AAPL 2020-08-31: raw close=129.0400 split_adj_close=129.0400 vendor adj_close=125.0575 available_at=2020-08-31 20:15:00+00:00
+actions:
+symbol    ex_date     type  ratio  amount   vendor              available_at
+  AAPL 2020-08-07 dividend    NaN   0.820 yfinance 2020-08-07 20:15:00+00:00
+  AAPL 2020-08-31    split    4.0     NaN yfinance 2020-08-31 20:15:00+00:00
+   SPY 2020-09-18 dividend    NaN   1.339 yfinance 2020-09-18 20:15:00+00:00

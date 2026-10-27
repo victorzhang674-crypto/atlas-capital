@@ -1,0 +1,1544 @@
+..........EEEEEEEEEEEEEEEEEEEEEEEE.EEEEEEEEEEEEEEEEEE.......E....E...... [  9%]
+...................................EEEEEEEE............................. [ 19%]
+........................................................................ [ 29%]
+........................................................................ [ 39%]
+........................................................................ [ 49%]
+........................................................................ [ 59%]
+........................................................................ [ 69%]
+........................................................................ [ 79%]
+........................................................................ [ 89%]
+........................................................................ [ 99%]
+..                                                                       [100%]
+==================================== ERRORS ====================================
+____________ ERROR at setup of test_database_file_lives_in_the_lake ____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a933b0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a92f30>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_________________ ERROR at setup of test_query_over_lake_view __________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a93230>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a90380>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_____________________ ERROR at setup of test_named_params ______________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a939e0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a93a40>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_______________ ERROR at setup of test_query_params_are_not_sql ________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a96330>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a96960>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_query_rejects_multiple_statements ___________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a94c80>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a94d40>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_ ERROR at setup of test_query_rejects_writes[insert into audit_events (event_id) values ('x')] _
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a96600>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a96630>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+____ ERROR at setup of test_query_rejects_writes[delete from audit_events] _____
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a97a10>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a97aa0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_ ERROR at setup of test_query_rejects_writes[update audit_events set actor = 'x'] _
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a99af0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a98650>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_____ ERROR at setup of test_query_rejects_writes[drop table audit_events] _____
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a9aae0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a9b170>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_____ ERROR at setup of test_query_rejects_writes[create table t (a int)] ______
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a99370>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a993a0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_ ERROR at setup of test_query_rejects_writes[copy audit_events to 'out.csv'] __
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a97f20>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a97f50>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_ ERROR at setup of test_query_rejects_writes[attach 'other.duckdb' as other] __
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a7eb10>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a7ee70>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_________ ERROR at setup of test_query_rejects_writes[pragma version] __________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a97ec0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a97e60>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_________ ERROR at setup of test_query_rejects_writes[set threads = 1] _________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a95d60>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a94ad0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_________________ ERROR at setup of test_views_see_new_writes __________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a929c0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a92a80>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_____ ERROR at setup of test_refresh_sees_writes_from_another_lake_object ______
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a92a20>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a92ab0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+________ ERROR at setup of test_unwritten_table_view_is_empty_and_typed ________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a9a6f0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a9b5c0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_______________ ERROR at setup of test_query_timestamps_are_utc ________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a9be60>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a9bf20>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+________________ ERROR at setup of test_views_are_not_persisted ________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a99100>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a99af0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+____________ ERROR at setup of test_get_database_is_one_per_process ____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a9ad80>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a9ae10>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+____________ ERROR at setup of test_closed_database_refuses_queries ____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa1940>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa1f40>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+__________________ ERROR at setup of test_read_only_database ___________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa03b0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa03e0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_______ ERROR at setup of test_unpartitioned_and_year_partitioned_views ________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa1610>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa1640>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_____________ ERROR at setup of test_views_follow_registry_changes _____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a9b830>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a9b890>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________________ ERROR at setup of test_roundtrip_dtypes ____________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a9adb0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a99b80>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+______________ ERROR at setup of test_partition_layout_by_symbol _______________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a99790>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a997c0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_unpartitioned_table_has_one_file ____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a92fc0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a931d0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________________ ERROR at setup of test_partition_by_year ___________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a95ac0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a94e00>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_____ ERROR at setup of test_partition_value_with_slash_stays_inside_table _____
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a96f30>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a97140>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_______ ERROR at setup of test_append_rejects_existing_or_repeated_keys ________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a7d040>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a7e450>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________________ ERROR at setup of test_append_adds_rows ____________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa03e0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa0380>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_______________ ERROR at setup of test_overwrite_replaces_table ________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa3710>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa2a50>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_______ ERROR at setup of test_overwrite_with_empty_frame_empties_table ________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa3890>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa3920>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________________ ERROR at setup of test_bad_mode_rejected ___________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa7470>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa48f0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_______________ ERROR at setup of test_read_filters_and_columns ________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa4a70>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa7e60>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_______ ERROR at setup of test_read_unwritten_registered_table_is_empty ________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa3fb0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa37d0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+__________ ERROR at setup of test_partition_change_requires_overwrite __________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa08f0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa0920>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_read_output_works_with_pit_filter ___________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a7e630>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a7d3d0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+____________ ERROR at setup of test_write_logs_and_bumps_generation ____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a956a0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a95d60>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_failed_validation_writes_nothing ____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a92fc0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a931d0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_failed_overwrite_keeps_old_table ____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a9b860>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a98260>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_partition_dir_names_for_each_type ___________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a9b830>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a9b890>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+______________ ERROR at setup of test_first_write_records_version ______________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa4b90>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa4bf0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_migrate_unwritten_table_is_a_noop ___________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116ab2930>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116ab1a60>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+______________ ERROR at setup of test_upsert_later_ingestion_wins ______________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116ab3410>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116ab0a10>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+__________ ERROR at setup of test_upsert_adds_new_keys_and_partitions __________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116ab3a10>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116ab3110>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_upsert_batch_duplicates_keep_last ___________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a98590>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a99af0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_________________ ERROR at setup of test_upsert_is_idempotent __________________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a99850>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a9bef0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+___________ ERROR at setup of test_upsert_into_new_table_creates_it ____________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x10c823740>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a8e300>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+_____________ ERROR at setup of test_upsert_empty_batch_is_a_noop ______________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116a96870>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116a968a0>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+__________ ERROR at setup of test_upsert_keys_must_match_primary_key ___________
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa09e0>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa3e00>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+______ ERROR at setup of test_upsert_one_million_rows_under_five_seconds _______
+
+tmp_lake = <atlas.core.storage.lake.Lake object at 0x116aa2780>
+prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    @pytest.fixture
+    def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
+        """`tmp_lake` with the `prices_daily` test schema registered."""
+>       tmp_lake.registry.register(prices_schema)
+
+tests/unit/core/storage/conftest.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <atlas.core.storage.schema.SchemaRegistry object at 0x116aa2870>
+schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+
+    def register(self, schema: TableSchema) -> TableSchema:
+        """Add `schema` and return the registered one. Registering an equal schema again is a
+        no-op; a different schema under a taken name raises `ValueError`."""
+        existing = self._schemas.get(schema.name)
+        if existing is None:
+            self._schemas[schema.name] = schema
+            return schema
+        if existing != schema:
+>           raise ValueError(f"a different schema is already registered as {schema.name!r}")
+E           ValueError: a different schema is already registered as 'prices_daily'
+
+src/atlas/core/storage/schema.py:224: ValueError
+=========================== short test summary info ============================
+ERROR tests/unit/core/storage/test_storage_db.py::test_database_file_lives_in_the_lake
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_over_lake_view
+ERROR tests/unit/core/storage/test_storage_db.py::test_named_params - ValueEr...
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_params_are_not_sql
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_multiple_statements
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[insert into audit_events (event_id) values ('x')]
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[delete from audit_events]
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[update audit_events set actor = 'x']
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[drop table audit_events]
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[create table t (a int)]
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[copy audit_events to 'out.csv']
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[attach 'other.duckdb' as other]
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[pragma version]
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[set threads = 1]
+ERROR tests/unit/core/storage/test_storage_db.py::test_views_see_new_writes
+ERROR tests/unit/core/storage/test_storage_db.py::test_refresh_sees_writes_from_another_lake_object
+ERROR tests/unit/core/storage/test_storage_db.py::test_unwritten_table_view_is_empty_and_typed
+ERROR tests/unit/core/storage/test_storage_db.py::test_query_timestamps_are_utc
+ERROR tests/unit/core/storage/test_storage_db.py::test_views_are_not_persisted
+ERROR tests/unit/core/storage/test_storage_db.py::test_get_database_is_one_per_process
+ERROR tests/unit/core/storage/test_storage_db.py::test_closed_database_refuses_queries
+ERROR tests/unit/core/storage/test_storage_db.py::test_read_only_database - V...
+ERROR tests/unit/core/storage/test_storage_db.py::test_unpartitioned_and_year_partitioned_views
+ERROR tests/unit/core/storage/test_storage_db.py::test_views_follow_registry_changes
+ERROR tests/unit/core/storage/test_storage_lake.py::test_roundtrip_dtypes - V...
+ERROR tests/unit/core/storage/test_storage_lake.py::test_partition_layout_by_symbol
+ERROR tests/unit/core/storage/test_storage_lake.py::test_unpartitioned_table_has_one_file
+ERROR tests/unit/core/storage/test_storage_lake.py::test_partition_by_year - ...
+ERROR tests/unit/core/storage/test_storage_lake.py::test_partition_value_with_slash_stays_inside_table
+ERROR tests/unit/core/storage/test_storage_lake.py::test_append_rejects_existing_or_repeated_keys
+ERROR tests/unit/core/storage/test_storage_lake.py::test_append_adds_rows - V...
+ERROR tests/unit/core/storage/test_storage_lake.py::test_overwrite_replaces_table
+ERROR tests/unit/core/storage/test_storage_lake.py::test_overwrite_with_empty_frame_empties_table
+ERROR tests/unit/core/storage/test_storage_lake.py::test_bad_mode_rejected - ...
+ERROR tests/unit/core/storage/test_storage_lake.py::test_read_filters_and_columns
+ERROR tests/unit/core/storage/test_storage_lake.py::test_read_unwritten_registered_table_is_empty
+ERROR tests/unit/core/storage/test_storage_lake.py::test_partition_change_requires_overwrite
+ERROR tests/unit/core/storage/test_storage_lake.py::test_read_output_works_with_pit_filter
+ERROR tests/unit/core/storage/test_storage_lake.py::test_write_logs_and_bumps_generation
+ERROR tests/unit/core/storage/test_storage_lake.py::test_failed_validation_writes_nothing
+ERROR tests/unit/core/storage/test_storage_lake.py::test_failed_overwrite_keeps_old_table
+ERROR tests/unit/core/storage/test_storage_lake.py::test_partition_dir_names_for_each_type
+ERROR tests/unit/core/storage/test_storage_meta.py::test_first_write_records_version
+ERROR tests/unit/core/storage/test_storage_meta.py::test_migrate_unwritten_table_is_a_noop
+ERROR tests/unit/core/storage/test_storage_upsert.py::test_upsert_later_ingestion_wins
+ERROR tests/unit/core/storage/test_storage_upsert.py::test_upsert_adds_new_keys_and_partitions
+ERROR tests/unit/core/storage/test_storage_upsert.py::test_upsert_batch_duplicates_keep_last
+ERROR tests/unit/core/storage/test_storage_upsert.py::test_upsert_is_idempotent
+ERROR tests/unit/core/storage/test_storage_upsert.py::test_upsert_into_new_table_creates_it
+ERROR tests/unit/core/storage/test_storage_upsert.py::test_upsert_empty_batch_is_a_noop
+ERROR tests/unit/core/storage/test_storage_upsert.py::test_upsert_keys_must_match_primary_key
+ERROR tests/unit/core/storage/test_storage_upsert.py::test_upsert_one_million_rows_under_five_seconds
+670 passed, 2 deselected, 52 errors in 4.55s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "torch"
+ - leaked function "__getattr__"
+ - leaked function "get_profiling_information"
+ - leaked function "fetchnumpy"
+ - leaked function "complete"
+ - leaked function "_prepare_script"
+ - leaked function "fetchmany"
+ - leaked function "enable_profiling"
+ - leaked function "duplicate"
+ - leaked function "fetch_df_chunk"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=1

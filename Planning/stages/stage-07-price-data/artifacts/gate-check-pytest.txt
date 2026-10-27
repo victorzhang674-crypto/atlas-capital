@@ -1,0 +1,5 @@
+$ git log -1 --oneline
+e9dca25 stage-06: merged-main check records
+$ uv run pytest -q  (2026-10-27; tree = HEAD + Stage 07 dependency adds in pyproject.toml/uv.lock, no code yet)
+627 passed in 6.74s
+exit=0

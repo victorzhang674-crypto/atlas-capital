@@ -1,0 +1,186 @@
+"""Stage 07 Task 2: the yfinance adapter, on recorded fixtures (no network)."""
+
+import math
+from datetime import date
+
+import pandas as pd
+import pytest
+from price_helpers import FakeYFinance, load_yf_symbol
+
+from atlas.core.config import PriceDataConfig
+from atlas.core.errors import DataError
+from atlas.data.providers.base import ACTION_COLUMNS, DAILY_COLUMNS, PriceProvider
+from atlas.data.providers.yfinance_provider import YFinanceProvider
+
+START, END = date(2020, 8, 3), date(2020, 9, 30)
+
+
+def _provider(
+    fake: FakeYFinance, sleeps: list[float] | None = None, **cfg: object
+) -> YFinanceProvider:
+    sink = sleeps if sleeps is not None else []
+    return YFinanceProvider(
+        PriceDataConfig(**cfg),  # type: ignore[arg-type]
+        download=fake.download,
+        splits=fake.splits,
+        sleep=sink.append,
+    )
+
+
+def _row(frame: pd.DataFrame, symbol: str, day: date) -> pd.Series:
+    rows = frame[(frame["symbol"] == symbol) & (frame["date"] == day)]
+    assert len(rows) == 1, f"expected one {symbol} row on {day}"
+    return rows.iloc[0]
+
+
+def test_is_a_price_provider() -> None:
+    assert isinstance(_provider(FakeYFinance()), PriceProvider)
+    assert _provider(FakeYFinance()).name == "yfinance"
+
+
+def test_aapl_prices_are_unadjusted_before_split() -> None:
+    out = _provider(FakeYFinance()).fetch_daily(["AAPL"], START, END)
+    assert tuple(out.columns) == DAILY_COLUMNS
+    assert len(out) == 42
+    before = _row(out, "AAPL", date(2020, 8, 28))
+    assert before["close"] == pytest.approx(124.807503 * 4, abs=1e-4)  # 499.23 as traded
+    assert before["open"] == pytest.approx(126.012497 * 4, abs=1e-4)
+    assert before["volume"] == 187630000 // 4
+    on_split = _row(out, "AAPL", date(2020, 8, 31))
+    assert on_split["close"] == pytest.approx(129.039993, abs=1e-5)
+    assert on_split["volume"] == 225702700
+    assert set(out["vendor"]) == {"yfinance"}
+
+
+def test_split_after_window_still_unadjusts() -> None:  # Review focus 3
+    out = _provider(FakeYFinance()).fetch_daily(["AAPL"], START, date(2020, 8, 28))
+    assert out["date"].max() == date(2020, 8, 28)
+    assert _row(out, "AAPL", date(2020, 8, 28))["close"] == pytest.approx(499.23, abs=1e-3)
+
+
+def test_adj_close_is_vendor_value() -> None:
+    out = _provider(FakeYFinance()).fetch_daily(["AAPL"], START, END)
+    vendor = load_yf_symbol("AAPL").loc["2020-08-28", "Adj Close"]
+    assert _row(out, "AAPL", date(2020, 8, 28))["adj_close"] == pytest.approx(vendor)
+
+
+def test_actions_aapl_split_and_raw_dividend() -> None:
+    out = _provider(FakeYFinance()).fetch_actions(["AAPL"], START, END)
+    assert tuple(out.columns) == ACTION_COLUMNS
+    assert list(zip(out["ex_date"], out["type"], strict=True)) == [
+        (date(2020, 8, 7), "dividend"),
+        (date(2020, 8, 31), "split"),
+    ]
+    div, split = out.iloc[0], out.iloc[1]
+    assert div["amount"] == pytest.approx(0.82) and math.isnan(div["ratio"])
+    assert split["ratio"] == 4.0 and math.isnan(split["amount"])
+
+
+def test_actions_window_excludes_splits_outside_it() -> None:
+    out = _provider(FakeYFinance()).fetch_actions(["AAPL"], date(2020, 9, 1), END)
+    assert out.empty
+
+
+def test_actions_spy_dividend() -> None:
+    out = _provider(FakeYFinance()).fetch_actions(["SPY"], START, END)
+    assert list(out["ex_date"]) == [date(2020, 9, 18)]
+    assert out["amount"].iloc[0] == pytest.approx(1.339)
+
+
+def test_delisted_symbol_is_absent_not_an_error() -> None:
+    fake = FakeYFinance()
+    provider = _provider(fake)
+    daily = provider.fetch_daily(["AAPL", "SIVB", "SPY"], START, END)
+    assert sorted(set(daily["symbol"])) == ["AAPL", "SPY"]
+    actions = provider.fetch_actions(["SIVB"], START, END)
+    assert actions.empty
+    assert "SIVB" not in fake.split_calls  # no rows → no split lookup needed
+
+
+def test_download_args_end_exclusive_and_vendor_symbols() -> None:
+    brk = load_yf_symbol("SPY")  # any recorded frame stands in for BRK-B
+    fake = FakeYFinance(frames={"BRK-B": brk}, splits={})
+    out = _provider(fake).fetch_daily(["brk.b"], START, END)
+    assert fake.download_calls == [(["BRK-B"], START, date(2020, 10, 1))]
+    assert set(out["symbol"]) == {"BRK.B"}
+
+
+def test_batches_and_throttles() -> None:
+    fake = FakeYFinance()
+    sleeps: list[float] = []
+    provider = _provider(fake, sleeps, batch_size=2, min_request_interval_seconds=0.5)
+    out = provider.fetch_daily(["AAPL", "SPY", "SIVB"], START, END)
+    assert [call[0] for call in fake.download_calls] == [["AAPL", "SPY"], ["SIVB"]]
+    # 2 downloads + 2 split-history lookups (AAPL, SPY) = 4 requests → 3 pauses
+    assert fake.split_calls == ["AAPL", "SPY"]
+    assert sleeps == [0.5, 0.5, 0.5]
+    assert len(out) == 84
+
+
+def test_retry_then_success() -> None:
+    fake = FakeYFinance(fail_times=2)
+    sleeps: list[float] = []
+    out = _provider(fake, sleeps, backoff_seconds=1.0, min_request_interval_seconds=0).fetch_daily(
+        ["AAPL"], START, END
+    )
+    assert len(out) == 42
+    assert sleeps == [1.0, 2.0]
+
+
+def test_download_keeps_failing_raises_data_error() -> None:
+    fake = FakeYFinance(fail_times=10)
+    with pytest.raises(DataError, match="yfinance download"):
+        _provider(fake, max_retries=2).fetch_daily(["AAPL"], START, END)
+    assert len(fake.download_calls) == 3
+
+
+def test_split_history_missing_for_traded_symbol_raises() -> None:
+    fake = FakeYFinance(no_splits=("AAPL",))
+    with pytest.raises(DataError, match=r"AAPL.*split history"):
+        _provider(fake).fetch_daily(["AAPL"], START, END)
+
+
+def test_actions_reuse_the_daily_download() -> None:
+    fake = FakeYFinance()
+    provider = _provider(fake)
+    provider.fetch_daily(["AAPL", "SPY"], START, END)
+    provider.fetch_actions(["AAPL", "SPY"], START, END)
+    provider.fetch_daily(["AAPL"], START, END)
+    assert len(fake.download_calls) == 1
+    assert fake.split_calls == ["AAPL", "SPY"]
+
+
+def test_tz_aware_index_uses_new_york_date() -> None:
+    frame = load_yf_symbol("SPY")
+    frame.index = frame.index.tz_localize("America/New_York")
+    fake = FakeYFinance(frames={"SPY": frame}, splits={})
+    out = _provider(fake).fetch_daily(["SPY"], START, END)
+    assert out["date"].iloc[0] == START
+    assert len(out) == 42
+
+
+def test_partial_nan_row_is_kept_for_validation() -> None:  # Review focus 2
+    frame = load_yf_symbol("SPY")
+    frame.loc["2020-08-04", "Volume"] = float("nan")
+    fake = FakeYFinance(frames={"SPY": frame}, splits={})
+    out = _provider(fake).fetch_daily(["SPY"], START, END)
+    assert len(out) == 42
+    assert pd.isna(_row(out, "SPY", date(2020, 8, 4))["volume"])
+
+
+def test_dividend_on_a_day_without_a_bar_is_kept() -> None:
+    frame = load_yf_symbol("SPY")
+    frame.loc["2020-09-18", ["Open", "High", "Low", "Close", "Adj Close", "Volume"]] = float("nan")
+    fake = FakeYFinance(frames={"SPY": frame}, splits={})
+    provider = _provider(fake)
+    daily = provider.fetch_daily(["SPY"], START, END)
+    assert len(daily) == 41 and date(2020, 9, 18) not in set(daily["date"])
+    actions = provider.fetch_actions(["SPY"], START, END)
+    assert list(actions["ex_date"]) == [date(2020, 9, 18)]
+    assert actions["amount"].iloc[0] == pytest.approx(1.339)
+
+
+def test_empty_request_makes_no_call() -> None:
+    fake = FakeYFinance()
+    assert _provider(fake).fetch_daily([], START, END).empty
+    assert fake.download_calls == []

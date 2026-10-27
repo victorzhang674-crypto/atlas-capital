@@ -1,0 +1,57 @@
+{
+  "corporate_actions": {
+    "forward_splits": [
+      {
+        "id": "fs-1",
+        "symbol": "AAPL",
+        "cusip": "037833100",
+        "new_rate": 4,
+        "old_rate": 1,
+        "process_date": "2020-08-31",
+        "ex_date": "2020-08-31",
+        "record_date": "2020-08-24",
+        "payable_date": "2020-08-28"
+      }
+    ],
+    "reverse_splits": [
+      {
+        "id": "rs-1",
+        "symbol": "XYZ",
+        "cusip": "000000000",
+        "new_rate": 1,
+        "old_rate": 10,
+        "process_date": "2020-09-01",
+        "ex_date": "2020-09-01",
+        "record_date": "2020-09-01",
+        "payable_date": "2020-09-01"
+      }
+    ],
+    "cash_dividends": [
+      {
+        "id": "cd-1",
+        "symbol": "AAPL",
+        "cusip": "037833100",
+        "rate": 0.82,
+        "special": false,
+        "foreign": false,
+        "process_date": "2020-08-13",
+        "ex_date": "2020-08-07",
+        "record_date": "2020-08-10",
+        "payable_date": "2020-08-13"
+      },
+      {
+        "id": "cd-2",
+        "symbol": "SPY",
+        "cusip": "78462F103",
+        "rate": 1.339,
+        "special": false,
+        "foreign": false,
+        "process_date": "2020-10-30",
+        "ex_date": "2020-09-18",
+        "record_date": "2020-09-21",
+        "payable_date": "2020-10-30"
+      }
+    ]
+  },
+  "next_page_token": null
+}

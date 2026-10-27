@@ -1,0 +1,23 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-7-planning-implementation-de524c/.venv.nosync/bin/python
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-7-planning-implementation-de524c
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 12 items
+
+tests/unit/data/test_price_ingest.py::test_ingest_fixtures_writes_prices_and_actions PASSED [  8%]
+tests/unit/data/test_price_adjustment.py::test_aapl_split_adjusted_series_is_continuous PASSED [ 16%]
+tests/unit/data/test_price_adjustment.py::test_aapl_recomputed_matches_vendor_within_tolerance PASSED [ 25%]
+tests/unit/data/test_price_adjustment.py::test_ingest_fixtures_have_no_mismatches PASSED [ 33%]
+tests/unit/data/test_price_ingest.py::test_reingest_is_idempotent PASSED [ 41%]
+tests/unit/data/test_price_ingest.py::test_reingest_replaces_changed_values PASSED [ 50%]
+tests/unit/data/test_price_ingest.py::test_failed_symbol_never_aborts_batch PASSED [ 58%]
+tests/unit/data/test_price_ingest.py::test_batch_error_retries_symbol_by_symbol PASSED [ 66%]
+tests/unit/data/test_price_ingest.py::test_invalid_rows_fail_only_that_symbol PASSED [ 75%]
+tests/unit/data/test_price_ingest.py::test_bar_on_non_session_fails_symbol PASSED [ 83%]
+tests/unit/data/test_price_ingest.py::test_actions_error_fails_symbol PASSED [ 91%]
+tests/unit/data/test_price_yfinance.py::test_delisted_symbol_is_absent_not_an_error PASSED [100%]
+
+============================== 12 passed in 0.94s ==============================
+exit=0

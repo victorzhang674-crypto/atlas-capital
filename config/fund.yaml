@@ -19,6 +19,16 @@ data:
     fundamentals: sec_edgar  # point-in-time XBRL companyfacts (Stage 09)
     macro: fred  # FRED / ALFRED with vintages (Stage 10)
     news: alpaca  # timestamped news: alpaca | yahoo (Stage 11)
+  # Daily price fetching and checks (Stage 07).
+  prices:
+    batch_size: 50  # symbols per vendor request
+    max_retries: 3  # retries after a failed vendor request
+    backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
+    min_request_interval_seconds: 0.5  # rate limit: pause between vendor requests, in seconds
+    request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
+    alpaca_feed: iex  # Alpaca data feed: iex (free tier) | sip (paid)
+    alpaca_data_url: https://data.alpaca.markets  # Alpaca market data API base URL
+    adj_mismatch_tolerance: 0.005  # record recomputed vs vendor adj_close gaps above 0.5%
 
 # LLM gateway values (consumed by Stage 24).
 llm:

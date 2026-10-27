@@ -1,9 +1,11 @@
 """Fixtures shared by the storage tests."""
 
+from pathlib import Path
+
 import pytest
 from storage_helpers import PricesFrame, make_prices_frame, make_prices_schema
 
-from atlas.core.storage import Lake, TableSchema
+from atlas.core.storage import Lake, SchemaRegistry, TableSchema
 
 
 @pytest.fixture
@@ -19,7 +21,11 @@ def prices_frame() -> PricesFrame:
 
 
 @pytest.fixture
-def lake(tmp_lake: Lake, prices_schema: TableSchema) -> Lake:
-    """`tmp_lake` with the `prices_daily` test schema registered."""
-    tmp_lake.registry.register(prices_schema)
-    return tmp_lake
+def lake(tmp_path: Path, prices_schema: TableSchema) -> Lake:
+    """A lake under `tmp_path/"lake"` whose registry holds only the `prices_daily` test schema.
+
+    Not a copy of `DEFAULT_REGISTRY`: data stages register real tables there (Stage 07's
+    `prices_daily` has more columns than this test schema), and the storage mechanics tested
+    here must not depend on which data tables happen to be imported.
+    """
+    return Lake(tmp_path / "lake", registry=SchemaRegistry([prices_schema]))

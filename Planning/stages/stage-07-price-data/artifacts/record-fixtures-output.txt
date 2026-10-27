@@ -1,0 +1,5 @@
+1 Failed download:
+['SIVB']: possibly delisted; no timezone found
+$SIVB: possibly delisted; no timezone found
+SIVB: no split history (None)
+(42, 23) 5 split rows
