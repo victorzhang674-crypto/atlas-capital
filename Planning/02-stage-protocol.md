@@ -38,7 +38,8 @@ Start Stage NN.
 5. **Resolve collisions with the overall plan.** If the brief, the stage plan or the code conflicts with `01-master-roadmap.md` or `00-design-spec.md`, follow the overall plan and log the collision in the Decisions log. Do not edit the overall plan without the owner's approval.
 6. **Use no real network calls in unit tests.** Use recorded fixtures under `tests/fixtures/` (VCR-style JSON/Parquet) or fakes. Live-network tests are marked `@pytest.mark.live` and skipped by default.
 7. **Use no real LLM calls in unit tests.** Use `FakeLLM` (from Stage 24) with scripted responses. Live-LLM tests are marked `@pytest.mark.llm`.
-8. **Run every command yourself.** Installs, tests, checks, data syncs, backfills, servers and visual checks are all run and inspected by the AI. Long jobs run in the background. The owner is never asked to run or check something unless a `Project.md` Rule 6 exception applies, and then the AI states the exception, gives the exact command, and keeps the item `BLOCKED` until it sees real output.
+8. **Do all git work yourself.** Branching, committing, merging `main` in, resolving conflicts and merging the finished stage into `main` are done and verified by the AI (`Project.md` Rule 6A).
+9. **Run every command yourself.** Installs, tests, checks, data syncs, backfills, servers and visual checks are all run and inspected by the AI. Long jobs run in the background. The owner is never asked to run or check something unless a `Project.md` Rule 6 exception applies, and then the AI states the exception, gives the exact command, and keeps the item `BLOCKED` until it sees real output.
 
 ## 3. Definition of Done (every stage)
 
@@ -53,7 +54,8 @@ A stage is `DONE` only when **every** box below is ticked from checks **run in t
 - [ ] Every new config key is in `config/*.yaml` with a comment and in `atlas.core.config` with a default.
 - [ ] The stage folder holds `plan.md`, a complete `worklog.md`, and raw verification output in `artifacts/`.
 - [ ] A **Verification evidence** block (format in `Project.md` §1.5) is written in the stage folder's `verification.md` and summarised in `PROGRESS.md` with a link, *then* the stage is ticked and set to `DONE`, along with the date, key files, decisions made, backlog items and **Handoff notes** for the next stage.
-- [ ] One git commit: `stage-NN: <title>` (plus the attribution trailer if the assistant adds one).
+- [ ] One git commit: `stage-NN: <title>` (plus the attribution trailer if the assistant adds one), made by the AI after reviewing the staged diff, then verified with `git status --short` and `git log` (`Project.md` Rule 6A).
+- [ ] The stage branch is merged into `main` by the AI, `uv run pytest -q` and `make check` are re-run on the merged result and are green, and the commit and merge hashes are recorded in `worklog.md`. The owner runs no git commands.
 
 ## 4. Engineering conventions
 

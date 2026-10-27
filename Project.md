@@ -152,7 +152,7 @@ When a collision is found:
 
 Whenever a task needs something run in a terminal, **the AI runs it itself**, automatically, with its own tools, and reads the output. It does not ask the owner to run commands, paste output, or "check manually".
 
-1. **This covers everything runnable:** installing dependencies, tests, lint/format/type checks, builds, data syncs and backfills, migrations, CLI commands, git operations the stage calls for, starting a server or the dashboard and checking it responds, and `live` / `llm` tests when the keys are already in the environment.
+1. **This covers everything runnable:** installing dependencies, tests, lint/format/type checks, builds, data syncs and backfills, migrations, CLI commands, all git operations (see Rule 6A), starting a server or the dashboard and checking it responds, and `live` / `llm` tests when the keys are already in the environment.
 2. **Long jobs** (backfills, backtests) are run by the AI in the background, and their completion and output are checked by the AI. They are not handed off with "run this and tell me".
 3. **Visual checks** (dashboard pages, reports, charts) are done by the AI with its browser and screenshot tools, not by asking the owner to look.
 4. **Try first, never predict.** The AI attempts the command and reads the actual error before concluding it cannot run it.
@@ -170,6 +170,33 @@ Whenever a task needs something run in a terminal, **the AI runs it itself**, au
 
 ---
 
+## Rule 6A — Git operations are the AI's job, and the AI checks them
+
+The owner never runs git commands or inspects git state by hand. The AI does every git operation itself, and verifies each one itself (Rule 6).
+
+1. **The AI performs every git operation a stage needs:**
+   - starting from an up-to-date `main`, and creating or using the stage's branch or worktree;
+   - staging only the intended files, and committing as `stage-NN: <title>` (plus the attribution trailer);
+   - merging `main` into the stage branch when `main` has moved on;
+   - merging the finished stage into `main` once the stage is `DONE`;
+   - resolving merge conflicts, and keeping the records on `main` (`PROGRESS.md`, the stage folder) in sync.
+2. **Check before every commit:**
+   - review the staged diff (`git diff --cached --stat` and the diff itself) and confirm it contains only the stage's intended files;
+   - never commit secrets, `.env`, the data lake (`data/`), caches or large generated files; confirm `.gitignore` covers them.
+3. **Verify after every git operation, and record the evidence:**
+   - `git status --short` shows a clean tree (or only expected files);
+   - `git log --oneline` shows the new commit or merge commit, with the right message;
+   - `git diff --stat <base>..HEAD` touches only the intended files;
+   - **after any merge,** run `uv run pytest -q` and `make check` on the merged result and confirm they are green, and confirm `git branch --merged main` lists the stage branch;
+   - write the commit hashes, the merge commit and the post-merge check results into the stage's `worklog.md`, and into `verification.md` / the `PROGRESS.md` handoff note when they are part of the stage's evidence.
+4. **`main` must never be left red.** A stage branch is merged into `main` only after the stage is `DONE`, and only if the merged result passes the full verification. If the merged result fails, the AI fixes it on the stage branch first; the stage is not `DONE` until the merged result is green.
+5. **Conflicts:** the AI resolves them itself, following Rule 3 precedence. If a resolution would change the meaning of a higher-ranked document, or the right answer is genuinely unclear, it asks the owner.
+6. **Failures** (a lock file, a failing hook, a merge conflict, a detached HEAD) are diagnosed and fixed by the AI. The owner is involved only if a Rule 6 exception truly applies.
+7. **Remote:** there is none at the moment. If one is configured later, the AI pushes `main` and the stage branch after each verified commit or merge (a normal push, never a force-push), and confirms the push with `git status -sb`.
+8. **Still needs the owner's approval first** (a Rule 6 exception): rewriting history (rebasing or amending commits already on `main`, `reset --hard` that discards work), force-pushing, deleting branches or worktrees that hold unmerged work, and deleting tags. Once approved, the AI runs the operation itself and verifies it. Cleaning up branches that are already merged may be proposed, and is done only with approval.
+
+---
+
 ## Quick checklist (copy into each stage chat)
 
 - [ ] Read Project.md in full and stated the current stage and status
@@ -180,4 +207,5 @@ Whenever a task needs something run in a terminal, **the AI runs it itself**, au
 - [ ] Ran every command myself (Rule 6); any owner-run command has a stated exception and is labelled
 - [ ] Ran the full verification in this chat; output read and saved to `artifacts/`; all criteria evidenced
 - [ ] Wrote `verification.md` and the summary in `PROGRESS.md`, then ticked the box and set `DONE`
-- [ ] Committed `stage-NN: <title>`
+- [ ] Committed `stage-NN: <title>` after reviewing the staged diff; verified with `git status` / `git log` (Rule 6A)
+- [ ] Merged into `main` after `DONE`; re-ran `uv run pytest -q` and `make check` on the merged result (green); recorded hashes in `worklog.md`
