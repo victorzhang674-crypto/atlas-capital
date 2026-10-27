@@ -10,7 +10,7 @@ Synthesise reports and the debate into a falsifiable `InvestmentThesis`, store i
 - Thesis registry (DuckDB `theses`): versions, status transitions (ACTIVE → INVALIDATED/CLOSED/EXPIRED), `review_due` date, triggers: kill criterion hit, earnings passed, price move > 2σ, thesis age > horizon
 - `Prediction` records emitted for each thesis (for Stage 53 scoring)
 - CLI: `atlas research AAPL --date 2024-05-01 [--replay]` → Rich-rendered thesis + HTML report in `data/runs/…`
-- Comparison note: run the same ticker/date in the reference TradingAgents (optional, manual) and record the differences in the handoff note
+- Comparison note (optional): the AI itself runs the same ticker/date in the reference TradingAgents (Project.md Rule 6) and records the differences in the handoff note
 
 ## Files
 `src/atlas/agents/director.py`, `src/atlas/agents/thesis/{registry.py,kill_criteria.py}`, `src/atlas/cli/research_cmd.py`, prompt, tests

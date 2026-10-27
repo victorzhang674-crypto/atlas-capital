@@ -38,13 +38,14 @@ Start Stage NN.
 5. **Resolve collisions with the overall plan.** If the brief, the stage plan or the code conflicts with `01-master-roadmap.md` or `00-design-spec.md`, follow the overall plan and log the collision in the Decisions log. Do not edit the overall plan without the owner's approval.
 6. **Use no real network calls in unit tests.** Use recorded fixtures under `tests/fixtures/` (VCR-style JSON/Parquet) or fakes. Live-network tests are marked `@pytest.mark.live` and skipped by default.
 7. **Use no real LLM calls in unit tests.** Use `FakeLLM` (from Stage 24) with scripted responses. Live-LLM tests are marked `@pytest.mark.llm`.
+8. **Run every command yourself.** Installs, tests, checks, data syncs, backfills, servers and visual checks are all run and inspected by the AI. Long jobs run in the background. The owner is never asked to run or check something unless a `Project.md` Rule 6 exception applies, and then the AI states the exception, gives the exact command, and keeps the item `BLOCKED` until it sees real output.
 
 ## 3. Definition of Done (every stage)
 
 A stage is `DONE` only when **every** box below is ticked from checks **run in this chat** (`Project.md` Rule 1). Otherwise its status stays `IN PROGRESS` or `BLOCKED`.
 
 - [ ] Every acceptance criterion in the stage brief is met, each with named evidence (a test, a command output, or a file).
-- [ ] The stage brief's `## Verify` commands were run in this chat and their output read.
+- [ ] The stage brief's `## Verify` commands were run **by the AI** in this chat and their output read (`Project.md` Rule 6).
 - [ ] `uv run pytest -q` is green, with no tests skipped beyond the `live`/`llm` markers.
 - [ ] `uv run ruff check . && uv run ruff format --check .` are clean.
 - [ ] `uv run mypy src/atlas` is clean (strict for `core`, `risk`, `accounting`, `execution`).

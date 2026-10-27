@@ -21,7 +21,7 @@ Scheduling (Stage 61).
 ## Tasks
 1. Sync orchestrator with fake providers; resume-after-crash test.
 2. CLI commands + CliRunner tests.
-3. Live run (manual): backfill the S&P 500 + ETFs from 2015 and record timings in the handoff note.
+3. Live run, executed by the AI itself in the background (Project.md Rule 6): backfill the S&P 500 + ETFs from 2015, monitor it to completion, save the log under the stage's `artifacts/`, and record timings in the handoff note. If an API key is missing, ask the owner to add it to `.env`, then run it.
 
 ## Acceptance criteria
 - `atlas data status` shows ≥ 8 years of prices for ≥ 95% of current members, fundamentals for ≥ 90%, and all macro series.
