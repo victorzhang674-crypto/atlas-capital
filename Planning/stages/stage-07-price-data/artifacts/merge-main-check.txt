@@ -1,0 +1,35 @@
+# Stage 07 branch after merging main (8590186, Project.md Rule 6) · 2026-10-27
+$ git log --oneline -1
+a5e1b45 stage-07: merge main (Project.md Rule 6) into the stage branch
+
+$ uv run pytest -q
+727 passed, 2 deselected in 6.32s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+91 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 47 source files
+exit=0
+
+$ uv run pytest tests/unit/data -q   (brief's Verify)
+100 passed, 2 deselected in 1.61s
+exit=0
+
+$ uv run pytest tests/unit/data -m live -q -rs   (optional)
+SKIPPED [1] tests/unit/data/test_price_live.py:40: ALPACA_API_KEY_ID / ALPACA_API_SECRET_KEY not set
+1 passed, 1 skipped, 100 deselected in 14.41s
+exit=0
+
+$ make check
+exit=0
+All checks passed!
+91 files already formatted
+Success: no issues found in 47 source files
+727 passed, 2 deselected in 6.16s
