@@ -204,7 +204,7 @@ class Database:
             except BaseException:
                 con.execute("ROLLBACK")
                 raise
-        _log.info("audit.mirror", run_id=run_id, inserted=len(rows), total=len(events))
+        _log.info("audit.mirror", mirrored_run_id=run_id, inserted=len(rows), total=len(events))
         return len(rows)
 
     def close(self) -> None:

@@ -197,7 +197,7 @@ class Lake:
         )
         self._generation += 1
         result = WriteResult(table=name, mode=mode, rows=table.num_rows, partitions=written)
-        _log.info("lake.write", table=name, mode=mode, rows=result.rows, partitions=written)
+        _log.info("lake.write", table=name, write_mode=mode, rows=result.rows, partitions=written)
         return result
 
     def _check_meta(self, schema: TableSchema) -> TableMeta | None:

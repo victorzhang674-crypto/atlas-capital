@@ -1,5 +1,6 @@
 """Tests for the append-only DuckDB mirror of the audit log (Stage 06, task 5)."""
 
+import io
 import json
 from collections.abc import Iterator
 from datetime import date
@@ -10,6 +11,7 @@ import pytest
 
 from atlas.core.audit import AuditEvent, AuditLog, EventType, audit_path
 from atlas.core.errors import DataError
+from atlas.core.logging import configure_logging, reset_logging
 from atlas.core.run_context import run_context
 from atlas.core.storage import Database, Lake
 
@@ -64,6 +66,25 @@ def test_mirror_is_idempotent_and_incremental(tmp_lake: Lake, db: Database) -> N
     assert _count(db) == 5
     seqs = db.query("select seq from audit_events order by seq")["seq"].tolist()
     assert seqs == [0, 1, 2, 3, 4]
+
+
+def test_mirror_logs_one_info_line(tmp_lake: Lake, db: Database, tmp_path: Path) -> None:
+    with run_context() as ctx:
+        log = AuditLog(audit_path(tmp_lake.root, ctx.run_id))
+        _record(log, 3)
+    log_file = tmp_path / "atlas.log"
+    configure_logging(log_file=log_file, console=io.StringIO())
+    try:
+        with run_context() as mirroring:  # e.g. a later job mirroring an earlier run's log
+            db.mirror_audit_log(log.path)
+    finally:
+        reset_logging()
+    lines = [json.loads(line) for line in log_file.read_text(encoding="utf-8").splitlines()]
+    storage = [line for line in lines if line["logger"].startswith("atlas.core.storage")]
+    assert [(line["event"], line["level"]) for line in storage] == [("audit.mirror", "info")]
+    assert storage[0]["run_id"] == mirroring.run_id
+    assert storage[0]["mirrored_run_id"] == ctx.run_id
+    assert (storage[0]["inserted"], storage[0]["total"]) == (3, 3)
 
 
 def test_mirror_keeps_runs_apart(tmp_lake: Lake, db: Database) -> None:

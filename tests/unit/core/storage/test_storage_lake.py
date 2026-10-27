@@ -1,5 +1,6 @@
 """Tests for the lake layout and partitioned Parquet write/read (Stage 06, task 2)."""
 
+import io
 import json
 import os
 from datetime import UTC, date, datetime
@@ -11,7 +12,9 @@ import pytest
 from storage_helpers import PricesFrame, make_prices_schema
 
 from atlas.core.errors import DataError
+from atlas.core.logging import configure_logging, reset_logging
 from atlas.core.pit import AsOf, pit_filter
+from atlas.core.run_context import run_context
 from atlas.core.storage import Column, ColumnType, Lake, SchemaRegistry, TableSchema
 
 _DAYS = (date(2024, 1, 2), date(2024, 1, 3), date(2024, 1, 4))
@@ -209,11 +212,27 @@ def test_read_output_works_with_pit_filter(lake: Lake, prices_frame: PricesFrame
     assert sorted(set(visible["date"])) == [date(2024, 1, 2), date(2024, 1, 3)]
 
 
-def test_write_bumps_generation(lake: Lake, prices_frame: PricesFrame) -> None:
-    start = lake.generation
-    lake.write_table("prices_daily", prices_frame(days=_DAYS[:1]))
-    lake.write_table("prices_daily", prices_frame(days=_DAYS[1:2]))
+def test_write_logs_and_bumps_generation(
+    lake: Lake, prices_frame: PricesFrame, tmp_path: Path
+) -> None:
+    log_file = tmp_path / "atlas.log"
+    configure_logging(log_file=log_file, console=io.StringIO())
+    try:
+        start = lake.generation
+        with run_context() as ctx:
+            lake.write_table("prices_daily", prices_frame(days=_DAYS[:1]))
+            lake.write_table("prices_daily", prices_frame(days=_DAYS[1:2]))
+    finally:
+        reset_logging()
     assert lake.generation == start + 2
+    lines = [json.loads(line) for line in log_file.read_text(encoding="utf-8").splitlines()]
+    storage = [line for line in lines if line["logger"].startswith("atlas.core.storage")]
+    assert [(line["event"], line["level"]) for line in storage] == [("lake.write", "info")] * 2
+    for line in storage:
+        assert line["run_id"] == ctx.run_id
+        assert line["table"] == "prices_daily"
+        assert line["write_mode"] == "append"
+        assert line["rows"] == len(prices_frame(days=_DAYS[:1]))
 
 
 def test_failed_validation_writes_nothing(lake: Lake, prices_frame: PricesFrame) -> None:

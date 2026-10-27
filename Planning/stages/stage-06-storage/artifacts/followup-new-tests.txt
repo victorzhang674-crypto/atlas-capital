@@ -1,0 +1,16 @@
+$ uv run pytest -q -s -W error tests/unit/core/storage/test_storage_lake.py::test_write_logs_and_bumps_generation tests/unit/core/storage/test_storage_audit_mirror.py::test_mirror_logs_one_info_line tests/unit/core/storage/test_storage_upsert.py::test_upsert_one_million_rows_under_five_seconds -v
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-6-planning-implementation-64e333
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, platformdirs-4.13.5
+collected 3 items
+
+tests/unit/core/storage/test_storage_lake.py .
+tests/unit/core/storage/test_storage_audit_mirror.py .
+tests/unit/core/storage/test_storage_upsert.py 
+1M-row upsert into a 1M-row table (500 partitions): 0.69 s
+.
+
+============================== 3 passed in 1.82s ===============================
+exit=0

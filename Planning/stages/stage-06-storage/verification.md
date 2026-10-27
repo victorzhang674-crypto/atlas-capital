@@ -26,4 +26,13 @@ Fill this in **only** with output from commands actually run in this stage's fin
   - In-scope items, each covered: lake layout (`test_lake_creates_layout`); `Lake.write_table`/`read_table`/`has_table`/`table_schema` (`test_storage_lake.py`); schema registry with required `available_at` (`test_storage_schema.py`); `Database` views and `query` (`test_storage_db.py`, incl. `test_views_are_not_persisted`, `test_views_see_new_writes`, `test_get_database_is_one_per_process`); upsert (`test_storage_upsert.py`); schema version per table in `curated/_meta.json` with migrations (`test_first_write_records_version`, `test_migrate_applies_chain`, `test_version_mismatch_blocks_read_and_write`, `test_schema_change_without_version_bump_fails`); `audit_events` append-only mirror (`test_storage_audit_mirror.py`, incl. `test_audit_events_is_append_only_via_query`, `test_mirror_detects_rewritten_history`).
 - Waivers: none
 
+#### Follow-up after the post-DONE audit — 2026-10-27
+Owner-requested follow-up (see worklog, "Post-DONE audit"): log-line tests added and two clobbered log keys fixed (`write_mode`, `mirrored_run_id`). Re-run in this chat on the final working tree (base commit `10e7394`):
+- `uv run pytest -q` → 627 passed, 0 failed, 0 deselected, exit 0 (626 + `test_mirror_logs_one_info_line`; `test_write_bumps_generation` renamed `test_write_logs_and_bumps_generation`) · raw: [artifacts/followup-pytest.txt](artifacts/followup-pytest.txt)
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 74 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 40 source files · raw: [artifacts/followup-lint-type.txt](artifacts/followup-lint-type.txt)
+- `uv run pytest tests/unit/core/storage -q` (brief's Verify) → 115 passed, exit 0 · raw: [artifacts/followup-verify.txt](artifacts/followup-verify.txt)
+- `make check` → lint, format check, mypy clean; 627 passed; exit 0 · raw: [artifacts/followup-make-check.txt](artifacts/followup-make-check.txt)
+- New log tests + 1M-row upsert, `-v -s -W error` → 3 passed; `1M-row upsert into a 1M-row table (500 partitions): 0.69 s` (< 5 s) · raw: [artifacts/followup-new-tests.txt](artifacts/followup-new-tests.txt)
+- Both acceptance criteria still hold: the 1M-row upsert passes in 0.69 s; all tests green (627 passed, `make check` exit 0).
+
 **Result:** ALL CRITERIA VERIFIED

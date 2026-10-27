@@ -1,0 +1,9 @@
+$ uv run ruff check .
+All checks passed!
+exit=0
+$ uv run ruff format --check .
+74 files already formatted
+exit=0
+$ uv run mypy src/atlas
+Success: no issues found in 40 source files
+exit=0
