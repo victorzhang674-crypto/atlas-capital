@@ -22,7 +22,7 @@ If the AI cannot read these files, it stops and tells the owner.
 "Done" is a factual claim. It may be made **only after verification has actually been run in the current chat and has passed**.
 
 ### 1.1 What counts as verification
-- The commands are **actually executed** in this chat: the stage brief's `## Verify` commands, `uv run pytest -q`, `uv run ruff check .`, `uv run ruff format --check .` and `uv run mypy src/atlas`.
+- The commands are **actually executed by the AI** in this chat (Rule 6): the stage brief's `## Verify` commands, `uv run pytest -q`, `uv run ruff check .`, `uv run ruff format --check .` and `uv run mypy src/atlas`. Output the owner ran and pasted counts only under a Rule 6 exception, labelled as such.
 - Their **real output has been read** and shows success (exit code 0, tests passed, no errors).
 - Each **acceptance criterion** in the stage brief has been checked one by one against evidence: a test name, a command output, or a file that exists.
 
@@ -148,6 +148,28 @@ When a collision is found:
 
 ---
 
+## Rule 6 — Run terminal commands yourself; never hand them to the owner
+
+Whenever a task needs something run in a terminal, **the AI runs it itself**, automatically, with its own tools, and reads the output. It does not ask the owner to run commands, paste output, or "check manually".
+
+1. **This covers everything runnable:** installing dependencies, tests, lint/format/type checks, builds, data syncs and backfills, migrations, CLI commands, git operations the stage calls for, starting a server or the dashboard and checking it responds, and `live` / `llm` tests when the keys are already in the environment.
+2. **Long jobs** (backfills, backtests) are run by the AI in the background, and their completion and output are checked by the AI. They are not handed off with "run this and tell me".
+3. **Visual checks** (dashboard pages, reports, charts) are done by the AI with its browser and screenshot tools, not by asking the owner to look.
+4. **Try first, never predict.** The AI attempts the command and reads the actual error before concluding it cannot run it.
+5. **Only these exceptions allow involving the owner:**
+   - **Technically impossible for the AI:** blocked by the sandbox or a permission it does not have (for example opening apps with `open`, binding a local port when that is disabled), an interactive sign-in, 2FA, a password or `sudo` prompt, or a GUI action its tools cannot perform.
+   - **Missing owner secrets:** an API key or credential that is not in the environment. The AI never asks the owner to type secrets into chat; it asks them to add the key to `.env`, then runs the command itself.
+   - **Needs approval first:** destructive or irreversible actions (deleting data, rewriting git history, force-pushing, publishing). The AI asks, and once approved, **it runs the command itself**.
+   - **Forbidden outright:** anything Rule 5 prohibits (real-money or live endpoints). These are never run by anyone on the AI's instruction.
+6. **When an exception applies,** the AI must:
+   - say exactly what blocked it (quote the error);
+   - give the owner the single exact command in its own fenced `bash` block, plus what output to expect;
+   - keep the affected task or criterion `BLOCKED` until real output is available;
+   - if the owner pastes the full output in chat, record it as evidence labelled **"run by owner — AI could not run: <reason>"**. This is acceptable only for commands the AI genuinely could not run.
+7. Sentences like "please run…", "you can verify by…" or "check that it works on your machine" are not allowed in place of the AI doing it, unless one of the exceptions above applies and is stated.
+
+---
+
 ## Quick checklist (copy into each stage chat)
 
 - [ ] Read Project.md in full and stated the current stage and status
@@ -155,6 +177,7 @@ When a collision is found:
 - [ ] Copied `Planning/stages/_template/` into the stage folder; read `brief.md`; wrote `plan.md`
 - [ ] Executed tasks in order, verifying each one, and logged each in `worklog.md`
 - [ ] Checked collisions against the overall plan; logged any in the Decisions log
+- [ ] Ran every command myself (Rule 6); any owner-run command has a stated exception and is labelled
 - [ ] Ran the full verification in this chat; output read and saved to `artifacts/`; all criteria evidenced
 - [ ] Wrote `verification.md` and the summary in `PROGRESS.md`, then ticked the box and set `DONE`
 - [ ] Committed `stage-NN: <title>`
