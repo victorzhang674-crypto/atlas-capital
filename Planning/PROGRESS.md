@@ -6,7 +6,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 - **Current stage:** 07 — Price data providers (yfinance, Alpaca) — `NOT STARTED`
 - **Stages done:** 6 / 66
-- **Last updated:** 2026-10-27 (Stage 06 DONE; audit follow-up)
+- **Last updated:** 2026-10-27 (Stage 06 DONE; audit follow-up; merged into main)
 
 ## Stage checklist
 
@@ -173,6 +173,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-27 | 06 | Self-review fix pass: views now also follow registry changes (bug: a table registered after the database opened had no view); bool partition names also handle `numpy.bool_`; `Lake` docstring states one writer at a time. Two items deferred to Backlog (multi-partition atomicity; SELECT table functions can read any file) | See [stage-06 worklog](stages/stage-06-storage/worklog.md) |
 | 2026-10-27 | 06 | Approved: Stage 06 has two commits, `10e7394 stage-06: Storage layer (DuckDB + Parquet lake)` and `stage-06: audit follow-up (log assertions, log-key fix)`, against the Definition of Done's "one git commit" per stage. The follow-up adds the plan's missing log-line test, the log-key fix it exposed and the post-DONE audit records. Owner's words: "Yes: add an assertion that write_table and mirror_audit_log log one info line, and record the audit findings in the Stage 06 worklog, as one follow-up commit on the stage branch." | Found by the post-DONE audit; owner decision in chat; see [stage-06 worklog](stages/stage-06-storage/worklog.md) |
 | 2026-10-27 | 06 | Log keys renamed: `lake.write` logs the write mode as `write_mode` (was `mode`) and `audit.mirror` logs the mirrored run as `mirrored_run_id` (was `run_id`), because Stage 03's `add_run_context` overwrites `mode`/`run_id`/`as_of`/`stage` with the current run's values. Found by the new log tests (red first: `'dev' == 'append'`; `KeyError: 'mirrored_run_id'`) | Bug fix test-first; general clash → Backlog; see [stage-06 worklog](stages/stage-06-storage/worklog.md) |
+| 2026-10-27 | 06 | Approved: a third, records-only Stage 06 commit, `stage-06: merged-main check records` (merged-main evidence lines, this row, a worklog entry), after `main` was fast-forwarded to `b640a80`. Owner's words: "Fast-forward main to the Stage 06 branch and re-run the checks on main, as for Stages 02–05." | Same procedure as Stage 05's follow-up records; owner request in chat |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -371,6 +372,7 @@ Full block and raw output: [verification.md](stages/stage-06-storage/verificatio
   - Storage tests verbose (`-v -s -W error`) → 114 PASSED, no warnings; `1M-row upsert into a 1M-row table (500 partitions): 0.60 s`
   - Docstring check → 51 public names, none missing
   - Follow-up after the post-DONE audit (base `10e7394`): `uv run pytest -q` → 627 passed; `ruff check` → All checks passed!; `ruff format --check` → 74 files already formatted; `mypy src/atlas` → Success (40 files); brief's Verify → 115 passed; `make check` → exit 0; new log tests + 1M-row upsert (`-W error`) → 3 passed, 0.69 s · raw: [artifacts/followup-*.txt](stages/stage-06-storage/artifacts/)
+  - On merged `main` (`b640a80`, fast-forward from `edb554d`): `uv run pytest -q` → 627 passed; `ruff check` → All checks passed!; `ruff format --check` → 74 files already formatted; `mypy src/atlas` → Success (40 files); brief's Verify → 115 passed; `make check` → exit=0; checkout clean before and after · raw: [artifacts/merged-main-check.txt](stages/stage-06-storage/artifacts/merged-main-check.txt)
 - Acceptance criteria:
   - [x] 1M-row synthetic upsert completes in under 5 s locally — evidence: `test_upsert_one_million_rows_under_five_seconds` PASSED (asserts `< 5.0` s; measured 0.60 s; earlier 0.59/0.61/0.58 s)
   - [x] All tests green — evidence: `uv run pytest -q` 626 passed, `make check` exit 0, brief's Verify 114 passed

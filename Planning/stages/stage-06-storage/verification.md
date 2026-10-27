@@ -34,5 +34,6 @@ Owner-requested follow-up (see worklog, "Post-DONE audit"): log-line tests added
 - `make check` → lint, format check, mypy clean; 627 passed; exit 0 · raw: [artifacts/followup-make-check.txt](artifacts/followup-make-check.txt)
 - New log tests + 1M-row upsert, `-v -s -W error` → 3 passed; `1M-row upsert into a 1M-row table (500 partitions): 0.69 s` (< 5 s) · raw: [artifacts/followup-new-tests.txt](artifacts/followup-new-tests.txt)
 - Both acceptance criteria still hold: the 1M-row upsert passes in 0.69 s; all tests green (627 passed, `make check` exit 0).
+- On merged `main` (`b640a80`, fast-forward from `edb554d`; run in the owner's Terminal panel): `uv run pytest -q` → 627 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 74 files already formatted; `mypy src/atlas` → Success (40 files); `uv run pytest tests/unit/core/storage -q` → 115 passed; `make check` → exit=0; checkout clean before and after · raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt) (script: [artifacts/merged-main-check.sh](artifacts/merged-main-check.sh))
 
 **Result:** ALL CRITERIA VERIFIED

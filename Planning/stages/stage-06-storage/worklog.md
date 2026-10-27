@@ -71,3 +71,20 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - Final runs (raw: `artifacts/followup-*.txt`): `uv run pytest -q` → 627 passed, exit 0; `ruff check .` → All checks passed!; `ruff format --check .` → 74 files already formatted; `mypy src/atlas` → Success (40 files); brief's Verify `uv run pytest tests/unit/core/storage -q` → 115 passed; `make check` → exit 0; the two new tests plus the 1M-row upsert with `-W error` → 3 passed, upsert 0.69 s.
 - Code files changed: `src/atlas/core/storage/lake.py`, `src/atlas/core/storage/db.py`; tests changed: `tests/unit/core/storage/test_storage_lake.py`, `tests/unit/core/storage/test_storage_audit_mirror.py`.
 - Commit: `stage-06: audit follow-up (log assertions, log-key fix)` on the stage branch (not merged into `main`).
+
+## 2026-10-27 — Fast-forward main and merged-main check
+- Owner asked: "Fast-forward main to the Stage 06 branch and re-run the checks on main, as for Stages 02–05."
+- `main` was at `edb554d`, the base of this branch, so a fast-forward was possible with no rebase.
+- Ran in the owner's Terminal panel, because the sandbox cannot write the main checkout: `artifacts/merged-main-check.sh` → `artifacts/merged-main-check.txt` (script exit 0).
+  - `git merge --ff-only` edb554d..b640a80.
+  - `uv sync --group dev` installed duckdb 2.0.0 and pyarrow 26.0.0 in the main checkout.
+  - Then, on merged `main`:
+    - `uv run pytest -q` → 627 passed.
+    - `ruff check .` → All checks passed!
+    - `ruff format --check .` → 74 files already formatted.
+    - `mypy src/atlas` → Success (40 files).
+    - Brief's Verify (`uv run pytest tests/unit/core/storage -q`) → 115 passed.
+    - `make check` → exit 0.
+  - `git status --short` was empty before and after.
+  - The full-suite runs end with the known `nanobind: leaked …` shutdown lines (Backlog); exit codes were 0.
+- Did: records-only commit `stage-06: merged-main check records` (this entry, the verification.md and PROGRESS.md evidence lines, a Decisions log row), then fast-forward `main` to it.

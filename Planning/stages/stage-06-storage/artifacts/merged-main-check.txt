@@ -1,0 +1,180 @@
+# Stage 06 follow-up: fast-forward + verification on merged main · 2026-10-27 10:15 EDT
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/stage-6-planning-implementation-64e333
+Updating edb554d..b640a80
+Fast-forward
+ Planning/PROGRESS.md                               |  60 ++-
+ .../stages/stage-06-storage/artifacts/.gitkeep     |   0
+ .../stage-06-storage/artifacts/docstrings.py       |  20 +
+ .../stage-06-storage/artifacts/docstrings.txt      |   4 +
+ .../artifacts/followup-lint-type.txt               |   9 +
+ .../artifacts/followup-make-check.txt              |  40 ++
+ .../artifacts/followup-new-tests.txt               |  16 +
+ .../stage-06-storage/artifacts/followup-pytest.txt |  33 ++
+ .../stage-06-storage/artifacts/followup-verify.txt |   5 +
+ .../artifacts/gate-check-pytest.txt                |  14 +
+ .../stage-06-storage/artifacts/lint-type.txt       |  11 +
+ .../stage-06-storage/artifacts/make-check.txt      |  40 ++
+ .../stages/stage-06-storage/artifacts/pytest.txt   |  33 ++
+ .../artifacts/stage-tests-verbose.txt              | 129 ++++++
+ .../stages/stage-06-storage/artifacts/verify.txt   |   5 +
+ Planning/stages/stage-06-storage/plan.md           | 215 +++++++++
+ Planning/stages/stage-06-storage/verification.md   |  38 ++
+ Planning/stages/stage-06-storage/worklog.md        |  73 +++
+ pyproject.toml                                     |   9 +-
+ src/atlas/core/storage/__init__.py                 |  38 ++
+ src/atlas/core/storage/db.py                       | 253 +++++++++++
+ src/atlas/core/storage/lake.py                     | 501 +++++++++++++++++++++
+ src/atlas/core/storage/meta.py                     | 114 +++++
+ src/atlas/core/storage/schema.py                   | 341 ++++++++++++++
+ tests/conftest.py                                  |   7 +
+ tests/unit/core/storage/conftest.py                |  25 +
+ tests/unit/core/storage/storage_helpers.py         |  50 ++
+ .../unit/core/storage/test_storage_audit_mirror.py | 166 +++++++
+ tests/unit/core/storage/test_storage_db.py         | 193 ++++++++
+ tests/unit/core/storage/test_storage_lake.py       | 295 ++++++++++++
+ tests/unit/core/storage/test_storage_meta.py       | 195 ++++++++
+ tests/unit/core/storage/test_storage_schema.py     | 314 +++++++++++++
+ tests/unit/core/storage/test_storage_upsert.py     | 124 +++++
+ uv.lock                                            |  34 ++
+ 34 files changed, 3397 insertions(+), 7 deletions(-)
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/.gitkeep
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/docstrings.py
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/docstrings.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/followup-lint-type.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/followup-make-check.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/followup-new-tests.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/followup-pytest.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/followup-verify.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/gate-check-pytest.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/lint-type.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/pytest.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/stage-tests-verbose.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/verify.txt
+ create mode 100644 Planning/stages/stage-06-storage/plan.md
+ create mode 100644 Planning/stages/stage-06-storage/verification.md
+ create mode 100644 Planning/stages/stage-06-storage/worklog.md
+ create mode 100644 src/atlas/core/storage/__init__.py
+ create mode 100644 src/atlas/core/storage/db.py
+ create mode 100644 src/atlas/core/storage/lake.py
+ create mode 100644 src/atlas/core/storage/meta.py
+ create mode 100644 src/atlas/core/storage/schema.py
+ create mode 100644 tests/unit/core/storage/conftest.py
+ create mode 100644 tests/unit/core/storage/storage_helpers.py
+ create mode 100644 tests/unit/core/storage/test_storage_audit_mirror.py
+ create mode 100644 tests/unit/core/storage/test_storage_db.py
+ create mode 100644 tests/unit/core/storage/test_storage_lake.py
+ create mode 100644 tests/unit/core/storage/test_storage_meta.py
+ create mode 100644 tests/unit/core/storage/test_storage_schema.py
+ create mode 100644 tests/unit/core/storage/test_storage_upsert.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Desktop/Trading Agents · branch main · HEAD b640a80
+
+$ uv sync --group dev   (new runtime deps: duckdb, pyarrow)
+ ~ atlas-capital==0.1.0 (from file:///Users/zzjsmacbookair/Desktop/Trading%20Agents)
+ + duckdb==2.0.0
+ + pyarrow==26.0.0
+exit=0
+
+$ uv run pytest -q
+   Building atlas-capital @ file:///Users/zzjsmacbookair/Desktop/Trading%20Agents
+      Built atlas-capital @ file:///Users/zzjsmacbookair/Desktop/Trading%20Agents
+Uninstalled 1 package in 0.51ms
+Installed 1 package in 1ms
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+........................................................................ [ 57%]
+........................................................................ [ 68%]
+........................................................................ [ 80%]
+........................................................................ [ 91%]
+...................................................                      [100%]
+627 passed in 4.13s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "register"
+ - leaked function ""
+ - leaked function "_submit"
+ - leaked function "cursor"
+ - leaked function "extract_statements"
+ - leaked function "fetchmany"
+ - leaked function "get_profiling_information"
+ - leaked function "_register_collection"
+ - leaked function "remove_function"
+ - leaked function "_register_source"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+74 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 40 source files
+exit=0
+
+$ uv run pytest tests/unit/core/storage -q
+........................................................................ [ 62%]
+...........................................                              [100%]
+115 passed in 2.11s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+74 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 40 source files
+uv run pytest -q
+........................................................................ [ 11%]
+........................................................................ [ 22%]
+........................................................................ [ 34%]
+........................................................................ [ 45%]
+........................................................................ [ 57%]
+........................................................................ [ 68%]
+........................................................................ [ 80%]
+........................................................................ [ 91%]
+...................................................                      [100%]
+627 passed in 3.91s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_register_values"
+ - leaked function "_catalog_version"
+ - leaked function ""
+ - leaked function "fetchdf"
+ - leaked function "install_extension"
+ - leaked function "_register_source"
+ - leaked function "get_profiling_information"
+ - leaked function "_register_collection"
+ - leaked function ""
+ - leaked function "tf"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
