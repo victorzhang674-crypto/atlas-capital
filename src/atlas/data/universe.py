@@ -270,7 +270,8 @@ class Universe:
 
     `config` defaults to `AtlasConfig()` (pass the run's loaded config); `calendar` to
     `TradingCalendar(config=config.calendar)`. Membership read from `index_membership` is
-    cached and re-read after any write made through the same `Lake` object.
+    cached and re-read whenever the table's files change on disk, whichever `Lake` object or
+    process wrote them (each write replaces a file atomically, so inode, mtime or size move).
     """
 
     def __init__(
@@ -286,7 +287,7 @@ class Universe:
             calendar if calendar is not None else TradingCalendar(config=self._cfg.calendar)
         )
         self._intervals: dict[str, pd.DataFrame] = {}
-        self._generation = lake.generation
+        self._files_state: tuple[tuple[str, int, int, int], ...] | None = None
 
     def _as_of(self, as_of: date | AsOf) -> AsOf:
         if isinstance(as_of, AsOf):
@@ -302,10 +303,19 @@ class Universe:
             raise ValueError(f"unknown universe {name!r}; known: {known}")
         return universes[name]
 
+    def _membership_files_state(self) -> tuple[tuple[str, int, int, int], ...]:
+        """Path, inode, mtime (ns) and size of every `index_membership` file."""
+        state = []
+        for path in self._lake.table_files(INDEX_MEMBERSHIP.name):
+            st = path.stat()
+            state.append((str(path), st.st_ino, st.st_mtime_ns, st.st_size))
+        return tuple(state)
+
     def _index_intervals(self, index_id: str) -> pd.DataFrame:
-        if self._lake.generation != self._generation:
+        state = self._membership_files_state()
+        if state != self._files_state:
             self._intervals.clear()
-            self._generation = self._lake.generation
+            self._files_state = state
         if index_id not in self._intervals:
             frame = self._lake.read_table(
                 INDEX_MEMBERSHIP.name, filters=[("index_id", "=", index_id)]

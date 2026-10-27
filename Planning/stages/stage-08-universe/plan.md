@@ -66,7 +66,7 @@ None with the roadmap or the design spec. Points checked:
 | `config/fund.yaml` (modify) | `data.tradable`, `data.reference` with comments |
 | `config/ticker_changes.yaml` (create) | manual renames with sources |
 | `src/atlas/core/types/instruments.py` (modify) | `Instrument.name/first_trade_date/last_trade_date`, `is_etf` |
-| `src/atlas/data/reference.py` (create) | `INSTRUMENTS`, `TickerChange`, `TickerMap`, `load_ticker_map`, `parse_constituents`, `parse_changes`, `build_instruments`, `instruments_frame`, `trade_date_ranges`, `fetch_sp500_pages` |
+| `src/atlas/data/reference.py` (create) | `INSTRUMENTS`, `TickerChange`, `TickerMap`, `load_ticker_map`, `parse_constituents`, `parse_changes`, `build_instruments`, `instruments_frame`, `trade_date_ranges`, `fetch_sp500_pages` *(also built, not planned here; audit A4: `read_instruments`, `TickerMap.changes`; and `read_config_file` in `atlas.core.config`)* |
 | `src/atlas/data/universe.py` (create) | `INDEX_MEMBERSHIP`, `SP500_INCEPTION`, `MembershipAnomaly`, `MembershipBuild`, `build_membership`, `ReferenceReport`, `refresh_universe_reference`, `Universe` |
 | `docs/data-limitations.md` (create) | residual survivorship bias and other limits |
 | `tests/fixtures/universe/` (create) | `wikipedia_sp500_constituents.html`, `wikipedia_sp500_changes.html`, `README.md` |

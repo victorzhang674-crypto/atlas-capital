@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-8-planning-implementation-fba07a/.venv.nosync/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-8-planning-implementation-fba07a
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 64 items / 63 deselected / 1 selected
+
+tests/unit/data/test_universe.py::test_live_wikipedia_pages_parse PASSED [100%]
+
+======================= 1 passed, 63 deselected in 6.10s =======================

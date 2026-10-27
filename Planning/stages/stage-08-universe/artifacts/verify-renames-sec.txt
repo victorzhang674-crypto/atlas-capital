@@ -1,0 +1,54 @@
+
+=== WLP -> ANTM  configured effective 2014-12-03
+  no matching sentence found in the first hits
+
+=== UA -> UAA  configured effective 2016-04-08
+  no matching sentence found in the first hits
+
+=== TSO -> ANDV  configured effective 2017-08-01
+  no matching sentence found in the first hits
+
+=== DLPH -> APTV  configured effective 2017-12-05
+  8-K filed 2017-11-15 0001193125-17-344150 (Delphi Technologies PLC  (CIK 0001707092))
+    > We have received authorization to list our ordinary shares on The New York Stock Exchange (“NYSE”) under the symbol “DLPH,” and Aptiv will change its ticker symbol to “APTV.
+    > Following the separation, we will be an independent public company and intend to list our shares on the NYSE under the symbol “DLPH,” and Aptiv will change its ticker symbol to “APTV.
+  8-K filed 2017-11-15 0001193125-17-344144 (Delphi Automotive PLC  (APTV)  (CIK 0001521332))
+    > We have received authorization to list our ordinary shares on The New York Stock Exchange (“NYSE”) under the symbol “DLPH,” and Aptiv will change its ticker symbol to “APTV.
+    > Following the separation, we will be an independent public company and intend to list our shares on the NYSE under the symbol “DLPH,” and Aptiv will change its ticker symbol to “APTV.
+
+=== PCLN -> BKNG  configured effective 2018-02-27
+  no matching sentence found in the first hits
+
+=== LUK -> JEF  configured effective 2018-05-24
+  no matching sentence found in the first hits
+
+=== KORS -> CPRI  configured effective 2019-01-02
+  8-K filed 2018-12-31 0001193125-18-362322 (Capri Holdings Ltd  (CPRI)  (CIK 0001530721))
+    > 1 COMPLETES ACQUISITION OF VERSACE LONDON – December 31, 2018 – Capri Holdings Limited, a global fashion luxury group, announced today that it has changed its name from Michael Kors Holdings Limited (NYSE: KORS), and beginning on January 2, 2019, its New York Stock Exchange ticker symbol will be CPRI.
+
+=== HRS -> LHX  configured effective 2019-07-01
+  8-K filed 2019-07-01 0001140361-19-012139 (L3HARRIS TECHNOLOGIES, INC. /DE/  (LHX)  (CIK 0000202058))
+    > Shares of Harris common stock, which traded on the NYSE under the ticker symbol “HRS”, will begin trading today under the ticker symbol “LHX”.
+  8-K filed 2019-07-01 0001140361-19-012139 (L3HARRIS TECHNOLOGIES, INC. /DE/  (LHX)  (CIK 0000202058))
+    > 4 In connection with the Merger, the shares of L3Harris Common Stock, which previously traded under ticker symbol “HRS” on the New York Stock Exchange, began trading under ticker symbol “LHX.
+
+=== JEC -> J  configured effective 2019-12-09
+  8-K filed 2019-11-25 0000052988-19-000066 (JACOBS ENGINEERING GROUP INC /DE/  (J)  (CIK 0000052988))
+    > 01 Other Events On November 24, 2019, the Company issued a press release announcing the Company’s ticker symbol change to “J” from “JEC”.
+    > 1 Press release dated November 24, 2019 announcing the Company's ticker symbol change to "J" from "JEC" Pursuant to the requirements of the Securities Exchange Act of 1934, the Registrant has duly caused this report to be signed on its behalf by the undersigned hereunto duly authorized.
+  8-K filed 2019-11-25 0000052988-19-000066 (JACOBS ENGINEERING GROUP INC /DE/  (J)  (CIK 0000052988))
+    > 1 Exhibit bazadebezolkohpepadr="564065914" Press Release FOR IMMEDIATE RELEASE November 24, 2019 Jacobs Announces New NYSE Stock Ticker Symbol; Launching New Global Brand That Reflects Transformation DALLAS – Jacob s (NYSE:JEC) announces that it will begin trading on the NYSE under the updated ticker symbol “J” on Dec.
+
+=== IR -> TT  configured effective 2020-03-02
+  no matching sentence found in the first hits
+
+=== COG -> CTRA  configured effective 2021-10-04
+  8-K filed 2021-10-01 0001104659-21-122041 (Coterra Energy Inc.  (CTRA)  (CIK 0000858470))
+    > Coterra’s common stock will trade on the New York Stock Exchange under the ticker symbol "CTRA" at the open of trading on October 4, 2021 and under the symbol “COG” until then.
+
+=== FB -> META  configured effective 2022-06-09
+  8-K filed 2022-05-31 0001326801-22-000070 (Meta Platforms, Inc.  (META)  (CIK 0001326801))
+    > (Nasdaq: FB) today announced that its Class A common stock will begin trading on NASDAQ under the ticker symbol 'META' prior to market open on June 9, 2022.
+
+=== ANTM -> ELV  configured effective 2022-06-28
+  no matching sentence found in the first hits

@@ -1,0 +1,12 @@
+KILLED (test failed)     members ignore start dates  [1 failed in 0.59s]
+KILLED (test failed)     tradable uses every stored bar (no pit_filter, no guard)  [1 failed in 0.59s]
+KILLED (test failed)     tradable returns members when no prices exist  [1 failed in 0.49s]
+KILLED (test failed)     duplicate constituent symbols accepted  [1 failed in 0.46s]
+KILLED (test failed)     missing constituent column accepted  [1 failed in 0.56s]
+KILLED (test failed)     changes header not checked  [1 failed in 0.49s]
+KILLED (test failed)     ETF that is an index member accepted  [1 failed in 0.44s]
+KILLED (test failed)     bad log ticker not skipped  [1 failed in 0.45s]
+SURVIVED (test passed)   members_on empty shortcut removed (expected equivalent: same result)  [1 passed in 0.41s]
+KILLED (test failed)     tradable empty-members shortcut removed (needed: else the calendar is consulted)  [1 failed in 0.50s]
+
+10 mutations; unexpected survivors or setup errors: 0

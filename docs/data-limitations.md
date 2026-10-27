@@ -29,14 +29,18 @@ so a 2019 backtest sees AIV, CELG, ETFC, …, not today's list), but not all of 
 4. **Source errors are kept visible, not fixed.** A row the reconstruction cannot apply
    (an added name that is not a member just after, a removed name that already is, a cell
    that is not a ticker) becomes a `MembershipAnomaly`, is logged as a warning and changes
-   nothing. In the recorded snapshot (2026-10-27) there are **12 anomalies, all dated before
-   2018-01-01** (a test pins this): mostly reused tickers and gaps before 2000.
+   nothing. In the recorded snapshot (2026-10-27) there are **13 anomalies, all dated before
+   2018-01-01** (a test pins this): mostly reused tickers and gaps before 2000, plus one
+   anachronism (the log writes Under Armour's class C shares, added 2016-04-08 as `UA.C`,
+   under their later ticker `UA`; so before 2016-12-07 the reconstruction gives the class A
+   line `UAA` a start of 2016-04-08 instead of 2014-05-01, and `UA` a start of 1957).
 5. **Ticker identity.** An instrument is identified by its latest ticker (FB is META in every
-   year). Renames come from the manual list `config/ticker_changes.yaml` (21 entries, each
+   year). Renames come from the manual list `config/ticker_changes.yaml` (22 entries, each
    with its source); a rename missing from it splits one company into two names, each a
-   member for its own period (still correct membership, but two price histories). Several
-   effective dates there are marked `manual` and were not re-checked against a primary
-   source. **Reused tickers** (the same ticker for two companies: DD for E.I. du Pont and for
+   member for its own period (still correct membership, but two price histories). Every
+   date there comes from the change log, an older log revision or the company's SEC filings;
+   four (`sec-consistent`: WLP, TSO, IR, ANTM) are consistent with the filings, which do not
+   name the first trading day outright. **Reused tickers** (the same ticker for two companies: DD for E.I. du Pont and for
    today's DuPont, T for AT&T Corp. and SBC/AT&T Inc., AGN, Q) cannot be told apart without a
    permanent security id: before the reuse, both companies share one symbol (one anomaly
    each, all before 2018).

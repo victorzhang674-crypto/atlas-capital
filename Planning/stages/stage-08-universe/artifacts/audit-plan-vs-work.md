@@ -44,6 +44,8 @@ No finding affects the acceptance criteria or the verification result: A2 and A3
 | A3 | Fixed (records): Decisions-log row recording the filter interpretation |
 | A7 | Fixed test-first: `test_data_limitations_doc` now requires `first_trade_date` (red: AssertionError), then the doc paragraph was added (green) |
 | A8 | Fixed test-first, beyond the proposed backlog note: `test_refresh_keeps_other_indices` (red: the NDX rows were wiped, shape (0, 4) vs (2, 4)); `refresh_universe_reference` now replaces only the `SP500` rows (`_replace_index`) and upserts `instruments`; green, still idempotent |
-| A4, A5, A9 | Recorded as they are (no action proposed) |
+| A4 | Closed in the gap-closing follow-up: plan file table lists the unplanned public functions |
+| A5 | Closed in the gap-closing follow-up: [mutation-checks.txt](mutation-checks.txt), one injected bug per never-red test: 9 killed, 1 survivor that is a true equivalent (an empty-input shortcut in `members_on`); every source file restored byte-for-byte |
+| A9 | Closed in the gap-closing follow-up: all 13 `manual` dates checked against SEC filings ([verify-renames-sec.txt](verify-renames-sec.txt), [verify-renames-sec-followup.txt](verify-renames-sec-followup.txt)); 9 confirmed, 4 consistent, JEC→J and Under Armour corrected |
 | A6 | Resolved: the owner ran the fast-forward; merged-main checks green ([merged-main-check.txt](merged-main-check.txt)) |
 | A10 | Reported to the owner |

@@ -394,7 +394,9 @@ def test_refresh_writes_tables_and_is_idempotent(
         tmp_lake, constituents_html(), changes_html(), ticker_map=repo_ticker_map
     )
     assert report.renames == 8
-    assert len(report.anomalies) == 12
+    # 13 since the Under Armour dates were corrected from SEC filings: the log writes the
+    # class C shares added 2016-04-08 as "UA", a ticker they only took on 2016-12-07.
+    assert len(report.anomalies) == 13
     membership = tmp_lake.read_table("index_membership")
     instruments = tmp_lake.read_table("instruments")
     assert report.intervals == len(membership) == 877  # 858 symbols, some with re-entries
@@ -781,3 +783,33 @@ def test_empty_inputs_give_empty_lists(tmp_lake: Lake) -> None:  # A2
     universe = Universe(tmp_lake)
     assert universe.members(D(1999, 12, 31)) == []
     assert universe.tradable(D(1999, 12, 31)) == []
+
+
+def test_repo_renames_are_checked_against_sec_filings(repo_ticker_map: TickerMap) -> None:
+    # Every `manual` entry was checked against SEC filings (artifacts/verify-renames-sec*.txt).
+    assert [c.old for c in repo_ticker_map.changes if c.source == "manual"] == []
+    assert all(
+        c.source.startswith(("log", "rev ", "sec ", "sec-consistent "))
+        for c in repo_ticker_map.changes
+    )
+    # Corrected by Jacobs' 8-K 0000052988-19-000066: trading as J began 2019-12-10.
+    assert repo_ticker_map.historical("J", D(2019, 12, 9)) == "JEC"
+    assert repo_ticker_map.historical("J", D(2019, 12, 10)) == "J"
+    # Under Armour's 8-Ks 0001336917-16-000068 / -000116: class C traded as UA.C from
+    # 2016-04-08; on 2016-12-07 class A went UA -> UAA and class C UA.C -> UA.
+    assert repo_ticker_map.canonical("UA", D(2016, 12, 6)) == "UAA"
+    assert repo_ticker_map.canonical("UA", D(2016, 12, 7)) == "UA"
+    assert repo_ticker_map.canonical("UA.C", D(2016, 6, 1)) == "UA"
+    assert repo_ticker_map.historical("UA", D(2016, 6, 1)) == "UA.C"
+    assert repo_ticker_map.historical("UAA", D(2016, 6, 1)) == "UA"
+
+
+def test_members_see_writes_from_another_lake_object(tmp_lake: Lake) -> None:
+    # A sync job in another process writes through its own Lake object (Stage 14).
+    _membership(tmp_lake, ["A"])
+    universe = Universe(tmp_lake)
+    assert universe.members(D(2020, 1, 2)) == ["A"]
+    writer = Lake(tmp_lake.root, registry=tmp_lake.registry.copy())
+    _membership(writer, ["B"])
+    assert tmp_lake.generation == 1  # this Lake object made only the first write
+    assert universe.members(D(2020, 1, 2)) == ["B"]
