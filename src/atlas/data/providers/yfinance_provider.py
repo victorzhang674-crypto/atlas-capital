@@ -9,9 +9,18 @@ yahoo * F(d), where F(d) is the product of the ratios of all splits with ex-date
 
 Requests are batched (`batch_size` symbols per `yf.download`), throttled and retried (see
 `PriceDataConfig`). Yahoo pads a symbol it has no data for (delisted, unknown) with NaN rows;
-such rows are dropped, so the symbol is simply absent from the result. Downloads and split
-histories are memoised per instance: `fetch_actions` after `fetch_daily` on the same window
-makes no new request.
+such rows are dropped, so the symbol is simply absent from the result. A symbol with bars but
+no split history (`yf.Ticker(s).splits` is `None`) is also left out, with a
+`prices.no_split_history` warning: its raw prices cannot be rebuilt, and the rest of the batch
+is still served. Downloads and split histories are memoised per instance: `fetch_actions`
+after `fetch_daily` on the same window makes no new request.
+
+Error boundary: yfinance signals vendor trouble with many exception types (HTTP, rate-limit,
+JSON, its own errors), so *any* exception raised inside `yf.download` / `Ticker.splits` is
+retried and, when retries run out, raised as `DataError` chained to the original (`__cause__`).
+That includes a programming error in the call itself (say a keyword yfinance renamed), which
+therefore shows up as a failed fetch and a fallback to the secondary vendor, not a crash; read
+the chained cause. Errors in this module's own parsing are not caught.
 """
 
 import time
@@ -106,7 +115,7 @@ class YFinanceProvider:
         self._sleep = sleep
         self._throttle = Throttle(self._policy.min_interval_seconds, sleep)
         self._bars: dict[tuple[str, date, date], pd.DataFrame] = {}
-        self._splits: dict[str, tuple[tuple[date, float], ...]] = {}
+        self._splits: dict[str, tuple[tuple[date, float], ...] | None] = {}
 
     def fetch_daily(self, symbols: Sequence[str], start: date, end: date) -> pd.DataFrame:
         """Raw daily bars of `symbols` for sessions in `[start, end]` (see module docstring)."""
@@ -141,7 +150,7 @@ class YFinanceProvider:
                 factor = self._split_factor(symbol, paid.index)
                 for day, amount, f in zip(paid.index, paid.to_numpy(), factor, strict=True):
                     rows.append(_action(symbol, day, "dividend", amount=float(amount * f)))
-            for day, ratio in self._split_history(symbol):
+            for day, ratio in self._splits.get(symbol) or ():
                 if start <= day <= end:
                     rows.append(_action(symbol, day, "split", ratio=float(ratio)))
         if not rows:
@@ -153,7 +162,8 @@ class YFinanceProvider:
     def _symbol_bars(
         self, symbols: Sequence[str], start: date, end: date
     ) -> dict[str, pd.DataFrame]:
-        """Yahoo's rows per canonical symbol (date index); a symbol with no bar is left out."""
+        """Yahoo's rows per canonical symbol (date index). Left out: a symbol with no bar, and
+        one with bars but no split history (its raw prices cannot be rebuilt; logged once)."""
         wanted = check_request(symbols, start, end)
         missing = [s for s in wanted if (s, start, end) not in self._bars]
         for i in range(0, len(missing), self._batch_size):
@@ -163,7 +173,7 @@ class YFinanceProvider:
             bars = self._bars[(symbol, start, end)]
             if bars.dropna(how="all", subset=_BAR_FIELDS).empty:
                 _log.info("prices.no_data", vendor=self.name, symbol=symbol)
-            else:
+            elif self._split_history(symbol) is not None:
                 out[symbol] = bars
         return out
 
@@ -180,8 +190,9 @@ class YFinanceProvider:
         for vsym, symbol in vendor.items():
             self._bars[(symbol, start, end)] = _bars_of(frame, vsym, len(vendor) == 1)
 
-    def _split_history(self, symbol: str) -> tuple[tuple[date, float], ...]:
-        """`(ex_date, ratio)` of every split in the symbol's whole history, in date order."""
+    def _split_history(self, symbol: str) -> tuple[tuple[date, float], ...] | None:
+        """`(ex_date, ratio)` of every split in the symbol's whole history, in date order, or
+        `None` when Yahoo has no history for it (logged as `prices.no_split_history`)."""
         if symbol not in self._splits:
             vsym = vendor_symbol(symbol, "-")
             self._throttle.wait()
@@ -193,9 +204,9 @@ class YFinanceProvider:
                 (Exception,),
             )
             if raw is None:
-                raise DataError(
-                    f"yfinance: {symbol} has bars but no split history; cannot un-adjust prices"
-                )
+                _log.warning("prices.no_split_history", vendor=self.name, symbol=symbol)
+                self._splits[symbol] = None
+                return None
             ratios = raw[raw > 0].sort_index()
             self._splits[symbol] = tuple(
                 zip(_to_dates(ratios.index), ratios.to_numpy(dtype="float64").tolist(), strict=True)
@@ -206,7 +217,7 @@ class YFinanceProvider:
         """F(d) for each day: product of the ratios of splits with ex-date after d."""
         factor = np.ones(len(days))
         dates = np.array(list(days), dtype="object")
-        for split_day, ratio in self._split_history(symbol):
+        for split_day, ratio in self._splits.get(symbol) or ():
             factor[dates < split_day] *= ratio
         return factor
 

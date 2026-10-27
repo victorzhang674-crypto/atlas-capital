@@ -12,6 +12,14 @@ per symbol and window, written atomically. What is cached, so a cache can never 
 
 Pass a lake's `cache_dir` (`<lake>/cache/prices`) as `cache_dir`. Delete the directory to
 force a refetch.
+
+Needs an installed clock: every fetch reads `get_clock().today()`, which raises `AtlasError`
+("no clock installed") outside `use_clock(...)`. Run it under `use_clock(LiveClock())` for
+live work (the Stage 14 CLI) or `use_clock(SimClock(...))` in a backtest or test.
+
+When `inner` keeps a record of which vendor served each symbol (`ServedRecorder`, e.g.
+`FallbackPriceProvider`), bars served from the cache are passed to its `record_served`, so
+actions fetched afterwards still come from the vendor whose bars are cached.
 """
 
 from collections.abc import Callable, Sequence
@@ -27,6 +35,7 @@ from atlas.core.logging import get_logger
 from atlas.core.storage.meta import atomic_write
 from atlas.data.providers.base import (
     PriceProvider,
+    ServedRecorder,
     check_request,
     empty_actions,
     empty_daily,
@@ -70,6 +79,8 @@ class CachedPriceProvider:
                 frames.append(normalize(pd.read_parquet(path)))
             else:
                 missing.append(symbol)
+        if kind == "daily" and frames and isinstance(self.inner, ServedRecorder):
+            self.inner.record_served(pd.concat(frames, ignore_index=True))
         if missing:
             fetch: Callable[[Sequence[str], date, date], pd.DataFrame] = (
                 self.inner.fetch_daily if kind == "daily" else self.inner.fetch_actions

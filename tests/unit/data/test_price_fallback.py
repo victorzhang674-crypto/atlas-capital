@@ -10,7 +10,7 @@ from pydantic import SecretStr
 from atlas.core.config import AtlasConfig, DataConfig, DataProviders, Secrets
 from atlas.core.errors import ConfigError, DataError
 from atlas.data.providers.alpaca_provider import AlpacaPriceProvider
-from atlas.data.providers.base import PriceProvider
+from atlas.data.providers.base import PriceProvider, ServedRecorder
 from atlas.data.providers.fallback import FallbackPriceProvider, build_price_provider
 from atlas.data.providers.yfinance_provider import YFinanceProvider
 
@@ -101,6 +101,19 @@ def test_actions_follow_the_provider_that_served_prices() -> None:
     chain.fetch_daily(["AAPL", "SPY"], D1, D2)
     out = chain.fetch_actions(["AAPL", "SPY"], D1, D2)
     assert dict(zip(out["symbol"], out["vendor"], strict=True)) == {"AAPL": "a", "SPY": "b"}
+
+
+def test_record_served_routes_actions_by_vendor() -> None:  # audit item 9
+    primary = FakePriceProvider(actions=_actions("a", "AAPL"), name="a")
+    secondary = FakePriceProvider(
+        actions=pd.concat([_actions("b", "AAPL"), _actions("b", "SPY")]), name="b"
+    )
+    chain = FallbackPriceProvider(primary, secondary)
+    assert isinstance(chain, ServedRecorder)
+    chain.record_served(pd.concat([_daily("b", "AAPL"), _daily("zzz", "SPY")]))
+    out = chain.fetch_actions(["AAPL", "SPY"], D1, D2)
+    # AAPL → b (recorded); SPY's vendor "zzz" is unknown → ignored → primary (has no SPY actions)
+    assert dict(zip(out["symbol"], out["vendor"], strict=True)) == {"AAPL": "b"}
 
 
 def test_actions_unseen_symbols_go_to_primary_then_backup_on_error() -> None:

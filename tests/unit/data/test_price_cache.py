@@ -8,9 +8,10 @@ import pytest
 from price_helpers import FakePriceProvider, daily_rows
 
 from atlas.core.clock import SimClock
-from atlas.core.errors import DataError
+from atlas.core.errors import AtlasError, DataError
 from atlas.data.providers.base import PriceProvider
 from atlas.data.providers.cache import CachedPriceProvider
+from atlas.data.providers.fallback import FallbackPriceProvider
 
 D1, D2 = date(2024, 2, 26), date(2024, 2, 27)  # before the sim_clock's 2024-03-01
 
@@ -103,3 +104,37 @@ def test_actions_cached_only_for_symbols_with_cached_bars(
     # AAPL (one dividend) and SPY (none) are cached; SIVB has no cached bars, so it is re-asked
     assert action_calls == [("AAPL", "SPY", "SIVB"), ("SIVB",)]
     assert list(first["symbol"]) == ["AAPL"]
+
+
+def test_requires_an_installed_clock(tmp_path: Path) -> None:  # audit item 8
+    with pytest.raises(AtlasError, match="no clock installed"):
+        CachedPriceProvider(_inner(), tmp_path).fetch_daily(["AAPL"], D1, D2)
+
+
+def test_cached_bars_route_actions_to_their_vendor(tmp_path: Path, sim_clock: SimClock) -> None:
+    # audit item 9: bars cached from the secondary must not send uncached actions to the primary
+    def dividend(vendor: str, amount: float) -> pd.DataFrame:
+        return pd.DataFrame(
+            {
+                "symbol": ["SPY"],
+                "ex_date": [D2],
+                "type": ["dividend"],
+                "ratio": [float("nan")],
+                "amount": [amount],
+                "vendor": [vendor],
+            }
+        )
+
+    secondary = FakePriceProvider(
+        daily_rows("SPY", [(D1, 10.0, 1), (D2, 10.0, 1)], "b"), dividend("b", 0.5), name="b"
+    )
+    first_run = CachedPriceProvider(
+        FallbackPriceProvider(FakePriceProvider(name="a"), secondary), tmp_path
+    )
+    first_run.fetch_daily(["SPY"], D1, D2)  # bars from b, cached; actions never fetched
+    primary = FakePriceProvider(actions=dividend("a", 0.7), name="a")
+    second_run = CachedPriceProvider(FallbackPriceProvider(primary, secondary), tmp_path)
+    assert list(second_run.fetch_daily(["SPY"], D1, D2)["vendor"]) == ["b", "b"]  # cache hit
+    actions = second_run.fetch_actions(["SPY"], D1, D2)
+    assert list(actions["vendor"]) == ["b"] and list(actions["amount"]) == [0.5]
+    assert not [call for call in primary.calls if call[0] == "actions"]

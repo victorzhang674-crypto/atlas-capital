@@ -165,6 +165,13 @@ def test_bar_on_non_session_fails_symbol(tmp_lake: Lake) -> None:  # Review focu
     assert report.symbols_ok == ("SPY",)
 
 
+def test_symbol_without_split_history_fails_alone(tmp_lake: Lake) -> None:  # audit item 1
+    report = _ingest(tmp_lake, _yahoo(FakeYFinance(no_splits=("AAPL",))), ["AAPL", "SPY"])
+    assert report.symbols_ok == ("SPY",)
+    assert report.symbols_failed == ("AAPL",)
+    assert "no price data" in report.failure_reasons["AAPL"]
+
+
 def test_actions_error_fails_symbol(tmp_lake: Lake) -> None:
     day = date(2020, 8, 3)
     daily = pd.concat([daily_rows(s, [(day, 10.0, 100)]) for s in ("AAPL", "SPY")])

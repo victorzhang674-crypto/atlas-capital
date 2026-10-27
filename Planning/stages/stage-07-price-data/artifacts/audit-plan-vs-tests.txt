@@ -1,0 +1,22 @@
+plan names 65 tests; defined in tests/unit/data: 94
+named in plan but not defined: none
+defined but not PASSED in final verbose run: none
+tests added beyond the plan's list (29): ['test_actions_both_fail_raises_data_error', 'test_actions_of_other_symbols_are_ignored', 'test_actions_outside_window_are_dropped', 'test_actions_unseen_symbols_go_to_primary_then_backup_on_error', 'test_actions_window_excludes_splits_outside_it', 'test_all_symbols_failing_writes_nothing', 'test_available_at_never_before_the_session_close', 'test_available_at_on_early_close', 'test_available_at_uses_calendar_config', 'test_both_empty_is_not_an_error', 'test_check_request_rejects_invalid_symbol', 'test_dividend_not_below_price_raises', 'test_dividend_on_a_day_without_a_bar_is_kept', 'test_empty_request_makes_no_call', 'test_empty_response_gives_empty_frame', 'test_factory_alpaca_primary_with_keys', 'test_ingest_fixtures_have_no_mismatches', 'test_ingested_prices_respect_point_in_time', 'test_is_a_price_provider', 'test_normalize_actions_rejects_unknown_type', 'test_price_config_rejects_percent_typed_as_fraction', 'test_primary_complete_never_calls_secondary', 'test_retry_policy_from_config', 'test_secondary_error_after_partial_primary_keeps_primary_rows', 'test_server_error_exhausts_retries', 'test_split_and_dividend_on_the_same_ex_date', 'test_split_history_missing_for_traded_symbol_raises', 'test_tables_are_registered', 'test_transport_error_is_retried']
+OK  src/atlas/core/config.py
+OK  config/fund.yaml
+OK  src/atlas/data/providers/__init__.py
+OK  src/atlas/data/providers/base.py
+OK  src/atlas/data/providers/yfinance_provider.py
+OK  src/atlas/data/providers/alpaca_provider.py
+OK  src/atlas/data/providers/fallback.py
+OK  src/atlas/data/providers/cache.py
+OK  src/atlas/data/prices.py
+OK  tests/unit/data/price_helpers.py
+MISSING tests/unit/data/conftest.py
+OK  tests/fixtures/prices/
+OK  src/atlas/data/providers/base.py
+OK  src/atlas/data/providers/yfinance_provider.py
+OK  src/atlas/data/providers/alpaca_provider.py
+OK  src/atlas/data/providers/fallback.py
+OK  src/atlas/data/providers/cache.py
+OK  src/atlas/data/providers/__init__.py

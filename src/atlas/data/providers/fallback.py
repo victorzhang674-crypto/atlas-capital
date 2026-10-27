@@ -23,8 +23,9 @@ class FallbackPriceProvider:
     `DataError`) are asked of the secondary. Both raising `DataError` raises `DataError`; an
     empty answer is not a failure (a delisted symbol has no data), so the result may still
     lack symbols. `fetch_actions`: each symbol goes to the provider that served its prices in
-    the last `fetch_daily` (the primary if none did), so actions match the prices they adjust;
-    on `DataError` the other provider is asked; both failing raises `DataError`.
+    the last `fetch_daily` (or, for bars served elsewhere, the vendor passed to
+    `record_served`; the primary if neither), so actions match the prices they adjust; on
+    `DataError` the other provider is asked; both failing raises `DataError`.
     """
 
     name = "fallback"
@@ -74,6 +75,15 @@ class FallbackPriceProvider:
             return empty_daily()
         out = pd.concat(frames, ignore_index=True)
         return out.sort_values(["symbol", "date"], kind="stable").reset_index(drop=True)
+
+    def record_served(self, daily: pd.DataFrame) -> None:
+        """Route later `fetch_actions` calls by the `vendor` column of bars this chain did not
+        fetch itself (e.g. served by `CachedPriceProvider`). Unknown vendors are ignored."""
+        by_name = {self.primary.name: self.primary, self.secondary.name: self.secondary}
+        for symbol, vendor in zip(daily["symbol"], daily["vendor"], strict=True):
+            provider = by_name.get(str(vendor))
+            if provider is not None:
+                self._served[str(symbol)] = provider
 
     def fetch_actions(self, symbols: Sequence[str], start: date, end: date) -> pd.DataFrame:
         """Actions of each symbol from the provider that served its prices (see class doc)."""

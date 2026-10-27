@@ -1,0 +1,6 @@
+run 1: rows=84 action_rows=3 ok=('AAPL', 'SPY') failed=('SIVB',) mismatches=0
+  reasons: {'SIVB': 'no price data returned'}
+run 2: rows=84 action_rows=3 ok=('AAPL', 'SPY') failed=('SIVB',) mismatches=0
+  reasons: {'SIVB': 'no price data returned'}
+AAPL 2020-08-28: raw close=499.2300 split_adj_close=124.8075 vendor adj_close=120.9557 available_at=2020-08-28 20:15:00+00:00
+AAPL 2020-08-31: raw close=129.0400 split_adj_close=129.0400 vendor adj_close=125.0575 available_at=2020-08-31 20:15:00+00:00

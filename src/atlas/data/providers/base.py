@@ -79,6 +79,15 @@ class PriceProvider(Protocol):
         ...
 
 
+@runtime_checkable
+class ServedRecorder(Protocol):
+    """A provider that remembers which vendor served each symbol's bars (to route actions)."""
+
+    def record_served(self, daily: pd.DataFrame) -> None:
+        """Note the `vendor` of each symbol in `daily`, bars served without this provider."""
+        ...
+
+
 def empty_daily() -> pd.DataFrame:
     """A daily frame with no rows and the contract's dtypes."""
     return normalize_daily(pd.DataFrame({c: [] for c in DAILY_COLUMNS}))

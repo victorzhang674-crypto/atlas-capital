@@ -26,3 +26,16 @@ Fill this in **only** with output from commands actually run in this stage's fin
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Follow-up after the post-DONE audit — 2026-10-27
+Owner-approved follow-up (audit items 1, 4, 8, 9 fixed; records for items 2, 5, 6 fixed; see worklog "Audit follow-up"). Re-run in this chat on the final working tree (base commit `59c23f2`):
+- `uv run pytest -q` → 727 passed, 0 failed, 2 deselected (live), exit 0 (+5 tests) · raw: [artifacts/followup-pytest.txt](artifacts/followup-pytest.txt)
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 91 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 47 source files · raw: [artifacts/followup-lint-type.txt](artifacts/followup-lint-type.txt)
+- `uv run pytest tests/unit/data -v` (brief's Verify) → 100 passed, 2 deselected, exit 0 · raw: [artifacts/followup-verify-tests-unit-data.txt](artifacts/followup-verify-tests-unit-data.txt); with `-W error` → 100 passed · raw: [artifacts/followup-data-warnings-as-errors.txt](artifacts/followup-data-warnings-as-errors.txt)
+- `uv run pytest tests/unit/data -m live -v -rs` → yfinance PASSED (real Yahoo), Alpaca SKIPPED (no keys) · raw: [artifacts/followup-verify-live.txt](artifacts/followup-verify-live.txt)
+- `make check` → exit 0 · raw: [artifacts/followup-make-check.txt](artifacts/followup-make-check.txt)
+- Docstrings → 8 modules, 44 public names, missing none · raw: [artifacts/followup-docstrings.txt](artifacts/followup-docstrings.txt)
+- Real-data ingest check (real Yahoo, twice) → `rows=84 action_rows=3 ok=('AAPL', 'SPY') failed=('SIVB',) mismatches=0` both runs · raw: [artifacts/followup-live-ingest-check.txt](artifacts/followup-live-ingest-check.txt)
+- Acceptance criteria unchanged and still evidenced: every test named above PASSED again in `followup-verify-tests-unit-data.txt`.
+
+**Result (follow-up):** ALL CRITERIA VERIFIED

@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-7-planning-implementation-de524c/.venv.nosync/bin/python
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-7-planning-implementation-de524c
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 102 items / 100 deselected / 2 selected
+
+tests/unit/data/test_price_live.py::test_yfinance_live_smoke PASSED      [ 50%]
+tests/unit/data/test_price_live.py::test_alpaca_live_smoke SKIPPED (...) [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/unit/data/test_price_live.py:40: ALPACA_API_KEY_ID / ALPACA_API_SECRET_KEY not set
+================ 1 passed, 1 skipped, 100 deselected in 15.25s =================
+exit=0

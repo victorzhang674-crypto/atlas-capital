@@ -1,0 +1,2 @@
+bars vendor: ['b', 'b']
+actions vendor: ['a'] amount: [0.7]

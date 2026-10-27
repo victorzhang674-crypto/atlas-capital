@@ -1,7 +1,10 @@
 """Stage 07 Task 2: the yfinance adapter, on recorded fixtures (no network)."""
 
+import io
+import json
 import math
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -9,6 +12,7 @@ from price_helpers import FakeYFinance, load_yf_symbol
 
 from atlas.core.config import PriceDataConfig
 from atlas.core.errors import DataError
+from atlas.core.logging import configure_logging, reset_logging
 from atlas.data.providers.base import ACTION_COLUMNS, DAILY_COLUMNS, PriceProvider
 from atlas.data.providers.yfinance_provider import YFinanceProvider
 
@@ -134,10 +138,42 @@ def test_download_keeps_failing_raises_data_error() -> None:
     assert len(fake.download_calls) == 3
 
 
-def test_split_history_missing_for_traded_symbol_raises() -> None:
+def test_any_yfinance_error_becomes_chained_data_error() -> None:  # audit item 4
+    calls: list[str] = []
+
+    def broken(symbols: list[str], start: date, end_exclusive: date) -> pd.DataFrame:
+        calls.append("download")
+        raise TypeError("download() got an unexpected keyword argument 'actions'")
+
+    provider = YFinanceProvider(
+        PriceDataConfig(max_retries=1),
+        download=broken,
+        splits=FakeYFinance().splits,
+        sleep=lambda s: None,
+    )
+    with pytest.raises(DataError, match="yfinance download") as info:
+        provider.fetch_daily(["AAPL"], START, END)
+    assert isinstance(info.value.__cause__, TypeError)  # the original error stays visible
+    assert calls == ["download", "download"]  # retried like a vendor failure
+
+
+def test_symbol_without_split_history_is_dropped_and_logged(tmp_path: Path) -> None:
+    # Plan D2: a traded symbol whose split history is `None` is left out (logged), so the
+    # rest of its batch is still served (audit item 1; this replaced a test that expected a raise).
     fake = FakeYFinance(no_splits=("AAPL",))
-    with pytest.raises(DataError, match=r"AAPL.*split history"):
-        _provider(fake).fetch_daily(["AAPL"], START, END)
+    provider = _provider(fake)
+    log_file = tmp_path / "atlas.log"
+    configure_logging(log_file=log_file, console=io.StringIO())
+    try:
+        daily = provider.fetch_daily(["AAPL", "SPY"], START, END)
+        actions = provider.fetch_actions(["AAPL", "SPY"], START, END)
+    finally:
+        reset_logging()
+    assert set(daily["symbol"]) == {"SPY"} and len(daily) == 42
+    assert set(actions["symbol"]) == {"SPY"}
+    lines = [json.loads(line) for line in log_file.read_text(encoding="utf-8").splitlines()]
+    warned = [ln for ln in lines if ln["event"] == "prices.no_split_history"]
+    assert [(ln["level"], ln["symbol"]) for ln in warned] == [("warning", "AAPL")]
 
 
 def test_actions_reuse_the_daily_download() -> None:
