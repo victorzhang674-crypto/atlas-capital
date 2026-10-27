@@ -1,0 +1,129 @@
+$ uv run pytest tests/unit/core/storage -v -s -W error
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-6-planning-implementation-64e333/.venv.nosync/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-6-planning-implementation-64e333
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, platformdirs-4.13.5
+collecting ... collected 114 items
+
+tests/unit/core/storage/test_storage_audit_mirror.py::test_mirror_inserts_all_events PASSED
+tests/unit/core/storage/test_storage_audit_mirror.py::test_mirror_is_idempotent_and_incremental PASSED
+tests/unit/core/storage/test_storage_audit_mirror.py::test_mirror_keeps_runs_apart PASSED
+tests/unit/core/storage/test_storage_audit_mirror.py::test_mirror_refuses_broken_chain PASSED
+tests/unit/core/storage/test_storage_audit_mirror.py::test_mirror_detects_rewritten_history PASSED
+tests/unit/core/storage/test_storage_audit_mirror.py::test_mirror_rejects_a_file_with_several_runs PASSED
+tests/unit/core/storage/test_storage_audit_mirror.py::test_audit_events_is_append_only_via_query PASSED
+tests/unit/core/storage/test_storage_audit_mirror.py::test_mirror_empty_or_missing_file PASSED
+tests/unit/core/storage/test_storage_audit_mirror.py::test_read_only_database_cannot_mirror PASSED
+tests/unit/core/storage/test_storage_db.py::test_database_file_lives_in_the_lake PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_over_lake_view PASSED
+tests/unit/core/storage/test_storage_db.py::test_named_params PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_params_are_not_sql PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_multiple_statements PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[insert into audit_events (event_id) values ('x')] PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[delete from audit_events] PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[update audit_events set actor = 'x'] PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[drop table audit_events] PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[create table t (a int)] PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[copy audit_events to 'out.csv'] PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[attach 'other.duckdb' as other] PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[pragma version] PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[set threads = 1] PASSED
+tests/unit/core/storage/test_storage_db.py::test_views_see_new_writes PASSED
+tests/unit/core/storage/test_storage_db.py::test_refresh_sees_writes_from_another_lake_object PASSED
+tests/unit/core/storage/test_storage_db.py::test_unwritten_table_view_is_empty_and_typed PASSED
+tests/unit/core/storage/test_storage_db.py::test_query_timestamps_are_utc PASSED
+tests/unit/core/storage/test_storage_db.py::test_views_are_not_persisted PASSED
+tests/unit/core/storage/test_storage_db.py::test_get_database_is_one_per_process PASSED
+tests/unit/core/storage/test_storage_db.py::test_closed_database_refuses_queries PASSED
+tests/unit/core/storage/test_storage_db.py::test_read_only_database PASSED
+tests/unit/core/storage/test_storage_db.py::test_unpartitioned_and_year_partitioned_views PASSED
+tests/unit/core/storage/test_storage_db.py::test_views_follow_registry_changes PASSED
+tests/unit/core/storage/test_storage_lake.py::test_lake_creates_layout PASSED
+tests/unit/core/storage/test_storage_lake.py::test_roundtrip_dtypes PASSED
+tests/unit/core/storage/test_storage_lake.py::test_partition_layout_by_symbol PASSED
+tests/unit/core/storage/test_storage_lake.py::test_unpartitioned_table_has_one_file PASSED
+tests/unit/core/storage/test_storage_lake.py::test_partition_by_year PASSED
+tests/unit/core/storage/test_storage_lake.py::test_partition_value_with_slash_stays_inside_table PASSED
+tests/unit/core/storage/test_storage_lake.py::test_append_rejects_existing_or_repeated_keys PASSED
+tests/unit/core/storage/test_storage_lake.py::test_append_adds_rows PASSED
+tests/unit/core/storage/test_storage_lake.py::test_overwrite_replaces_table PASSED
+tests/unit/core/storage/test_storage_lake.py::test_overwrite_with_empty_frame_empties_table PASSED
+tests/unit/core/storage/test_storage_lake.py::test_bad_mode_rejected PASSED
+tests/unit/core/storage/test_storage_lake.py::test_read_filters_and_columns PASSED
+tests/unit/core/storage/test_storage_lake.py::test_read_unwritten_registered_table_is_empty PASSED
+tests/unit/core/storage/test_storage_lake.py::test_partition_change_requires_overwrite PASSED
+tests/unit/core/storage/test_storage_lake.py::test_read_output_works_with_pit_filter PASSED
+tests/unit/core/storage/test_storage_lake.py::test_write_bumps_generation PASSED
+tests/unit/core/storage/test_storage_lake.py::test_failed_validation_writes_nothing PASSED
+tests/unit/core/storage/test_storage_lake.py::test_failed_overwrite_keeps_old_table PASSED
+tests/unit/core/storage/test_storage_lake.py::test_partition_dir_names_for_each_type PASSED
+tests/unit/core/storage/test_storage_meta.py::test_meta_roundtrip PASSED
+tests/unit/core/storage/test_storage_meta.py::test_meta_missing_file_is_empty PASSED
+tests/unit/core/storage/test_storage_meta.py::test_meta_corrupt_file_raises[{not json] PASSED
+tests/unit/core/storage/test_storage_meta.py::test_meta_corrupt_file_raises[{"format": 99, "tables": {}}] PASSED
+tests/unit/core/storage/test_storage_meta.py::test_meta_corrupt_file_raises[{"format": 1, "tables": {"t": {"version": "one"}}}] PASSED
+tests/unit/core/storage/test_storage_meta.py::test_meta_corrupt_file_raises[[1, 2]] PASSED
+tests/unit/core/storage/test_storage_meta.py::test_meta_write_is_atomic_json PASSED
+tests/unit/core/storage/test_storage_meta.py::test_first_write_records_version PASSED
+tests/unit/core/storage/test_storage_meta.py::test_version_mismatch_blocks_read_and_write PASSED
+tests/unit/core/storage/test_storage_meta.py::test_migrate_applies_chain PASSED
+tests/unit/core/storage/test_storage_meta.py::test_migrate_missing_step_fails_cleanly PASSED
+tests/unit/core/storage/test_storage_meta.py::test_migrate_step_producing_bad_rows_fails_cleanly PASSED
+tests/unit/core/storage/test_storage_meta.py::test_migrate_unwritten_table_is_a_noop PASSED
+tests/unit/core/storage/test_storage_meta.py::test_registered_version_older_than_data_fails PASSED
+tests/unit/core/storage/test_storage_meta.py::test_schema_change_without_version_bump_fails PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_requires_available_at PASSED
+tests/unit/core/storage/test_storage_schema.py::test_static_schema_may_omit_available_at PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides0] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides1] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides2] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides3] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides4] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides5] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides6] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides7] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides8] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides9] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_schema_rejects_bad_declarations[overrides10] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_year_partition_declaration PASSED
+tests/unit/core/storage/test_storage_schema.py::test_arrow_schema_types PASSED
+tests/unit/core/storage/test_storage_schema.py::test_fingerprint_tracks_columns PASSED
+tests/unit/core/storage/test_storage_schema.py::test_registry_register_get_copy PASSED
+tests/unit/core/storage/test_storage_schema.py::test_registry_migrations PASSED
+tests/unit/core/storage/test_storage_schema.py::test_default_registry_is_a_registry PASSED
+tests/unit/core/storage/test_storage_schema.py::test_validate_frame_returns_arrow_in_schema_order PASSED
+tests/unit/core/storage/test_storage_schema.py::test_validate_frame_missing_available_at_fails PASSED
+tests/unit/core/storage/test_storage_schema.py::test_validate_frame_extra_or_missing_columns_fail PASSED
+tests/unit/core/storage/test_storage_schema.py::test_null_available_at_rejected PASSED
+tests/unit/core/storage/test_storage_schema.py::test_non_nullable_nan_rejected PASSED
+tests/unit/core/storage/test_storage_schema.py::test_infinite_float_rejected[inf] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_infinite_float_rejected[-inf] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_wrong_dtypes_rejected[volume-values0] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_wrong_dtypes_rejected[volume-values1] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_wrong_dtypes_rejected[date-values2] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_wrong_dtypes_rejected[close-values3] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_wrong_dtypes_rejected[symbol-values4] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_wrong_dtypes_rejected[volume-values5] PASSED
+tests/unit/core/storage/test_storage_schema.py::test_timestamp_column_normalised_to_utc PASSED
+tests/unit/core/storage/test_storage_schema.py::test_naive_timestamp_rejected PASSED
+tests/unit/core/storage/test_storage_schema.py::test_object_timestamps_rejected PASSED
+tests/unit/core/storage/test_storage_schema.py::test_sub_microsecond_timestamp_rejected PASSED
+tests/unit/core/storage/test_storage_schema.py::test_date_column_accepts_dates_and_midnight_datetime64 PASSED
+tests/unit/core/storage/test_storage_schema.py::test_nullable_columns_accept_nulls PASSED
+tests/unit/core/storage/test_storage_schema.py::test_non_nullable_int_rejects_missing PASSED
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_later_ingestion_wins PASSED
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_adds_new_keys_and_partitions PASSED
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_batch_duplicates_keep_last PASSED
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_is_idempotent PASSED
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_into_new_table_creates_it PASSED
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_empty_batch_is_a_noop PASSED
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_keys_must_match_primary_key PASSED
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_one_million_rows_under_five_seconds 
+1M-row upsert into a 1M-row table (500 partitions): 0.60 s
+PASSED
+
+============================= 114 passed in 2.22s ==============================
+exit=0

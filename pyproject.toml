@@ -5,10 +5,13 @@ description = "Atlas Capital: a multi-agent hedge fund simulator (research and p
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 # The "core" runtime dependencies (pydantic/pydantic-settings/pyyaml/python-dotenv from Stage 02;
-# structlog/python-ulid from Stage 03; exchange-calendars/pandas from Stage 05).
+# structlog/python-ulid from Stage 03; exchange-calendars/pandas from Stage 05; duckdb/pyarrow
+# from Stage 06).
 dependencies = [
+    "duckdb>=1.1",
     "exchange-calendars>=4.5",
     "pandas>=2.2",
+    "pyarrow>=17",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
     "python-dotenv>=1.0",
@@ -103,7 +106,7 @@ warn_return_any = true
 no_implicit_reexport = true
 strict_equality = true
 
-# exchange_calendars ships no type information (no py.typed, no stubs).
+# exchange_calendars and pyarrow ship no type information (no py.typed, no stubs).
 [[tool.mypy.overrides]]
-module = ["exchange_calendars"]
+module = ["exchange_calendars", "pyarrow", "pyarrow.*"]
 ignore_missing_imports = true

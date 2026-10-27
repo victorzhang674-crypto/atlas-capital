@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from atlas.core.clock import SimClock, use_clock
+from atlas.core.storage import DEFAULT_REGISTRY, Lake
 
 
 @pytest.fixture(scope="session")
@@ -21,3 +22,9 @@ def sim_clock() -> Iterator[SimClock]:
     clock = SimClock(start=date(2024, 3, 1))
     with use_clock(clock):
         yield clock
+
+
+@pytest.fixture
+def tmp_lake(tmp_path: Path) -> Lake:
+    """An empty `Lake` under `tmp_path/"lake"`, with its own copy of `DEFAULT_REGISTRY`."""
+    return Lake(tmp_path / "lake", registry=DEFAULT_REGISTRY.copy())

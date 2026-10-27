@@ -4,9 +4,9 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 06 — Storage layer (DuckDB + Parquet lake) — `NOT STARTED`
-- **Stages done:** 5 / 66
-- **Last updated:** 2026-10-26 (Stage 05 DONE)
+- **Current stage:** 07 — Price data providers (yfinance, Alpaca) — `NOT STARTED`
+- **Stages done:** 6 / 66
+- **Last updated:** 2026-10-27 (Stage 06 DONE)
 
 ## Stage checklist
 
@@ -16,7 +16,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - [x] **03** [Logging, run context & audit trail](stages/stage-03-logging-audit/brief.md)
 - [x] **04** [Core domain model](stages/stage-04-domain-model/brief.md)
 - [x] **05** [Clock, trading calendar & point-in-time guard](stages/stage-05-clock-pit/brief.md)
-- [ ] **06** [Storage layer (DuckDB + Parquet lake)](stages/stage-06-storage/brief.md)
+- [x] **06** [Storage layer (DuckDB + Parquet lake)](stages/stage-06-storage/brief.md)
 
 ### Phase 1 Data Platform → M1
 - [ ] **07** [Price data providers (yfinance, Alpaca)](stages/stage-07-price-data/brief.md)
@@ -156,6 +156,22 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-26 | 05 | Review fix pass: fresh reviewer (Opus) verdict "With fixes", Critical none; Important I1 (config had no effect), I2 (ban gaps), I3 (`advance` skipped today's decision) and re-graded Minor 2 (negative lag = look-ahead) fixed test-first; four minors deferred to Backlog; "declined to judge" items ruled as standing (ULID/structlog wall clock → D11; `AsOf` on non-sessions; vintage selection → 09/10/13; `ArrowDtype` rejected → Stage 06 note; async `use_clock`; `SimClock` across threads; `catch_warnings` thread safety) | See [stage-05 worklog](stages/stage-05-clock-pit/worklog.md) |
 | 2026-10-26 | 05 | Approved as is: Stage 05 has two commits, `stage-05: Clock, trading calendar & point-in-time guard` (`47e5ddd`) and `stage-05: follow-up records`, against the Definition of Done's "one git commit" per stage. The follow-up holds records only: the merged-`main` verification (artifacts/merged-main-check.{txt,sh}), its evidence lines and the commit/rebase/merge worklog entries. `main` had gained `5979a34 stage-04: correct model count in records` after the stage branch was cut, so the stage commit (`64ae655`) was rebased onto `main` (one `PROGRESS.md` Decisions-log conflict, both sides' rows kept) and re-verified (`make check` exit 0) before the fast-forward; there is no `origin` remote, so the app's sync tool could not be used. The fast-forward and check ran in the owner's Terminal panel because this session's sandbox cannot write to the main checkout. Owner's words: "Fast-forward main to the stage-05 commit, like Stages 02–04, and record the merged-main check." | Owner request in chat after DONE; same pattern as Stages 02–04; see [stage-05 worklog](stages/stage-05-clock-pit/worklog.md) |
 | 2026-10-26 | 05 | Approved as is: Stage 05 has two more records-only commits after `206366e stage-05: follow-up records`: `ab4fc22 stage-05: audit note on plan test names` (worklog entry: three `plan.md` test names differ from the code; cases covered) and `stage-05: correct test count and commit log in records` (this row, and the handoff's "+ 7 config cases" corrected to "+ 5 config tests": 81 tests in the three new files + 5 in `test_config.py` = 86). No code or test changes. Owner's words: "Add a records-only audit note for the three test-name differences to the Stage 05 worklog and commit it on main." and "Fix the two record errors (config test count 7 → 5, and log the third commit in the Decisions log) as a records-only commit on main." | Found by the post-DONE audits; owner requests in chat |
+| 2026-10-27 | 06 | Execution: plan written and executed in the same chat, native inline TDD; open design choices took the recommended option (D1–D12 below). Owner's words: "According to the planning documents, please firstly generate the plans for Stage 6 then carefully implement the plans and complete the plans. After Stage 6 completion, please also help me to audit the stage by comparing the plans with the work that you have done." No subagent review: a self-review of the whole diff ran before DONE and the owner-requested audit runs after | Owner request in chat; see [stage-06 plan](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | Collisions: none with the roadmap or spec. Checked: brief Task 4 "no string-formatted SQL" vs DuckDB DDL, which cannot take parameters, resolved by creating views through the relation API; duckdb 2.0's `relation.create_view` stores views in the file, so views are session-only `con.register` relations (D7) | [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D1: closed `ColumnType` set `string`/`int64`/`float64`/`bool`/`date`/`timestamp`; no `decimal` or list columns yet (Backlog) | YAGNI; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D2: `Column`/`TableSchema` are frozen `AtlasModel`s that validate their own declaration (unique names, non-empty non-nullable primary key, `available_at` non-nullable timestamp unless `static`, partitions inside the key, `audit_events` reserved) | Cross-package contract (stage protocol §4); [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D3: strict write validation: exact column set, compatible dtypes only (no parsing from strings), tz-aware timestamps stored as UTC microseconds (finer rejected), dates as `date` or midnight `datetime64`, finite floats, no nulls in non-nullable columns; `DataError` | Fail loudly on vendor drift; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D4: partitions are primary-key columns (string/int64/date/bool) or the virtual `year` of `year_column`; one `data.parquet` per `col=value/` directory (percent-encoded values); partition columns kept in the files | A key lives in one partition; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D5: `append` fails on existing or repeated keys; `upsert` keeps the last row per key in the batch, then replaces stored rows (later ingestion wins); `overwrite` replaces the table; `keys` must equal the primary key as a set | Brief interface; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D6: per-partition atomic replace (temp file + `os.replace`); overwrite swaps a staged directory and restores the old one on failure; multi-partition writes not atomic (retry repairs); one writer per lake | [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D7: `Database(lake, read_only=False)` on `<lake>/atlas.duckdb`, `TimeZone = 'UTC'`, session-only views (Parquet glob or empty typed table) rebuilt when the lake's generation or the registry changes, or on `refresh()`; `get_database(lake)` one per file per process | Brief: one per process, views over Parquet globs; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D8: `Database.query` runs exactly one `SELECT` (`duckdb.extract_statements`), bound parameters only; results via Arrow (dates as `date`, timestamps `datetime64[us, UTC]`) | Parameter safety; append-only `audit_events`; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D9: `curated/_meta.json` stores version, partitioning and a column fingerprint per table; reads/writes need the registered version and fingerprint; `Lake.migrate` applies registered `(table, from_version)` steps | Brief: schema version per table; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D10: audit mirror verifies the JSONL chain, needs one run per file and requires mirrored rows to be an exact prefix; inserts new events in one transaction | Append-only, idempotent; partly answers the Stage 03 anchor backlog item; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D11: `read_table` returns rows sorted by primary key with a fresh index; filters `(column, op, value)` pushed down to pyarrow | Reproducible output; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | D12: no new config keys; the lake root is `cfg.data.lake_path` (resolved by the caller) | Layout names are fixed by brief/spec, not thresholds; [stage-06 plan › Design decisions](stages/stage-06-storage/plan.md) |
+| 2026-10-27 | 06 | Self-review fix pass: views now also follow registry changes (bug: a table registered after the database opened had no view); bool partition names also handle `numpy.bool_`; `Lake` docstring states one writer at a time. Two items deferred to Backlog (multi-partition atomicity; SELECT table functions can read any file) | See [stage-06 worklog](stages/stage-06-storage/worklog.md) |
+
 ## Backlog (out-of-scope ideas captured during stages)
 
 - PCA/statistical risk model alongside the fundamental model
@@ -183,6 +199,11 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 05 review, minor) `TradingCalendar` methods given a `datetime` (a `date` subclass) raise a confusing `TypeError`; reject `datetime` in `_check` with a hint to `market_date()`
 - (Stage 05 review, minor) `SimClock(start=<aware instant>)` accepts an instant outside the calendar bounds; the error only appears on the first `advance()`; check bounds in `__init__`
 - (Stage 05 review, minor) Untested but working: `SimClock.advance` across the November DST fall-back; an early-close decision time between 13:15 and 16:15 ET; `pit_filter` with duplicate index labels — pin with tests
+- (Stage 06, D1) Column types: add a list-of-strings type (Stage 11 `news.symbols[]`) and a `Decimal` type (Stages 50/52 ledger, orders, fills) when those stages need them
+- (Stage 06, D6) Multi-partition writes and the `_meta.json` update are not one atomic step; a crash mid-write leaves some partitions new (a retried upsert repairs it). Add a manifest / transaction log if crash-consistency across partitions is ever needed
+- (Stage 06 review) `Database.query` accepts any single `SELECT`, which can call DuckDB table functions (`read_csv`, `read_parquet`) on any readable path; consider `enable_external_access = false` with `allowed_directories` set to the lake before the dashboard (Stage 64) exposes queries
+- (Stage 06) A full `uv run pytest -q` ends with `nanobind: leaked … _duckdb.DuckDBPyConnection …` lines at interpreter shutdown (exit code 0, results unaffected). Seen only when hypothesis `@given` tests run after a duckdb connection was opened in the same process (likely hypothesis 6.170's module-constant scan); revisit after a duckdb/hypothesis upgrade
+- (Stage 06) `pyproject.toml` floors (`duckdb>=1.1`, `pyarrow>=17`) are untested below the locked duckdb 2.0.0 / pyarrow 26.0.0; the storage tests also assume pandas 3 (`str` dtype), like the Stage 05 pandas-floor item
 
 ## Handoff notes
 
@@ -322,4 +343,30 @@ Full block and raw output: [verification.md](stages/stage-05-clock-pit/verificat
 - Acceptance criteria:
   - [x] No direct wall-clock calls outside `clock.py` — evidence: `ruff check .` clean with TID251 (16 banned APIs); `test_ruff_bans_wall_clock_outside_clock_module` 12/12; `test_ruff_allows_wall_clock_in_clock_module`; `test_no_string_clock_reads_outside_clock_module`; artifacts/wallclock-grep.txt
   - [x] PIT boundary tests pass — evidence: `test_bar_not_visible_same_morning`, `test_bar_visible_next_session_morning`, `test_knows_is_strict`, `test_pit_filter_keeps_only_known_rows`, `test_injected_future_bar_is_caught` (artifacts/stage-tests-verbose.txt)
+- Waivers: none
+
+### Stage 06 — Storage layer (DuckDB + Parquet lake) — DONE 2026-10-27
+- Folder: [stages/stage-06-storage/](stages/stage-06-storage/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: `atlas.core.storage` — `schema.py` (`ColumnType`, `Column`, `TableSchema`, `SchemaRegistry`, `DEFAULT_REGISTRY`, `validate_frame`), `meta.py` (`TableMeta`, `MetaStore`, `atomic_write`), `lake.py` (`Lake`, `WriteResult`, `WriteMode`, `Filter`, `to_pandas`), `db.py` (`Database`, `get_database`, `audit_events` mirror); shared `tmp_lake` fixture in `tests/conftest.py`. 114 new tests in `tests/unit/core/storage/test_storage_{schema,lake,upsert,meta,db,audit_mirror}.py` (+ `storage_helpers.py`, directory `conftest.py`). Runtime deps duckdb 2.0.0, pyarrow 26.0.0 (mypy `ignore_missing_imports` for pyarrow)
+- Key interfaces: `DEFAULT_REGISTRY.register(TableSchema(name=..., columns=(Column(name=..., dtype=ColumnType.X, nullable=False), ...), primary_key=(...), partition_by=(...), year_column=None, version=1, static=False))`; `lake = Lake(root, registry=None)` → `raw_path(vendor, dataset)`, `table_path(name)`, `table_files(name)`, `has_table(name)`, `table_schema(name)`, `write_table(name, df, partition_cols=None, mode="append"|"overwrite"|"upsert", keys=None) -> WriteResult(table, mode, rows, partitions)`, `read_table(name, filters=[(col, op, value)], columns=[...]) -> DataFrame` (sorted by primary key), `migrate(name) -> int`, `generation`; `registry.add_migration(name, from_version, fn)`; `db = Database(lake, read_only=False)` / `get_database(lake)` → `query(sql, params)` (one `SELECT`, `?` or `$name`), `refresh()`, `mirror_audit_log(path) -> int`, `close()`
+- Decisions: Decisions log rows dated 2026-10-27, stage 06 (execution, collisions check, D1–D12, self-review fix pass)
+- Collisions with the overall plan: none (two points checked: parameterless DuckDB DDL, persisted relation views; both resolved by D7)
+- Deviations from brief: none in scope. Additions: `static` tables, `year_column`/virtual `year` partition, schema fingerprint in `_meta.json`, `refresh()`, `read_only` mode, `get_database`, `to_pandas`, `atomic_write`
+- Known gaps → backlog: list/`Decimal` column types; multi-partition atomicity; `SELECT` table functions can read any path; nanobind shutdown messages; untested dependency floors (see Backlog, "Stage 06")
+- Next stage should know: register curated tables in `DEFAULT_REGISTRY` at import time (e.g. `atlas.data.prices`); every non-static table needs `available_at` as a non-nullable `ColumnType.TIMESTAMP` column, and frames must already carry the right dtypes: tz-aware `datetime64` for timestamps (stored as UTC microseconds; finer precision is rejected), `datetime.date` objects or naive midnight `datetime64` for dates, real integer/float/bool/string dtypes (strings are never parsed into numbers or dates). Re-ingest with `mode="upsert"` (idempotent; the batch's last row per key wins). Partition columns must be primary-key columns (or `year` via `year_column`). Reads return `datetime64[us, UTC]` timestamps (numpy-backed, so `pit_filter` accepts them) and `datetime.date` dates; `Database.query` returns the same types. A schema change needs a version bump plus `registry.add_migration(...)` and `lake.migrate(name)`; reads and writes refuse a version or fingerprint mismatch. Tests: `tmp_lake` gives a lake with its own copy of `DEFAULT_REGISTRY`; close every `Database` you open (`with Database(lake) as db:`). Do not open a read-write and a read-only `Database` on the same file in one process at the same time (duckdb refuses a second configuration). In this sandbox, a new worktree needs `UV_PROJECT_ENVIRONMENT=.venv.nosync uv sync --group dev` + `ln -s .venv.nosync .venv` and `UV_CACHE_DIR="$TMPDIR/uv-cache"` (and PyPI reachable for the sync)
+
+#### Verification evidence — Stage 06 — 2026-10-27
+Full block and raw output: [verification.md](stages/stage-06-storage/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 626 passed, 0 failed, 0 deselected
+  - `uv run ruff check .` → All checks passed!
+  - `uv run ruff format --check .` → 74 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 40 source files
+  - `uv run pytest tests/unit/core/storage -q` (brief's Verify) → 114 passed
+  - `make check` → lint/format/mypy clean, 626 passed, exit=0
+  - Storage tests verbose (`-v -s -W error`) → 114 PASSED, no warnings; `1M-row upsert into a 1M-row table (500 partitions): 0.60 s`
+  - Docstring check → 51 public names, none missing
+- Acceptance criteria:
+  - [x] 1M-row synthetic upsert completes in under 5 s locally — evidence: `test_upsert_one_million_rows_under_five_seconds` PASSED (asserts `< 5.0` s; measured 0.60 s; earlier 0.59/0.61/0.58 s)
+  - [x] All tests green — evidence: `uv run pytest -q` 626 passed, `make check` exit 0, brief's Verify 114 passed
 - Waivers: none

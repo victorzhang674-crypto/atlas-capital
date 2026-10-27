@@ -1,0 +1,33 @@
+$ uv run pytest -q
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 34%]
+........................................................................ [ 46%]
+........................................................................ [ 57%]
+........................................................................ [ 69%]
+........................................................................ [ 80%]
+........................................................................ [ 92%]
+..................................................                       [100%]
+626 passed in 4.46s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "appender"
+ - leaked function "register"
+ - leaked function "query_progress"
+ - leaked function "torch"
+ - leaked function "sqltype"
+ - leaked function "__getattr__"
+ - leaked function ""
+ - leaked function "_name_scope"
+ - leaked function "fetchall"
+ - leaked function "begin"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0

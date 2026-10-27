@@ -1,0 +1,4 @@
+$ uv run python Planning/stages/stage-06-storage/artifacts/docstrings.py
+modules: 5; public classes/functions/methods/properties checked: 51
+missing docstrings: none
+exit=0
