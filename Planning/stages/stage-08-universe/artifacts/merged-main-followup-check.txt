@@ -1,0 +1,40 @@
+# Stage 08: verification on merged main after the audit follow-up (read-only) · 2026-10-27
+# Same method as merged-main-check.txt: worktree venv (same uv.lock), PYTHONPATH=<main>/src, no bytecode, caches in $TMPDIR.
+
+$ git log --oneline -3
+8fba0dd stage-08: audit follow-up (per-index refresh, guard tests, records)
+5e78327 stage-08: Universe & historical index membership
+c1afe56 planning: add Project.md Rule 6A (AI does and verifies all git operations)
+
+$ git status --short --untracked-files=all   (before)
+exit=0
+
+$ git branch --merged main
++ claude/stage-8-planning-implementation-fba07a
+* main
+
+$ python -c "import atlas; print(atlas.__file__)"
+/Users/zzjsmacbookair/Desktop/Trading Agents/src/atlas/__init__.py
+
+$ pytest -q
+797 passed, 3 deselected in 8.51s
+exit=0
+
+$ ruff check .
+All checks passed!
+exit=0
+
+$ ruff format --check .
+97 files already formatted
+exit=0
+
+$ mypy src/atlas
+Success: no issues found in 49 source files
+exit=0
+
+$ pytest tests/unit/data/test_universe.py -q   (brief's Verify)
+61 passed, 1 deselected in 2.42s
+exit=0
+
+$ git status --short --untracked-files=all   (after)
+exit=0

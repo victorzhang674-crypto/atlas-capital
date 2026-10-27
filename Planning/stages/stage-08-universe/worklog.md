@@ -82,3 +82,8 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - A7 (test-first): `test_data_limitations_doc` now requires `first_trade_date` → red (AssertionError) → paragraph added to `docs/data-limitations.md` → green.
 - A1, A3 (records): plan D2 annotated (and the Global-constraints line on overwrites, made stale by A8); Decisions-log rows for the A3 interpretation and the approved second commit; PROGRESS handoff "Key interfaces" updated for A8; audit file gained a Follow-up table.
 - Ran: `uv run pytest -q` → 797 passed, 3 deselected; ruff/format/mypy clean; brief's Verify → 61 passed (also `-W error`); `make check` → exit 0; docstrings → none missing (artifacts/followup-*.txt). Live test not re-run: `fetch_sp500_pages` is unchanged.
+
+## 2026-10-27 18:35 — Merged-main check after the follow-up
+- Commit `8fba0dd stage-08: audit follow-up (per-index refresh, guard tests, records)`; owner ran `git -C "<repo>" merge --ff-only claude/stage-8-planning-implementation-fba07a` → `Updating 5e78327..8fba0dd`, fast-forward, 17 files.
+- Ran read-only on `main` (same method as before, unpiped so every exit code is real): `pytest -q` → 797 passed, 3 deselected; `ruff check .` → All checks passed!; `ruff format --check .` → 97 files already formatted; `mypy src/atlas` → Success (49 files); brief's Verify → 61 passed, 1 deselected; all exit 0; `git branch --merged main` lists the stage branch; main checkout clean before and after · raw: [artifacts/merged-main-followup-check.txt](artifacts/merged-main-followup-check.txt).
+- Hashes: `main` = stage branch = `8fba0dd` (fast-forwards only, no merge commits).
