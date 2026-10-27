@@ -29,6 +29,20 @@ data:
     alpaca_feed: iex  # Alpaca data feed: iex (free tier) | sip (paid)
     alpaca_data_url: https://data.alpaca.markets  # Alpaca market data API base URL
     adj_mismatch_tolerance: 0.005  # record recomputed vs vendor adj_close gaps above 0.5%
+  # Universe reference data sources (Stage 08).
+  reference:
+    sp500_constituents_url: https://en.wikipedia.org/wiki/List_of_S%26P_500_companies  # constituents table
+    sp500_changes_url: https://en.wikipedia.org/wiki/Historical_components_of_the_S%26P_500  # change log
+    user_agent: AtlasCapital/0.1 (research and paper-trading simulator)  # sent with every request
+    request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
+    ticker_changes_file: config/ticker_changes.yaml  # manual ticker renames, relative to the repo root
+  # Liquidity filters of Universe.tradable (Stage 08); only bars known before the cutoff count.
+  tradable:
+    min_price: 5.0  # last raw close, USD
+    min_adv_usd: 20000000  # mean raw close x volume over adv_window_days bars, USD
+    adv_window_days: 20  # bars in the ADV average
+    min_history_days: 252  # bars of price history required
+    max_stale_sessions: 5  # the last bar may lag the latest known session by this many sessions
 
 # LLM gateway values (consumed by Stage 24).
 llm:

@@ -1,0 +1,34 @@
+# Manual ticker renames (Stage 08), read by atlas.data.reference.load_ticker_map; not part of
+# load_config. An instrument's identity is its latest ticker: rows of the S&P 500 change log
+# that use an older ticker are mapped through this list before membership is rebuilt.
+# Fields: old / new tickers; effective = first day under `new`; optional since = first day
+# `old` meant this company (the ticker was used by an earlier company too); source; note.
+# Sources: "log" = a rename row in the recorded change log (Historical components of the
+# S&P 500, revision 1379179365); "rev 1364118843" = a rename row deleted from the log on
+# 2026-07-18, read in that older revision; "manual" = public company announcement, date not
+# re-verified against a primary source in Stage 08 (it only decides which change-log rows
+# are mapped, so an error of a few days matters only for rows dated in that gap).
+
+# The list, newest first.
+changes:
+  - {old: SATS, new: ECHO, effective: 2026-06-24, source: rev 1364118843, note: EchoStar}
+  - {old: FLT, new: CPAY, effective: 2024-03-25, source: rev 1364118843, note: FLEETCOR to Corpay}
+  - {old: CDAY, new: DAY, effective: 2024-02-01, source: log, note: Ceridian to Dayforce}
+  - {old: RE, new: EG, effective: 2023-07-10, source: rev 1364118843, note: Everest Re to Everest Group}
+  - {old: ANTM, new: ELV, effective: 2022-06-28, source: manual, note: Anthem to Elevance Health}
+  - {old: FB, new: META, effective: 2022-06-09, source: manual, note: Facebook to Meta Platforms}
+  - {old: WLTW, new: WTW, effective: 2022-01-10, source: log, note: Willis Towers Watson}
+  - {old: COG, new: CTRA, effective: 2021-10-04, source: manual, note: Cabot Oil & Gas to Coterra}
+  - {old: IR, new: TT, effective: 2020-03-02, source: manual, note: "Ingersoll-Rand plc to Trane; IR then reused by Gardner Denver"}
+  - {old: JEC, new: J, effective: 2019-12-09, source: manual, note: Jacobs Engineering}
+  - {old: HRS, new: LHX, effective: 2019-07-01, source: manual, note: Harris to L3Harris}
+  - {old: DWDP, new: DD, effective: 2019-06-03, source: log, note: DowDuPont to DuPont}
+  - {old: KORS, new: CPRI, effective: 2019-01-02, source: manual, note: Michael Kors to Capri}
+  - {old: LUK, new: JEF, effective: 2018-05-24, source: manual, note: Leucadia to Jefferies}
+  - {old: PCLN, new: BKNG, effective: 2018-02-27, source: manual, note: Priceline to Booking}
+  - {old: DLPH, new: APTV, effective: 2017-12-05, source: manual, note: Delphi Automotive to Aptiv}
+  - {old: Q, new: IQV, effective: 2017-11-15, since: 2016-10-03, source: log, note: "QuintilesIMS to IQVIA; Q was Qwest before, Qnity after"}
+  - {old: DOW, new: DWDP, effective: 2017-09-01, source: log, note: "Dow Chemical to DowDuPont; DOW reused by Dow Inc. in 2019"}
+  - {old: TSO, new: ANDV, effective: 2017-08-01, source: manual, note: Tesoro to Andeavor}
+  - {old: UA, new: UAA, effective: 2016-04-08, source: manual, note: "Under Armour class A; UA reused by the class C shares"}
+  - {old: WLP, new: ANTM, effective: 2014-12-03, source: manual, note: WellPoint to Anthem}

@@ -1,0 +1,15 @@
+wikipedia_sp500_constituents.html: 408178 chars from revision 1382178819
+Traceback (most recent call last):
+  File "/Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-8-planning-implementation-fba07a/Planning/stages/stage-08-universe/artifacts/record_wikipedia_fixtures.py", line 51, in <module>
+    main()
+  File "/Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-8-planning-implementation-fba07a/Planning/stages/stage-08-universe/artifacts/record_wikipedia_fixtures.py", line 35, in main
+    resp.raise_for_status()
+  File "/Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-8-planning-implementation-fba07a/.venv.nosync/lib/python3.12/site-packages/httpx/_models.py", line 829, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '403 Please respect our robot policy https://w.wiki/4wJS. If you think you are incorrectly blocked, please contact noc@wikimedia.org (768589d)' for url 'https://en.wikipedia.org/w/index.php?title=Historical_components_of_the_S%26P_500&oldid=1379179365'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '403 Please respect our robot policy https://w.wiki/4wJS. If you think you are incorrectly blocked, please contact noc@wikimedia.org (768589d)' for url 'https://en.wikipedia.org/w/index.php?title=Historical_components_of_the_S%26P_500&oldid=1379179365'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/403
+wikipedia_sp500_constituents.html: already recorded, kept
+wikipedia_sp500_changes.html: 368403 chars from revision 1379179365

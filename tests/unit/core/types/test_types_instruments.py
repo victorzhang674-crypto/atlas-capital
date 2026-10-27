@@ -1,5 +1,7 @@
 """Tests for symbol normalisation and `Instrument`."""
 
+from datetime import date
+
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
@@ -95,3 +97,36 @@ def test_cash_cannot_be_shortable() -> None:
 def test_currency_must_be_iso(currency: str) -> None:
     with pytest.raises(ValidationError):
         Instrument(symbol="SAP", asset_class=AssetClass.EQUITY, currency=currency)
+
+
+def test_instrument_new_fields() -> None:  # Stage 08 D3
+    inst = Instrument(
+        symbol="AAPL",
+        asset_class=AssetClass.EQUITY,
+        name="Apple Inc.",
+        first_trade_date=date(1980, 12, 12),
+        last_trade_date=date(2026, 10, 26),
+    )
+    assert inst.name == "Apple Inc."
+    assert inst.is_etf is False
+    assert Instrument(symbol="SPY", asset_class=AssetClass.ETF).is_etf is True
+    bare = Instrument(symbol="X", asset_class=AssetClass.EQUITY)
+    assert (bare.name, bare.first_trade_date, bare.last_trade_date) == (None, None, None)
+    assert "is_etf" not in bare.model_dump()
+
+
+def test_instrument_trade_dates_ordered() -> None:
+    with pytest.raises(ValidationError, match="first_trade_date"):
+        Instrument(
+            symbol="X",
+            asset_class=AssetClass.EQUITY,
+            first_trade_date=date(2020, 1, 3),
+            last_trade_date=date(2020, 1, 2),
+        )
+    same = Instrument(
+        symbol="X",
+        asset_class=AssetClass.EQUITY,
+        first_trade_date=date(2020, 1, 2),
+        last_trade_date=date(2020, 1, 2),
+    )
+    assert same.first_trade_date == same.last_trade_date

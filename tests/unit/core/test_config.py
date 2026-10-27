@@ -21,7 +21,9 @@ from atlas.core.config import (
     FundConfig,
     LimitsConfig,
     PodStops,
+    ReferenceDataConfig,
     Secrets,
+    TradableConfig,
     _deep_merge,
     _yaml_layers,
     config_fingerprint,
@@ -696,3 +698,42 @@ def test_secret_typed_into_yaml_never_reaches_traceback(tmp_path: Path) -> None:
         load_config(config_dir=d)
     assert "fund.fred_api_key" in str(info.value)
     assert "REAL-KEY-123" not in "".join(traceback.format_exception(info.value))
+
+
+# --- Stage 08: universe reference data and tradable filters ----------------------------------
+
+
+def test_reference_data_defaults() -> None:  # Stage 08 D7
+    ref = AtlasConfig().data.reference
+    assert ref == ReferenceDataConfig(
+        sp500_constituents_url="https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
+        sp500_changes_url="https://en.wikipedia.org/wiki/Historical_components_of_the_S%26P_500",
+        user_agent="AtlasCapital/0.1 (research and paper-trading simulator)",
+        request_timeout_seconds=30.0,
+        ticker_changes_file=Path("config/ticker_changes.yaml"),
+    )
+
+
+def test_tradable_defaults() -> None:  # Stage 08 D5, D7 (brief: min_price=5, 20e6, 252)
+    assert AtlasConfig().data.tradable == TradableConfig(
+        min_price=5.0,
+        min_adv_usd=20_000_000.0,
+        adv_window_days=20,
+        min_history_days=252,
+        max_stale_sessions=5,
+    )
+
+
+@pytest.mark.parametrize(
+    ("values", "pattern"),
+    [
+        ({"min_price": 0}, "min_price"),
+        ({"min_adv_usd": -1}, "min_adv_usd"),
+        ({"adv_window_days": 0}, "adv_window_days"),
+        ({"min_history_days": 10}, "min_history_days"),
+        ({"max_stale_sessions": -1}, "max_stale_sessions"),
+    ],
+)
+def test_tradable_validation(values: dict[str, object], pattern: str) -> None:
+    with pytest.raises(ValidationError, match=pattern):
+        TradableConfig.model_validate(values)

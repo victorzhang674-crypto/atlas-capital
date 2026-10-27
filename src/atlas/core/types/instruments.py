@@ -7,6 +7,7 @@ reads any of those spellings and `vendor_symbol` writes one back out.
 
 import re
 from collections.abc import Mapping
+from datetime import date
 from enum import StrEnum
 from typing import Annotated, Self
 
@@ -75,20 +76,34 @@ class AssetClass(StrEnum):
 
 
 class Instrument(AtlasModel):
-    """A tradable instrument. `sector`/`industry` are GICS names (`None` for ETFs and cash);
-    `currency` is the ISO 4217 code prices are quoted in; `is_shortable` says whether the fund
-    may hold it short (never for cash)."""
+    """A tradable instrument. `name` is the issuer or fund name; `exchange` is the listing
+    exchange (an ISO 10383 MIC such as `XNYS` when known); `sector`/`industry` are GICS names
+    (`None` for ETFs and cash); `currency` is the ISO 4217 code prices are quoted in;
+    `first_trade_date`/`last_trade_date` are the first and last sessions with a price in the
+    lake (`None` if unknown); `is_shortable` says whether the fund may hold it short (never
+    for cash)."""
 
     symbol: Symbol
     asset_class: AssetClass
+    name: str | None = None
     exchange: str | None = None
     sector: str | None = None
     industry: str | None = None
     currency: Annotated[str, Field(pattern=r"^[A-Z]{3}$")] = "USD"
+    first_trade_date: date | None = None
+    last_trade_date: date | None = None
     is_shortable: bool = True
 
+    @property
+    def is_etf(self) -> bool:
+        """Whether this is an exchange-traded fund."""
+        return self.asset_class is AssetClass.ETF
+
     @model_validator(mode="after")
-    def _cash_is_not_shortable(self) -> Self:
+    def _check(self) -> Self:
         if self.asset_class is AssetClass.CASH and self.is_shortable:
             raise ValueError("a CASH instrument cannot be shortable")
+        first, last = self.first_trade_date, self.last_trade_date
+        if first is not None and last is not None and first > last:
+            raise ValueError(f"first_trade_date {first} is after last_trade_date {last}")
         return self

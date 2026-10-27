@@ -314,12 +314,56 @@ class PriceDataConfig(_Frozen):
     adj_mismatch_tolerance: _OpenFrac = 0.005
 
 
+class TradableConfig(_Frozen):
+    """Liquidity filters of `Universe.tradable` (Stage 08), computed from bars known before
+    the decision cutoff.
+
+    `min_price`: last raw close, USD. `min_adv_usd`: average daily dollar volume (mean of raw
+    close x volume) over the last `adv_window_days` bars, USD. `min_history_days`: bars of
+    history. `max_stale_sessions`: how many sessions the last bar may lag the latest session
+    whose bar is known (a name that stopped trading drops out).
+    """
+
+    min_price: Annotated[float, Field(gt=0)] = 5.0
+    min_adv_usd: _NonNeg = 20_000_000.0
+    adv_window_days: Annotated[int, Field(gt=0)] = 20
+    min_history_days: Annotated[int, Field(gt=0)] = 252
+    max_stale_sessions: Annotated[int, Field(ge=0)] = 5
+
+    @model_validator(mode="after")
+    def _history_covers_adv_window(self) -> Self:
+        if self.min_history_days < self.adv_window_days:
+            raise ValueError(
+                f"min_history_days ({self.min_history_days}) must be at least "
+                f"adv_window_days ({self.adv_window_days})"
+            )
+        return self
+
+
+class ReferenceDataConfig(_Frozen):
+    """Where the universe reference data comes from (Stage 08).
+
+    The two URLs are the Wikipedia pages holding the S&P 500 constituents table and change
+    log; `user_agent` is sent with every request (Wikimedia's robot policy wants a
+    descriptive one); `request_timeout_seconds` bounds one HTTP request. `ticker_changes_file`
+    is the manual ticker-rename list, relative to the repo root and not resolved here.
+    """
+
+    sp500_constituents_url: str = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+    sp500_changes_url: str = "https://en.wikipedia.org/wiki/Historical_components_of_the_S%26P_500"
+    user_agent: str = "AtlasCapital/0.1 (research and paper-trading simulator)"
+    request_timeout_seconds: Annotated[float, Field(gt=0)] = 30.0
+    ticker_changes_file: Path = Path("config/ticker_changes.yaml")
+
+
 class DataConfig(_Frozen):
     """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
 
     lake_path: Path = Path("data")
     providers: DataProviders = Field(default_factory=DataProviders)
     prices: PriceDataConfig = Field(default_factory=PriceDataConfig)
+    reference: ReferenceDataConfig = Field(default_factory=ReferenceDataConfig)
+    tradable: TradableConfig = Field(default_factory=TradableConfig)
     universes: _UniverseMap = Field(default_factory=_default_universes)
 
 
@@ -509,6 +553,14 @@ def _read_yaml(path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ConfigError(f"{path}: top level must be a mapping, got {type(data).__name__}")
     return data
+
+
+def read_config_file(path: Path) -> dict[str, Any]:
+    """Parse one YAML file under `config/` with the loader's rules: UTF-8, no repeated keys,
+    a mapping at the top. A missing or empty file is `{}`; errors raise `ConfigError` naming
+    the file. For reference files that `load_config` does not read (Stage 08 ticker renames).
+    """
+    return _read_yaml(path)
 
 
 def _deep_merge(*layers: Mapping[str, Any]) -> dict[str, Any]:
