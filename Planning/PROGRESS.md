@@ -6,7 +6,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 - **Current stage:** 10 — Macro data (FRED / ALFRED) — `NOT STARTED`
 - **Stages done:** 9 / 66
-- **Last updated:** 2026-10-28 (Stage 09 DONE; merged into main)
+- **Last updated:** 2026-10-28 (Stage 09 DONE; gap-closing follow-up merged into main)
 
 ## Stage checklist
 
@@ -516,6 +516,7 @@ Full block and raw output: [verification.md](stages/stage-09-fundamentals/verifi
   - On merged `main` (`f0d1acb`, fast-forward from `383a016` run by the owner; read-only): `pytest -q` → 934 passed, 4 deselected; `ruff check .` → All checks passed!; `ruff format --check .` → 113 files already formatted; `mypy src/atlas` → Success (55 files); brief's Verify → 127 passed; all exit 0; checkout clean before and after · raw: [artifacts/merged-main-check.txt](stages/stage-09-fundamentals/artifacts/merged-main-check.txt)
   - Real-data check (live data.sec.gov, run twice) → `rows=10996 ok=('AAPL', 'MSFT', 'JPM') failed=() fallback_rows=0`; AAPL as of 2023-11-03 revenue TTM 383,285,000,000
   - Gap-closing follow-up (base `3512e76`): `uv run pytest -q` → 937 passed, 4 deselected; ruff, format, mypy clean; brief's Verify `-v -W error` → 130 passed; `make check` → exit 0; coverage 100%; `make check` on merged `main` `3512e76` (read-only) → exit 0, 934 passed · raw: [artifacts/gaps-*.txt](stages/stage-09-fundamentals/artifacts/), [artifacts/merged-main-make-check.txt](stages/stage-09-fundamentals/artifacts/merged-main-make-check.txt)
+  - On merged `main` after the gap-closing follow-up (`b471c42`, owner's fast-forward; read-only): `make check` → exit 0, 937 passed; brief's Verify → 130 passed; checkout clean before and after · raw: [artifacts/gaps-merged-main-check.txt](stages/stage-09-fundamentals/artifacts/gaps-merged-main-check.txt)
 - Acceptance criteria:
   - [x] `fundamentals_pit("AAPL", as_of)` matches fixture-derived figures — evidence: `test_acceptance_fundamentals_pit_aapl_fy2023`, `test_acceptance_detail_cites_the_10k`, `test_fundamentals_reads_lake`, artifacts/real-ingest-check.txt
   - [x] Restatement tests pass — evidence: `test_restated_value_not_seen_before_its_filing`, `test_jpm_q1_2012_restatement`, `test_msft_asc606_recast`, `test_known_facts_latest_filing_per_period`
