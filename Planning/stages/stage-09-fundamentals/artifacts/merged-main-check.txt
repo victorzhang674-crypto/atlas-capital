@@ -1,0 +1,42 @@
+# Stage 09: verification on merged main (read-only) · 2026-10-28
+# Owner ran: git -C <repo> merge --ff-only claude/stage-9-planning-implementation-aed6ae → Updating 383a016..f0d1acb, Fast-forward, 101 files.
+# Method (as Stage 08): worktree venv (same uv.lock), PYTHONPATH=<main>/src, no bytecode, caches in $TMPDIR; cwd = main checkout.
+# make check = lint + fmt-check + type + test (Makefile); its four commands run directly, because 'uv run' would sync a venv in the read-only main checkout.
+
+$ git log --oneline -3
+f0d1acb stage-09: Point-in-time fundamentals (SEC EDGAR)
+383a016 stage-08: close remaining gaps (renames checked against SEC filings, cache, mutation checks)
+2b12e27 stage-08: merged-main check records
+
+$ git status --short --untracked-files=all   (before)
+exit=0
+
+$ git branch --merged main
++ claude/stage-9-planning-implementation-aed6ae
+* main
+
+$ python -c "import atlas; print(atlas.__file__)"
+/Users/zzjsmacbookair/Desktop/Trading Agents/src/atlas/__init__.py
+
+$ pytest -q   (re-run unpiped for the exit code)
+934 passed, 4 deselected in 12.56s
+exit=0
+
+$ ruff check .
+All checks passed!
+exit=0
+
+$ ruff format --check .
+113 files already formatted
+exit=0
+
+$ mypy src/atlas
+Success: no issues found in 55 source files
+exit=0
+
+$ pytest tests/unit/data/fundamentals -q   (brief's Verify)
+127 passed, 1 deselected in 4.18s
+exit=0
+
+$ git status --short --untracked-files=all   (after; also after the re-run)
+exit=0

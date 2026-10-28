@@ -6,7 +6,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 - **Current stage:** 10 — Macro data (FRED / ALFRED) — `NOT STARTED`
 - **Stages done:** 9 / 66
-- **Last updated:** 2026-10-28 (Stage 09 DONE; fast-forward into main pending, see Stage 09 worklog)
+- **Last updated:** 2026-10-28 (Stage 09 DONE; merged into main)
 
 ## Stage checklist
 
@@ -203,6 +203,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-28 | 09 | Execution changes, all before the code they affect existed and annotated in the plan: `filing_index(cik, needed)` takes accession → filing date (was `filed_dates`, which would also read pages for filings already in `recent`); `Fundamentals` takes no `calendar` (a plain date's cutoff comes from `config.calendar`); `test_fundamentals_guards.py` added for the error paths (100% line coverage of `atlas.data.fundamentals`). Process deviation recorded in the worklog: the `FundamentalsConfig` model was written before its two config tests, so those were never red | [stage-09 worklog](stages/stage-09-fundamentals/worklog.md) |
 | 2026-10-28 | 09 | `call_with_retry` (Stage 07, `atlas.data.providers.base`) gains a keyword-only `event` (log event name, default `prices.request_failed`, so Stage 07 behaviour is unchanged); the EDGAR client logs `fundamentals.request_failed` | Reuse instead of a second retry loop |
 | 2026-10-28 | 09 | `SEC_USER_AGENT` is not set here, so `test_live_edgar_aapl` (`-m live`) ran and was skipped; not an acceptance criterion. The pipeline was run against live data.sec.gov with the descriptive User-Agent instead (10,996 rows twice, AAPL FY2023 figures equal) | Rule 6 missing-secret exception for the optional live test; see [verification.md](stages/stage-09-fundamentals/verification.md) |
+| 2026-10-28 | 09 | A second, records-only Stage 09 commit, `stage-09: merged-main check records` (merged-main evidence, worklog entry, plan note, this row), against the one-commit-per-stage default: Project.md Rule 6A (rank 1) requires the commit hash and the merged-`main` checks in the records, which can only be written after the owner's fast-forward of `main` to `f0d1acb` (the sandbox cannot write the main checkout). The owner ran the fast-forward after being told the records would follow as a small commit. Same procedure as Stages 06–08 | Rule 3 precedence (Project.md over the stage protocol's DoD); see [stage-09 worklog](stages/stage-09-fundamentals/worklog.md) |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -510,6 +511,7 @@ Full block and raw output: [verification.md](stages/stage-09-fundamentals/verifi
   - `uv run mypy src/atlas` → Success: no issues found in 55 source files
   - `uv run pytest tests/unit/data/fundamentals -q` (brief's Verify) → 127 passed, 1 deselected
   - `-W error -v` → 127 passed; `-k acceptance -W error` → 7 passed; `-m live` → skipped (`SEC_USER_AGENT` not set); `make check` → exit 0; coverage of `atlas.data.fundamentals` 100%; docstrings → none missing
+  - On merged `main` (`f0d1acb`, fast-forward from `383a016` run by the owner; read-only): `pytest -q` → 934 passed, 4 deselected; `ruff check .` → All checks passed!; `ruff format --check .` → 113 files already formatted; `mypy src/atlas` → Success (55 files); brief's Verify → 127 passed; all exit 0; checkout clean before and after · raw: [artifacts/merged-main-check.txt](stages/stage-09-fundamentals/artifacts/merged-main-check.txt)
   - Real-data check (live data.sec.gov, run twice) → `rows=10996 ok=('AAPL', 'MSFT', 'JPM') failed=() fallback_rows=0`; AAPL as of 2023-11-03 revenue TTM 383,285,000,000
 - Acceptance criteria:
   - [x] `fundamentals_pit("AAPL", as_of)` matches fixture-derived figures — evidence: `test_acceptance_fundamentals_pit_aapl_fy2023`, `test_acceptance_detail_cites_the_10k`, `test_fundamentals_reads_lake`, artifacts/real-ingest-check.txt
