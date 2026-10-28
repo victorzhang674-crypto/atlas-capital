@@ -366,7 +366,8 @@ class FundamentalsConfig(_Frozen):
     map, relative to the repo root and not resolved here. Durations, in days, of a fiscal
     quarter (`quarter_days`) and a fiscal year (`annual_days`) are inclusive ranges that admit
     52/53-week years; a metric whose period ended more than `max_staleness_days` before the
-    as-of day is not used.
+    as-of day is not used. `cik_overrides_file` lists verified CIKs of former S&P 500 members
+    (relative to the repo root, not resolved here).
     """
 
     company_tickers_url: str = "https://www.sec.gov/files/company_tickers.json"
@@ -381,6 +382,7 @@ class FundamentalsConfig(_Frozen):
     quarter_days: tuple[int, int] = (80, 100)
     annual_days: tuple[int, int] = (350, 380)
     max_staleness_days: Annotated[int, Field(gt=0)] = 400
+    cik_overrides_file: Path = Path("config/cik_overrides.yaml")
 
     @model_validator(mode="after")
     def _check(self) -> Self:

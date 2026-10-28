@@ -72,7 +72,12 @@ def test_load_concept_map_repo_file(repo_root: Path) -> None:
     ]
     revenue = cmap["revenue"]
     assert (revenue.kind, revenue.unit) == ("flow", "USD")
-    assert revenue.parts[0][1] == (("us-gaap", REVENUE_TAG),)
+    assert revenue.parts[0][1] == (("us-gaap", "RevenuesNetOfInterestExpense"),)
+    assert revenue.parts[0][2] == (
+        ("us-gaap", "InterestIncomeExpenseNet"),
+        ("us-gaap", "NoninterestIncome"),
+    )
+    assert revenue.parts[0][3] == (("us-gaap", REVENUE_TAG),)
     debt = cmap["total_debt"]
     assert debt.kind == "stock" and len(debt.parts) == 2
     assert debt.parts[0][2] == (
@@ -83,7 +88,7 @@ def test_load_concept_map_repo_file(repo_root: Path) -> None:
         ("dei", "EntityCommonStockSharesOutstanding"),
     )
     assert cmap["eps_diluted"].unit == "USD/shares"
-    assert len(cmap.tags()) == 35
+    assert len(cmap.tags()) == 37
 
 
 @pytest.mark.parametrize(

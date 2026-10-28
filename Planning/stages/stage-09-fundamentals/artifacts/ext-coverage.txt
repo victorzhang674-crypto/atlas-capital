@@ -1,0 +1,8 @@
+src/atlas/data/fundamentals/__init__.py           6      0   100%
+src/atlas/data/fundamentals/edgar_client.py     174      0   100%
+src/atlas/data/fundamentals/ingest.py            55      0   100%
+src/atlas/data/fundamentals/mapping.py          151      0   100%
+src/atlas/data/fundamentals/parser.py           121      0   100%
+src/atlas/data/fundamentals/pit.py              196      0   100%
+TOTAL                                           703      0   100%
+141 passed, 1 deselected in 6.18s

@@ -1,0 +1,7 @@
+run 2026-10-28T16:50:36Z (after the bank revenue fallback)
+ok=('CELG', 'ATVI', 'APC', 'STI', 'SIVB') failed={'FRC': 'no CIK (not in company_tickers.json or config/cik_overrides.yaml)'} rows=11530 fallback_rows=0
+CELG cik=816284 as of 2019-06-03: revenue_ttm=15,768,000,000 to 2019-03-31 (quarters, accn 0000816284-19-000031); net_income_ttm=4,745,000,000
+ATVI cik=718877 as of 2022-06-01: revenue_ttm=8,297,000,000 to 2022-03-31 (quarters, accn 0001628280-22-011987); net_income_ttm=2,474,000,000
+APC cik=773910 as of 2019-03-01: revenue_ttm=13,382,000,000 to 2018-12-31 (annual, accn 0000773910-19-000009); net_income_ttm=615,000,000
+STI cik=750556 as of 2019-06-03: revenue_ttm=9,304,000,000 to 2019-03-31 (quarters, accn 0000750556-19-000143); net_income_ttm=2,712,000,000
+SIVB cik=719739 as of 2022-12-01: revenue_ttm=6,185,000,000 to 2022-09-30 (quarters, accn 0000719739-22-000081); net_income_ttm=1,712,000,000

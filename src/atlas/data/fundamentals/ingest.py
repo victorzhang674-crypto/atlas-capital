@@ -82,7 +82,7 @@ def ingest_fundamentals(
     for symbol in requested:
         cik = cik_map.cik(symbol)
         if cik is None:
-            reasons[symbol] = "no CIK in company_tickers.json (not a current SEC registrant)"
+            reasons[symbol] = "no CIK (not in company_tickers.json or config/cik_overrides.yaml)"
             continue
         try:
             facts = parse_companyfacts(

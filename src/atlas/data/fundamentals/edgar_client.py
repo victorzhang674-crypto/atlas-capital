@@ -15,21 +15,23 @@ change and are always served from the cache once stored.
 
 import json
 import time
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from datetime import date
 from pathlib import Path
 from types import TracebackType
-from typing import Any, BinaryIO, Self
+from typing import Annotated, Any, BinaryIO, Self
 
 import httpx
 import pandas as pd
+from pydantic import Field, ValidationError, model_validator
 
-from atlas.core.config import AtlasConfig, FundamentalsConfig
+from atlas.core.config import AtlasConfig, FundamentalsConfig, read_config_file
 from atlas.core.errors import ConfigError, DataError
 from atlas.core.logging import get_logger
 from atlas.core.storage import Lake
 from atlas.core.storage.meta import atomic_write
-from atlas.core.types.instruments import normalize_symbol
+from atlas.core.types.base import AtlasModel, NonEmptyStr
+from atlas.core.types.instruments import Symbol, normalize_symbol
 from atlas.data.fundamentals.parser import parse_submissions
 from atlas.data.providers.base import RetryPolicy, Throttle, call_with_retry
 
@@ -86,6 +88,17 @@ class CikMap:
             _log.info("fundamentals.tickers_skipped", count=skipped)
         return cls(ciks)
 
+    def with_overrides(self, overrides: Sequence["CikOverride"]) -> "CikMap":
+        """A new map where each override replaces its symbol's CIK (`cik=None` removes the
+        symbol: no verified CIK). This map is unchanged."""
+        ciks = dict(self._ciks)
+        for override in overrides:
+            if override.cik is None:
+                ciks.pop(override.symbol, None)
+            else:
+                ciks[override.symbol] = override.cik
+        return CikMap(ciks)
+
     def cik(self, symbol: str) -> int | None:
         """The CIK of `symbol`, or `None` when it is not listed (or not a valid symbol)."""
         try:
@@ -96,6 +109,53 @@ class CikMap:
     def __len__(self) -> int:
         """Number of tickers in the map."""
         return len(self._ciks)
+
+
+class CikOverride(AtlasModel):
+    """A verified CIK for a symbol `company_tickers.json` cannot resolve correctly (a former
+    S&P 500 member: delisted, or its ticker now used by another company).
+
+    `cik=None` means no verified SEC CIK (e.g. a bank that filed with the FDIC). `name` is the
+    change-log security name; `evidence` says how the CIK was checked.
+    """
+
+    symbol: Symbol
+    cik: Annotated[int, Field(gt=0)] | None
+    name: NonEmptyStr
+    evidence: NonEmptyStr
+
+
+class _CikOverridesFile(AtlasModel):
+    """Body of `config/cik_overrides.yaml`."""
+
+    overrides: tuple[CikOverride, ...] = ()
+
+    @model_validator(mode="after")
+    def _unique(self) -> Self:
+        seen: set[str] = set()
+        for override in self.overrides:
+            if override.symbol in seen:
+                raise ValueError(f"{override.symbol} is listed twice")
+            seen.add(override.symbol)
+        return self
+
+
+def load_cik_overrides(path: Path) -> tuple[CikOverride, ...]:
+    """The overrides in `path` (`overrides: [...]`; see `config/cik_overrides.yaml`).
+
+    A missing file gives none. Invalid content raises `ConfigError` naming the file and the
+    entry at fault.
+    """
+    data = read_config_file(path)
+    try:
+        body = _CikOverridesFile.model_validate(data)
+    except ValidationError as exc:
+        problems = "; ".join(
+            f"{'.'.join(str(p) for p in err['loc']) or '<root>'}: {err['msg']}"
+            for err in exc.errors()
+        )
+        raise ConfigError(f"{path}: {problems}") from None
+    return body.overrides
 
 
 class EdgarClient:
@@ -280,3 +340,14 @@ def build_edgar_client(config: AtlasConfig, lake: Lake | None = None) -> EdgarCl
             'e.g. "Atlas Capital you@example.com"; add it to .env'
         )
     return EdgarClient(config.data.fundamentals, user_agent=user_agent, lake=lake)
+
+
+def build_cik_map(
+    client: EdgarClient, config: AtlasConfig | None = None, *, refresh: bool = False
+) -> CikMap:
+    """The ticker → CIK map for ingestion: EDGAR's `company_tickers.json` (current
+    registrants) with the verified overrides of `config.data.fundamentals.cik_overrides_file`
+    (former members; path relative to the working directory) applied on top."""
+    cfg = config if config is not None else AtlasConfig()
+    base = CikMap.from_company_tickers(client.company_tickers(refresh=refresh))
+    return base.with_overrides(load_cik_overrides(cfg.data.fundamentals.cik_overrides_file))

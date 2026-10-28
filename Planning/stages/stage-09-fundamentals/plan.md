@@ -163,3 +163,25 @@ None with the roadmap or the design spec. Points checked:
 - [x] `test_data_limitations_doc_covers_fundamentals` (mentions "companyfacts", "acceptance", "restat", "CIK").
 - [x] Write the fundamentals section (as-filed values, acceptance vs fallback, tag coverage and NaN concepts, derived Q4/EPS approximation, delisted names without a CIK, non-dimensional facts only).
 - [x] Full verification (Rule 1): `uv run pytest -q`, `ruff check`, `ruff format --check`, `mypy src/atlas`, brief Verify, `make check`, `-k acceptance -W error`, docstrings; outputs to `artifacts/`; write `verification.md`, `PROGRESS.md`; commit; merge into `main` (Rule 6A) and re-verify; audit plan vs work. *(Done: verification, records, audit, commit `f0d1acb`. Then the owner fast-forwarded `main` to `f0d1acb` (the sandbox cannot write the main checkout) and the merged-main checks passed: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt).)*
+
+---
+
+## Addendum (2026-10-28): CIKs of former members (owner-approved scope extension)
+
+**Why:** after DONE, the gap review found that `company_tickers.json` lists current registrants only. Of the 164 former S&P 500 members since 2018-01-01 (the backtest window, spec A7), 83 have no CIK there (no fundamentals) and 81 resolve only by their *current* ticker, which may since belong to another company. The brief names only `company_tickers.json`, so this is outside the In-scope list (Rule 2); the owner approved extending Stage 09 in chat: "Extend Stage 09 (Recommended)" (answer to: "Should Stage 09 be extended to give former S&P 500 members (left since 2018) verified SEC company IDs, so their fundamentals load too?").
+
+| # | Decision | Why |
+|---|---|---|
+| E1 | `config/cik_overrides.yaml` pins a CIK for **every** symbol that was an S&P 500 member on or after 2018-01-01 and is not in today's constituents table (`cik: null` = no verified CIK, the symbol stays unmapped). Each entry: `symbol`, `cik`, `name`, `evidence`. Read by `load_cik_overrides(path)` (not `load_config`), path from `data.fundamentals.cik_overrides_file`. | One reviewed list, independent of later ticker reuse in `company_tickers.json` |
+| E2 | `CikMap.with_overrides(overrides)`: an override replaces the `company_tickers.json` entry of its symbol (or removes it for `null`). `build_cik_map(client, config)` = real tickers file + repo overrides. | Overrides win: they were checked against the filings |
+| E3 | Verification (script `artifacts/build_cik_overrides.py`, output kept): candidates from the current ticker and from EDGAR full-text search of the change-log name in 10-K/10-Q filings during the membership window; a candidate is accepted when its SEC name or a former name matches the change-log name and it filed a 10-K or 10-Q during the membership window. Every row is reviewed by hand; unclear ones get `null` with the reason. | Fail safe: no fundamentals beats another company's fundamentals |
+| E4 | Current members keep `company_tickers.json` (current tickers are correct for them). | Scope |
+
+### Task A1: overrides file loader and CikMap overrides (test-first)
+- [x] Tests: `test_load_cik_overrides_repo_file`, `test_load_cik_overrides_rejects_bad_file`, `test_cik_map_overrides_add_replace_and_block`, `test_build_cik_map_applies_repo_overrides`, `test_cik_overrides_cover_former_members_since_2018` (Stage 08 universe fixtures), `test_fundamentals_defaults` (new key); red → implement → green.
+
+### Task A2: find and verify the CIKs
+- [x] Run `artifacts/build_cik_overrides.py` (real EDGAR, `SEC_USER_AGENT`), review every row, write `config/cik_overrides.yaml` with evidence.
+
+### Task A3: real-data check and records
+- [x] Ingest a sample of former members from live EDGAR with `build_cik_map` and read a pre-removal point-in-time view; full verification; docs (`data-limitations.md`), records, commit, merge into `main`. *(The real data exposed a bank revenue bug, fixed test-first: `InterestIncomeExpenseNet + NoninterestIncome` ahead of the fee-only `RevenueFromContract…` tag; see the worklog.)*

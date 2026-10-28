@@ -139,3 +139,18 @@ def test_resolve_priority_beats_a_later_filing_of_a_lower_tag() -> None:
     )
     out = resolve_concept(facts, concept("flow", (("A",), ("B",))))
     assert (out["tag"].tolist(), out["value"].tolist()) == (["A"], [100.0])
+
+
+def test_bank_revenue_is_net_interest_plus_noninterest_income() -> None:
+    """A bank that tags no total revenue: revenue = net interest income + noninterest income,
+    not `RevenueFromContractWithCustomer…`, which for a bank covers fee income only (SunTrust
+    FY2018: 5,987 M + 3,226 M = 9,213 M; the fee tag would give a fraction of it)."""
+    fy = {"start": date(2018, 1, 1), "end": date(2018, 12, 31), "filed": date(2019, 2, 22)}
+    facts = make_facts(
+        {"tag": "InterestIncomeExpenseNet", "value": 5_987, **fy},
+        {"tag": "NoninterestIncome", "value": 3_226, **fy},
+        {"tag": "RevenueFromContractWithCustomerExcludingAssessedTax", "value": 1_500, **fy},
+    )
+    out = resolve_concept(facts, repo_concept_map()["revenue"])
+    assert out["value"].tolist() == [9_213.0]
+    assert out["tag"].tolist() == ["InterestIncomeExpenseNet + NoninterestIncome"]

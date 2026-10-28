@@ -754,6 +754,7 @@ def test_fundamentals_defaults() -> None:  # Stage 09 D10
         quarter_days=(80, 100),
         annual_days=(350, 380),
         max_staleness_days=400,
+        cik_overrides_file=Path("config/cik_overrides.yaml"),
     )
 
 

@@ -1,14 +1,21 @@
 """Point-in-time fundamentals from SEC EDGAR (Stage 09).
 
-`edgar_client` fetches EDGAR JSON (ticker → CIK map, companyfacts, submissions) with a rate
-limit and a raw cache; `parser` turns it into the `fundamentals_facts` table (registered on
-import) with point-in-time `available_at`; `mapping` loads the concept map
-(`config/xbrl_map.yaml`) and resolves a concept per period; `pit` builds
-quarters, TTM, latest balances, ratios and the wide view (`Fundamentals(lake).pit(symbol,
-as_of)`); `ingest` fills the table from EDGAR.
+`edgar_client` fetches EDGAR JSON (ticker → CIK map with verified overrides for former
+members, companyfacts, submissions) with a rate limit and a raw cache; `parser` turns it into
+the `fundamentals_facts` table (registered on import) with point-in-time `available_at`;
+`mapping` loads the concept map (`config/xbrl_map.yaml`) and resolves a concept per period;
+`pit` builds quarters, TTM, latest balances, ratios and the wide view
+(`Fundamentals(lake).pit(symbol, as_of)`); `ingest` fills the table from EDGAR.
 """
 
-from atlas.data.fundamentals.edgar_client import CikMap, EdgarClient, build_edgar_client
+from atlas.data.fundamentals.edgar_client import (
+    CikMap,
+    CikOverride,
+    EdgarClient,
+    build_cik_map,
+    build_edgar_client,
+    load_cik_overrides,
+)
 from atlas.data.fundamentals.ingest import FundamentalsIngestReport, ingest_fundamentals
 from atlas.data.fundamentals.mapping import (
     PERIOD_COLUMNS,
@@ -62,6 +69,7 @@ __all__ = [
     "RAW_FACT_COLUMNS",
     "Alternative",
     "CikMap",
+    "CikOverride",
     "Concept",
     "ConceptMap",
     "EdgarClient",
@@ -71,6 +79,7 @@ __all__ = [
     "Part",
     "TaxTag",
     "attach_available_at",
+    "build_cik_map",
     "build_edgar_client",
     "compute_ratios",
     "fundamentals_pit",
@@ -79,6 +88,7 @@ __all__ = [
     "known_facts",
     "latest_balance",
     "latest_filings",
+    "load_cik_overrides",
     "load_concept_map",
     "metric_names",
     "parse_alternative",

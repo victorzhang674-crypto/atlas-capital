@@ -16,8 +16,9 @@
 
 # The standardised concepts (brief: Stage 09 In scope).
 concepts:
-  # Total revenue, USD (banks: total net revenue).
-  revenue: {kind: flow, unit: USD, tags: [Revenues, RevenueFromContractWithCustomerExcludingAssessedTax, SalesRevenueNet, RevenuesNetOfInterestExpense, RevenueFromContractWithCustomerIncludingAssessedTax]}
+  # Total revenue, USD. Banks: total net revenue; a bank that tags no total gets net interest
+  # income + noninterest income (for a bank, RevenueFromContractWithCustomer... is fee income only).
+  revenue: {kind: flow, unit: USD, tags: [Revenues, RevenuesNetOfInterestExpense, InterestIncomeExpenseNet + NoninterestIncome, RevenueFromContractWithCustomerExcludingAssessedTax, SalesRevenueNet, RevenueFromContractWithCustomerIncludingAssessedTax]}
   # Gross profit, USD (absent for banks).
   gross_profit: {kind: flow, unit: USD, tags: [GrossProfit]}
   # Operating income, USD.

@@ -1,0 +1,4 @@
+BCR: cik=9892 sec_name='BARD C R INC /NJ/' former=[] 10-K/10-Q filed 2017-07-01..2018-01-03: 2
+   companyfacts: entityName='BARD C R INC /NJ/', us-gaap tags=435
+KSU: cik=54480 sec_name='KANSAS CITY SOUTHERN' former=['KANSAS CITY SOUTHERN INDUSTRIES INC'] 10-K/10-Q filed 2017-07-01..2021-12-14: 18
+   companyfacts: entityName='KANSAS CITY SOUTHERN', us-gaap tags=375

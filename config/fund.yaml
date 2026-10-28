@@ -50,6 +50,7 @@ data:
     quarter_days: [80, 100]  # a duration in this range of days is a fiscal quarter (52/53-week years)
     annual_days: [350, 380]  # a duration in this range of days is a fiscal year
     max_staleness_days: 400  # a metric whose period ended longer ago than this is not used (NaN)
+    cik_overrides_file: config/cik_overrides.yaml  # verified CIKs of former S&P 500 members, relative to the repo root
   # Liquidity filters of Universe.tradable (Stage 08); only bars known before the cutoff count.
   tradable:
     min_price: 5.0  # last raw close, USD

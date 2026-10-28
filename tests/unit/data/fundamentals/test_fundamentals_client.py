@@ -4,12 +4,15 @@ import io
 import json
 import logging
 from collections.abc import Iterator
+from datetime import date
+from pathlib import Path
 
 import httpx
 import pytest
 import respx
 from fundamentals_helpers import (
     AAPL,
+    REPO_ROOT,
     TEST_USER_AGENT,
     SleepRecorder,
     edgar_client,
@@ -22,7 +25,13 @@ from atlas.core.config import AtlasConfig, FundamentalsConfig, Secrets
 from atlas.core.errors import ConfigError, DataError
 from atlas.core.logging import configure_logging, reset_logging
 from atlas.core.storage import Lake
-from atlas.data.fundamentals import CikMap, build_edgar_client
+from atlas.data.fundamentals import (
+    CikMap,
+    CikOverride,
+    build_cik_map,
+    build_edgar_client,
+    load_cik_overrides,
+)
 
 FACTS_URL = "https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json"
 
@@ -181,3 +190,83 @@ def test_user_agent_is_not_logged() -> None:
     text = stream.getvalue()
     assert "fundamentals.request_failed" in text
     assert TEST_USER_AGENT not in text
+
+
+# --- CIK overrides for former members (Stage 09 addendum) -------------------------------------
+
+OVERRIDES_FILE = REPO_ROOT / "config" / "cik_overrides.yaml"
+
+
+def test_load_cik_overrides_repo_file() -> None:
+    overrides = {o.symbol: o for o in load_cik_overrides(OVERRIDES_FILE)}
+    assert len(overrides) == 164
+    assert overrides["APC"].cik == 773910  # the ticker APC now belongs to ARKO Petroleum
+    assert overrides["STI"].cik == 750556  # the ticker STI now belongs to Solidion
+    assert overrides["CELG"].cik == 816284
+    assert overrides["ATVI"].cik == 718877
+    assert overrides["FRC"].cik is None  # a bank that filed with the FDIC, not the SEC
+    assert all(o.evidence and o.name for o in overrides.values())
+
+
+@pytest.mark.parametrize(
+    ("body", "pattern"),
+    [
+        ("overrides: [{symbol: A, cik: 1, name: x, evidence: y}, "
+         "{symbol: a, cik: 2, name: x, evidence: y}]", "twice"),
+        ("overrides: [{symbol: A, cik: 0, name: x, evidence: y}]", "cik"),
+        ("overrides: [{symbol: A, cik: 1, name: x}]", "evidence"),
+        ("overrides: [{symbol: A, cik: 1, name: x, evidence: y, note: z}]", "note"),
+        ("overrides: [{symbol: 'B@D!', cik: 1, name: x, evidence: y}]", "symbol"),
+    ],
+)  # fmt: skip
+def test_load_cik_overrides_rejects_bad_file(tmp_path: Path, body: str, pattern: str) -> None:
+    path = tmp_path / "cik_overrides.yaml"
+    path.write_text(body)
+    with pytest.raises(ConfigError, match=pattern) as err:
+        load_cik_overrides(path)
+    assert str(path) in str(err.value)
+
+
+def test_load_cik_overrides_missing_file_is_empty(tmp_path: Path) -> None:
+    assert load_cik_overrides(tmp_path / "absent.yaml") == ()
+
+
+def test_cik_map_overrides_add_replace_and_block() -> None:
+    base = CikMap({"AAPL": 320193, "APC": 2080921, "FRC": 999})
+    overrides = (
+        CikOverride(symbol="APC", cik=773910, name="Anadarko", evidence="e"),
+        CikOverride(symbol="celg", cik=816284, name="Celgene", evidence="e"),
+        CikOverride(symbol="FRC", cik=None, name="First Republic Bank", evidence="e"),
+    )
+    cik_map = base.with_overrides(overrides)
+    assert cik_map.cik("AAPL") == 320193  # untouched
+    assert cik_map.cik("APC") == 773910  # replaced
+    assert cik_map.cik("CELG") == 816284  # added
+    assert cik_map.cik("FRC") is None  # blocked
+    assert base.cik("APC") == 2080921  # the original map is unchanged
+
+
+def test_build_cik_map_applies_repo_overrides(
+    sec: respx.MockRouter, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(REPO_ROOT)
+    cik_map = build_cik_map(edgar_client(), AtlasConfig())
+    assert cik_map.cik("AAPL") == AAPL
+    assert cik_map.cik("CELG") == 816284
+    assert cik_map.cik("FRC") is None
+
+
+def test_cik_overrides_cover_former_members_since_2018() -> None:
+    """Every S&P 500 member on or after 2018-01-01 that is not in today's constituents table
+    (Stage 08 reconstruction from the recorded fixtures) has a reviewed override entry."""
+    from atlas.data.reference import load_ticker_map, parse_changes, parse_constituents
+    from atlas.data.universe import build_membership
+
+    fixtures = REPO_ROOT / "tests" / "fixtures" / "universe"
+    constituents = parse_constituents((fixtures / "wikipedia_sp500_constituents.html").read_text())
+    changes = parse_changes((fixtures / "wikipedia_sp500_changes.html").read_text())
+    ticker_map = load_ticker_map(REPO_ROOT / "config" / "ticker_changes.yaml")
+    intervals = build_membership(constituents, changes, ticker_map=ticker_map).intervals
+    recent = intervals[intervals["end_date"].isna() | (intervals["end_date"] > date(2018, 1, 1))]
+    former = set(recent["symbol"]) - set(constituents["symbol"])
+    assert {o.symbol for o in load_cik_overrides(OVERRIDES_FILE)} == former

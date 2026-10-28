@@ -94,16 +94,20 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    but is public the same evening (AAPL's FY2023 10-K: accepted 2023-11-02 18:08 ET, filed
    2023-11-03). When a filing is not in the index, `available_at` falls back to the open of the
    first session after the filing date (conservative, at most a day late).
-2. **Companies without a current ticker have no fundamentals.** The ticker → **CIK** map is
-   EDGAR's `company_tickers.json`, which lists current registrants only. Former S&P 500
-   members that were acquired or went bankrupt (CELG, SIVB, …) are not found, the same
-   survivorship gap as their missing prices (Stage 08 section). A manual CIK list for former
-   members would close it.
+2. **Former members need a reviewed CIK.** EDGAR's `company_tickers.json` lists current
+   registrants only, and an old ticker may now belong to another company (APC is now ARKO
+   Petroleum, STI is now Solidion). `config/cik_overrides.yaml` pins a verified **CIK** for every
+   S&P 500 member since 2018-01-01 that has left the index (164 names, each checked against its
+   own 10-K/10-Q filings during its membership; `build_cik_map` applies them). Two have none:
+   First Republic Bank and Signature Bank filed with the FDIC, not the SEC, so they have no
+   fundamentals. Members that left before 2018 (before the backtest window) are not covered.
 3. **Coverage depends on the tag list.** Standardised concepts are defined in
    `config/xbrl_map.yaml` as fallback lists of us-gaap/dei tags. A company that reports a line
    under a tag the map does not list gets **NaN** for it, never a guess; so does a business
    that has no such line (a bank has no gross profit, operating income, capex or R&D tag, so
-   its gross margin, operating margin and FCF are NaN). Total liabilities is NaN for filers that
+   its gross margin, operating margin and FCF are NaN). A bank that tags no total revenue gets
+   net interest income + noninterest income (its `RevenueFromContractWithCustomer…` tag covers
+   fee income only). Total liabilities is NaN for filers that
    report only "liabilities and equity". Total debt adds long-term debt (with its current
    portion) and short-term borrowings; leases are not included.
    Within one period the first tag in the list wins, even if a later tag was filed later: a
