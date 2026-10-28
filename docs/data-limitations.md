@@ -75,3 +75,48 @@ there while passing with Yahoo's consolidated volume.
   after the bar's date: it is **not** point-in-time. Use raw prices with `corporate_actions`
   (`atlas.data.prices.adjustment_factors`).
 - Corporate actions are known from their ex-date bar; announcement dates are not captured.
+
+## Fundamentals (Stage 09)
+
+Fundamentals come from SEC EDGAR's free XBRL **companyfacts** API, stored **as filed**: every
+filing that reports a period (the original 10-Q, the 10-K comparative a year later, a 10-Q/A)
+is its own row in `fundamentals_facts`, and a query at `as_of` uses, per tag and period, the
+latest filing that was public before the decision cutoff. So a **restatement** is seen only
+from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012 revenue from
+26,712 M to 26,052 M on 2012-08-09; MSFT recast fiscal 2017 for ASC 606 in its 2017-10-26
+10-Q), never earlier.
+
+### What is left
+
+1. **Knowledge time is the EDGAR acceptance time.** It comes from the submissions API
+   (`acceptanceDateTime`, which is UTC: checked against EDGAR's 17:30 ET filing-date rule,
+   Stage 09 artifacts). A filing accepted after 17:30 ET carries the next day's filing date
+   but is public the same evening (AAPL's FY2023 10-K: accepted 2023-11-02 18:08 ET, filed
+   2023-11-03). When a filing is not in the index, `available_at` falls back to the open of the
+   first session after the filing date (conservative, at most a day late).
+2. **Companies without a current ticker have no fundamentals.** The ticker → **CIK** map is
+   EDGAR's `company_tickers.json`, which lists current registrants only. Former S&P 500
+   members that were acquired or went bankrupt (CELG, SIVB, …) are not found, the same
+   survivorship gap as their missing prices (Stage 08 section). A manual CIK list for former
+   members would close it.
+3. **Coverage depends on the tag list.** Standardised concepts are defined in
+   `config/xbrl_map.yaml` as fallback lists of us-gaap/dei tags. A company that reports a line
+   under a tag the map does not list gets **NaN** for it, never a guess; so does a business
+   that has no such line (a bank has no gross profit, operating income, capex or R&D tag, so
+   its gross margin, operating margin and FCF are NaN). Total liabilities is NaN for filers that
+   report only "liabilities and equity". Total debt adds long-term debt (with its current
+   portion) and short-term borrowings; leases are not included.
+   Within one period the first tag in the list wins, even if a later tag was filed later: a
+   restatement filed under a different tag than the original is not picked up.
+4. **Only non-dimensional facts.** companyfacts carries company-wide values, not segment or
+   share-class (**dimension**) breakdowns; multi-class companies may lack the cover-page share
+   count (then `CommonStockSharesOutstanding` from the balance sheet is used).
+5. **Derived quarters.** Cash-flow lines are reported year-to-date in 10-Qs and many companies
+   report the fourth quarter only inside the fiscal year. Discrete quarters are therefore
+   derived (H1 − Q1, 9M − H1, **Q4** = FY − Q1..Q3). A derived EPS quarter is approximate
+   (share counts change during the year). TTM is the fiscal year at a fiscal year end, else
+   four contiguous quarters; a metric whose period ended more than 400 days before `as_of`
+   (`max_staleness_days`) is NaN.
+6. **Ratios use simple definitions.** ROE and ROA divide TTM net income by the latest equity
+   and assets (not averages); a ratio with a missing or non-positive denominator (negative
+   equity) is NaN.

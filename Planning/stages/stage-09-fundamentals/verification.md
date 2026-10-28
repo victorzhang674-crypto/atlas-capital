@@ -1,0 +1,29 @@
+# Stage 09 — Point-in-time fundamentals (SEC EDGAR) · Verification evidence
+
+Filled in only with output from commands actually run in this stage's chat (Project.md Rule 1). Raw outputs are in `artifacts/`.
+
+#### Verification evidence — Stage 09 — 2026-10-28
+- Commands run (this chat):
+  - `uv run pytest -q` → 934 passed, 0 failed, 4 deselected (live), exit 0 · raw: [artifacts/pytest.txt](artifacts/pytest.txt) (ends with the known `nanobind: leaked …` shutdown lines, Stage 06 backlog)
+  - `uv run ruff check .` → All checks passed! · raw: [artifacts/ruff-check.txt](artifacts/ruff-check.txt)
+  - `uv run ruff format --check .` → 113 files already formatted · raw: [artifacts/ruff-format.txt](artifacts/ruff-format.txt)
+  - `uv run mypy src/atlas` → Success: no issues found in 55 source files · raw: [artifacts/mypy.txt](artifacts/mypy.txt)
+  - `uv run pytest tests/unit/data/fundamentals -q` (brief's Verify) → 127 passed, 1 deselected (live), exit 0 · raw: [artifacts/verify-test-fundamentals.txt](artifacts/verify-test-fundamentals.txt)
+  - `uv run pytest tests/unit/data/fundamentals -q -W error -v` → 127 passed, no warnings · raw: [artifacts/stage-tests-verbose.txt](artifacts/stage-tests-verbose.txt)
+  - `uv run pytest tests/unit/data/fundamentals -k acceptance -W error -v` → 7 passed (the two acceptance tests and five acceptance-time tests) · raw: [artifacts/acceptance-tests.txt](artifacts/acceptance-tests.txt)
+  - `uv run pytest tests/unit/data/fundamentals -m live -v -rs` → `test_live_edgar_aapl SKIPPED (SEC_USER_AGENT is not set (.env))` · raw: [artifacts/live.txt](artifacts/live.txt)
+  - `make check` → ruff, format, mypy clean, 934 passed, exit 0 · raw: [artifacts/make-check.txt](artifacts/make-check.txt)
+  - `uv run pytest tests/unit/data/fundamentals --cov=atlas.data.fundamentals` → 100% line coverage of the six modules (665 statements) · raw: [artifacts/coverage.txt](artifacts/coverage.txt)
+  - Docstrings (`artifacts/docstrings.py`) → 6 modules, 45 public names checked, none missing · raw: [artifacts/docstrings.txt](artifacts/docstrings.txt)
+  - Real-data check against live data.sec.gov (`artifacts/real_ingest_check.py`, run twice in one process): `rows=10996 ok=('AAPL', 'MSFT', 'JPM') failed=() fallback_rows=0` both runs; AAPL as of 2023-11-03 `revenue_ttm=383,285,000,000 net_income_ttm=96,995,000,000 eps=6.13 total_debt=111,088,000,000 gross_margin=0.4413`; as of 2023-11-02 `revenue_ttm=383,933,000,000` · raw: [artifacts/real-ingest-check.txt](artifacts/real-ingest-check.txt)
+  - Source probe: `acceptanceDateTime` fits EDGAR's 17:30 ET filing-date rule for 252/254 filings read as UTC, 58/254 as Eastern · raw: [artifacts/acceptance-utc-check.txt](artifacts/acceptance-utc-check.txt)
+- Acceptance criteria (brief):
+  - [x] `fundamentals_pit("AAPL", as_of)` matches fixture-derived figures — evidence: `test_acceptance_fundamentals_pit_aapl_fy2023` (all 15 concepts and 6 ratios of AAPL FY2023 as of 2023-11-03 equal the 10-K figures: revenue 383,285 M, gross profit 169,148 M, operating income 114,301 M, net income 96,995 M, EPS 6.13, shares 15,552,752,000, assets 352,583 M, liabilities 290,437 M, equity 62,146 M, cash 29,965 M, debt 111,088 M, OCF 110,543 M, capex 10,959 M, R&D 29,915 M, SBC 10,833 M), `test_acceptance_detail_cites_the_10k` (accession 0000320193-23-000106, tag, period, acceptance time), `test_fundamentals_reads_lake` (the lake-backed `Fundamentals(lake).pit("AAPL", …)` equals the frame-level `fundamentals_pit`), `test_parse_companyfacts_aapl_fy2023_revenue` (brief task 2: 383,285 M); the same figures from live EDGAR (artifacts/real-ingest-check.txt)
+  - [x] Restatement tests pass — evidence: `test_restated_value_not_seen_before_its_filing` (synthetic: 100 then 90), `test_known_facts_latest_filing_per_period`, `test_jpm_q1_2012_restatement` (real 10-Q/A: 26,712 M as of 2012-08-08, 26,052 M as of 2012-08-09), `test_msft_asc606_recast` (real recast: 20,453 M as of 2017-06-01, 21,928 M as of 2018-06-01), `test_resolve_uses_latest_filing_per_period`
+  - [x] Look-ahead tests pass — evidence: `test_future_facts_do_not_change_result`, `test_guard_raises_if_filter_bypassed` (`LookAheadError`), `test_known_facts_cutoff_is_strict`, `test_fundamentals_pit_before_10k_uses_previous_ttm`, `test_available_at_uses_acceptance_time`, `test_available_at_fallback_is_next_session_open`
+- Brief tasks: 1 → `test_fundamentals_client.py` (CIK map, rate limiter, retries, raw cache; respx); 2 → `test_fundamentals_parser.py`; 3 → `test_fundamentals_mapping.py` + `test_jpm_missing_concepts_are_nan` (JPM gross profit NaN, not an error); 4 → `test_fundamentals_quarters.py`; 5 → restatement tests above; 6 → `test_ratios_known_values`, `test_ratio_with_missing_or_nonpositive_denominator_is_nan`, look-ahead tests above.
+- Not verified here (not an acceptance criterion): the `-m live` test needs `SEC_USER_AGENT` (EDGAR contact User-Agent), which is not set in this environment; it was run and skipped. The pipeline was exercised against live data.sec.gov with the descriptive User-Agent instead (artifacts/real-ingest-check.txt); `www.sec.gov/files/company_tickers.json` answers 403 without contact details, so the fixture `company_tickers.json` is built, not recorded (tests/fixtures/fundamentals/README.md).
+- Post-DONE audit (owner request, before the commit): [artifacts/audit-plan-vs-work.md](artifacts/audit-plan-vs-work.md) (A1–A9); its one fix (A5: `test_resolve_priority_beats_a_later_filing_of_a_lower_tag` + a doc line) came before the final run above; mutation checks of the never-red tests: 12/12 killed ([artifacts/mutation-checks.txt](artifacts/mutation-checks.txt))
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED

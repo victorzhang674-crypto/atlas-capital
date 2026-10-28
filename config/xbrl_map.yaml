@@ -1,0 +1,48 @@
+# XBRL concept map (Stage 09), read by atlas.data.fundamentals.load_concept_map; not part of
+# load_config. Standardised fundamentals from SEC EDGAR companyfacts.
+#
+# Each concept has:
+#   kind:   flow  (a duration: income and cash-flow lines; summed into quarters and TTM)
+#           stock (an instant: balance-sheet lines and share counts; the latest balance is used)
+#   unit:   the XBRL unit kept (facts in other units are ignored)
+#   tags:   fallback list; for each period the first alternative with a value wins.
+#           A bare name is us-gaap; "dei:Name" is the dei taxonomy. "A + B" is an alternative
+#           that is present only when every term has a value for that period (their sum).
+#   sum_of: instead of tags, a list of parts, each a fallback list; the concept is the sum of
+#           the parts present (a missing part counts as 0), absent when no part is present.
+# A concept with no value for a company (a bank has no gross profit) is NaN, not an error.
+# Changing this file needs no re-download (the raw companyfacts JSON is kept in raw/sec/), but
+# only the tags listed here are stored in the fundamentals_facts table, so re-run the ingest.
+
+# The standardised concepts (brief: Stage 09 In scope).
+concepts:
+  # Total revenue, USD (banks: total net revenue).
+  revenue: {kind: flow, unit: USD, tags: [Revenues, RevenueFromContractWithCustomerExcludingAssessedTax, SalesRevenueNet, RevenuesNetOfInterestExpense, RevenueFromContractWithCustomerIncludingAssessedTax]}
+  # Gross profit, USD (absent for banks).
+  gross_profit: {kind: flow, unit: USD, tags: [GrossProfit]}
+  # Operating income, USD.
+  operating_income: {kind: flow, unit: USD, tags: [OperatingIncomeLoss]}
+  # Net income attributable to the parent, USD.
+  net_income: {kind: flow, unit: USD, tags: [NetIncomeLoss, ProfitLoss, NetIncomeLossAvailableToCommonStockholdersBasic]}
+  # Diluted earnings per share, USD per share.
+  eps_diluted: {kind: flow, unit: USD/shares, tags: [EarningsPerShareDiluted]}
+  # Common shares outstanding (cover page, dei), shares.
+  shares_outstanding: {kind: stock, unit: shares, tags: ["dei:EntityCommonStockSharesOutstanding", CommonStockSharesOutstanding]}
+  # Total assets, USD.
+  total_assets: {kind: stock, unit: USD, tags: [Assets]}
+  # Total liabilities, USD.
+  total_liabilities: {kind: stock, unit: USD, tags: [Liabilities]}
+  # Stockholders' equity attributable to the parent, USD.
+  stockholders_equity: {kind: stock, unit: USD, tags: [StockholdersEquity, StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest]}
+  # Cash and cash equivalents, USD (banks: cash and due from banks).
+  cash_and_equivalents: {kind: stock, unit: USD, tags: [CashAndCashEquivalentsAtCarryingValue, CashAndDueFromBanks, CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents]}
+  # Total debt, USD = long-term debt including its current portion + short-term borrowings.
+  total_debt: {kind: stock, unit: USD, sum_of: [[LongTermDebt, LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities, LongTermDebtNoncurrent + LongTermDebtCurrent], [ShortTermBorrowings, CommercialPaper + OtherShortTermBorrowings, CommercialPaper]]}
+  # Net cash from operating activities, USD.
+  operating_cash_flow: {kind: flow, unit: USD, tags: [NetCashProvidedByUsedInOperatingActivities, NetCashProvidedByUsedInOperatingActivitiesContinuingOperations]}
+  # Capital expenditure (payments for property, plant and equipment), USD, positive.
+  capex: {kind: flow, unit: USD, tags: [PaymentsToAcquirePropertyPlantAndEquipment, PaymentsToAcquireProductiveAssets]}
+  # Research and development expense, USD.
+  rnd: {kind: flow, unit: USD, tags: [ResearchAndDevelopmentExpense, ResearchAndDevelopmentExpenseExcludingAcquiredInProcessCost]}
+  # Stock-based compensation, USD.
+  sbc: {kind: flow, unit: USD, tags: [ShareBasedCompensation, AllocatedShareBasedCompensationExpense]}

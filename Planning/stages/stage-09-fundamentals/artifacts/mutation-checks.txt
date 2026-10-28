@@ -1,0 +1,13 @@
+KILLED: config: SEC rate cap le=10 -> le=20 -> test_fundamentals_validation (1 failed in 0.38s)
+KILLED: config: quarter/annual overlap check removed -> test_fundamentals_validation (1 failed, 5 passed in 0.35s)
+KILLED: config: default staleness 400 -> 365 -> test_fundamentals_defaults (1 failed in 0.55s)
+KILLED: client: page-name check removed -> test_submissions_page_rejects_bad_names (1 failed in 3.20s)
+KILLED: client: closes an injected pool -> test_client_keeps_an_injected_pool_open (1 failed in 0.34s)
+KILLED: client: JSON array accepted -> test_client_rejects_a_json_array (1 failed in 0.34s)
+KILLED: parser: non-finite values accepted -> test_parse_companyfacts_guards (1 failed, 6 passed in 0.35s)
+KILLED: parser: string fy accepted -> test_parse_companyfacts_guards (1 failed, 5 passed in 0.33s)
+KILLED: mapping: repeated tag accepted -> test_parse_alternative_rejects_a_repeated_tag (1 failed in 0.38s)
+KILLED: mapping: empty sum_of part accepted -> test_concept_map_rejects_an_empty_sum_part (1 failed in 0.33s)
+KILLED: pit: staleness boundary < -> <= -> test_stale_metric_is_nan (1 failed in 0.43s)
+KILLED: pit: look-ahead guard removed -> test_guard_raises_if_filter_bypassed (1 failed in 0.57s)
+12/12 killed

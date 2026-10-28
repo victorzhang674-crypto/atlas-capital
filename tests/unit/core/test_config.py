@@ -18,6 +18,7 @@ from pydantic import SecretStr, ValidationError
 from atlas.core.config import (
     AtlasConfig,
     CalendarConfig,
+    FundamentalsConfig,
     FundConfig,
     LimitsConfig,
     PodStops,
@@ -737,3 +738,37 @@ def test_tradable_defaults() -> None:  # Stage 08 D5, D7 (brief: min_price=5, 20
 def test_tradable_validation(values: dict[str, object], pattern: str) -> None:
     with pytest.raises(ValidationError, match=pattern):
         TradableConfig.model_validate(values)
+
+
+def test_fundamentals_defaults() -> None:  # Stage 09 D10
+    assert AtlasConfig().data.fundamentals == FundamentalsConfig(
+        company_tickers_url="https://www.sec.gov/files/company_tickers.json",
+        companyfacts_url="https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json",
+        submissions_url="https://data.sec.gov/submissions/CIK{cik:010d}.json",
+        submissions_page_url="https://data.sec.gov/submissions/{name}",
+        max_requests_per_second=10.0,
+        request_timeout_seconds=30.0,
+        max_retries=3,
+        backoff_seconds=1.0,
+        xbrl_map_file=Path("config/xbrl_map.yaml"),
+        quarter_days=(80, 100),
+        annual_days=(350, 380),
+        max_staleness_days=400,
+    )
+
+
+@pytest.mark.parametrize(
+    ("values", "pattern"),
+    [
+        ({"max_requests_per_second": 11}, "max_requests_per_second"),
+        ({"max_requests_per_second": 0}, "max_requests_per_second"),
+        ({"companyfacts_url": "https://x/facts.json"}, "companyfacts_url"),
+        ({"submissions_page_url": "https://x/"}, "submissions_page_url"),
+        ({"quarter_days": (100, 80)}, "quarter_days"),
+        ({"quarter_days": (80, 360)}, "quarter_days must end"),
+        ({"max_staleness_days": 0}, "max_staleness_days"),
+    ],
+)
+def test_fundamentals_validation(values: dict[str, object], pattern: str) -> None:
+    with pytest.raises(ValidationError, match=pattern):
+        FundamentalsConfig.model_validate(values)

@@ -1,0 +1,19 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-9-planning-implementation-aed6ae/.venv.nosync/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-9-planning-implementation-aed6ae
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 128 items / 121 deselected / 7 selected
+
+tests/unit/data/fundamentals/test_fundamentals_guards.py::test_parse_submissions_guards[table1-acceptanceDateTime] PASSED [ 14%]
+tests/unit/data/fundamentals/test_fundamentals_parser.py::test_parse_submissions_acceptance_is_utc PASSED [ 28%]
+tests/unit/data/fundamentals/test_fundamentals_parser.py::test_parse_submissions_blank_acceptance_is_nat PASSED [ 42%]
+tests/unit/data/fundamentals/test_fundamentals_parser.py::test_every_fixture_fact_has_an_acceptance_time PASSED [ 57%]
+tests/unit/data/fundamentals/test_fundamentals_parser.py::test_available_at_uses_acceptance_time PASSED [ 71%]
+tests/unit/data/fundamentals/test_fundamentals_pit.py::test_acceptance_fundamentals_pit_aapl_fy2023 PASSED [ 85%]
+tests/unit/data/fundamentals/test_fundamentals_pit.py::test_acceptance_detail_cites_the_10k PASSED [100%]
+
+====================== 7 passed, 121 deselected in 0.90s =======================
+exit=0

@@ -180,19 +180,21 @@ def call_with_retry[T](
     sleep: Callable[[float], None],
     what: str,
     retry_on: tuple[type[BaseException], ...],
+    *,
+    event: str = "prices.request_failed",
 ) -> T:
     """Call `fn`, retrying up to `policy.max_retries` times on the `retry_on` exceptions.
 
-    Waits `backoff_seconds * 2**i` before retry `i + 1`. When every attempt failed, raises
-    `DataError` naming `what`, chained to the last error. Any other exception propagates at
-    once (a bug is not a vendor outage).
+    Waits `backoff_seconds * 2**i` before retry `i + 1`; each failure is logged as a warning
+    named `event`. When every attempt failed, raises `DataError` naming `what`, chained to the
+    last error. Any other exception propagates at once (a bug is not a vendor outage).
     """
     attempts = policy.max_retries + 1
     for attempt in range(attempts):
         try:
             return fn()
         except retry_on as exc:
-            _log.warning("prices.request_failed", what=what, attempt=attempt + 1, error=str(exc))
+            _log.warning(event, what=what, attempt=attempt + 1, error=str(exc))
             if attempt + 1 == attempts:
                 raise DataError(f"{what} failed after {attempts} attempt(s): {exc}") from exc
             sleep(policy.backoff_seconds * 2**attempt)

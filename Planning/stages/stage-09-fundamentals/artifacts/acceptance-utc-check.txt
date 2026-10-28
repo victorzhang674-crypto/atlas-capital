@@ -1,0 +1,5 @@
+Run 2026-10-28 on full submissions JSON downloaded from data.sec.gov the same day (not trimmed)
+subs_0000320193.json: fits as UTC 144/145, as Eastern 39/145; UTC misses: [('8-K', '2020-07-30', '2020-07-30T22:55:04.000Z')]
+subs_0000789019.json: fits as UTC 79/80, as Eastern 9/80; UTC misses: [('8-K', '2023-10-16', '2023-10-16T21:30:10.000Z')]
+subs_0000019617.json: fits as UTC 29/29, as Eastern 10/29; UTC misses: []
+TOTAL: fits as UTC 252/254, as Eastern 58/254

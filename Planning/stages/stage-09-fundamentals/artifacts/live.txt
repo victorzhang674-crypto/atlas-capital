@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-9-planning-implementation-aed6ae/.venv.nosync/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-9-planning-implementation-aed6ae
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 128 items / 127 deselected / 1 selected
+
+tests/unit/data/fundamentals/test_fundamentals_live.py::test_live_edgar_aapl SKIPPED [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/unit/data/fundamentals/test_fundamentals_live.py:19: SEC_USER_AGENT is not set (.env): EDGAR needs a contact User-Agent
+====================== 1 skipped, 127 deselected in 0.56s ======================
+exit=0

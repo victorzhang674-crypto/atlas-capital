@@ -36,6 +36,20 @@ data:
     user_agent: AtlasCapital/0.1 (research and paper-trading simulator)  # sent with every request
     request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
     ticker_changes_file: config/ticker_changes.yaml  # manual ticker renames, relative to the repo root
+  # SEC EDGAR fundamentals (Stage 09). The User-Agent comes from the SEC_USER_AGENT secret (.env).
+  fundamentals:
+    company_tickers_url: https://www.sec.gov/files/company_tickers.json  # ticker -> CIK list
+    companyfacts_url: https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json  # XBRL facts per company
+    submissions_url: https://data.sec.gov/submissions/CIK{cik:010d}.json  # filing index (acceptance times)
+    submissions_page_url: https://data.sec.gov/submissions/{name}  # older filing-index pages
+    max_requests_per_second: 10  # rate limit; the SEC allows at most 10 requests per second
+    request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
+    max_retries: 3  # retries after a failed request (transport error, HTTP 429 or 5xx)
+    backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
+    xbrl_map_file: config/xbrl_map.yaml  # concept map (tags per concept), relative to the repo root
+    quarter_days: [80, 100]  # a duration in this range of days is a fiscal quarter (52/53-week years)
+    annual_days: [350, 380]  # a duration in this range of days is a fiscal year
+    max_staleness_days: 400  # a metric whose period ended longer ago than this is not used (NaN)
   # Liquidity filters of Universe.tradable (Stage 08); only bars known before the cutoff count.
   tradable:
     min_price: 5.0  # last raw close, USD

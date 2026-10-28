@@ -1,0 +1,9 @@
+recorded 2026-10-28T11:09:42Z
+mapped tags: 35
+AAPL: 26 tags, 3941 facts, 72 filings
+  submissions: 44 in recent, 1 history page(s) recorded
+MSFT: 25 tags, 4222 facts, 72 filings
+  submissions: 26 in recent, 1 history page(s) recorded
+JPM: 22 tags, 2833 facts, 74 filings
+  submissions: 5 in recent, 44 history page(s) recorded
+company_tickers.json: 18 tickers: ['AAPL', 'MSFT', 'JPM', 'JPM-PC', 'AMJB', 'JPM-PD', 'JPM-PJ', 'JPM-PK', 'JPM-PL', 'JPM-PM', 'VYLD', 'BRK-B', 'BRK-A', 'GOOGL', 'GOOG', 'GOOGM', 'GOOGN', 'META']

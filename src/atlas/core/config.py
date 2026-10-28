@@ -356,6 +356,48 @@ class ReferenceDataConfig(_Frozen):
     ticker_changes_file: Path = Path("config/ticker_changes.yaml")
 
 
+class FundamentalsConfig(_Frozen):
+    """SEC EDGAR fundamentals (Stage 09).
+
+    URLs are templates: `{cik:010d}` is the zero-padded CIK, `{name}` a submissions history
+    file name. `max_requests_per_second` is the client's rate limit (the SEC allows at most 10);
+    `request_timeout_seconds` bounds one HTTP request; a failed request is retried
+    `max_retries` times, waiting `backoff_seconds` (doubling). `xbrl_map_file` is the concept
+    map, relative to the repo root and not resolved here. Durations, in days, of a fiscal
+    quarter (`quarter_days`) and a fiscal year (`annual_days`) are inclusive ranges that admit
+    52/53-week years; a metric whose period ended more than `max_staleness_days` before the
+    as-of day is not used.
+    """
+
+    company_tickers_url: str = "https://www.sec.gov/files/company_tickers.json"
+    companyfacts_url: str = "https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json"
+    submissions_url: str = "https://data.sec.gov/submissions/CIK{cik:010d}.json"
+    submissions_page_url: str = "https://data.sec.gov/submissions/{name}"
+    max_requests_per_second: Annotated[float, Field(gt=0, le=10)] = 10.0
+    request_timeout_seconds: Annotated[float, Field(gt=0)] = 30.0
+    max_retries: Annotated[int, Field(ge=0)] = 3
+    backoff_seconds: _NonNeg = 1.0
+    xbrl_map_file: Path = Path("config/xbrl_map.yaml")
+    quarter_days: tuple[int, int] = (80, 100)
+    annual_days: tuple[int, int] = (350, 380)
+    max_staleness_days: Annotated[int, Field(gt=0)] = 400
+
+    @model_validator(mode="after")
+    def _check(self) -> Self:
+        for name in ("companyfacts_url", "submissions_url"):
+            if "{cik" not in getattr(self, name):
+                raise ValueError(f"{name} must contain a {{cik:010d}} placeholder")
+        if "{name}" not in self.submissions_page_url:
+            raise ValueError("submissions_page_url must contain a {name} placeholder")
+        for name in ("quarter_days", "annual_days"):
+            low, high = getattr(self, name)
+            if not 0 < low <= high:
+                raise ValueError(f"{name} must be an increasing range of positive days")
+        if self.quarter_days[1] >= self.annual_days[0]:
+            raise ValueError("quarter_days must end before annual_days starts")
+        return self
+
+
 class DataConfig(_Frozen):
     """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
 
@@ -363,6 +405,7 @@ class DataConfig(_Frozen):
     providers: DataProviders = Field(default_factory=DataProviders)
     prices: PriceDataConfig = Field(default_factory=PriceDataConfig)
     reference: ReferenceDataConfig = Field(default_factory=ReferenceDataConfig)
+    fundamentals: FundamentalsConfig = Field(default_factory=FundamentalsConfig)
     tradable: TradableConfig = Field(default_factory=TradableConfig)
     universes: _UniverseMap = Field(default_factory=_default_universes)
 

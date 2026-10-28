@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-9-planning-implementation-aed6ae
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collected 128 items / 1 deselected / 127 selected
+
+tests/unit/data/fundamentals/test_fundamentals_client.py ............... [ 11%]
+                                                                         [ 11%]
+tests/unit/data/fundamentals/test_fundamentals_guards.py ............... [ 23%]
+..........                                                               [ 31%]
+tests/unit/data/fundamentals/test_fundamentals_ingest.py ........        [ 37%]
+tests/unit/data/fundamentals/test_fundamentals_mapping.py ..........     [ 45%]
+tests/unit/data/fundamentals/test_fundamentals_parser.py ............... [ 57%]
+..................                                                       [ 71%]
+tests/unit/data/fundamentals/test_fundamentals_pit.py .................. [ 85%]
+....                                                                     [ 88%]
+tests/unit/data/fundamentals/test_fundamentals_quarters.py ............. [ 99%]
+.                                                                        [100%]
+
+====================== 127 passed, 1 deselected in 3.49s =======================
+exit=0
