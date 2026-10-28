@@ -6,7 +6,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 - **Current stage:** 10 — Macro data (FRED / ALFRED) — `NOT STARTED`
 - **Stages done:** 9 / 66
-- **Last updated:** 2026-10-28 (Stage 09 DONE; gap-closing follow-up merged into main)
+- **Last updated:** 2026-10-28 (Stage 09 DONE; addendum (former members' CIKs, bank revenue) merged into main)
 
 ## Stage checklist
 
@@ -523,6 +523,7 @@ Full block and raw output: [verification.md](stages/stage-09-fundamentals/verifi
   - On merged `main` after the gap-closing follow-up (`b471c42`, owner's fast-forward; read-only): `make check` → exit 0, 937 passed; brief's Verify → 130 passed; checkout clean before and after · raw: [artifacts/gaps-merged-main-check.txt](stages/stage-09-fundamentals/artifacts/gaps-merged-main-check.txt)
   - With the owner's `SEC_USER_AGENT`: `-m live` → `test_live_edgar_aapl PASSED` (real EDGAR); `company_tickers.json` re-recorded from the real file; `uv run pytest -q` → 937 passed; `make check` → exit 0 · raw: [artifacts/live-with-user-agent.txt](stages/stage-09-fundamentals/artifacts/live-with-user-agent.txt)
   - Addendum (former members' CIKs, bank revenue): `uv run pytest -q` → 948 passed; ruff, format, mypy clean; brief's Verify → 141 passed; `make check` → exit 0; `-m live` (AAPL + CELG) → PASSED; real-data check of former members · raw: [artifacts/ext-*.txt](stages/stage-09-fundamentals/artifacts/), [artifacts/former-members-check.txt](stages/stage-09-fundamentals/artifacts/former-members-check.txt)
+  - Addendum on merged `main` (`ab0fff7`, read-only): `make check` → exit 0, 948 passed; brief's Verify → 141 passed; checkout clean · raw: [artifacts/ext-merged-main-check.txt](stages/stage-09-fundamentals/artifacts/ext-merged-main-check.txt)
 - Acceptance criteria:
   - [x] `fundamentals_pit("AAPL", as_of)` matches fixture-derived figures — evidence: `test_acceptance_fundamentals_pit_aapl_fy2023`, `test_acceptance_detail_cites_the_10k`, `test_fundamentals_reads_lake`, artifacts/real-ingest-check.txt
   - [x] Restatement tests pass — evidence: `test_restated_value_not_seen_before_its_filing`, `test_jpm_q1_2012_restatement`, `test_msft_asc606_recast`, `test_known_facts_latest_filing_per_period`
