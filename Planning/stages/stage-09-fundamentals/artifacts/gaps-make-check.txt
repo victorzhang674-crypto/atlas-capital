@@ -1,0 +1,44 @@
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+113 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 55 source files
+uv run pytest -q
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 30%]
+........................................................................ [ 38%]
+........................................................................ [ 46%]
+........................................................................ [ 53%]
+........................................................................ [ 61%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 84%]
+........................................................................ [ 92%]
+........................................................................ [ 99%]
+.                                                                        [100%]
+937 passed, 4 deselected in 37.11s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function ""
+ - leaked function "fetchmany"
+ - leaked function "fetchnumpy"
+ - leaked function "__eq__"
+ - leaked function "type"
+ - leaked function "fetch_df_chunk"
+ - leaked function "enum_type"
+ - leaked function "_prepare_script"
+ - leaked function "__init__"
+ - leaked function "query_progress"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0

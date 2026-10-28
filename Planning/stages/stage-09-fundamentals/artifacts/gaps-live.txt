@@ -1,0 +1,4 @@
+s                                                                        [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/unit/data/fundamentals/test_fundamentals_live.py:19: SEC_USER_AGENT is not set (.env): EDGAR needs a contact User-Agent
+1 skipped, 130 deselected in 0.98s

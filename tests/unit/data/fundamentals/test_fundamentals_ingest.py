@@ -48,8 +48,9 @@ def sec() -> Iterator[respx.MockRouter]:
 
 @pytest.fixture
 def cik_map() -> CikMap:
-    tickers = CikMap.from_company_tickers(fixture_json("company_tickers.json"))
-    return CikMap({**tickers._ciks, "EMPTY": 1})
+    payload = fixture_json("company_tickers.json")
+    payload["extra"] = {"cik_str": 1, "ticker": "EMPTY", "title": "No mapped facts"}
+    return CikMap.from_company_tickers(payload)
 
 
 def ingest(lake: Lake, cik_map: CikMap, symbols: list[str]) -> FundamentalsIngestReport:
@@ -146,3 +147,30 @@ def test_fundamentals_default_concept_map_is_the_repo_file(
 
     monkeypatch.chdir(REPO_ROOT)
     assert Fundamentals(tmp_lake).concept_map.names == repo_concept_map().names
+
+
+def test_ingest_rejects_a_bare_string(
+    sec: respx.MockRouter, tmp_lake: Lake, cik_map: CikMap
+) -> None:
+    with pytest.raises(ValueError, match="not one string"):
+        ingest(tmp_lake, cik_map, "AAPL")  # type: ignore[arg-type]
+    assert sec.calls.call_count == 0
+
+
+def test_ingest_rejects_an_invalid_symbol_before_any_request(
+    sec: respx.MockRouter, tmp_lake: Lake, cik_map: CikMap
+) -> None:
+    with pytest.raises(ValueError, match="B@D"):
+        ingest(tmp_lake, cik_map, ["AAPL", "B@D!"])
+    assert sec.calls.call_count == 0
+    assert not tmp_lake.has_table(FUNDAMENTALS_FACTS.name)
+
+
+def test_ingest_dedupes_after_normalising(
+    sec: respx.MockRouter, tmp_lake: Lake, cik_map: CikMap
+) -> None:
+    report = ingest(tmp_lake, cik_map, ["aapl", "AAPL", "brk-b"])
+    assert report.symbols_ok == ("AAPL",)
+    assert report.symbols_failed == ("BRK.B",)  # CIK known, no companyfacts recorded
+    facts_calls = [c for c in sec.calls if "/companyfacts/CIK0000320193" in c.request.url.path]
+    assert len(facts_calls) == 1

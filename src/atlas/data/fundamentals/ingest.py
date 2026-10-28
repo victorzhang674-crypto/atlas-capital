@@ -61,8 +61,13 @@ def ingest_fundamentals(
     config.calendar)`; `concept_map` to `config.data.fundamentals.xbrl_map_file` (relative to
     the working directory). `refresh=False` reuses archived raw JSON. A symbol without a CIK,
     whose EDGAR data fails (`DataError`), or with no mapped facts, is recorded in
-    `symbols_failed` and never aborts the batch.
+    `symbols_failed` and never aborts the batch. The request itself is checked first, before
+    any download: a bare string or an invalid symbol raises `ValueError`; symbols are
+    normalised, then de-duplicated in first-seen order.
     """
+    if isinstance(symbols, str):
+        raise ValueError("symbols must be a sequence of tickers, not one string")
+    requested = tuple(dict.fromkeys(normalize_symbol(s) for s in symbols))
     cfg = config if config is not None else AtlasConfig()
     cal = calendar if calendar is not None else TradingCalendar(config=cfg.calendar)
     cmap = (
@@ -74,8 +79,7 @@ def ingest_fundamentals(
     ok: list[str] = []
     reasons: dict[str, str] = {}
     rows = fallback = 0
-    for raw_symbol in dict.fromkeys(symbols):
-        symbol = normalize_symbol(raw_symbol)
+    for symbol in requested:
         cik = cik_map.cik(symbol)
         if cik is None:
             reasons[symbol] = "no CIK in company_tickers.json (not a current SEC registrant)"

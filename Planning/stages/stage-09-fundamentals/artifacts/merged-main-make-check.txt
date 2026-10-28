@@ -1,0 +1,48 @@
+# make check on merged main (3512e76), read-only · 2026-10-28
+# cwd = main checkout; UV_PROJECT_ENVIRONMENT=<worktree>/.venv.nosync, UV_NO_SYNC=1, PYTHONPATH=<main>/src, PYTHONDONTWRITEBYTECODE=1, RUFF_CACHE_DIR/MYPY_CACHE_DIR in $TMPDIR, PYTEST_ADDOPTS='-p no:cacheprovider'
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+113 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 55 source files
+uv run pytest -q
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 30%]
+........................................................................ [ 38%]
+........................................................................ [ 46%]
+........................................................................ [ 53%]
+........................................................................ [ 61%]
+........................................................................ [ 69%]
+........................................................................ [ 77%]
+........................................................................ [ 84%]
+........................................................................ [ 92%]
+......................................................................   [100%]
+934 passed, 4 deselected in 15.61s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_result_as_arrow"
+ - leaked function "type"
+ - leaked function "fetch_df_chunk"
+ - leaked function "torch"
+ - leaked function "install_extension"
+ - leaked function "struct_type"
+ - leaked function "array_type"
+ - leaked function "fetchone"
+ - leaked function "query_appender"
+ - leaked function "cursor"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+$ git status --porcelain --untracked-files=all  (after)
+(empty)
