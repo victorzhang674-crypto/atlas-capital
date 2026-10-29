@@ -1,0 +1,289 @@
+[
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/pick-shovel-vs-edge-gatekeeper-124531248.html",
+    "providerPublishTime": 1793277931,
+    "publisher": "24/7 Wall St.",
+    "relatedTickers": [
+      "AAPL",
+      "NVDA"
+    ],
+    "title": "Pick-and-Shovel vs. Edge Gatekeeper: Why Investors Are Splitting Between Nvidia and Apple",
+    "type": "STORY",
+    "uuid": "861be251-b136-3d53-9cdb-fc9c7aa290b8"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/ai-made-flash-memory-5-124321564.html",
+    "providerPublishTime": 1793277801,
+    "publisher": "24/7 Wall St.",
+    "relatedTickers": [
+      "AAPL",
+      "SNDK",
+      "WDC"
+    ],
+    "title": "AI Has Made Flash Memory 5 Times More Expensive, and Apple Can\u2019t Bully Its Memory Suppliers Anymore",
+    "type": "STORY",
+    "uuid": "ebc932c9-7d71-325c-ab6f-0e471d2d61f4"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/memory-shortage-until-2030-why-120806472.html",
+    "providerPublishTime": 1793275686,
+    "publisher": "BeInCrypto",
+    "relatedTickers": [
+      "SNDK",
+      "SKHY",
+      "AAPL",
+      "MU",
+      "NVDA"
+    ],
+    "title": "A Memory Shortage Until 2030? Why Semiconductor Stocks Are Rallying Again",
+    "type": "STORY",
+    "uuid": "67090440-78f3-3b93-bbe3-0a86b3b30660"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/ishares-russell-1000-value-iwd-110515259.html",
+    "providerPublishTime": 1793271915,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "AAPL",
+      "AMZN",
+      "ALL",
+      "IWD",
+      "BRK-B",
+      "MSFT"
+    ],
+    "title": "iShares Russell 1000 Value (IWD) Sells $6.3 Million of Apple on Tuesday",
+    "type": "STORY",
+    "uuid": "58779e66-29b1-3dbc-8124-83a6d887f01b"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/jpmorgan-nasdaq-equity-premium-income-110511978.html",
+    "providerPublishTime": 1793271911,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "JEPQ",
+      "INTC",
+      "PLTR",
+      "NVDA",
+      "MAR",
+      "AAPL",
+      "MSFT",
+      "MU"
+    ],
+    "title": "JPMorgan Nasdaq Equity Premium Income (JEPQ) Adds Intel and Palantir on Oct. 27",
+    "type": "STORY",
+    "uuid": "5ee8a791-0da4-3e10-94e5-34a6a3f24fba"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/ishares-russell-1000-growth-iwf-110504814.html",
+    "providerPublishTime": 1793271904,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "NVDA",
+      "IWF",
+      "AAPL",
+      "AVGO",
+      "MSFT",
+      "GOOG"
+    ],
+    "title": "iShares Russell 1000 Growth (IWF) Adds NVIDIA and Apple on Tuesday",
+    "type": "STORY",
+    "uuid": "a6df2731-5f4e-3286-90e9-4cd2777e5eee"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/warren-buffetts-48-billion-american-110500025.html",
+    "providerPublishTime": 1793271900,
+    "publisher": "Motley Fool",
+    "relatedTickers": [
+      "AXP",
+      "BRK-B",
+      "AAPL",
+      "NVDA"
+    ],
+    "title": "Warren Buffett's $48 Billion American Express Stake Has Been a Huge Winner. The Latest Results Say the Streak Is Far From Over.",
+    "type": "STORY",
+    "uuid": "8dca73aa-bb8f-3449-8289-163f7c462761"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/invesco-qqq-qqq-adds-nvidia-110454703.html",
+    "providerPublishTime": 1793271894,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "QQQ",
+      "NVDA",
+      "AAPL",
+      "MSFT",
+      "MU",
+      "AMZN"
+    ],
+    "title": "Invesco QQQ (QQQ) Adds NVIDIA and Apple on Tuesday",
+    "type": "STORY",
+    "uuid": "ad756b52-5f80-36e9-ab3d-51146d2f6d6f"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/invesco-nasdaq-100-etf-qqqm-110424873.html",
+    "providerPublishTime": 1793271864,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "QQQM",
+      "AAPL",
+      "NVDA",
+      "MSFT",
+      "AMZN",
+      "MU"
+    ],
+    "title": "Invesco NASDAQ 100 ETF (QQQM) Buys $20.6 Million More NVIDIA on Oct. 27",
+    "type": "STORY",
+    "uuid": "c4d61d3a-a5f1-3411-be0e-d7f060902c49"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/spdr-portfolio-p-500-etf-110405115.html",
+    "providerPublishTime": 1793271845,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "NVDA",
+      "AAPL",
+      "MSFT",
+      "AMZN",
+      "SPYM",
+      "GOOG"
+    ],
+    "title": "SPDR Portfolio S&P 500 ETF (SPYM) Buys $34.8 Million More NVDA on Oct. 27",
+    "type": "STORY",
+    "uuid": "8203fd72-1e03-3e95-93e4-62ca949e0703"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/proshares-ultra-qqq-qld-bought-110359339.html",
+    "providerPublishTime": 1793271839,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "NVDA",
+      "QLD",
+      "AAPL",
+      "MSFT",
+      "ALAB",
+      "HONA"
+    ],
+    "title": "What ProShares Ultra QQQ (QLD) Bought: NVIDIA Leads on Tuesday",
+    "type": "STORY",
+    "uuid": "5a7c97df-b6ac-3b9e-ab55-40fc57207e7b"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/ishares-core-p-500-ivv-110355993.html",
+    "providerPublishTime": 1793271835,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "IVV",
+      "NVDA",
+      "AAPL",
+      "MSFT",
+      "AMZN",
+      "GOOG"
+    ],
+    "title": "iShares Core S&P 500 (IVV) Adds NVIDIA and Apple on Oct. 27",
+    "type": "STORY",
+    "uuid": "2b5db96f-ca21-330d-a1d2-37b58c40a0c9"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/spdr-p-500-etf-spy-110351660.html",
+    "providerPublishTime": 1793271831,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "NVDA",
+      "AAPL",
+      "SPY",
+      "MSFT",
+      "AMZN",
+      "GOOG"
+    ],
+    "title": "SPDR S&P 500 ETF (SPY) Sells NVIDIA and Apple on Oct. 27",
+    "type": "STORY",
+    "uuid": "88e29bfd-7f89-3710-859d-5e5a76543f4c"
+  },
+  {
+    "link": "https://finance.yahoo.com/markets/stocks/articles/47-etfs-add-apple-aapl-110050574.html",
+    "providerPublishTime": 1793271650,
+    "publisher": "GuruFocus.com",
+    "relatedTickers": [
+      "AAPL",
+      "IVV"
+    ],
+    "title": "47 ETFs Add to Apple (AAPL) Holdings on Tuesday",
+    "type": "STORY",
+    "uuid": "0db3594d-88b4-3a52-91ed-34f5970317fe"
+  },
+  {
+    "link": "https://finance.yahoo.com/m/1cbdc2dc-9ae2-3c30-90f9-33ba148b5388/how-garmin-ceo-cliff-pemble.html",
+    "providerPublishTime": 1793271640,
+    "publisher": "Investor's Business Daily",
+    "relatedTickers": [
+      "GRMN",
+      "GOOG",
+      "AAPL"
+    ],
+    "title": "How Garmin CEO Cliff Pemble Showed No Fear Navigating To Success",
+    "type": "STORY",
+    "uuid": "1cbdc2dc-9ae2-3c30-90f9-33ba148b5388"
+  },
+  {
+    "link": "https://finance.yahoo.com/technology/articles/omdia-global-smartphone-shipments-fell-105600542.html",
+    "providerPublishTime": 1793271360,
+    "publisher": "Business Wire",
+    "relatedTickers": [
+      "005930.KS",
+      "AAPL",
+      "TTGT"
+    ],
+    "title": "Omdia: Global Smartphone Shipments Fell 20% in 3Q26, the Lowest Third-quarter Total Since 2013",
+    "type": "STORY",
+    "uuid": "dd685e45-6b4f-358a-87cb-c5e90b89507e"
+  },
+  {
+    "link": "https://finance.yahoo.com/m/f8b9a967-faf5-35ea-8b71-9e86c429f4fa/apple-squeezed-these-chip.html",
+    "providerPublishTime": 1793267220,
+    "publisher": "The Wall Street Journal",
+    "relatedTickers": [
+      "AAPL"
+    ],
+    "title": "Apple Squeezed These Chip Suppliers for Years. AI Is Helping Them Get Even.",
+    "type": "STORY",
+    "uuid": "f8b9a967-faf5-35ea-8b71-9e86c429f4fa"
+  },
+  {
+    "link": "https://finance.yahoo.com/technology/articles/south-korea-fines-google-apple-140741941.html",
+    "providerPublishTime": 1793264434,
+    "publisher": "Euronews",
+    "relatedTickers": [
+      "GOOG",
+      "AAPL"
+    ],
+    "title": "South Korea fines Google, Apple for pushing app developers onto their payment systems",
+    "type": "STORY",
+    "uuid": "c8e7290d-fec9-3fc0-a413-ec5eca55701d"
+  },
+  {
+    "link": "https://finance.yahoo.com/m/bdb4d6e4-02c9-3f80-9bec-c8c66dbe64cb/spacex-supplier.html",
+    "providerPublishTime": 1793257260,
+    "publisher": "The Wall Street Journal",
+    "relatedTickers": [
+      "SPCX",
+      "STM",
+      "AAPL",
+      "TSLA",
+      "STM"
+    ],
+    "title": "SpaceX Supplier STMicroelectronics Forecasts Strong Sales on AI, Satellite Boost",
+    "type": "STORY",
+    "uuid": "bdb4d6e4-02c9-3f80-9bec-c8c66dbe64cb"
+  },
+  {
+    "link": "https://finance.yahoo.com/m/4b9e382e-3811-3656-b664-b205b85c5b89/the-beleaguered-chip-sellers.html",
+    "providerPublishTime": 1793235600,
+    "publisher": "The Wall Street Journal",
+    "relatedTickers": [
+      "AAPL"
+    ],
+    "title": "The Beleaguered Chip Sellers Getting Their Revenge on Apple",
+    "type": "STORY",
+    "uuid": "4b9e382e-3811-3656-b664-b205b85c5b89"
+  }
+]

@@ -4,9 +4,9 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 11 — News data pipeline — `NOT STARTED`
-- **Stages done:** 10 / 66
-- **Last updated:** 2026-10-29 (Stage 10 DONE; project moved to ~/Projects/atlas-capital, live FRED test passed)
+- **Current stage:** 12 — Events calendar & sentiment sources — `NOT STARTED`
+- **Stages done:** 11 / 66
+- **Last updated:** 2026-10-29 (Stage 11 DONE)
 
 ## Stage checklist
 
@@ -23,7 +23,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - [x] **08** [Universe & historical index membership](stages/stage-08-universe/brief.md)
 - [x] **09** [Point-in-time fundamentals (SEC EDGAR)](stages/stage-09-fundamentals/brief.md)
 - [x] **10** [Macro data (FRED / ALFRED)](stages/stage-10-macro/brief.md)
-- [ ] **11** [News data pipeline](stages/stage-11-news/brief.md)
+- [x] **11** [News data pipeline](stages/stage-11-news/brief.md)
 - [ ] **12** [Events calendar & sentiment sources](stages/stage-12-events-sentiment/brief.md)
 - [ ] **13** [Data quality checks & DataView facade](stages/stage-13-data-quality-dataview/brief.md)
 - [ ] **14** [Data sync CLI & bootstrap backfill](stages/stage-14-data-cli/brief.md)
@@ -217,6 +217,12 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-29 | 10 | Merge and merged-main check: the owner approved running the fast-forward in their Terminal panel ("yes please go ahead") after the sandbox refused it. iCloud had offloaded 11 `.git/objects` files (merge failed with `mmap failed: Operation canceled` until they were read back) and keeps 162 tracked files of the main checkout offloaded, so the post-merge `make check` ran on a `git archive` export of `main` with a fresh offline venv (same tree hash as the stage branch). A second, records-only commit `stage-10: merged-main check records` holds the hashes and that evidence (Rule 6A), as in Stage 09 | Rule 6A; see [stage-10 worklog](stages/stage-10-macro/worklog.md) |
 | 2026-10-29 | 10 | Project moved out of iCloud at the owner's request ("you are allowed to move the project out from the sync. Please help me to operate"): `main` cloned into `~/Projects/atlas-capital` (`git clone --no-local`, no remote), `.env` and `.claude/settings.local.json` copied, fresh venv; `make check` there → exit 0, 1031 passed. `~/Desktop/Trading Agents` kept as a backup for the owner to delete; the older `~/Projects/Trading Agents` (different history) untouched. With the owner's `FRED_API_KEY`, `test_live_fred_cpi` passed against the real FRED API | Owner instruction; see [stage-10 worklog](stages/stage-10-macro/worklog.md) |
 | 2026-10-29 | 10 | Owner-approved change of the brief's market rule (Rule 3: brief value changed with the owner's approval, brief text not edited): market series (yields, spreads, VIX) are available obs_date + 1 day at **06:00 ET** (`data.macro.market_available_time`, was 08:00), so day D's close is used at the D + 1 08:00 decision instead of D + 2. Owner's words: "for the market-data planning, if it would be practical for moving it to D+1, please move in your way." The close is public by the evening of D; 06:00 (not 07:59) leaves room if the decision time moves. The strict cutoff is unchanged (`test_market_time_at_the_cutoff_is_not_known`) | Owner decision in chat; see [stage-10 worklog](stages/stage-10-macro/worklog.md) |
+| 2026-10-29 | 11 | Stage 11 executed straight after its plan (executing-plans + test-driven-development skills loaded, inline, no subagents), as the owner asked in chat: "start the planning for stage 11 in for a fully broken-down plan. Execute the plan after building it". The skill's ledger is the stage `worklog.md` (`Ruling:` lines) and there is one stage commit, not one per task (Rule 2A and the one-commit rule outrank the skill) | Owner instruction; see [stage-11 plan](stages/stage-11-news/plan.md) |
+| 2026-10-29 | 11 | Collisions check: none with the roadmap or the spec. Interpretations: (1) brief `news_pit(symbol, as_of, lookback_days=14, limit=50)` needs the stored rows → `News(lake, cfg).pit(symbol, as_of, lookback_days=None, limit=None)` (defaults 14 / 50 from `data.news`); the frame-level `news_pit(articles, symbol, as_of, *, lookback_days, limit)` keeps the name (as Stages 09–10); (2) "curated, de-duplicated news": every vendor article is stored once; cross-source copies are hidden at query time over the rows known at `as_of` (dropping them at ingest would make the surviving id depend on ingest order); (3) modules beyond the brief's five: `relevance.py`, `ingest.py`; (4) "ticker mentioned in the headline" = the symbol (`$S`, `(S)`, `EXCH:S`, bare symbol of ≥ 3 characters), not the company name; (5) extra columns `provider`, `updated_at` | Rule 3 record; see [stage-11 plan › Collisions](stages/stage-11-news/plan.md) |
+| 2026-10-29 | 11 | D1–D10 (plan): storage `ColumnType.STRING_LIST` (Stage 06 D1); `news` table PK `(article_id, published_at)`, year partitions, `article_id = <provider>-<vendor id>`, `Evidence.id = news:<article_id>`; `available_at = published_at`; content hash of normalised headline + summary; duplicates = an earlier row ≤ 48 h before with equal hash or rapidfuzz ratio ≥ 92 (earliest-known copy kept, no look-ahead); relevance 1.0 headline / 0.5 tag-only, roundups (> 10 tags) dropped unless the headline names the ticker; `NewsConfig` (`data.news`); fallback Alpaca → Yahoo | See [stage-11 plan › Design decisions](stages/stage-11-news/plan.md) |
+| 2026-10-29 | 11 | Rulings during execution (each with its cost in the [worklog](stages/stage-11-news/worklog.md)): `BTC/USD` is a valid symbol under `normalize_symbol` (`BTC.USD`), so tags use that one rule; Yahoo's default fetch is `yf.Search(...).news` because yfinance's `Ticker.get_news` endpoint answered HTTP 404, and a Yahoo symbol request keeps only articles Yahoo tagged with the symbol; `ingest_news` has no `config` parameter (the provider carries its settings); `news: alpaca` without keys falls back to Yahoo with a `news.alpaca_unavailable` warning instead of `ConfigError` (alpaca is the shipped default; the owner has no keys yet) | Rule 3 / executing-plans rulings |
+| 2026-10-29 | 11 | Fixtures: Alpaca pages are built in the documented API shape (`ALPACA_API_*` empty; live test skipped, not an acceptance criterion; Rule 6 missing-secret exception); the Yahoo fixture is a real answer recorded 2026-10-29 (`artifacts/record_yahoo_news.py`). New dependency `rapidfuzz>=3.9` (3.14.6). Commands ran with `UV_CACHE_DIR=$TMPDIR/uv-cache UV_NO_SYNC=1` because the sandbox blocks `~/.cache/uv` | See `tests/fixtures/news/README.md` |
+| 2026-10-29 | 11 | Final review was a self-review (no reviewer subagent: the session's rules allow one only when the owner asks). It found and fixed one issue (a re-dated vendor article cited twice → earliest row per `article_id`, `test_same_article_id_twice_cited_once`); three minors went to the Backlog | Executing-plans final review; see [stage-11 worklog](stages/stage-11-news/worklog.md) |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -275,6 +281,12 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 10) Done 2026-10-29: `FRED_API_KEY` is in `~/Projects/atlas-capital/.env` (gitignored, mode 600); `test_live_fred_cpi` (`-m live`) passed against the real API, including the 2000-vintage windowing (DGS10: three windows)
 - (Stage 10) Done 2026-10-29: the project now lives in `~/Projects/atlas-capital`, outside iCloud (the Desktop copy offloaded files and hid venv `.pth` files, breaking merges, imports and checks). Open that folder for Stage 11 on; `~/Desktop/Trading Agents` is a backup the owner may delete
 - (Stage 10) `Macro.pit` reads every vintage of the requested series on each call (small today: ~22 series); Stage 13's `DataView.macro` may cache per lake generation
+- (Stage 11) Alpaca news is tested only against built fixtures and its live test was skipped (no keys). Add `ALPACA_API_KEY_ID` / `ALPACA_API_SECRET_KEY` to `.env`, run `uv run pytest tests/unit/data/news -m live`, and re-record `tests/fixtures/news/alpaca_news_p*.json` from real responses. Until then news ingestion uses Yahoo alone (recent only), so the M1 "8+ years of news" backfill (Stage 14) needs the keys
+- (Stage 11) Stored headlines/summaries are the vendor's latest version; edits after publication (`updated_at`) leak into backtests. Snapshotting the text at first ingest (or ignoring articles updated long after publication) would remove it
+- (Stage 11) `News.pit` reads every `news` year partition with an `available_at` filter on each call (row-group statistics prune, directories do not); Stage 13's `DataView.news` may cache per lake generation or filter by year
+- (Stage 11) `YahooNewsProvider` retries any exception raised by its fetch function, so a programming error in a custom `news_fn` looks like a vendor outage (same trade-off as the yfinance price adapter)
+- (Stage 11) A `pd.NA` cell in a `string_list` column is rejected ("expected a list") instead of being read as null
+- (Stage 11) yfinance's `Ticker.get_news` (`/xhr/ncp`) answered HTTP 404 on 2026-10-29; re-check after a yfinance upgrade — its items carry summaries, which the search API lacks
 
 ## Handoff notes
 
@@ -572,4 +584,29 @@ Full block and raw output: [verification.md](stages/stage-10-macro/verification.
 - Acceptance criteria:
   - [x] PIT queries never return a value whose release came after as_of — evidence: `test_acceptance_no_returned_value_released_after_as_of`, `test_acceptance_cpi_march_2020_unknown_on_2020_04_05`, `test_acceptance_cpi_march_2020_first_release_on_2020_04_15`, `test_cpi_not_known_on_release_morning`, `test_future_rows_change_nothing`, `test_guard_raises_if_filter_bypassed`, `test_dgs10_pit_strict_cutoff`
   - [x] Revisions are handled — evidence: `test_revision_seen_only_after_its_vintage`, `test_market_revision_waits_for_its_vintage`, `test_latest_missing_value_hides_older_value`, `test_windowed_ingest_equals_single_request`
+- Waivers: none
+
+### Stage 11 — News data pipeline — DONE 2026-10-29
+- Folder: [stages/stage-11-news/](stages/stage-11-news/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: storage `ColumnType.STRING_LIST` (`list<string>`, read as tuples; not in keys, partitions or filters); config `NewsConfig` (`cfg.data.news`, `config/fund.yaml › data.news`); package `atlas.data.news` — `base.py` (`NewsProvider`, `ARTICLE_COLUMNS`, `RAW_COLUMNS`, `NEWS` table, `normalize_news`, `check_news_window`, `empty_news`), `alpaca_news.py` (`AlpacaNewsProvider`: paged, batched, `include_content=false`, retries, keys only in headers), `yahoo_news.py` (`YahooNewsProvider`: `yf.Search` news, recent only), `dedup.py` (`normalize_text`, `content_hash`, `mark_duplicates`, `DUPLICATE_OF`), `relevance.py` (`headline_mentions`, `score_relevance`), `ingest.py` (`ingest_news`, `NewsIngestReport`, `FallbackNewsProvider`, `build_news_provider`), `pit.py` (`news_pit`, `news_pit_detail`, `market_news_pit`, `to_evidence`, `News`); dependency `rapidfuzz`; fixtures `tests/fixtures/news/`; `docs/data-limitations.md › News`
+- Key interfaces: `ingest_news(lake, build_news_provider(cfg), symbols | None, start, end) -> NewsIngestReport(rows, rows_by_provider)` (aware datetimes, `[start, end)`); `News(lake, cfg).pit(symbol, as_of: date | AsOf, lookback_days=None, limit=None) -> list[Evidence]` (`Evidence.id = "news:<article_id>"`, `as_of` = publish time UTC, `text` = headline + blank line + summary); `News.pit_detail(...)` (frame with `relevance`, `headline_match`); `News.market(as_of, ...)` (untagged or SPY/QQQ-tagged, newest first); `News.articles(start, end)`
+- Decisions: Decisions log rows dated 2026-10-29, stage 11 (execution, interpretations, D1–D10, rulings, fixtures, self-review)
+- Collisions with the overall plan: none (interpretations only, see the Decisions log)
+- Deviations from brief: none in scope. Additions: `provider` / `updated_at` columns, `relevance.py`, `ingest.py`, `pit_detail`, `News.articles`, storage list type. Rulings: Yahoo uses the search API; Yahoo keeps only tagged results; no `config` on `ingest_news`; Yahoo-only with a warning when Alpaca keys are missing
+- Known gaps → backlog: Alpaca live test and real fixtures pending keys (news history needs them); edited text leaks; per-call partition reads; Yahoo retry breadth; `pd.NA` list cells; `get_news` 404 (see Backlog, "Stage 11")
+- Next stage should know: importing `atlas.data.news` registers `news` in `DEFAULT_REGISTRY`. Article ids are `<provider>-<vendor id>`; cite `news:<article_id>`. Duplicates and roundups are hidden at query time, not in the table, so read news through `News` (or `news_pit*`), not the raw table. Candidates for a ticker are the vendor's tags. Without Alpaca keys, `build_news_provider` returns Yahoo (recent only) and warns. In this sandbox run `uv` with `UV_CACHE_DIR=$TMPDIR/uv-cache UV_NO_SYNC=1`
+
+#### Verification evidence — Stage 11 — 2026-10-29
+Full block and raw output: [verification.md](stages/stage-11-news/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 1187 passed, 0 failed, 7 deselected (live)
+  - `uv run ruff check .` → All checks passed!
+  - `uv run ruff format --check .` → 149 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 69 source files
+  - `uv run pytest tests/unit/data/news -q` (brief's Verify) → 126 passed, 2 deselected
+  - `-v -W error` → 126 passed; `-k acceptance -W error` → 4 passed; `make check` → exit 0; `-m live` → Yahoo PASSED, Alpaca skipped (keys not set); coverage of `atlas.data.news` 100%; unit tests with dead proxies → 252 passed (no network)
+- Acceptance criteria:
+  - [x] Evidence IDs are stable across re-ingests — evidence: `test_acceptance_evidence_ids_stable_across_reingests`, `test_acceptance_ids_independent_of_ingest_order`, `test_reingest_is_idempotent`, `test_same_article_id_twice_cited_once`
+  - [x] PIT tests pass — evidence: `test_acceptance_article_after_cutoff_invisible` (08:30 article invisible at 08:00), `test_guard_raises_if_filter_bypassed`, `test_future_rows_change_nothing`, `test_window_independent`
+  - [x] Dedup tests pass — evidence: `test_same_story_two_sources_is_one`, `test_acceptance_same_story_two_sources_one_evidence`, `test_fuzzy_threshold_boundary`, `test_outside_48h_not_duplicate`
 - Waivers: none

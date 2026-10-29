@@ -15,6 +15,10 @@ Column types and how they are stored (Arrow) and read back (pandas):
 | `bool` | `bool` | `bool` (`boolean` if nullable) |
 | `date` | `date32` | `object` holding `datetime.date` (trading days) |
 | `timestamp` | `timestamp[us, tz=UTC]` | `datetime64[us, UTC]` |
+| `string_list` | `list<string>` | `object` holding `tuple[str, ...]` (Stage 11 `news.symbols`) |
+
+A `string_list` cell is a list, tuple or numpy array of strings (no null items); it may not be
+part of the primary key or the partitioning, and the lake does not filter on it.
 """
 
 import hashlib
@@ -59,6 +63,7 @@ class ColumnType(StrEnum):
     BOOL = "bool"
     DATE = "date"
     TIMESTAMP = "timestamp"
+    STRING_LIST = "string_list"
 
 
 _ARROW_TYPES: dict[ColumnType, pa.DataType] = {
@@ -68,6 +73,7 @@ _ARROW_TYPES: dict[ColumnType, pa.DataType] = {
     ColumnType.BOOL: pa.bool_(),
     ColumnType.DATE: pa.date32(),
     ColumnType.TIMESTAMP: pa.timestamp("us", tz="UTC"),
+    ColumnType.STRING_LIST: pa.list_(pa.string()),
 }
 _PARTITION_TYPES = frozenset(
     {ColumnType.STRING, ColumnType.INT64, ColumnType.DATE, ColumnType.BOOL}
@@ -123,6 +129,8 @@ class TableSchema(AtlasModel):
                 raise ValueError(f"{self.name}: primary key column {key!r} is not declared")
             if by_name[key].nullable:
                 raise ValueError(f"{self.name}: primary key column {key!r} must not be nullable")
+            if by_name[key].dtype is ColumnType.STRING_LIST:
+                raise ValueError(f"{self.name}: primary key column {key!r} must not be a list")
         if not self.static:
             avail = by_name.get(AVAILABLE_AT)
             if avail is None or avail.dtype is not ColumnType.TIMESTAMP or avail.nullable:
@@ -314,6 +322,8 @@ def _to_arrow(table: str, col: Column, series: pd.Series) -> pa.Array:
             arr = pa.array(series, type=pa.bool_(), from_pandas=True)
         elif col.dtype is ColumnType.DATE:
             arr = _date_array(where, series)
+        elif col.dtype is ColumnType.STRING_LIST:
+            arr = _string_list_array(where, series)
         else:  # TIMESTAMP
             if not isinstance(dtype, pd.DatetimeTZDtype):
                 raise DataError(f"{where}: expected a tz-aware datetime64 dtype, got {dtype}")
@@ -339,3 +349,18 @@ def _date_array(where: str, series: pd.Series) -> pa.Array:
     if inferred not in ("date", "empty"):
         raise DataError(f"{where}: expected datetime.date values, got {inferred} ({dtype})")
     return pa.array(series, type=pa.date32(), from_pandas=True)
+
+
+def _string_list_array(where: str, series: pd.Series) -> pa.Array:
+    cells: list[list[str] | None] = []
+    for value in series:
+        if value is None or (isinstance(value, float) and np.isnan(value)):
+            cells.append(None)
+            continue
+        if not isinstance(value, list | tuple | np.ndarray):
+            raise DataError(f"{where}: expected a list of strings, got {type(value).__name__}")
+        items = list(value)
+        if not all(isinstance(item, str) for item in items):
+            raise DataError(f"{where}: list items must be strings, got {items!r}")
+        cells.append(items)
+    return pa.array(cells, type=_ARROW_TYPES[ColumnType.STRING_LIST])

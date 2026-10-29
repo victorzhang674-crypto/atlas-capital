@@ -22,6 +22,7 @@ from atlas.core.config import (
     FundConfig,
     LimitsConfig,
     MacroConfig,
+    NewsConfig,
     PodStops,
     ReferenceDataConfig,
     Secrets,
@@ -817,3 +818,59 @@ def test_repo_yaml_macro_equals_defaults(repo_root: Path, tmp_path: Path) -> Non
 def test_macro_validation(values: dict[str, object], pattern: str) -> None:
     with pytest.raises(ValidationError, match=pattern):
         MacroConfig.model_validate(values)
+
+
+def test_news_config_defaults() -> None:  # Stage 11 D7
+    assert AtlasConfig().data.news == NewsConfig(
+        alpaca_news_url="https://data.alpaca.markets/v1beta1/news",
+        page_limit=50,
+        symbols_per_request=50,
+        max_retries=3,
+        backoff_seconds=1.0,
+        min_request_interval_seconds=0.3,
+        request_timeout_seconds=30.0,
+        yahoo_max_items=20,
+        max_summary_chars=1000,
+        dedup_window_hours=48.0,
+        fuzzy_threshold=92.0,
+        roundup_max_symbols=10,
+        headline_relevance=1.0,
+        symbols_relevance=0.5,
+        market_symbols=("SPY", "QQQ"),
+        lookback_days=14,
+        limit=50,
+    )
+
+
+def test_repo_yaml_news_equals_defaults(repo_root: Path, tmp_path: Path) -> None:
+    cfg = load_config("dev", config_dir=_repo_config_copy(repo_root, tmp_path))
+    assert cfg.data.news == NewsConfig()
+
+
+def test_news_market_symbols_normalised() -> None:
+    assert NewsConfig(market_symbols=[" spy", "brk-b"]).market_symbols == ("SPY", "BRK.B")
+
+
+@pytest.mark.parametrize(
+    ("values", "pattern"),
+    [
+        ({"page_limit": 51}, "page_limit"),
+        ({"page_limit": 0}, "page_limit"),
+        ({"symbols_per_request": 0}, "symbols_per_request"),
+        ({"fuzzy_threshold": 101}, "fuzzy_threshold"),
+        ({"dedup_window_hours": 0}, "dedup_window_hours"),
+        ({"roundup_max_symbols": 0}, "roundup_max_symbols"),
+        ({"symbols_relevance": 1.0}, "symbols_relevance"),
+        ({"symbols_relevance": 0}, "symbols_relevance"),
+        ({"market_symbols": []}, "market_symbols"),
+        ({"market_symbols": ["^GSPC"]}, "invalid symbol"),
+        ({"market_symbols": ["SPY", "spy"]}, "duplicate"),
+        ({"lookback_days": 0}, "lookback_days"),
+        ({"limit": 0}, "limit"),
+        ({"max_summary_chars": 0}, "max_summary_chars"),
+        ({"yahoo_max_items": 0}, "yahoo_max_items"),
+    ],
+)
+def test_news_validation(values: dict[str, object], pattern: str) -> None:
+    with pytest.raises(ValidationError, match=pattern):
+        NewsConfig.model_validate(values)

@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 128 items / 124 deselected / 4 selected
+
+tests/unit/data/news/test_news_pit.py::test_acceptance_article_after_cutoff_invisible PASSED [ 25%]
+tests/unit/data/news/test_news_pit.py::test_acceptance_evidence_ids_stable_across_reingests PASSED [ 50%]
+tests/unit/data/news/test_news_pit.py::test_acceptance_ids_independent_of_ingest_order PASSED [ 75%]
+tests/unit/data/news/test_news_pit.py::test_acceptance_same_story_two_sources_one_evidence PASSED [100%]
+
+====================== 4 passed, 124 deselected in 0.60s =======================

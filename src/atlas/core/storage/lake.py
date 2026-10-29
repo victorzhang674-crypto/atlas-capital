@@ -386,7 +386,7 @@ class Lake:
 
 def to_pandas(schema: TableSchema, table: pa.Table) -> pd.DataFrame:
     """Arrow → pandas with the lake's read types (nullable ints → `Int64`, nullable bools →
-    `boolean`; numpy-backed timestamps, so `pit_filter` accepts them)."""
+    `boolean`, string lists → tuples; numpy-backed timestamps, so `pit_filter` accepts them)."""
     frame: pd.DataFrame = table.to_pandas()
     for name in frame.columns:
         col = schema.column(str(name))
@@ -394,6 +394,12 @@ def to_pandas(schema: TableSchema, table: pa.Table) -> pd.DataFrame:
             frame[name] = frame[name].astype("Int64")
         elif col.nullable and col.dtype is ColumnType.BOOL:
             frame[name] = frame[name].astype("boolean")
+        elif col.dtype is ColumnType.STRING_LIST:
+            frame[name] = pd.Series(
+                [None if cell is None else tuple(cell) for cell in frame[name]],
+                index=frame.index,
+                dtype="object",
+            )
     return frame
 
 
@@ -467,6 +473,8 @@ def _filter_expression(schema: TableSchema, filters: Sequence[Filter]) -> pc.Exp
             raise ValueError(f"{schema.name}: cannot filter on unknown column {column!r}")
         if op not in _OPS:
             raise ValueError(f"unknown filter operator {op!r}; expected one of {sorted(_OPS)}")
+        if schema.column(column).dtype is ColumnType.STRING_LIST:
+            raise ValueError(f"{schema.name}: cannot filter on list column {column!r}")
         arrow_type = schema.arrow_schema().field(column).type
         field = pc.field(column)
         try:

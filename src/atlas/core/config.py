@@ -28,6 +28,7 @@ from pydantic import (
     SerializerFunctionWrapHandler,
     ValidationError,
     WrapSerializer,
+    field_validator,
     model_validator,
 )
 from pydantic_settings import (
@@ -40,6 +41,7 @@ from pydantic_settings import (
 from pydantic_settings.exceptions import SettingsError
 
 from atlas.core.errors import ConfigError
+from atlas.core.types.instruments import normalize_symbol
 
 Profile = Literal["dev", "backtest", "paper"]
 PROFILES: tuple[Profile, ...] = ("dev", "backtest", "paper")
@@ -445,6 +447,60 @@ class MacroConfig(_Frozen):
         return self
 
 
+class NewsConfig(_Frozen):
+    """Company and market news (Stage 11).
+
+    Alpaca: `alpaca_news_url` is the news endpoint; `page_limit` articles per page (Alpaca's
+    maximum is 50); `symbols_per_request` tickers per request; a failed request is retried
+    `max_retries` times, waiting `backoff_seconds` (doubling); `min_request_interval_seconds`
+    is the pause between requests (the free tier allows 200 per minute);
+    `request_timeout_seconds` bounds one HTTP request. Yahoo: `yahoo_max_items` articles asked
+    per symbol (recent news only). Summaries are cut to `max_summary_chars` characters.
+
+    Query: two articles are the same story when published at most `dedup_window_hours` apart
+    and their content hashes match or their headlines score at least `fuzzy_threshold` (0-100,
+    rapidfuzz ratio). An article with more than `roundup_max_symbols` tags is a roundup and is
+    dropped unless its headline names the ticker. Relevance is `headline_relevance` when the
+    headline names the ticker and `symbols_relevance` when it is only tagged. Market-wide news
+    is untagged news or news tagged with one of `market_symbols`. `lookback_days` and `limit`
+    are the query defaults (calendar days before the cutoff; articles returned).
+    """
+
+    alpaca_news_url: str = "https://data.alpaca.markets/v1beta1/news"
+    page_limit: Annotated[int, Field(ge=1, le=50)] = 50
+    symbols_per_request: Annotated[int, Field(ge=1)] = 50
+    max_retries: Annotated[int, Field(ge=0)] = 3
+    backoff_seconds: _NonNeg = 1.0
+    min_request_interval_seconds: _NonNeg = 0.3
+    request_timeout_seconds: Annotated[float, Field(gt=0)] = 30.0
+    yahoo_max_items: Annotated[int, Field(ge=1)] = 20
+    max_summary_chars: Annotated[int, Field(ge=1)] = 1000
+    dedup_window_hours: Annotated[float, Field(gt=0)] = 48.0
+    fuzzy_threshold: Annotated[float, Field(ge=0, le=100)] = 92.0
+    roundup_max_symbols: Annotated[int, Field(ge=1)] = 10
+    headline_relevance: Annotated[float, Field(gt=0)] = 1.0
+    symbols_relevance: Annotated[float, Field(gt=0)] = 0.5
+    market_symbols: tuple[str, ...] = ("SPY", "QQQ")
+    lookback_days: Annotated[int, Field(ge=1)] = 14
+    limit: Annotated[int, Field(ge=1)] = 50
+
+    @field_validator("market_symbols", mode="after")
+    @classmethod
+    def _normalise_market_symbols(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        symbols = tuple(normalize_symbol(s) for s in value)
+        if not symbols:
+            raise ValueError("market_symbols must name at least one symbol")
+        if len(set(symbols)) != len(symbols):
+            raise ValueError(f"duplicate market_symbols: {list(symbols)}")
+        return symbols
+
+    @model_validator(mode="after")
+    def _check(self) -> Self:
+        if self.symbols_relevance >= self.headline_relevance:
+            raise ValueError("symbols_relevance must be below headline_relevance")
+        return self
+
+
 class DataConfig(_Frozen):
     """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
 
@@ -454,6 +510,7 @@ class DataConfig(_Frozen):
     reference: ReferenceDataConfig = Field(default_factory=ReferenceDataConfig)
     fundamentals: FundamentalsConfig = Field(default_factory=FundamentalsConfig)
     macro: MacroConfig = Field(default_factory=MacroConfig)
+    news: NewsConfig = Field(default_factory=NewsConfig)
     tradable: TradableConfig = Field(default_factory=TradableConfig)
     universes: _UniverseMap = Field(default_factory=_default_universes)
 

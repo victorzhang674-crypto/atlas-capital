@@ -168,3 +168,44 @@ revision was published, then the revised value (`Macro(lake).pit(series_ids, as_
 7. **Missing values.** FRED's "." (a holiday, no quote) is stored as NaN; such an observation
    is left out of point-in-time results, and a later vintage that blanks a value hides the old
    one.
+
+## News (Stage 11)
+
+Company and market news come from Alpaca's news API (the Benzinga feed, history from 2015) with
+Yahoo Finance as a recent-only fallback (`atlas.data.news`). Each vendor article is stored once
+in `news`, keyed by `<provider>-<vendor id>`, and an agent cites it as `news:<article_id>`
+(`News(lake).pit(symbol, as_of)`), an id that does not change when the news is re-ingested.
+
+### What is left
+
+1. **Only the headline and summary are stored.** Article bodies are never requested
+   (`include_content=false`) and summaries are cut to 1000 characters, for copyright and size.
+   An agent reasons from headlines and summaries, not full text. Yahoo items have no summary.
+2. **Availability is the publish time, and later edits leak.** An article is known from its
+   vendor publish time (`available_at = published_at`, strictly before the cutoff). The stored
+   headline and summary are the vendor's latest version at ingest time; when the vendor
+   updated an article after publishing it (`updated_at`), a backtest reads the edited text at
+   the original time. Benzinga's edits are mostly small, but a corrected headline can leak.
+3. **Yahoo is recent only and found by search.** The fallback serves whatever Yahoo's search
+   API still lists (about the last days to weeks), so a historical backfill without Alpaca keys
+   holds almost no history. yfinance's `Ticker.get_news` endpoint answered HTTP 404 in
+   October 2026, so the adapter uses the search API, whose results are kept only when Yahoo
+   tagged them with the ticker. Without `ALPACA_API_KEY_ID` / `ALPACA_API_SECRET_KEY`, news
+   ingestion runs on Yahoo alone and logs `news.alpaca_unavailable`.
+4. **Candidates are the vendor's tags.** News about a ticker means articles the vendor tagged
+   with it; an untagged article that names the company is missed. A headline "names" the
+   ticker only through the symbol (`$AAPL`, `(AAPL)`, `NASDAQ:AAPL`, or a bare symbol of three
+   or more letters), never the company name, so most Benzinga headlines score as tag-only
+   (relevance 0.5 rather than 1.0).
+5. **Roundups are dropped.** An article tagged with more than 10 tickers is a roundup ("12
+   stocks to watch") and is left out for a ticker unless its headline names that ticker.
+6. **Duplicates are hidden at query time.** The same story from two sources, or re-published,
+   is one story when the copies are at most 48 hours apart and their normalised content hashes
+   match or their headlines score at least 92 (rapidfuzz ratio). The earliest-known copy is
+   kept and later copies are hidden, using only articles known at `as_of` among the ones the
+   query considers (those tagged with the ticker, or the market-wide ones), so a duplicate
+   never hides news based on the future. A vendor id stored twice (a re-dated article) is
+   cited once, from its earliest version. Both copies stay in the table. Differently worded
+   reports of one event (below 92) count as separate articles.
+7. **Market-wide news** is untagged news or news tagged with SPY or QQQ (`market_symbols`); it
+   is only as broad as the vendor's tagging.

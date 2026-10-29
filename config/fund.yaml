@@ -68,6 +68,25 @@ data:
     transform_lag_tolerance_days: 7  # a YoY / 3-month lagged value may be this many days early
     zscore_window_years: 10  # trailing window of the macro z-score, in years
     zscore_min_years: 5  # history needed before a z-score is given, in years
+  # Company and market news (Stage 11). Alpaca keys come from the ALPACA_API_* secrets (.env).
+  news:
+    alpaca_news_url: https://data.alpaca.markets/v1beta1/news  # Alpaca (Benzinga) news endpoint
+    page_limit: 50  # articles per page; Alpaca's maximum is 50
+    symbols_per_request: 50  # tickers per Alpaca request
+    max_retries: 3  # retries after a failed request (transport error, HTTP 429 or 5xx)
+    backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
+    min_request_interval_seconds: 0.3  # rate limit: pause between requests (free tier: 200/min)
+    request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
+    yahoo_max_items: 20  # Yahoo fallback: recent articles asked per symbol
+    max_summary_chars: 1000  # summaries are cut to this many characters (no article bodies)
+    dedup_window_hours: 48  # two copies of a story are at most this many hours apart
+    fuzzy_threshold: 92  # headline similarity (rapidfuzz ratio, 0-100) that marks a duplicate
+    roundup_max_symbols: 10  # more tags than this = roundup, dropped unless the headline names the ticker
+    headline_relevance: 1.0  # relevance when the headline names the ticker
+    symbols_relevance: 0.5  # relevance when the ticker is only in the tags (must be lower)
+    market_symbols: [SPY, QQQ]  # market-wide news = untagged or tagged with one of these
+    lookback_days: 14  # default query window, calendar days before the cutoff
+    limit: 50  # default number of articles a query returns
   # Liquidity filters of Universe.tradable (Stage 08); only bars known before the cutoff count.
   tradable:
     min_price: 5.0  # last raw close, USD

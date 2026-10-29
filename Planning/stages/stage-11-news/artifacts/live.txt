@@ -1,0 +1,6 @@
+tests/unit/data/news/test_news_live.py::test_live_alpaca_news SKIPPED    [ 50%]
+tests/unit/data/news/test_news_live.py::test_live_yahoo_news PASSED      [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/unit/data/news/test_news_live.py:19: ALPACA_API_KEY_ID / ALPACA_API_SECRET_KEY not set
+================= 1 passed, 1 skipped, 118 deselected in 8.90s =================
