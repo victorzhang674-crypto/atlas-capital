@@ -605,6 +605,7 @@ Full block and raw output: [verification.md](stages/stage-11-news/verification.m
   - `uv run mypy src/atlas` → Success: no issues found in 69 source files
   - `uv run pytest tests/unit/data/news -q` (brief's Verify) → 126 passed, 2 deselected
   - `-v -W error` → 126 passed; `-k acceptance -W error` → 4 passed; `make check` → exit 0; `-m live` → Yahoo PASSED, Alpaca skipped (keys not set); coverage of `atlas.data.news` 100%; unit tests with dead proxies → 252 passed (no network)
+  - On merged `main` (`3066bec`, fast-forward from `b795993`): `uv run pytest -q` → 1187 passed; `make check` → exit 0; brief's Verify → 126 passed · raw: [artifacts/merged-main-check.txt](stages/stage-11-news/artifacts/merged-main-check.txt)
 - Acceptance criteria:
   - [x] Evidence IDs are stable across re-ingests — evidence: `test_acceptance_evidence_ids_stable_across_reingests`, `test_acceptance_ids_independent_of_ingest_order`, `test_reingest_is_idempotent`, `test_same_article_id_twice_cited_once`
   - [x] PIT tests pass — evidence: `test_acceptance_article_after_cutoff_invisible` (08:30 article invisible at 08:00), `test_guard_raises_if_filter_bypassed`, `test_future_rows_change_nothing`, `test_window_independent`

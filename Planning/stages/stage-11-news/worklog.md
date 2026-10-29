@@ -63,3 +63,9 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Final: minor (deferred): a `pd.NA` cell in a `string_list` column is rejected as "expected a list" rather than treated as null → Backlog.
 - Ran (full verification, outputs in `artifacts/`): `uv run pytest -q` → 1187 passed, 7 deselected; `ruff check .` → All checks passed!; `ruff format --check .` → 149 files already formatted; `mypy src/atlas` → Success (69 files); `make check` → exit 0; brief's Verify → 126 passed, 2 deselected; `-v -W error` → 126 passed; `-k acceptance -W error` → 4 passed; coverage `atlas.data.news` 100%; dead proxies → 252 passed.
 - Records: `verification.md` (ALL CRITERIA VERIFIED), plan ticked (all but the commit step), `PROGRESS.md` (tick, handoff, evidence, Decisions log, Backlog).
+
+## 2026-10-29 — Commit, merge into main, merged-main check
+- Commit: `3066bec stage-11: News data pipeline` (49 files; staged diff reviewed: only the stage's files, no secrets, no `.env` / `data/` / caches; an empty harness directory `tests/fixtures/news/.claude/.cc-writes` was removed with `rmdir` first); `git status --short` clean; `git log` shows it on `stage-11-news` above `b795993`.
+- Merge: `git checkout main && git merge --ff-only stage-11-news` → fast-forward `b795993..3066bec` (no conflicts; ran from this session, the project is outside iCloud now).
+- Merged-main check on `main` `3066bec`: `uv run pytest -q` → 1187 passed, 7 deselected (exit 0); `make check` → exit 0 (All checks passed!, 149 files already formatted, mypy Success 69 files, 1187 passed); brief's Verify → 126 passed; `git branch --merged main` lists `stage-11-news` · raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt).
+- Records commit: `stage-11: merged-main check records` (this entry, `verification.md`, `plan.md`, `PROGRESS.md`), fast-forwarded into `main` and checked the same way.

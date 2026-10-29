@@ -1,0 +1,16 @@
+# merged main 3066bec
+$ uv run pytest -q
+1187 passed, 7 deselected in 11.51s
+exit 0
+$ make check
+All checks passed!
+149 files already formatted
+Success: no issues found in 69 source files
+1187 passed, 7 deselected in 11.34s
+exit 0
+$ uv run pytest tests/unit/data/news -q
+126 passed, 2 deselected in 1.06s
+$ git branch --merged main
+* main
+  stage-10-followup
+  stage-11-news

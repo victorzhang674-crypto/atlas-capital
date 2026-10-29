@@ -194,7 +194,7 @@ Fixtures: page 1 = three AAPL/MSFT articles from 2020-03-02 (one tagged with 12 
 - [x] Coverage: `uv run pytest tests/unit/data/news --cov=atlas.data.news --cov-report=term-missing -q` → target ≥ 95%, add guard tests for uncovered branches.
 - [x] Full verification (outputs under `artifacts/`): `uv run pytest -q`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy src/atlas`, `make check`, the brief's Verify `uv run pytest tests/unit/data/news -q`, `-k acceptance -W error`, unit tests with dead proxies (no network).
 - [x] Write `verification.md` (every acceptance criterion with evidence), tick this plan, update `PROGRESS.md` (tick, handoff, evidence, Decisions log, Backlog).
-- [ ] Commit `stage-11: News data pipeline` after reviewing the staged diff; merge into `main`; re-run `uv run pytest -q` and `make check` on `main`; record hashes in `worklog.md` (Rule 6A).
+- [x] Commit `stage-11: News data pipeline` after reviewing the staged diff; merge into `main`; re-run `uv run pytest -q` and `make check` on `main`; record hashes in `worklog.md` (Rule 6A).
 
 ## Acceptance criteria → evidence (planned)
 
