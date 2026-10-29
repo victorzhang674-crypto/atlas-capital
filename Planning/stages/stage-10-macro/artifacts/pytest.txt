@@ -1,0 +1,39 @@
+$ uv run pytest -q
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+........................................................................ [ 34%]
+........................................................................ [ 41%]
+........................................................................ [ 48%]
+........................................................................ [ 55%]
+........................................................................ [ 62%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 97%]
+.......................                                                  [100%]
+1031 passed, 5 deselected in 12.06s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "commit"
+ - leaked function "map_type"
+ - leaked function ""
+ - leaked function "disable_profiling"
+ - leaked function "cursor"
+ - leaked function "tf"
+ - leaked function "_catalog_version"
+ - leaked function "_bind"
+ - leaked function "extract_statements"
+ - leaked function ""
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0

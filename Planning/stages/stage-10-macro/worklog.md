@@ -1,0 +1,53 @@
+# Stage 10 — Macro data (FRED / ALFRED) · Work log
+
+Append entries in order. Record failures and dead ends as honestly as successes.
+
+## 2026-10-29 — Gate check and environment
+- Did: read `Project.md`, `PROGRESS.md` (Stage 09 `DONE`; its `verification.md` says ALL CRITERIA VERIFIED), the brief, the roadmap row, spec §3/§5/§11, the stage protocol and Stage 09's code and plan.
+- Ran: `uv run pytest -q` → **948 passed, 4 deselected**, exit 0 · raw: [artifacts/gate-check-pytest.txt](artifacts/gate-check-pytest.txt). Set Stage 10 to `IN PROGRESS` in `PROGRESS.md`.
+- Problems / fixes (environment, no project change):
+  - `uv` could not write its default cache (`~/.cache/uv`, sandbox) → `UV_CACHE_DIR=$TMPDIR/uv-cache`.
+  - The new worktree's `.venv` had no working editable install: the repo sits in an iCloud-synced folder, which marks `.pth` files hidden (and made an iCloud conflict copy `_editable_impl_atlas_capital 2.pth`); Python 3.12 skips hidden `.pth` files, so `import atlas` failed. `chflags nohidden` helped only until the next sync, so every command runs with `PYTHONPATH=src` and `UV_NO_SYNC=1` (no rebuild).
+
+## 2026-10-29 — Source probe and fixtures
+- Did: `FRED_API_KEY` is empty in the project `.env`, so the FRED API answers 400 (`api_key is not set`). The keyless ALFRED downloads work: one CSV per vintage and the vintage list of the download page. Wrote [artifacts/record_fred_fixtures.py](artifacts/record_fred_fixtures.py), which writes `tests/fixtures/macro/{series,vintagedates,observations}/` in the FRED API JSON shapes.
+- Ran: the recorder → CPIAUCSL 670 vintages, 40 snapshots, 114 observation rows; DGS10 5139 vintages, 64 snapshots, 44 rows · raw: [artifacts/record-fixtures-output.txt](artifacts/record-fixtures-output.txt).
+- Problems / fixes: (1) httpx with the descriptive User-Agent timed out; curl showed the server resets requests that carry a custom User-Agent (HTTP/2 INTERNAL_ERROR), so the recorder fetches with plain curl. (2) The first DGS10 run gave 15,218 rows: the snapshot at the window start (2020-03-01, not a vintage date) ignored `cosd`/`coed` and returned the full history; the recorder now applies the observation window itself (re-run: 44 rows).
+- Findings: CPI March 2020 absent in the 2020-04-09 vintage, 257.953 from 2020-04-10, 257.989 from 2021-02-08; DGS10 Good Friday 2020-04-10 is "."; the ICE BofA OAS series exist on FRED only from 2023-10-30; FRED allows at most 2000 vintage dates per JSON request (API docs).
+
+## 2026-10-29 — Plan
+- Did: wrote [plan.md](plan.md) (7 tasks, D1–D9, interpretations, Review Focus) with the superpowers writing-plans skill.
+
+## 2026-10-29 — Task 1: config and series catalog
+- Did: tests `test_macro_defaults`, `test_repo_yaml_macro_equals_defaults`, `test_macro_validation` (8 cases) in `tests/unit/core/test_config.py`; `tests/unit/data/macro/test_macro_catalog.py` (repo file, 6 bad files, missing file). Code: `MacroConfig` + `DataConfig.macro` (`src/atlas/core/config.py`), `data.macro` in `config/fund.yaml`, `config/macro.yaml` (22 series), `src/atlas/data/macro/{__init__,series}.py` (`MacroSeries`, `MacroCatalog`, `load_macro_series`).
+- Ran: `uv run pytest tests/unit/data/macro tests/unit/core/test_config.py -q` → FAIL (module / `MacroConfig` missing), then → 130 passed; `ruff check` clean after wrapping a long test line and a raw `match=`; `mypy src/atlas` → Success (57 files).
+- Problems / fixes: `MacroCatalog` first subclassed `Mapping` with a `get` that raises; that breaks `Mapping.get`'s contract, so it is now a plain read-only class with `ids`, `get`, `in`, iteration and `len`.
+
+## 2026-10-29 — Task 2: FRED client
+- Did: `tests/unit/data/macro/macro_helpers.py` (fixture server emulating the API: checks the key and `file_type`, filters and pages vintage dates, answers only the recorded observations request; `FakeFred` for windowing; `SleepRecorder`), `test_macro_client.py` (15 tests), `tests/fixtures/macro/README.md`. Code: `src/atlas/data/macro/fred_client.py` (`FredClient.series`, `vintage_dates`, `observations`, `build_fred_client`).
+- Ran: `uv run pytest tests/unit/data/macro/test_macro_client.py -q` → FAIL (`FredClient` missing); after the code → 1 failed, 21 passed (`test_api_key_never_logged_or_raised`); after the fixes → 22 passed (whole `tests/unit/data/macro`); `ruff check` (one import order fix), `ruff format`, `mypy src/atlas` → clean (58 files).
+- Problems / fixes (both real leaks caught by the test): (1) **httpx logs every request URL** at INFO ("HTTP Request: GET …?api_key=…"), and the root logger is INFO by default, so the key would have reached the logs: `fred_client` attaches a filter to the `httpx` and `httpcore` loggers that masks `api_key=` values. (2) The original transport error (whose text can carry the URL) stayed as the suppressed `__context__` of the raised error: the retryable error is now raised outside the `except` block, with redacted text.
+
+## 2026-10-29 — Task 3: vintage ingestion (storage)
+- Did: `test_macro_ingest.py` (parsing, metadata, `vintage_windows`, `collapse_vintages`, release `available_at` incl. EST/EDT, ingest of the CPI fixture, idempotence, windowed = single request via `FakeFred`, failing series, request checks, whole catalog). Code: `series.py` gained `MACRO_OBSERVATIONS`, `MACRO_SERIES`, `OBS_COLUMNS`, `ROW_COLUMNS`, `parse_observations`, `parse_series_metadata`, `vintage_windows`, `collapse_vintages`, `attach_available_at` (release rule; market rule left for Task 5); new `ingest.py` (`LATEST`, `MacroIngestReport`, `ingest_macro`).
+- Ran: `uv run pytest tests/unit/data/macro/test_macro_ingest.py -q` → FAIL (names missing); after the code → 5 failed, 33 passed; after the test fix → 38 passed (whole folder); ruff, format, mypy clean (59 files).
+- Problems / fixes: the five failures were the tests passing a `MacroConfig` where `ingest_macro` takes the run's `AtlasConfig` (as Stage 09's ingest does); the tests now wrap it (`run_config`). The windowing test confirmed four windows `[2020-01-01..04-09], [04-10..06-09], [06-10..08-09], [08-10..9999-12-31]` give exactly the rows of one request.
+
+## 2026-10-29 — Task 4: point-in-time query and acceptance
+- Did: `test_macro_pit.py` (the brief's CPI acceptance pair, release morning, revisions, month-end sweep 2019–2021 against a store truncated to known rows, future rows, bypassed filter, a vintage that blanks a value, shape/lookback, detail, `Macro` reader and its errors); helpers `stored_rows`, `make_rows`. Code: `pit.py` (`known_observations`, `macro_pit_detail`, `macro_pit`, `DETAIL_COLUMNS`, `Macro` with `observations`, `pit`, `pit_detail`, `series_info`).
+- Ran: `uv run pytest tests/unit/data/macro/test_macro_pit.py -q` → FAIL (module missing); after the code → 3 failed, 47 passed; after the fixes → 50 passed; ruff, format, mypy clean (60 files).
+- Problems / fixes: (1) two tests used a 40-day lookback from mid-April/early April, which excludes observations dated the 1st of the month before; the tests were wrong (never green) and now use 50 and 70 days (comment in the test). (2) `Macro.pit` read the lake before checking the as-of type, so a `datetime` gave `DataError` instead of `TypeError`; the as-of is now resolved first.
+
+## 2026-10-29 — Task 5: market series availability
+- Did: `test_macro_market.py` (DGS10 first vintage → next calendar day 08:00 ET incl. Friday → Saturday, EST vs EDT, configurable lag/time, revision rows wait for their vintage, strict cutoff, Good Friday "."). Code: market branch of `attach_available_at` in `series.py` (first vintage: `obs_date + market_lag_days` at `market_available_time`; later vintages: the later of that and `realtime_start` at the same time).
+- Ran: `uv run pytest tests/unit/data/macro/test_macro_market.py -q` → 6 failed (`NotImplementedError` placeholder); after the code → 56 passed (whole folder).
+
+## 2026-10-29 — Task 6: transforms
+- Did: `test_macro_transforms.py` (CPI YoY at first release = 100·(257.953/254.095 − 1) = 1.51833; missing year-ago value; daily YoY via Friday and with zero tolerance; 3-month annualised 12.550881; z-score against a hand-computed trailing window, NaN before 5 years and for a flat series; curve slope on common dates; real rate with the latest monthly inflation; index checks). Code: `transforms.py` (`yoy_pct`, `annualized_3m_pct`, `zscore`, `curve_slope`, `real_rate`).
+- Ran: → FAIL (names missing); after the code → 1 failed, 63 passed (`merge_asof` refused keys of different resolution, `datetime64[s]` vs `[us]`), then 64 passed; ruff flagged Unicode minus signs in docstrings (replaced with `-`); mypy flagged `Index - DateOffset` typing (index converted with `pd.DatetimeIndex(...).as_unit("ns")`) → clean (61 files).
+
+## 2026-10-29 — Task 7: live test, docs, coverage, full verification
+- Did: `test_macro_live.py` (`-m live`, skipped without `FRED_API_KEY`); `test_macro_guards.py` (malformed vintage/observation answers, 400 without JSON, bad rows, naive release time, catalog iteration, `series_info`) → coverage 97% → **100%**; `docs/data-limitations.md › Macro (Stage 10)` with `test_data_limitations_doc_covers_macro` (red, then green); docstring check `artifacts/docstrings.py` found `_RedactApiKey.filter` undocumented → fixed → none missing.
+- Ran (first full run): `uv run pytest -q` → **1 failed**, 1030 passed: `test_every_source_dir_has_init` found `src/atlas/data/macro/.claude/.cc-writes`, an empty harness directory created while my shell's working directory was inside the package; `ruff format --check` → 1 file to reformat (`test_macro_guards.py`). Fix: removed the two empty directories with `rmdir` (also one under `tests/fixtures/macro/`), formatted the file.
+- Ran (second full run, all outputs in `artifacts/`): `uv run pytest -q` → 1031 passed, 5 deselected; `ruff check .` → All checks passed!; `ruff format --check .` → 129 files already formatted; `mypy src/atlas` → Success (61 files); brief's Verify → 73 passed, 1 deselected; `-v -W error` → 73 passed; `-k acceptance -W error` → 3 passed; `-m live` → 1 skipped (`FRED_API_KEY` not set); coverage 100%; docstrings none missing; dead-proxy run → 73 passed; `make check` → exit 0.
+- Records: `verification.md` (ALL CRITERIA VERIFIED), plan ticked, `PROGRESS.md` (tick, handoff, evidence, Decisions log, Backlog).

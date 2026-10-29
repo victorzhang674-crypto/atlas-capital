@@ -1,0 +1,46 @@
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+129 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 61 source files
+uv run pytest -q
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+........................................................................ [ 34%]
+........................................................................ [ 41%]
+........................................................................ [ 48%]
+........................................................................ [ 55%]
+........................................................................ [ 62%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 97%]
+.......................                                                  [100%]
+1031 passed, 5 deselected in 11.91s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_statement_count"
+ - leaked function ""
+ - leaked function "__getitem__"
+ - leaked function "list_type"
+ - leaked function "__new__"
+ - leaked function "__exit__"
+ - leaked function "_own_sources"
+ - leaked function "_register_values"
+ - leaked function "create_function"
+ - leaked function "interrupt"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0

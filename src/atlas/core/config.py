@@ -400,6 +400,50 @@ class FundamentalsConfig(_Frozen):
         return self
 
 
+class MacroConfig(_Frozen):
+    """FRED / ALFRED macro data (Stage 10).
+
+    `api_url` is the FRED API base; `max_requests_per_second` the client's rate limit (FRED
+    allows 120 requests per minute); `request_timeout_seconds` bounds one HTTP request; a failed
+    request is retried `max_retries` times, waiting `backoff_seconds` (doubling). `series_file`
+    is the series catalog, relative to the repo root and not resolved here. Ingestion reads
+    observations dated from `observation_start` and every vintage from `vintage_start` (FRED's
+    earliest date, 1776-07-04, means all vintages), at most `max_vintage_dates_per_request`
+    vintages per request (FRED's JSON limit is 2000) and `page_limit` rows per page (FRED's
+    maximum is 100000).
+
+    Point in time: a market series' value is available `market_lag_days` calendar days after
+    its observation date at `market_available_time` (naive, America/New_York). Transforms find
+    a lagged value at most `transform_lag_tolerance_days` days before the target date; the
+    z-score uses a trailing window of `zscore_window_years` years and needs `zscore_min_years`
+    years of history.
+    """
+
+    api_url: str = "https://api.stlouisfed.org/fred"
+    max_requests_per_second: Annotated[float, Field(gt=0, le=2)] = 2.0
+    request_timeout_seconds: Annotated[float, Field(gt=0)] = 30.0
+    max_retries: Annotated[int, Field(ge=0)] = 3
+    backoff_seconds: _NonNeg = 1.0
+    series_file: Path = Path("config/macro.yaml")
+    observation_start: date = date(2000, 1, 1)
+    vintage_start: date = date(1776, 7, 4)
+    max_vintage_dates_per_request: Annotated[int, Field(ge=2, le=2000)] = 2000
+    page_limit: Annotated[int, Field(ge=1, le=100_000)] = 100_000
+    market_lag_days: Annotated[int, Field(ge=1)] = 1
+    market_available_time: time = time(8, 0)
+    transform_lag_tolerance_days: Annotated[int, Field(ge=0)] = 7
+    zscore_window_years: Annotated[int, Field(gt=0)] = 10
+    zscore_min_years: Annotated[int, Field(gt=0)] = 5
+
+    @model_validator(mode="after")
+    def _check(self) -> Self:
+        if self.market_available_time.tzinfo is not None:
+            raise ValueError("market_available_time must be naive (it is read in New York)")
+        if self.zscore_min_years > self.zscore_window_years:
+            raise ValueError("zscore_min_years must not exceed zscore_window_years")
+        return self
+
+
 class DataConfig(_Frozen):
     """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
 
@@ -408,6 +452,7 @@ class DataConfig(_Frozen):
     prices: PriceDataConfig = Field(default_factory=PriceDataConfig)
     reference: ReferenceDataConfig = Field(default_factory=ReferenceDataConfig)
     fundamentals: FundamentalsConfig = Field(default_factory=FundamentalsConfig)
+    macro: MacroConfig = Field(default_factory=MacroConfig)
     tradable: TradableConfig = Field(default_factory=TradableConfig)
     universes: _UniverseMap = Field(default_factory=_default_universes)
 

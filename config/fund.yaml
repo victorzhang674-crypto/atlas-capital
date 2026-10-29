@@ -51,6 +51,23 @@ data:
     annual_days: [350, 380]  # a duration in this range of days is a fiscal year
     max_staleness_days: 400  # a metric whose period ended longer ago than this is not used (NaN)
     cik_overrides_file: config/cik_overrides.yaml  # verified CIKs of former S&P 500 members, relative to the repo root
+  # FRED / ALFRED macro data (Stage 10). The API key comes from the FRED_API_KEY secret (.env).
+  macro:
+    api_url: https://api.stlouisfed.org/fred  # FRED API base URL
+    max_requests_per_second: 2  # rate limit; FRED allows 120 requests per minute
+    request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
+    max_retries: 3  # retries after a failed request (transport error, HTTP 429 or 5xx)
+    backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
+    series_file: config/macro.yaml  # series catalog (kind, release time), relative to the repo root
+    observation_start: 2000-01-01  # first observation date ingested
+    vintage_start: 1776-07-04  # first vintage ingested; FRED's earliest date = every vintage
+    max_vintage_dates_per_request: 2000  # vintages per observations request (FRED's JSON limit)
+    page_limit: 100000  # rows per observations page (FRED's maximum)
+    market_lag_days: 1  # a market series' value is available this many calendar days after its date
+    market_available_time: "08:00"  # ... at this time, America/New_York; quoted for YAML
+    transform_lag_tolerance_days: 7  # a YoY / 3-month lagged value may be this many days early
+    zscore_window_years: 10  # trailing window of the macro z-score, in years
+    zscore_min_years: 5  # history needed before a z-score is given, in years
   # Liquidity filters of Universe.tradable (Stage 08); only bars known before the cutoff count.
   tradable:
     min_price: 5.0  # last raw close, USD

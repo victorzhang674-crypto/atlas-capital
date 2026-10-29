@@ -1,0 +1,2 @@
+CPIAUCSL: 'Consumer Price Index for All Urban Consumers: All Items in U.S. City Average' 'Index 1982-1984=100' M SA; vintages=670 (1972-07-21 .. 2026-10-14); snapshots fetched=40; observation rows=114
+DGS10: 'Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity, Quoted on an Investment Basis' '%' D NSA; vintages=5139 (2005-06-28 .. 2026-10-28); snapshots fetched=64; observation rows=44

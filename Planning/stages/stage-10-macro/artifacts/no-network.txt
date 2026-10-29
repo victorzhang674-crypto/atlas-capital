@@ -1,0 +1,5 @@
+$ env HTTP_PROXY=http://127.0.0.1:9 HTTPS_PROXY=http://127.0.0.1:9 ALL_PROXY=http://127.0.0.1:9 uv run pytest tests/unit/data/macro -q -p no:cacheprovider
+........................................................................ [ 98%]
+.                                                                        [100%]
+73 passed, 1 deselected in 1.04s
+exit=0

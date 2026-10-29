@@ -124,3 +124,46 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
 6. **Ratios use simple definitions.** ROE and ROA divide TTM net income by the latest equity
    and assets (not averages); a ratio with a missing or non-positive denominator (negative
    equity) is NaN.
+
+## Macro (Stage 10)
+
+US macro series come from FRED, and their history **as it was known** comes from ALFRED, the
+St. Louis Fed's archive of past **vintages** (`atlas.data.macro`). Every stored row is one value
+of one observation in one vintage, so a backtest sees the first release of a statistic until a
+revision was published, then the revised value (`Macro(lake).pit(series_ids, as_of, lookback)`).
+
+### What is left
+
+1. **Release times are scheduled times, not posting times.** A release series is known from
+   its vintage's `realtime_start` date at the `release_time` in `config/macro.yaml` (for
+   example CPI 08:30 New York). ALFRED records dates, not times, so the time is the publisher's
+   scheduled one (the later one where it has varied: core PCE 10:00). With the default 08:00
+   decision time a statistic released that morning is first used the next day. FEDFUNDS has no
+   fixed posting time and is taken at 17:00.
+2. **Market series use a fixed rule, not the vintage.** Treasury yields, credit spreads and VIX
+   are known `obs_date` + 1 calendar day at 08:00 New York (`market_lag_days`,
+   `market_available_time`), even where FRED posted the value later (Friday's yield appears on
+   FRED on Monday; the quote itself was public on Friday). Because a value must be known
+   *strictly before* the cutoff, a value available at 08:00 is **not** used at the 08:00
+   decision of that day, so with the defaults day D's yield first enters the decision of D + 2
+   (calendar days). Revisions of a market value wait for their own vintage.
+3. **Credit spreads have three years of history.** ICE licensing limits FRED to the last
+   three years of the ICE BofA option-adjusted spreads (`BAMLH0A0HYM2`, `BAMLC0A0CM`): data
+   starts **2023-10-30** and ALFRED has no older vintages. A 2018+ backtest has no free
+   HY/IG spread before late 2023; a 10-year z-score of them is NaN for years.
+4. **Before ALFRED's first vintage, history is "known from the first vintage".** A series'
+   oldest observations carry the date of its first archived vintage (DGS10's archive starts
+   2005-06-28; CPIAUCSL's 1972-07-21), which is later than the real release, so they look
+   unavailable before that date. Ingestion reads every vintage from `vintage_start`
+   (1776-07-04 = all) and observations from `observation_start` (2000-01-01).
+5. **Licensed or delayed series.** FRED posts University of Michigan sentiment (`UMCSENT`)
+   with a delay under its licence; the vintage dates reflect FRED's posting, so the model sees
+   it later than subscribers did (conservative, never early).
+6. **Units are FRED's.** Values are stored in each series' own units (`macro_series.units`):
+   percent for yields, spreads and rates, index levels for prices and activity, thousands of
+   persons for payrolls, millions or billions of USD for balance sheets and money. The
+   transforms (`yoy_pct`, `annualized_3m_pct`, `curve_slope`, `real_rate`) return percent or
+   percentage points; `zscore` is unitless and needs 5 of its 10 years of history.
+7. **Missing values.** FRED's "." (a holiday, no quote) is stored as NaN; such an observation
+   is left out of point-in-time results, and a later vintage that blanks a value hides the old
+   one.

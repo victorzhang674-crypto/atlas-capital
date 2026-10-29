@@ -1,0 +1,61 @@
+# Macro series catalog (Stage 10), read by atlas.data.macro.load_macro_series; not part of
+# load_config. Every series comes from FRED / ALFRED (US only).
+#
+# Each series has:
+#   kind:         market  (a market quote: Treasury yields, credit spreads, VIX). Its value for
+#                         date D is available D + data.macro.market_lag_days at
+#                         data.macro.market_available_time (default D + 1 day, 08:00 New York).
+#                 release (a published statistic). Its value is available on the vintage's
+#                         ALFRED realtime_start date at release_time.
+#   release_time: release series only: the publisher's scheduled release time, America/New_York,
+#                 quoted "HH:MM"; where it has varied, the later time (never assume a release
+#                 before it happened).
+#   description:  what the series is, its unit and its publisher.
+# Values are stored in FRED's own units (see the macro_series table).
+
+# The brief's series set (Stage 10 In scope).
+series:
+  # 3-month Treasury constant maturity yield, percent (Fed H.15, daily).
+  DGS3MO: {kind: market, description: "3-month Treasury constant maturity yield, percent (H.15)"}
+  # 2-year Treasury constant maturity yield, percent (Fed H.15, daily).
+  DGS2: {kind: market, description: "2-year Treasury constant maturity yield, percent (H.15)"}
+  # 10-year Treasury constant maturity yield, percent (Fed H.15, daily).
+  DGS10: {kind: market, description: "10-year Treasury constant maturity yield, percent (H.15)"}
+  # 10-year minus 2-year Treasury yield, percentage points (FRED, daily).
+  T10Y2Y: {kind: market, description: "10-year minus 2-year Treasury spread, percentage points"}
+  # 10-year minus 3-month Treasury yield, percentage points (FRED, daily).
+  T10Y3M: {kind: market, description: "10-year minus 3-month Treasury spread, percentage points"}
+  # Effective federal funds rate, monthly average, percent; FRED posts it with no fixed time.
+  FEDFUNDS: {kind: release, release_time: "17:00", description: "Effective federal funds rate, monthly average, percent"}
+  # CPI all items, index 1982-84=100, seasonally adjusted (BLS, 08:30).
+  CPIAUCSL: {kind: release, release_time: "08:30", description: "CPI-U all items, index 1982-84=100, SA (BLS)"}
+  # Core CPI (less food and energy), index 1982-84=100, seasonally adjusted (BLS, 08:30).
+  CPILFESL: {kind: release, release_time: "08:30", description: "CPI-U less food and energy, index 1982-84=100, SA (BLS)"}
+  # Core PCE price index, 2017=100, SA (BEA Personal Income and Outlays: 08:30, at times 10:00).
+  PCEPILFE: {kind: release, release_time: "10:00", description: "PCE price index excluding food and energy, index, SA (BEA)"}
+  # Unemployment rate, percent, SA (BLS Employment Situation, 08:30).
+  UNRATE: {kind: release, release_time: "08:30", description: "Unemployment rate, percent, SA (BLS)"}
+  # Nonfarm payrolls, thousands of persons, SA (BLS Employment Situation, 08:30).
+  PAYEMS: {kind: release, release_time: "08:30", description: "All employees, total nonfarm, thousands, SA (BLS)"}
+  # Initial jobless claims, number, SA, weekly (Department of Labor, Thursdays 08:30).
+  ICSA: {kind: release, release_time: "08:30", description: "Initial claims, number, SA, weekly (DOL)"}
+  # Industrial production index, 2017=100, SA (Fed G.17, 09:15).
+  INDPRO: {kind: release, release_time: "09:15", description: "Industrial production index, SA (Fed G.17)"}
+  # Advance retail sales, millions of USD, SA (Census, 08:30).
+  RSAFS: {kind: release, release_time: "08:30", description: "Advance retail sales and food services, millions USD, SA (Census)"}
+  # University of Michigan consumer sentiment, index 1966:Q1=100 (10:00; FRED posts it late).
+  UMCSENT: {kind: release, release_time: "10:00", description: "University of Michigan consumer sentiment, index 1966Q1=100"}
+  # ICE BofA US high-yield option-adjusted spread, percent (daily; FRED keeps 3 years only).
+  BAMLH0A0HYM2: {kind: market, description: "ICE BofA US High Yield index option-adjusted spread, percent"}
+  # ICE BofA US corporate (investment grade) option-adjusted spread, percent (daily; 3 years only).
+  BAMLC0A0CM: {kind: market, description: "ICE BofA US Corporate index option-adjusted spread, percent"}
+  # CBOE VIX close, index points (daily).
+  VIXCLS: {kind: market, description: "CBOE Volatility Index (VIX) close, index points"}
+  # Nominal broad US dollar index, Jan 2006=100: daily values published weekly (Fed H.10, Mondays 16:15).
+  DTWEXBGS: {kind: release, release_time: "16:15", description: "Nominal broad US dollar index, Jan 2006=100 (Fed H.10)"}
+  # Chicago Fed National Financial Conditions Index, weekly (Wednesdays 08:30).
+  NFCI: {kind: release, release_time: "08:30", description: "Chicago Fed National Financial Conditions Index, weekly"}
+  # Fed total assets, millions of USD, weekly as of Wednesday (Fed H.4.1, Thursdays 16:30).
+  WALCL: {kind: release, release_time: "16:30", description: "Federal Reserve total assets, millions USD, weekly (H.4.1)"}
+  # M2 money stock, billions of USD, SA, monthly (Fed H.6, 13:00).
+  M2SL: {kind: release, release_time: "13:00", description: "M2 money stock, billions USD, SA (Fed H.6)"}

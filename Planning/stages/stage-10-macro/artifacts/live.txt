@@ -1,0 +1,16 @@
+$ uv run pytest tests/unit/data/macro -m live -v -rs
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-10-planning-implementation-095734/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Desktop/Trading Agents/.claude/worktrees/stage-10-planning-implementation-095734
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 74 items / 73 deselected / 1 selected
+
+tests/unit/data/macro/test_macro_live.py::test_live_fred_cpi SKIPPED     [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/unit/data/macro/test_macro_live.py:19: FRED_API_KEY is not set (.env): the FRED API needs a key
+====================== 1 skipped, 73 deselected in 0.58s =======================
+exit=0

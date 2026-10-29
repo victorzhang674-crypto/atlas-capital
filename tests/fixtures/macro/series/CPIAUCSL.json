@@ -1,0 +1,17 @@
+{
+ "realtime_start": "1776-07-04",
+ "realtime_end": "9999-12-31",
+ "seriess": [
+  {
+   "id": "CPIAUCSL",
+   "title": "Consumer Price Index for All Urban Consumers: All Items in U.S. City Average",
+   "frequency": "Monthly",
+   "frequency_short": "M",
+   "units": "Index 1982-1984=100",
+   "seasonal_adjustment": "Seasonally Adjusted",
+   "seasonal_adjustment_short": "SA",
+   "realtime_start": "1776-07-04",
+   "realtime_end": "9999-12-31"
+  }
+ ]
+}

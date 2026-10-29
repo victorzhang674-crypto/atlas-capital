@@ -21,6 +21,7 @@ from atlas.core.config import (
     FundamentalsConfig,
     FundConfig,
     LimitsConfig,
+    MacroConfig,
     PodStops,
     ReferenceDataConfig,
     Secrets,
@@ -773,3 +774,46 @@ def test_fundamentals_defaults() -> None:  # Stage 09 D10
 def test_fundamentals_validation(values: dict[str, object], pattern: str) -> None:
     with pytest.raises(ValidationError, match=pattern):
         FundamentalsConfig.model_validate(values)
+
+
+def test_macro_defaults() -> None:  # Stage 10 D6
+    assert AtlasConfig().data.macro == MacroConfig(
+        api_url="https://api.stlouisfed.org/fred",
+        max_requests_per_second=2.0,
+        request_timeout_seconds=30.0,
+        max_retries=3,
+        backoff_seconds=1.0,
+        series_file=Path("config/macro.yaml"),
+        observation_start=date(2000, 1, 1),
+        vintage_start=date(1776, 7, 4),
+        max_vintage_dates_per_request=2000,
+        page_limit=100_000,
+        market_lag_days=1,
+        market_available_time=time(8, 0),
+        transform_lag_tolerance_days=7,
+        zscore_window_years=10,
+        zscore_min_years=5,
+    )
+
+
+def test_repo_yaml_macro_equals_defaults(repo_root: Path, tmp_path: Path) -> None:
+    cfg = load_config("dev", config_dir=_repo_config_copy(repo_root, tmp_path))
+    assert cfg.data.macro == MacroConfig()
+
+
+@pytest.mark.parametrize(
+    ("values", "pattern"),
+    [
+        ({"max_requests_per_second": 3}, "max_requests_per_second"),
+        ({"max_requests_per_second": 0}, "max_requests_per_second"),
+        ({"max_vintage_dates_per_request": 1}, "max_vintage_dates_per_request"),
+        ({"max_vintage_dates_per_request": 2001}, "max_vintage_dates_per_request"),
+        ({"page_limit": 100_001}, "page_limit"),
+        ({"market_lag_days": 0}, "market_lag_days"),
+        ({"zscore_min_years": 11}, "zscore_min_years"),
+        ({"market_available_time": "08:00+00:00"}, "market_available_time"),
+    ],
+)
+def test_macro_validation(values: dict[str, object], pattern: str) -> None:
+    with pytest.raises(ValidationError, match=pattern):
+        MacroConfig.model_validate(values)

@@ -1,0 +1,4 @@
+$ uv run python Planning/stages/stage-10-macro/artifacts/docstrings.py
+6 modules, 38 public modules/classes/functions/methods checked
+missing: none
+exit=0

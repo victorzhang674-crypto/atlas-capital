@@ -4,9 +4,9 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 10 — Macro data (FRED / ALFRED) — `NOT STARTED`
-- **Stages done:** 9 / 66
-- **Last updated:** 2026-10-29 (Stage 09 DONE; final audit, see stage-09 artifacts/audit-final.md)
+- **Current stage:** 11 — News data pipeline — `NOT STARTED`
+- **Stages done:** 10 / 66
+- **Last updated:** 2026-10-29 (Stage 10 DONE; see stage-10 verification.md)
 
 ## Stage checklist
 
@@ -22,7 +22,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - [x] **07** [Price data providers (yfinance, Alpaca)](stages/stage-07-price-data/brief.md)
 - [x] **08** [Universe & historical index membership](stages/stage-08-universe/brief.md)
 - [x] **09** [Point-in-time fundamentals (SEC EDGAR)](stages/stage-09-fundamentals/brief.md)
-- [ ] **10** [Macro data (FRED / ALFRED)](stages/stage-10-macro/brief.md)
+- [x] **10** [Macro data (FRED / ALFRED)](stages/stage-10-macro/brief.md)
 - [ ] **11** [News data pipeline](stages/stage-11-news/brief.md)
 - [ ] **12** [Events calendar & sentiment sources](stages/stage-12-events-sentiment/brief.md)
 - [ ] **13** [Data quality checks & DataView facade](stages/stage-13-data-quality-dataview/brief.md)
@@ -209,6 +209,11 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-28 | 09 | Owner-approved scope extension (Rule 2 override, asked in chat): Stage 09 also gives former S&P 500 members since 2018-01-01 verified CIKs. Question: "Should Stage 09 be extended to give former S&P 500 members (left since 2018) verified SEC company IDs, so their fundamentals load too?" Owner's answer: "Extend Stage 09 (Recommended)". Measured first: 164 former members in the window, 83 without a CIK in `company_tickers.json`, 81 resolvable only by a possibly reused current ticker. Design E1–E4 in the plan addendum (`config/cik_overrides.yaml`, `CikMap.with_overrides`, `build_cik_map`, verification against the filings) | [stage-09 plan › Addendum](stages/stage-09-fundamentals/plan.md) |
 | 2026-10-28 | 09 | Addendum outcome: `config/cik_overrides.yaml` (164 former members since 2018: 162 verified CIKs, FRC and SBNY null as FDIC filers; reused tickers APC and STI caught), `CikOverride`, `load_cik_overrides`, `CikMap.with_overrides`, `build_cik_map`, config key `data.fundamentals.cik_overrides_file`. Real data then exposed a bank revenue bug (fee-only `RevenueFromContractWithCustomer…` used as total revenue for banks without a `Revenues` tag), fixed test-first by the fallback `InterestIncomeExpenseNet + NoninterestIncome` ahead of it. `test_load_concept_map_repo_file` updated to the new map (35 → 37 tags; it pins the repo file, which changed deliberately). Committed as `stage-09: CIKs of former members, bank revenue fallback` | Owner-approved extension; see [stage-09 worklog](stages/stage-09-fundamentals/worklog.md) |
 | 2026-10-29 | 09 | Final audit (owner: "is everything for this stage completed? please fully audit according to the planning markdown files."): Stage 09 has 7 commits (`f0d1acb` stage, `3512e76` records, `b471c42` gap fixes, `e98dc1f` records, `23ed7be` live test + real tickers fixture, `ab0fff7` addendum, `9423387` records) plus the audit-records commit `stage-09: final audit records`, against the one-commit default. Each code commit had an owner request; the records-only ones (`3512e76`, `e98dc1f`, `9423387`, and this one) exist because Project.md Rule 6A needs hashes and merged-main checks in the records, which cannot go into the commit they describe (Rule 3: Project.md over the protocol's DoD). `e98dc1f` and `9423387` had no Decisions row until this audit | [artifacts/audit-final.md](stages/stage-09-fundamentals/artifacts/audit-final.md) |
+| 2026-10-29 | 10 | Stage 10 executed straight after its plan (native inline TDD, no subagents), as the owner asked in chat: "firstly generate planning markdown files for stage 10 and save them to the stage 10 folder then start with the implementation of the plan" | Owner instruction; see [stage-10 plan](stages/stage-10-macro/plan.md) |
+| 2026-10-29 | 10 | Collisions check: none with the roadmap or the spec. Interpretations: (1) brief `macro_pit(series_ids, as_of, lookback)` needs the stored rows → `Macro(lake, cfg).pit(series_ids, as_of, lookback)`; the frame-level `macro_pit(observations, series_ids, as_of, lookback)` keeps the name (as Stage 09 did); (2) two modules beyond the brief's three: `series.py` (catalog, tables, parsing, windows, availability) and `ingest.py`; (3) DTWEXBGS (daily values published weekly, Fed H.10) is a release series, not a market one; (4) the brief's market rule "obs_date + 1 day 08:00 ET" meets Stage 05's strict cutoff (`available_at < cutoff`) at the default 08:00 decision: a daily value for D is first used at the decision of D + 2 calendar days. Followed literally (fail safe); `market_available_time` / `market_lag_days` are configurable — **flagged to the owner** | Rule 3 record; see [stage-10 plan › Collisions](stages/stage-10-macro/plan.md) |
+| 2026-10-29 | 10 | D1–D9 (plan): `macro_observations(series_id, obs_date, value?, realtime_start, available_at)` PK series/obs/realtime_start, partitioned by series, NaN for "."; static `macro_series` (title, frequency, units, SA, kind; no time-varying fields); whole vintage history read each ingest, split into windows of ≤ 1999 vintages + the one in effect (FRED's 2000-vintage JSON limit), merged across window boundaries; availability: release = `realtime_start` at the series' `release_time` (ET), market = first vintage obs + 1 day 08:00 ET, revision = later of that and its vintage date 08:00; `MacroConfig` defaults (`data.macro`); PIT = latest known vintage, missing latest value hides the observation; transforms in percent / percentage points | See [stage-10 plan › Design decisions](stages/stage-10-macro/plan.md) |
+| 2026-10-29 | 10 | Fixtures are real ALFRED data (keyless CSV per vintage + the vintage list of the ALFRED download page) wrapped in the documented FRED API JSON shapes, because `FRED_API_KEY` is empty; recorder `artifacts/record_fred_fixtures.py` (uses curl: ALFRED resets requests with a custom User-Agent). `test_live_fred_cpi` (`-m live`) is skipped until the owner adds `FRED_API_KEY` to `.env`; not an acceptance criterion | Rule 6 missing-secret exception; see `tests/fixtures/macro/README.md` |
+| 2026-10-29 | 10 | Secret handling: httpx logs every request URL at INFO, and the FRED key is a query parameter, so `atlas.data.macro.fred_client` attaches a filter to the `httpx` and `httpcore` loggers that masks `api_key=` values (affects every httpx user in the process, harmlessly); error text from the network is redacted and transport errors are re-raised without their original as cause or context | Caught by `test_api_key_never_logged_or_raised` |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -261,6 +266,11 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 09) TTM EPS is a sum of quarterly EPS (derived quarters are approximate); consider TTM net income / diluted weighted shares. ROE/ROA use latest balances, not averages
 - (Stage 09) `parse_submissions` keeps `accn, form, filed, accepted_at` only; Stage 12's earnings dates need the 8-K `items` column (2.02) from the same submissions JSON (already archived in `raw/sec/submissions/`)
 - (Stage 09) `Fundamentals.pit` reads the symbol's whole partition on every call; Stage 13's `fundamentals_panel` over 500 names may want a per-symbol cache keyed on the partition file (as Stage 08's `Universe` does)
+- (Stage 10) ICE BofA credit spreads (`BAMLH0A0HYM2`, `BAMLC0A0CM`) exist on FRED only from 2023-10-30 (licence): Stage 21's regime model needs a free proxy for 2018–2023 credit stress (e.g. HYG/LQD vs IEF price spreads, or Moody's `BAA10Y`/`AAA10Y` from FRED)
+- (Stage 10) Market-series timing: with the defaults (available 08:00 ET on D + 1, strict cutoff at the 08:00 decision) a yield/VIX for day D is first used on D + 2; the owner may prefer `market_available_time` before the decision time (e.g. "07:59" or "06:00") so D's close is used on D + 1 — a config change, no code
+- (Stage 10) `release_time` values are publishers' scheduled times; an economic-calendar source (Stage 12) could give actual times and catch unscheduled releases
+- (Stage 10) Run `test_live_fred_cpi` (`-m live`) once `FRED_API_KEY` is in `.env`; it also checks the 2000-vintage windowing and pagination against the real API (fixtures emulate them)
+- (Stage 10) `Macro.pit` reads every vintage of the requested series on each call (small today: ~22 series); Stage 13's `DataView.macro` may cache per lake generation
 
 ## Handoff notes
 
@@ -530,4 +540,29 @@ Full block and raw output: [verification.md](stages/stage-09-fundamentals/verifi
   - [x] `fundamentals_pit("AAPL", as_of)` matches fixture-derived figures — evidence: `test_acceptance_fundamentals_pit_aapl_fy2023`, `test_acceptance_detail_cites_the_10k`, `test_fundamentals_reads_lake`, artifacts/real-ingest-check.txt
   - [x] Restatement tests pass — evidence: `test_restated_value_not_seen_before_its_filing`, `test_jpm_q1_2012_restatement`, `test_msft_asc606_recast`, `test_known_facts_latest_filing_per_period`
   - [x] Look-ahead tests pass — evidence: `test_future_facts_do_not_change_result`, `test_guard_raises_if_filter_bypassed`, `test_known_facts_cutoff_is_strict`, `test_fundamentals_pit_before_10k_uses_previous_ttm`
+- Waivers: none
+
+
+### Stage 10 — Macro data (FRED / ALFRED) — DONE 2026-10-29
+- Folder: [stages/stage-10-macro/](stages/stage-10-macro/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: package `atlas.data.macro` — `fred_client.py` (`FredClient`: `series`, `vintage_dates`, `observations` (`output_type=1`, paged); 2 req/s throttle, retries on transport/429/5xx, FRED's message on 400, raw JSON archive in `raw/fred/`, API key masked everywhere incl. httpx's own log lines; `build_fred_client`), `series.py` (`MacroSeries`, `MacroCatalog`, `load_macro_series`; tables `MACRO_OBSERVATIONS`, `MACRO_SERIES`; `parse_observations`, `parse_series_metadata`, `vintage_windows`, `collapse_vintages`, `attach_available_at`), `ingest.py` (`ingest_macro`, `MacroIngestReport`, `LATEST`), `pit.py` (`known_observations`, `macro_pit`, `macro_pit_detail`, `Macro`), `transforms.py` (`yoy_pct`, `annualized_3m_pct`, `zscore`, `curve_slope`, `real_rate`); config `MacroConfig` (`cfg.data.macro`, `config/fund.yaml › data.macro`); `config/macro.yaml` (the brief's 22 series, kind + release time); fixtures `tests/fixtures/macro/`; `docs/data-limitations.md › Macro`
+- Key interfaces: `with build_fred_client(cfg, lake) as client: ingest_macro(lake, client, series_ids=None, *, config=cfg, observation_end=None, realtime_end=None) -> MacroIngestReport(rows, series_ok, series_failed, failure_reasons, revision_rows)`; `Macro(lake, cfg).pit(series_ids, as_of: date | AsOf, lookback: timedelta) -> DataFrame` (index `obs_date` tz-naive `DatetimeIndex`, one float column per id in request order, FRED units); `Macro.pit_detail(...)` (rows used, with `realtime_start`, `available_at`); `Macro.series_info()`; transforms take a column of that frame and return percent / percentage points (`zscore` unitless)
+- Decisions: Decisions log rows dated 2026-10-29, stage 10 (execution, interpretations incl. the market-timing flag, D1–D9, fixtures, secret handling)
+- Collisions with the overall plan: none (interpretations only, see the Decisions log)
+- Deviations from brief: none in scope. Additions: `macro_series` metadata table, `pit_detail`, `ingest.py`/`series.py`, configurable market timing, raw archive
+- Known gaps → backlog: credit spreads only from 2023-10-30; market-series timing choice; scheduled (not actual) release times; live test pending `FRED_API_KEY`; per-call read (see Backlog, "Stage 10")
+- Next stage should know: importing `atlas.data.macro` registers `macro_observations` and `macro_series` in `DEFAULT_REGISTRY` and adds a key-masking filter to the `httpx`/`httpcore` loggers. Series ids must be in `config/macro.yaml` (path relative to the working directory). An observation dated the 1st of a month stands for that month (monthly) — choose `lookback` accordingly. In this worktree setup (iCloud-synced Desktop) run commands with `UV_NO_SYNC=1 PYTHONPATH=src`: the venv's editable `.pth` gets hidden. Copy the root `.env` into a new worktree for live tests
+
+#### Verification evidence — Stage 10 — 2026-10-29
+Full block and raw output: [verification.md](stages/stage-10-macro/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 1031 passed, 0 failed, 5 deselected (live)
+  - `uv run ruff check .` → All checks passed!
+  - `uv run ruff format --check .` → 129 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 61 source files
+  - `uv run pytest tests/unit/data/macro -q` (brief's Verify) → 73 passed, 1 deselected
+  - `-v -W error` → 73 passed; `-k acceptance -W error` → 3 passed; `-m live` → skipped (`FRED_API_KEY` not set); `make check` → exit 0; coverage of `atlas.data.macro` 100%; docstrings → none missing; unit tests with dead proxies → 73 passed (no network)
+- Acceptance criteria:
+  - [x] PIT queries never return a value whose release came after as_of — evidence: `test_acceptance_no_returned_value_released_after_as_of`, `test_acceptance_cpi_march_2020_unknown_on_2020_04_05`, `test_acceptance_cpi_march_2020_first_release_on_2020_04_15`, `test_cpi_not_known_on_release_morning`, `test_future_rows_change_nothing`, `test_guard_raises_if_filter_bypassed`, `test_dgs10_pit_strict_cutoff`
+  - [x] Revisions are handled — evidence: `test_revision_seen_only_after_its_vintage`, `test_market_revision_waits_for_its_vintage`, `test_latest_missing_value_hides_older_value`, `test_windowed_ingest_equals_single_request`
 - Waivers: none
