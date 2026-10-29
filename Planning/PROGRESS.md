@@ -6,7 +6,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 - **Current stage:** 11 — News data pipeline — `NOT STARTED`
 - **Stages done:** 10 / 66
-- **Last updated:** 2026-10-29 (Stage 10 DONE; see stage-10 verification.md)
+- **Last updated:** 2026-10-29 (Stage 10 DONE; project moved to ~/Projects/atlas-capital, live FRED test passed)
 
 ## Stage checklist
 
@@ -215,6 +215,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-10-29 | 10 | Fixtures are real ALFRED data (keyless CSV per vintage + the vintage list of the ALFRED download page) wrapped in the documented FRED API JSON shapes, because `FRED_API_KEY` is empty; recorder `artifacts/record_fred_fixtures.py` (uses curl: ALFRED resets requests with a custom User-Agent). `test_live_fred_cpi` (`-m live`) is skipped until the owner adds `FRED_API_KEY` to `.env`; not an acceptance criterion | Rule 6 missing-secret exception; see `tests/fixtures/macro/README.md` |
 | 2026-10-29 | 10 | Secret handling: httpx logs every request URL at INFO, and the FRED key is a query parameter, so `atlas.data.macro.fred_client` attaches a filter to the `httpx` and `httpcore` loggers that masks `api_key=` values (affects every httpx user in the process, harmlessly); error text from the network is redacted and transport errors are re-raised without their original as cause or context | Caught by `test_api_key_never_logged_or_raised` |
 | 2026-10-29 | 10 | Merge and merged-main check: the owner approved running the fast-forward in their Terminal panel ("yes please go ahead") after the sandbox refused it. iCloud had offloaded 11 `.git/objects` files (merge failed with `mmap failed: Operation canceled` until they were read back) and keeps 162 tracked files of the main checkout offloaded, so the post-merge `make check` ran on a `git archive` export of `main` with a fresh offline venv (same tree hash as the stage branch). A second, records-only commit `stage-10: merged-main check records` holds the hashes and that evidence (Rule 6A), as in Stage 09 | Rule 6A; see [stage-10 worklog](stages/stage-10-macro/worklog.md) |
+| 2026-10-29 | 10 | Project moved out of iCloud at the owner's request ("you are allowed to move the project out from the sync. Please help me to operate"): `main` cloned into `~/Projects/atlas-capital` (`git clone --no-local`, no remote), `.env` and `.claude/settings.local.json` copied, fresh venv; `make check` there → exit 0, 1031 passed. `~/Desktop/Trading Agents` kept as a backup for the owner to delete; the older `~/Projects/Trading Agents` (different history) untouched. With the owner's `FRED_API_KEY`, `test_live_fred_cpi` passed against the real FRED API | Owner instruction; see [stage-10 worklog](stages/stage-10-macro/worklog.md) |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -270,8 +271,8 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 10) ICE BofA credit spreads (`BAMLH0A0HYM2`, `BAMLC0A0CM`) exist on FRED only from 2023-10-30 (licence): Stage 21's regime model needs a free proxy for 2018–2023 credit stress (e.g. HYG/LQD vs IEF price spreads, or Moody's `BAA10Y`/`AAA10Y` from FRED)
 - (Stage 10) Market-series timing: with the defaults (available 08:00 ET on D + 1, strict cutoff at the 08:00 decision) a yield/VIX for day D is first used on D + 2; the owner may prefer `market_available_time` before the decision time (e.g. "07:59" or "06:00") so D's close is used on D + 1 — a config change, no code
 - (Stage 10) `release_time` values are publishers' scheduled times; an economic-calendar source (Stage 12) could give actual times and catch unscheduled releases
-- (Stage 10) Run `test_live_fred_cpi` (`-m live`) once `FRED_API_KEY` is in `.env`; it also checks the 2000-vintage windowing and pagination against the real API (fixtures emulate them)
-- (Stage 10) The repo lives in an iCloud-synced Desktop folder: iCloud offloads files (162 tracked files of the main checkout, `.git/objects`, worktree files) and hides venv `.pth` files, which breaks git merges, imports and checks at random. Moving the project out of iCloud (or marking it `.nosync`) would remove this whole class of failure — the owner's decision
+- (Stage 10) Done 2026-10-29: `FRED_API_KEY` is in `~/Projects/atlas-capital/.env` (gitignored, mode 600); `test_live_fred_cpi` (`-m live`) passed against the real API, including the 2000-vintage windowing (DGS10: three windows)
+- (Stage 10) Done 2026-10-29: the project now lives in `~/Projects/atlas-capital`, outside iCloud (the Desktop copy offloaded files and hid venv `.pth` files, breaking merges, imports and checks). Open that folder for Stage 11 on; `~/Desktop/Trading Agents` is a backup the owner may delete
 - (Stage 10) `Macro.pit` reads every vintage of the requested series on each call (small today: ~22 series); Stage 13's `DataView.macro` may cache per lake generation
 
 ## Handoff notes
@@ -565,6 +566,7 @@ Full block and raw output: [verification.md](stages/stage-10-macro/verification.
   - `uv run pytest tests/unit/data/macro -q` (brief's Verify) → 73 passed, 1 deselected
   - `-v -W error` → 73 passed; `-k acceptance -W error` → 3 passed; `-m live` → skipped (`FRED_API_KEY` not set); `make check` → exit 0; coverage of `atlas.data.macro` 100%; docstrings → none missing; unit tests with dead proxies → 73 passed (no network)
   - On merged `main` (`e056de5`, fast-forward from `a2593b2` run in the owner's Terminal panel): checks on an exact `git archive` export of `main` (the main checkout's files are iCloud-offloaded) → `make check` exit 0, 1031 passed; brief's Verify → 73 passed; `main^{tree}` = branch tree · raw: [artifacts/merged-main-check.txt](stages/stage-10-macro/artifacts/merged-main-check.txt)
+  - Follow-up 2026-10-29 in `~/Projects/atlas-capital` (project moved out of iCloud): `make check` → exit 0, 1031 passed; with the owner's `FRED_API_KEY`, `-m live` → `test_live_fred_cpi PASSED` · raw: [artifacts/live-fred.txt](stages/stage-10-macro/artifacts/live-fred.txt)
 - Acceptance criteria:
   - [x] PIT queries never return a value whose release came after as_of — evidence: `test_acceptance_no_returned_value_released_after_as_of`, `test_acceptance_cpi_march_2020_unknown_on_2020_04_05`, `test_acceptance_cpi_march_2020_first_release_on_2020_04_15`, `test_cpi_not_known_on_release_morning`, `test_future_rows_change_nothing`, `test_guard_raises_if_filter_bypassed`, `test_dgs10_pit_strict_cutoff`
   - [x] Revisions are handled — evidence: `test_revision_seen_only_after_its_vintage`, `test_market_revision_waits_for_its_vintage`, `test_latest_missing_value_hides_older_value`, `test_windowed_ingest_equals_single_request`

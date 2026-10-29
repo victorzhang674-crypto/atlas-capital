@@ -1,0 +1,11 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 74 items / 73 deselected / 1 selected
+
+tests/unit/data/macro/test_macro_live.py::test_live_fred_cpi PASSED      [100%]
+
+====================== 1 passed, 73 deselected in 12.72s =======================
