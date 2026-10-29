@@ -1,0 +1,59 @@
+# Final audit: checks on main 9423387 (read-only) · 2026-10-29
+# cwd = main checkout; UV_PROJECT_ENVIRONMENT=<worktree>/.venv.nosync, UV_NO_SYNC=1, PYTHONPATH=<main>/src, no bytecode, caches in $TMPDIR, PYTEST_ADDOPTS='-p no:cacheprovider'; main checkout clean before and after
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+113 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 55 source files
+uv run pytest -q
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 22%]
+........................................................................ [ 30%]
+........................................................................ [ 37%]
+........................................................................ [ 45%]
+........................................................................ [ 53%]
+........................................................................ [ 60%]
+........................................................................ [ 68%]
+........................................................................ [ 75%]
+........................................................................ [ 83%]
+........................................................................ [ 91%]
+........................................................................ [ 98%]
+............                                                             [100%]
+948 passed, 4 deselected in 12.58s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_prepare_script"
+ - leaked function "__getattr__"
+ - leaked function "decimal_type"
+ - leaked function ""
+ - leaked function "_register_source"
+ - leaked function "executemany"
+ - leaked function "df"
+ - leaked function "commit"
+ - leaked function "array_type"
+ - leaked function "df"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ uv run pytest tests/unit/data/fundamentals -q   (brief's Verify)
+........................................................................ [ 51%]
+.....................................................................    [100%]
+141 passed, 1 deselected in 5.24s
+exit=0
+
+$ uv run pytest tests/unit/data/fundamentals -m live -rs -q
+.                                                                        [100%]
+1 passed, 141 deselected in 14.96s
+exit=0
