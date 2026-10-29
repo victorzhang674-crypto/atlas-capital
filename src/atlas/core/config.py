@@ -501,6 +501,105 @@ class NewsConfig(_Frozen):
         return self
 
 
+class EventsConfig(_Frozen):
+    """Corporate and macro events (Stage 12).
+
+    `macro_calendar_file` holds the FOMC meetings and the FRED release definitions (relative to
+    the repo root, not resolved here). Earnings dates come from EDGAR filings filed from
+    `history_start` on; a 10-Q/10-K is an earnings event only if no 8-K item 2.02 was accepted
+    in the `periodic_match_days` calendar days before it. `upcoming_earnings` names the
+    optional provider of scheduled dates (`yahoo`, or `none`); its failed requests are retried
+    `max_retries` times, waiting `backoff_seconds` (doubling), with
+    `min_request_interval_seconds` between requests.
+
+    Queries: a scheduled earnings date is dropped once an actual earnings event of the symbol
+    on or after `scheduled_date - scheduled_match_days` (calendar days) is known. Reactions span
+    `reaction_days` sessions from the reaction session and are measured against
+    `reaction_benchmark`. `horizon_days` (calendar days after the as-of day) and `past_n`
+    (events returned) are the query defaults.
+    """
+
+    macro_calendar_file: Path = Path("config/macro_calendar.yaml")
+    history_start: date = date(2015, 1, 1)
+    periodic_match_days: Annotated[int, Field(ge=1)] = 60
+    upcoming_earnings: Literal["yahoo", "none"] = "yahoo"
+    max_retries: Annotated[int, Field(ge=0)] = 3
+    backoff_seconds: _NonNeg = 1.0
+    min_request_interval_seconds: _NonNeg = 0.5
+    scheduled_match_days: Annotated[int, Field(ge=0)] = 10
+    reaction_days: Annotated[int, Field(ge=1)] = 3
+    reaction_benchmark: str = "SPY"
+    horizon_days: Annotated[int, Field(ge=1)] = 14
+    past_n: Annotated[int, Field(ge=1)] = 8
+
+    @field_validator("reaction_benchmark", mode="after")
+    @classmethod
+    def _normalise_benchmark(cls, value: str) -> str:
+        return normalize_symbol(value)
+
+
+class SocialConfig(_Frozen):
+    """Optional social-media posts (Stage 12), off unless `enabled`.
+
+    `providers` are fetched in order (`stocktwits`, `reddit`); StockTwits streams come from
+    `stocktwits_url`, Reddit searches of `reddit_subreddits` from `reddit_url`. Each request asks
+    for at most `max_items` posts (Reddit's maximum is 100) and sends `user_agent`; a failed
+    request is retried `max_retries` times, waiting `backoff_seconds` (doubling), with
+    `min_request_interval_seconds` between requests and `request_timeout_seconds` per request.
+    `lookback_days` is the query default (calendar days before the cutoff).
+    """
+
+    enabled: bool = False
+    providers: tuple[Literal["stocktwits", "reddit"], ...] = ("stocktwits", "reddit")
+    stocktwits_url: str = "https://api.stocktwits.com/api/2/streams/symbol"
+    reddit_url: str = "https://www.reddit.com"
+    reddit_subreddits: Annotated[tuple[str, ...], Field(min_length=1)] = (
+        "wallstreetbets",
+        "stocks",
+        "investing",
+    )
+    max_items: Annotated[int, Field(ge=1, le=100)] = 100
+    lookback_days: Annotated[int, Field(ge=1)] = 7
+    max_retries: Annotated[int, Field(ge=0)] = 3
+    backoff_seconds: _NonNeg = 1.0
+    min_request_interval_seconds: _NonNeg = 1.0
+    request_timeout_seconds: Annotated[float, Field(gt=0)] = 30.0
+    user_agent: str = "AtlasCapital/0.1 (research and paper-trading simulator)"
+
+    @model_validator(mode="after")
+    def _check(self) -> Self:
+        if len(set(self.providers)) != len(self.providers):
+            raise ValueError(f"duplicate providers: {list(self.providers)}")
+        if not self.user_agent.strip():
+            raise ValueError("user_agent must not be blank")
+        return self
+
+
+class SentimentConfig(_Frozen):
+    """Numeric news sentiment (Stage 12).
+
+    `lexicon_file` is the Loughran-McDonald word list (`word,category`; relative to the repo
+    root, not resolved here), built from the master dictionary at `lexicon_url` by
+    `download_lm_lexicon`. A positive word with a negation among the `negation_window` words
+    before it is not counted. The per-symbol score weights each article by its relevance and
+    by `0.5 ** (age / half_life_days)` (age in days before the cutoff), over the articles of the
+    last `lookback_days` calendar days (at most `max_articles`); `daily_days` is the default
+    length of the daily series, in sessions. `social` configures the optional social posts.
+    """
+
+    lexicon_file: Path = Path("data/reference/lm_lexicon.csv")
+    lexicon_url: str = (
+        "https://drive.usercontent.google.com/download?id=1iq2RUf8qGFEAk1g8wQntP3habOnR3fXF"
+        "&export=download&confirm=t"
+    )
+    negation_window: Annotated[int, Field(ge=0)] = 3
+    half_life_days: Annotated[float, Field(gt=0)] = 3.0
+    lookback_days: Annotated[int, Field(ge=1)] = 14
+    max_articles: Annotated[int, Field(ge=1)] = 500
+    daily_days: Annotated[int, Field(ge=1)] = 90
+    social: SocialConfig = Field(default_factory=SocialConfig)
+
+
 class DataConfig(_Frozen):
     """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
 
@@ -511,6 +610,8 @@ class DataConfig(_Frozen):
     fundamentals: FundamentalsConfig = Field(default_factory=FundamentalsConfig)
     macro: MacroConfig = Field(default_factory=MacroConfig)
     news: NewsConfig = Field(default_factory=NewsConfig)
+    events: EventsConfig = Field(default_factory=EventsConfig)
+    sentiment: SentimentConfig = Field(default_factory=SentimentConfig)
     tradable: TradableConfig = Field(default_factory=TradableConfig)
     universes: _UniverseMap = Field(default_factory=_default_universes)
 

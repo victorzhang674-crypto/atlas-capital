@@ -1,0 +1,14 @@
+AAPL: kept 108 of 1002 recent filings
+wrote tests/fixtures/events/submissions/CIK0000320193.json (29118 bytes)
+release 10: 151 dates
+wrote tests/fixtures/events/fred/release_dates_10.json (8341 bytes)
+release 50: 146 dates
+wrote tests/fixtures/events/fred/release_dates_50.json (8071 bytes)
+CPIAUCSL: 153 initial releases
+wrote tests/fixtures/events/fred/initial_CPIAUCSL.json (19285 bytes)
+PAYEMS: 153 initial releases
+wrote tests/fixtures/events/fred/initial_PAYEMS.json (19138 bytes)
+AAPL: Earnings Date ['2026-11-02']
+MSFT: Earnings Date ['2027-01-27']
+JPM: Earnings Date ['2027-01-14']
+wrote tests/fixtures/events/yahoo_calendar.json (904 bytes)

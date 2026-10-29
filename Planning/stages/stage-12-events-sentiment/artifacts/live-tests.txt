@@ -1,0 +1,14 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 163 items / 159 deselected / 4 selected
+
+tests/unit/data/events/test_events_live.py::test_live_aapl_earnings_events PASSED [ 25%]
+tests/unit/data/events/test_events_live.py::test_live_fred_release_dates PASSED [ 50%]
+tests/unit/data/events/test_events_live.py::test_live_yahoo_calendar PASSED [ 75%]
+tests/unit/data/sentiment/test_sentiment_live.py::test_live_download_lm_lexicon PASSED [100%]
+
+====================== 4 passed, 159 deselected in 32.27s ======================

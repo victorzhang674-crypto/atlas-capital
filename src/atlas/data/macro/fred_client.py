@@ -211,6 +211,75 @@ class FredClient:
             raise DataError(f"FRED observations {series_id}: got {len(rows)} of {count} rows")
         return {**first, "offset": 0, "observations": rows}
 
+    def release_dates(
+        self, release_id: int, *, realtime_start: date, refresh: bool = False
+    ) -> tuple[date, ...]:
+        """`fred/release/dates`: the dates of release `release_id` from `realtime_start` on,
+        ascending, including scheduled dates not yet released
+        (`include_release_dates_with_no_data=true`; Stage 12). Pages of
+        `min(page_limit, 10000)` dates are fetched until `count` arrived."""
+        limit = min(self._config.page_limit, VINTAGE_PAGE_MAX)
+        dates: list[date] = []
+        count: object = None
+        while True:
+            offset = len(dates)
+            params = {
+                "release_id": str(release_id),
+                "realtime_start": realtime_start.isoformat(),
+                "include_release_dates_with_no_data": "true",
+                "sort_order": "asc",
+                "limit": str(limit),
+                "offset": str(offset),
+            }
+            name = f"{release_id}_{realtime_start}_{offset}.json"
+            page = self._get("release/dates", params, name, refresh)
+            items, count = page.get("release_dates"), page.get("count")
+            if not isinstance(items, list) or not isinstance(count, int):
+                raise DataError(f"FRED release dates {release_id}: no release_dates/count")
+            try:
+                dates.extend(date.fromisoformat(item["date"]) for item in items)
+            except (KeyError, TypeError, ValueError) as exc:
+                raise DataError(f"FRED release dates {release_id}: bad date ({exc})") from exc
+            if len(dates) >= count or not items:
+                break
+        if len(dates) != count:
+            raise DataError(f"FRED release dates {release_id}: got {len(dates)} of {count}")
+        return tuple(dates)
+
+    def initial_release_dates(
+        self, series_id: str, *, observation_start: date, refresh: bool = False
+    ) -> tuple[date, ...]:
+        """The days on which `series_id` first published a value (`fred/series/observations`
+        with `output_type=4`, initial release only) for observations from `observation_start`:
+        each observation's `realtime_start`, de-duplicated and ascending (Stage 12)."""
+        base = {
+            "series_id": series_id,
+            "observation_start": observation_start.isoformat(),
+            "realtime_start": "1776-07-04",
+            "realtime_end": "9999-12-31",
+            "output_type": "4",
+            "limit": str(self._config.page_limit),
+        }
+        rows: list[Any] = []
+        count: object = None
+        while True:
+            offset = len(rows)
+            name = f"{series_id}_initial_{observation_start}_{offset}.json"
+            page = self._get("series/observations", {**base, "offset": str(offset)}, name, refresh)
+            items, count = page.get("observations"), page.get("count")
+            if not isinstance(items, list) or not isinstance(count, int):
+                raise DataError(f"FRED initial releases {series_id}: no observations/count")
+            rows.extend(items)
+            if len(rows) >= count or not items:
+                break
+        if len(rows) != count:
+            raise DataError(f"FRED initial releases {series_id}: got {len(rows)} of {count}")
+        try:
+            days = {date.fromisoformat(r["realtime_start"]) for r in rows if r["value"] != "."}
+        except (KeyError, TypeError, ValueError) as exc:
+            raise DataError(f"FRED initial releases {series_id}: bad row ({exc})") from exc
+        return tuple(sorted(days))
+
     # --- plumbing --------------------------------------------------------------------------------
 
     def _redact(self, text: str) -> str:

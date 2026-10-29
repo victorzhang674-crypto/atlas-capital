@@ -1,0 +1,27 @@
+{'what': 'GET https://data.sec.gov/submissions/CIK0000320193.json', 'attempt': 1, 'error': '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)', 'event': 'fundamentals.request_failed', 'level': 'warning', 'logger': 'atlas.data.providers.base', 'timestamp': '2026-10-29T20:30:41.450571Z'}
+{'what': 'GET https://data.sec.gov/submissions/CIK0000320193.json', 'attempt': 2, 'error': '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)', 'event': 'fundamentals.request_failed', 'level': 'warning', 'logger': 'atlas.data.providers.base', 'timestamp': '2026-10-29T20:30:42.924919Z'}
+{'what': 'GET https://data.sec.gov/submissions/CIK0000320193.json', 'attempt': 3, 'error': '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)', 'event': 'fundamentals.request_failed', 'level': 'warning', 'logger': 'atlas.data.providers.base', 'timestamp': '2026-10-29T20:30:45.608092Z'}
+{'what': 'GET https://data.sec.gov/submissions/CIK0000320193.json', 'attempt': 4, 'error': '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)', 'event': 'fundamentals.request_failed', 'level': 'warning', 'logger': 'atlas.data.providers.base', 'timestamp': '2026-10-29T20:30:50.091129Z'}
+{'symbol': 'AAPL', 'error': 'GET https://data.sec.gov/submissions/CIK0000320193.json failed after 4 attempt(s): [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)', 'event': 'events.symbol_failed', 'level': 'warning', 'logger': 'atlas.data.events.earnings', 'timestamp': '2026-10-29T20:30:50.091394Z'}
+lexicon data/reference/lm_lexicon.csv: version f0587e3b9410, negative 2345, positive 347, uncertainty 297
+  TextSentiment(score=0.0, pos=0, neg=0, uncertainty=0, words=10)  <- 'Apple beats estimates as iPhone sales surge to a record'
+  TextSentiment(score=-1.0, pos=0, neg=3, uncertainty=0, words=10)  <- 'Intel warns of weak demand and further losses; shares plunge'
+  TextSentiment(score=0.0, pos=0, neg=0, uncertainty=1, words=7)  <- 'Fed officials uncertain whether inflation will ease'
+earnings: EventsIngestReport(rows=0, symbols_ok=(), symbols_failed=('AAPL',), failure_reasons=FrozenDict({'AAPL': 'GET https://data.sec.gov/submissions/CIK0000320193.json failed after 4 attempt(s): [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)'}), skipped_filings=0)
+macro events: 368 rows
+past AAPL at 2024-02-02:
+Empty DataFrame
+Columns: [event_id, symbol, event_type, event_date, event_time, time_of_day, source, available_at]
+Index: []
+upcoming at 2024-01-29, 14 days:
+          event_id symbol event_type  event_date                event_time time_of_day         source              available_at
+0  fomc-2024-01-31   None       fomc  2024-01-31 2024-01-31 19:00:00+00:00     unknown  fomc_calendar 2024-01-01 05:00:00+00:00
+1   nfp-2024-02-02   None        nfp  2024-02-02 2024-02-02 13:30:00+00:00         BMO   fred_release 2024-01-01 05:00:00+00:00
+upcoming at 2020-03-10, 10 days (cancelled meeting still scheduled):
+          event_id symbol event_type  event_date                event_time time_of_day         source              available_at
+0   cpi-2020-03-11   None        cpi  2020-03-11 2020-03-11 12:30:00+00:00         BMO   fred_release 2020-01-01 05:00:00+00:00
+1  fomc-2020-03-18   None       fomc  2020-03-18 2020-03-18 18:00:00+00:00     unknown  fomc_calendar 2020-01-01 05:00:00+00:00
+upcoming at 2020-03-16, 10 days (after the cancellation):
+Empty DataFrame
+Columns: [event_id, symbol, event_type, event_date, event_time, time_of_day, source, available_at]
+Index: []

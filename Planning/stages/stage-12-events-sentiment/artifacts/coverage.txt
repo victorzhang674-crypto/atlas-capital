@@ -1,0 +1,22 @@
+........................................................................ [ 45%]
+........................................................................ [ 90%]
+................                                                         [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                      Stmts   Miss  Cover   Missing
+-----------------------------------------------------------------------
+src/atlas/data/events/__init__.py             6      0   100%
+src/atlas/data/events/base.py                97      3    97%   142, 164, 182
+src/atlas/data/events/earnings.py           183      8    96%   97-98, 120, 126-127, 338-339, 370
+src/atlas/data/events/macro_calendar.py     117      1    99%   174
+src/atlas/data/events/pit.py                121      0   100%
+src/atlas/data/events/reactions.py           94      5    95%   130-132, 211, 221
+src/atlas/data/sentiment/__init__.py          4      0   100%
+src/atlas/data/sentiment/aggregate.py        69      1    99%   78
+src/atlas/data/sentiment/lexicon.py         113      8    93%   142-143, 148-149, 152, 155, 172, 245
+src/atlas/data/sentiment/social.py          146     12    92%   66, 134-135, 170, 185-186, 189-191, 236, 247-248
+-----------------------------------------------------------------------
+TOTAL                                       950     38    96%
+160 passed, 4 deselected in 2.91s
+exit 0

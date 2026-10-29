@@ -1,0 +1,41 @@
+{
+ "AAPL": {
+  "Dividend Date": "2026-08-12",
+  "Ex-Dividend Date": "2026-08-09",
+  "Earnings Date": [
+   "2026-11-02"
+  ],
+  "Earnings High": 2.06,
+  "Earnings Low": 1.93,
+  "Earnings Average": 1.98261,
+  "Revenue High": 116186700000,
+  "Revenue Low": 112525022000,
+  "Revenue Average": 113322287400
+ },
+ "MSFT": {
+  "Dividend Date": "2026-12-09",
+  "Ex-Dividend Date": "2026-11-18",
+  "Earnings Date": [
+   "2027-01-27"
+  ],
+  "Earnings High": 4.97,
+  "Earnings Low": 4.65,
+  "Earnings Average": 4.81705,
+  "Revenue High": 98410000000,
+  "Revenue Low": 93527000000,
+  "Revenue Average": 95646497200
+ },
+ "JPM": {
+  "Dividend Date": "2026-10-30",
+  "Ex-Dividend Date": "2026-10-05",
+  "Earnings Date": [
+   "2027-01-14"
+  ],
+  "Earnings High": 6.4,
+  "Earnings Low": 5.65,
+  "Earnings Average": 5.90316,
+  "Revenue High": 52544343000,
+  "Revenue Low": 50066000000,
+  "Revenue Average": 51142683070
+ }
+}

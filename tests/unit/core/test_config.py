@@ -18,6 +18,7 @@ from pydantic import SecretStr, ValidationError
 from atlas.core.config import (
     AtlasConfig,
     CalendarConfig,
+    EventsConfig,
     FundamentalsConfig,
     FundConfig,
     LimitsConfig,
@@ -26,6 +27,8 @@ from atlas.core.config import (
     PodStops,
     ReferenceDataConfig,
     Secrets,
+    SentimentConfig,
+    SocialConfig,
     TradableConfig,
     _deep_merge,
     _yaml_layers,
@@ -874,3 +877,91 @@ def test_news_market_symbols_normalised() -> None:
 def test_news_validation(values: dict[str, object], pattern: str) -> None:
     with pytest.raises(ValidationError, match=pattern):
         NewsConfig.model_validate(values)
+
+
+# --- Stage 12: events and sentiment ------------------------------------------------------------
+
+
+def test_events_config_defaults() -> None:
+    cfg = AtlasConfig().data.events
+    assert cfg == EventsConfig()
+    assert cfg.macro_calendar_file == Path("config/macro_calendar.yaml")
+    assert cfg.history_start == date(2015, 1, 1)
+    assert cfg.periodic_match_days == 60
+    assert cfg.upcoming_earnings == "yahoo"
+    assert (cfg.max_retries, cfg.backoff_seconds, cfg.min_request_interval_seconds) == (3, 1.0, 0.5)
+    assert cfg.scheduled_match_days == 10
+    assert (cfg.reaction_days, cfg.reaction_benchmark) == (3, "SPY")
+    assert (cfg.horizon_days, cfg.past_n) == (14, 8)
+
+
+def test_sentiment_config_defaults() -> None:
+    cfg = AtlasConfig().data.sentiment
+    assert cfg == SentimentConfig()
+    assert cfg.lexicon_file == Path("data/reference/lm_lexicon.csv")
+    assert cfg.lexicon_url.startswith("https://drive.usercontent.google.com/download?id=")
+    assert cfg.negation_window == 3
+    assert (cfg.half_life_days, cfg.lookback_days) == (3.0, 14)
+    assert (cfg.max_articles, cfg.daily_days) == (500, 90)
+    social = cfg.social
+    assert social == SocialConfig()
+    assert social.enabled is False
+    assert social.providers == ("stocktwits", "reddit")
+    assert social.stocktwits_url == "https://api.stocktwits.com/api/2/streams/symbol"
+    assert social.reddit_url == "https://www.reddit.com"
+    assert social.reddit_subreddits == ("wallstreetbets", "stocks", "investing")
+    assert (social.max_items, social.lookback_days) == (100, 7)
+    assert (social.max_retries, social.backoff_seconds) == (3, 1.0)
+    assert (social.min_request_interval_seconds, social.request_timeout_seconds) == (1.0, 30.0)
+    assert social.user_agent == "AtlasCapital/0.1 (research and paper-trading simulator)"
+
+
+def test_repo_yaml_events_equals_defaults(repo_root: Path, tmp_path: Path) -> None:
+    cfg = load_config("dev", config_dir=_repo_config_copy(repo_root, tmp_path))
+    assert cfg.data.events == EventsConfig()
+
+
+def test_repo_yaml_sentiment_equals_defaults(repo_root: Path, tmp_path: Path) -> None:
+    cfg = load_config("dev", config_dir=_repo_config_copy(repo_root, tmp_path))
+    assert cfg.data.sentiment == SentimentConfig()
+
+
+def test_events_benchmark_normalised() -> None:
+    assert EventsConfig(reaction_benchmark=" spy").reaction_benchmark == "SPY"
+
+
+@pytest.mark.parametrize(
+    ("values", "pattern"),
+    [
+        ({"reaction_days": 0}, "reaction_days"),
+        ({"upcoming_earnings": "finnhub"}, "upcoming_earnings"),
+        ({"horizon_days": 0}, "horizon_days"),
+        ({"past_n": 0}, "past_n"),
+        ({"periodic_match_days": 0}, "periodic_match_days"),
+        ({"scheduled_match_days": -1}, "scheduled_match_days"),
+        ({"reaction_benchmark": "^GSPC"}, "invalid symbol"),
+    ],
+)
+def test_events_config_rejects(values: dict[str, object], pattern: str) -> None:
+    with pytest.raises(ValidationError, match=pattern):
+        EventsConfig.model_validate(values)
+
+
+@pytest.mark.parametrize(
+    ("values", "pattern"),
+    [
+        ({"half_life_days": 0}, "half_life_days"),
+        ({"negation_window": -1}, "negation_window"),
+        ({"lookback_days": 0}, "lookback_days"),
+        ({"max_articles": 0}, "max_articles"),
+        ({"daily_days": 0}, "daily_days"),
+        ({"social": {"providers": ["twitter"]}}, "providers"),
+        ({"social": {"providers": ["reddit", "reddit"]}}, "duplicate"),
+        ({"social": {"reddit_subreddits": []}}, "reddit_subreddits"),
+        ({"social": {"max_items": 101}}, "max_items"),
+        ({"social": {"user_agent": " "}}, "user_agent"),
+    ],
+)
+def test_sentiment_config_rejects(values: dict[str, object], pattern: str) -> None:
+    with pytest.raises(ValidationError, match=pattern):
+        SentimentConfig.model_validate(values)

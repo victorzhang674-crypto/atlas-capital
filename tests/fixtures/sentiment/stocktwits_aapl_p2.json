@@ -1,0 +1,8 @@
+{
+ "symbol": {"id": 686, "symbol": "AAPL", "title": "Apple Inc."},
+ "cursor": {"more": true, "since": 570999999, "max": 570999998},
+ "messages": [
+  {"id": 571000000, "body": "$AAPL earnings date confirmed", "created_at": "2024-03-01T14:00:00Z", "user": {"id": 4, "username": "trader_four"}, "entities": {"sentiment": null}},
+  {"id": 570999999, "body": "$AAPL old news", "created_at": "2024-02-20T14:00:00Z", "user": {"id": 5, "username": "trader_five"}, "entities": {"sentiment": null}}
+ ]
+}

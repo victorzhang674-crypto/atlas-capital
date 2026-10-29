@@ -1,0 +1,42 @@
+# Macro event calendar (Stage 12), read by atlas.data.events.load_macro_calendar; not part of
+# load_config. Path set by data.events.macro_calendar_file.
+#
+# Point in time: a scheduled date of year Y is known from 00:00 America/New_York on 1 January Y
+# (the Fed and BLS publish next year's schedule months before). An unscheduled FOMC decision is
+# known only at its statement time; a cancelled meeting stops being known at cancelled_at.
+
+# FOMC policy decisions. Source: federalreserve.gov fomccalendars.htm (2021-2027) and
+# fomchistorical2018/2019/2020.htm, checked 2026-10-29. Notation votes and conference calls
+# without a policy statement (2019-10-04, 2020-03-19/23/31, 2020-08-27, 2025-08-22) are not
+# meetings and are left out.
+fomc:
+  statement_time: "14:00"  # policy statement release, America/New_York, on the meeting's last day
+  # Scheduled meetings: the decision (last) day of each, by year.
+  meetings:
+    2018: [2018-01-31, 2018-03-21, 2018-05-02, 2018-06-13, 2018-08-01, 2018-09-26, 2018-11-08, 2018-12-19]
+    2019: [2019-01-30, 2019-03-20, 2019-05-01, 2019-06-19, 2019-07-31, 2019-09-18, 2019-10-30, 2019-12-11]
+    2020: [2020-01-29, 2020-03-18, 2020-04-29, 2020-06-10, 2020-07-29, 2020-09-16, 2020-11-05, 2020-12-16]
+    2021: [2021-01-27, 2021-03-17, 2021-04-28, 2021-06-16, 2021-07-28, 2021-09-22, 2021-11-03, 2021-12-15]
+    2022: [2022-01-26, 2022-03-16, 2022-05-04, 2022-06-15, 2022-07-27, 2022-09-21, 2022-11-02, 2022-12-14]
+    2023: [2023-02-01, 2023-03-22, 2023-05-03, 2023-06-14, 2023-07-26, 2023-09-20, 2023-11-01, 2023-12-13]
+    2024: [2024-01-31, 2024-03-20, 2024-05-01, 2024-06-12, 2024-07-31, 2024-09-18, 2024-11-07, 2024-12-18]
+    2025: [2025-01-29, 2025-03-19, 2025-05-07, 2025-06-18, 2025-07-30, 2025-09-17, 2025-10-29, 2025-12-10]
+    2026: [2026-01-28, 2026-03-18, 2026-04-29, 2026-06-17, 2026-07-29, 2026-09-16, 2026-10-28, 2026-12-09]
+    2027: [2027-01-27, 2027-03-17, 2027-04-28, 2027-06-09, 2027-07-28, 2027-09-15, 2027-10-27, 2027-12-08]
+  # Unscheduled meetings with a policy statement: statement date and time (America/New_York).
+  unscheduled:
+    - {date: 2020-03-03, time: "10:00"}  # 2020-03-02 meeting; rate cut announced 10:00 EST
+    - {date: 2020-03-15, time: "17:00"}  # Sunday meeting; rate cut announced 17:00 EDT
+  # Scheduled meetings that did not take place, with the instant the change became public.
+  cancelled:
+    - {date: 2020-03-18, cancelled_at: "2020-03-15T17:00:00-04:00"}  # replaced by the 2020-03-15 meeting
+
+# Data releases whose dates come from the FRED release calendar (fred/release/dates). A release
+# date counts only if the headline series first published a month's value that day
+# (output_type=4), or if it is after the last such date (scheduled); FRED also lists
+# revision-only days (CPI seasonal factors in February, payroll benchmark previews).
+releases:
+  # Consumer Price Index (BLS), 08:30 New York.
+  cpi: {fred_release_id: 10, headline_series: CPIAUCSL, release_time: "08:30", description: "Consumer Price Index (BLS)"}
+  # Employment Situation: nonfarm payrolls and unemployment (BLS), 08:30 New York.
+  nfp: {fred_release_id: 50, headline_series: PAYEMS, release_time: "08:30", description: "Employment Situation (BLS)"}

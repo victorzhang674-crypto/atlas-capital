@@ -14,6 +14,9 @@ describes). The availability rules, by source:
 | SEC filing | the filing's EDGAR `accepted` timestamp |
 | FRED / ALFRED observation | the release time of the vintage that first carried the value |
 | News article | its publish timestamp |
+| Earnings event (EDGAR 8-K 2.02, 10-Q/10-K) | the filing's EDGAR acceptance timestamp |
+| Scheduled event (FOMC, CPI, NFP; snapshot) | 00:00 New York on 1 January; snapshot: when taken |
+| Earnings reaction | the bar availability of the last session of its window |
 """
 
 from datetime import UTC, date, datetime, time, timedelta
@@ -33,6 +36,12 @@ AVAILABILITY_RULES: Final = FrozenDict(
         "sec_filing": "the filing's EDGAR acceptance timestamp (`accepted`)",
         "fred_observation": "release time of the first vintage that carried the value",
         "news": "the article's publish timestamp",
+        "earnings_event": "the EDGAR acceptance timestamp of the 8-K (item 2.02) or 10-Q/10-K",
+        "scheduled_event": (
+            "macro schedule: 00:00 New York on 1 January of the event's year (unscheduled: its "
+            "statement time); provider snapshot: the time it was taken"
+        ),
+        "earnings_reaction": "bar availability of the last session of the reaction window",
     }
 )
 """`available_at` rule per data source (see the module docstring's table)."""

@@ -133,7 +133,15 @@ def test_to_available_at() -> None:
 
 
 def test_availability_rules_cover_all_sources() -> None:
-    assert set(AVAILABILITY_RULES) == {"daily_bar", "sec_filing", "fred_observation", "news"}
+    assert set(AVAILABILITY_RULES) == {
+        "daily_bar",
+        "sec_filing",
+        "fred_observation",
+        "news",
+        "earnings_event",
+        "scheduled_event",
+        "earnings_reaction",
+    }
     assert all(rule.strip() for rule in AVAILABILITY_RULES.values())
 
 

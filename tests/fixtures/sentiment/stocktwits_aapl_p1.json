@@ -1,0 +1,9 @@
+{
+ "symbol": {"id": 686, "symbol": "AAPL", "title": "Apple Inc."},
+ "cursor": {"more": true, "since": 571000003, "max": 571000001},
+ "messages": [
+  {"id": 571000003, "body": "$AAPL strong gains into the close", "created_at": "2024-03-07T20:55:00Z", "user": {"id": 1, "username": "trader_one"}, "entities": {"sentiment": {"basic": "Bullish"}}},
+  {"id": 571000002, "body": "$AAPL weak demand in China, careful here", "created_at": "2024-03-07T18:10:00Z", "user": {"id": 2, "username": "trader_two"}, "entities": {"sentiment": {"basic": "Bearish"}}},
+  {"id": 571000001, "body": "$AAPL holding the 200 day", "created_at": "2024-03-06T15:00:00Z", "user": {"id": 3, "username": "trader_three"}, "entities": {"sentiment": null}}
+ ]
+}

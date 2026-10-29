@@ -87,6 +87,43 @@ data:
     market_symbols: [SPY, QQQ]  # market-wide news = untagged or tagged with one of these
     lookback_days: 14  # default query window, calendar days before the cutoff
     limit: 50  # default number of articles a query returns
+  # Corporate and macro events (Stage 12).
+  events:
+    macro_calendar_file: config/macro_calendar.yaml  # FOMC meetings and FRED release definitions, relative to the repo root
+    history_start: 2015-01-01  # earnings events are read from EDGAR filings filed from this date
+    periodic_match_days: 60  # a 10-Q/10-K is an earnings event only without an 8-K item 2.02 in these calendar days before it
+    upcoming_earnings: yahoo  # optional provider of scheduled earnings dates: yahoo | none
+    max_retries: 3  # retries after a failed upcoming-earnings request
+    backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
+    min_request_interval_seconds: 0.5  # rate limit: pause between upcoming-earnings requests, in seconds
+    scheduled_match_days: 10  # a scheduled date is dropped once an actual earnings event this many calendar days before it (or later) is known
+    reaction_days: 3  # sessions in the earnings reaction window, from the reaction session
+    reaction_benchmark: SPY  # abnormal returns are measured against this symbol
+    horizon_days: 14  # default window of upcoming events, calendar days after the as-of day
+    past_n: 8  # default number of past events returned
+  # Numeric news sentiment (Stage 12). The lexicon is free for academic research only, so it is downloaded, not committed.
+  sentiment:
+    lexicon_file: data/reference/lm_lexicon.csv  # Loughran-McDonald word lists (word,category), relative to the repo root (gitignored)
+    lexicon_url: https://drive.usercontent.google.com/download?id=1iq2RUf8qGFEAk1g8wQntP3habOnR3fXF&export=download&confirm=t  # LM master dictionary CSV (sraf.nd.edu)
+    negation_window: 3  # a positive word with no/not/none/neither/never/nobody this many words before it is not counted
+    half_life_days: 3.0  # an article's weight halves every this many days of age
+    lookback_days: 14  # articles of this many calendar days before the cutoff enter the score
+    max_articles: 500  # at most this many articles enter one score
+    daily_days: 90  # default length of the daily sentiment series, in sessions
+    # Optional social-media posts; off by default.
+    social:
+      enabled: false  # fetch StockTwits / Reddit posts only when true
+      providers: [stocktwits, reddit]  # providers used, in order
+      stocktwits_url: https://api.stocktwits.com/api/2/streams/symbol  # StockTwits symbol stream base URL
+      reddit_url: https://www.reddit.com  # Reddit base URL (public JSON search)
+      reddit_subreddits: [wallstreetbets, stocks, investing]  # subreddits searched for the symbol
+      max_items: 100  # posts asked per request; Reddit's maximum is 100
+      lookback_days: 7  # default query window, calendar days before the cutoff
+      max_retries: 3  # retries after a failed request (transport error, HTTP 429 or 5xx)
+      backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
+      min_request_interval_seconds: 1.0  # rate limit: pause between requests, in seconds
+      request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
+      user_agent: AtlasCapital/0.1 (research and paper-trading simulator)  # sent with every request
   # Liquidity filters of Universe.tradable (Stage 08); only bars known before the cutoff count.
   tradable:
     min_price: 5.0  # last raw close, USD

@@ -1,0 +1,23 @@
+lexicon data/reference/lm_lexicon.csv: version f0587e3b9410, negative 2345, positive 347, uncertainty 297
+  TextSentiment(score=0.0, pos=0, neg=0, uncertainty=0, words=10)  <- 'Apple beats estimates as iPhone sales surge to a record'
+  TextSentiment(score=-1.0, pos=0, neg=3, uncertainty=0, words=10)  <- 'Intel warns of weak demand and further losses; shares plunge'
+  TextSentiment(score=0.0, pos=0, neg=0, uncertainty=1, words=7)  <- 'Fed officials uncertain whether inflation will ease'
+earnings: EventsIngestReport(rows=48, symbols_ok=('AAPL',), symbols_failed=(), failure_reasons=FrozenDict({}), skipped_filings=0)
+macro events: 368 rows
+past AAPL at 2024-02-02:
+                   event_id symbol event_type  event_date                event_time time_of_day  source              available_at
+0  sec-0000320193-24-000005   AAPL   earnings  2024-02-01 2024-02-01 21:30:30+00:00         AMC  sec_8k 2024-02-01 21:30:30+00:00
+1  sec-0000320193-23-000104   AAPL   earnings  2023-11-02 2023-11-02 20:30:32+00:00         AMC  sec_8k 2023-11-02 20:30:32+00:00
+2  sec-0000320193-23-000075   AAPL   earnings  2023-08-03 2023-08-03 20:30:21+00:00         AMC  sec_8k 2023-08-03 20:30:21+00:00
+upcoming at 2024-01-29, 14 days:
+          event_id symbol event_type  event_date                event_time time_of_day         source              available_at
+0  fomc-2024-01-31   None       fomc  2024-01-31 2024-01-31 19:00:00+00:00     unknown  fomc_calendar 2024-01-01 05:00:00+00:00
+1   nfp-2024-02-02   None        nfp  2024-02-02 2024-02-02 13:30:00+00:00         BMO   fred_release 2024-01-01 05:00:00+00:00
+upcoming at 2020-03-10, 10 days (cancelled meeting still scheduled):
+          event_id symbol event_type  event_date                event_time time_of_day         source              available_at
+0   cpi-2020-03-11   None        cpi  2020-03-11 2020-03-11 12:30:00+00:00         BMO   fred_release 2020-01-01 05:00:00+00:00
+1  fomc-2020-03-18   None       fomc  2020-03-18 2020-03-18 18:00:00+00:00     unknown  fomc_calendar 2020-01-01 05:00:00+00:00
+upcoming at 2020-03-16, 10 days (after the cancellation):
+Empty DataFrame
+Columns: [event_id, symbol, event_type, event_date, event_time, time_of_day, source, available_at]
+Index: []
