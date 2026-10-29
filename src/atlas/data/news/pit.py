@@ -72,7 +72,12 @@ def news_pit_detail(
     limit: int,
     settings: NewsConfig | None = None,
 ) -> pd.DataFrame:
-    """The rows behind `news_pit`, with columns `DETAIL_COLUMNS` (see the module docstring)."""
+    """The rows behind `news_pit`, with columns `DETAIL_COLUMNS` (see the module docstring).
+
+    `lookback_days` is in calendar days before `as_of.cutoff` (an article exactly that long
+    before it is included); `limit` is the maximum number of articles; both must be positive
+    integers (`ValueError`). `relevance` is `headline_relevance` or `symbols_relevance`.
+    """
     cfg = settings if settings is not None else NewsConfig()
     _check_window(lookback_days, limit)
     scored = score_relevance(_known(articles, as_of), symbol, cfg)
@@ -92,7 +97,8 @@ def news_pit(
     limit: int,
     settings: NewsConfig | None = None,
 ) -> list[Evidence]:
-    """News about `symbol` known at `as_of`, as `Evidence` (see the module docstring)."""
+    """News about `symbol` known at `as_of`, as `Evidence` (see the module docstring);
+    `lookback_days` in calendar days before the cutoff, at most `limit` articles."""
     detail = news_pit_detail(
         articles, symbol, as_of, lookback_days=lookback_days, limit=limit, settings=settings
     )
@@ -108,7 +114,8 @@ def market_news_pit(
     settings: NewsConfig | None = None,
 ) -> list[Evidence]:
     """Market-wide news known at `as_of` (untagged, or tagged with a `market_symbols` ETF),
-    copies dropped, newest first, at most `limit`, as `Evidence`."""
+    copies dropped, newest first, at most `limit`, as `Evidence`; `lookback_days` in calendar
+    days before the cutoff."""
     cfg = settings if settings is not None else NewsConfig()
     _check_window(lookback_days, limit)
     known = _known(articles, as_of)
@@ -183,7 +190,8 @@ class News:
         lookback_days: int | None = None,
         limit: int | None = None,
     ) -> pd.DataFrame:
-        """`news_pit_detail` of `symbol` at `as_of` (defaults from `data.news`)."""
+        """`news_pit_detail` of `symbol` at `as_of`; `lookback_days` (calendar days) and
+        `limit` default to `data.news.lookback_days` (14) and `data.news.limit` (50)."""
         point = self._as_of(as_of)
         lookback, count = self._defaults(lookback_days, limit)
         return news_pit_detail(

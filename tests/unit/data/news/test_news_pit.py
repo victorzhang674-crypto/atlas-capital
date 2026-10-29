@@ -416,3 +416,27 @@ def test_same_article_id_twice_cited_once(tmp_path: Path) -> None:
     )
     both["available_at"] = both["published_at"]
     assert _ids(market_news_pit(both, AT_0303, **DEFAULTS)) == ["news:alpaca-1"]
+
+
+@pytest.mark.parametrize("path", ["pit", "pit_detail", "market"])
+def test_news_reader_guard_raises_if_filter_bypassed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, path: str
+) -> None:
+    # Audit fix (stage protocol §5): every data path asks for data after as_of and expects
+    # LookAheadError. The reader's own read window is widened and the filter bypassed, so a
+    # stored article published after the cutoff reaches the guard.
+    lake = _lake(tmp_path)
+    frame = articles_frame([article(published_at=utc(2020, 3, 3, 13, 30), symbols=[])])
+    ingest_news(lake, FakeNewsProvider("alpaca", frame), None, utc(2020, 3, 1), utc(2020, 3, 4))
+    reader = News(lake)
+    monkeypatch.setattr(
+        reader, "_window", lambda point, lookback: reader.articles(utc(2020, 1, 1), utc(2021, 1, 1))
+    )
+    monkeypatch.setattr(pit_module, "pit_filter", lambda df, as_of: df)
+    calls = {
+        "pit": lambda: reader.pit("AAPL", AT_0303),
+        "pit_detail": lambda: reader.pit_detail("AAPL", AT_0303),
+        "market": lambda: reader.market(AT_0303),
+    }
+    with pytest.raises(LookAheadError):
+        calls[path]()
