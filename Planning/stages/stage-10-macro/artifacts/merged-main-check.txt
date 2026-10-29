@@ -1,0 +1,67 @@
+# Merged main check — 2026-10-29 07:41 EDT
+# main checkout: HEAD e056de5, status lines: 0
+# Checks run on an exact export of main's committed tree (git archive main → $TMPDIR/main-e056de5) with a fresh venv built offline from uv's cache (uv sync --group dev --frozen --offline):
+# the main checkout's working files are iCloud-offloaded (162 dataless) and iCloud did not download them, so they could not be read.
+$ git -C <main> log --oneline -2
+e056de5 stage-10: Macro data (FRED / ALFRED)
+a2593b2 stage-09: final audit records
+$ git -C <main> branch --merged main | grep stage-10
++ claude/stage-10-planning-implementation-095734
+$ git -C <main> rev-parse main^{tree} claude/stage-10-planning-implementation-095734^{tree}
+6e1825f562a76cb54357432cc2f9839e6a3ce1a9
+6e1825f562a76cb54357432cc2f9839e6a3ce1a9
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+129 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 61 source files
+uv run pytest -q
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+........................................................................ [ 34%]
+........................................................................ [ 41%]
+........................................................................ [ 48%]
+........................................................................ [ 55%]
+........................................................................ [ 62%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 97%]
+.......................                                                  [100%]
+1031 passed, 5 deselected in 17.84s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "begin"
+ - leaked function "query_appender"
+ - leaked function "_table_kind"
+ - leaked function "__getattr__"
+ - leaked function "checkpoint"
+ - leaked function "load_extension"
+ - leaked function "_register_values"
+ - leaked function "_bind"
+ - leaked function "filesystem_is_registered"
+ - leaked function "create_function"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlmake-check-exit=0
+$ uv run pytest tests/unit/data/macro -q (brief's Verify)
+........................................................................ [ 98%]
+.                                                                        [100%]
+73 passed, 1 deselected in 1.00s
+verify-exit=0
+$ uv run pytest tests/unit/data/macro -k acceptance -q -W error
+...                                                                      [100%]
+3 passed, 71 deselected in 0.49s
+exit=0
