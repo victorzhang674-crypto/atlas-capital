@@ -1,0 +1,16 @@
+## git
+main
+d836494 stage-12: Events calendar & sentiment sources
+34f731d stage-11: audit merged-main records
+       1
+## uv run pytest -q
+1372 passed, 11 deselected in 14.89s
+exit 0
+## make check
+exit 0
+All checks passed!
+174 files already formatted
+Success: no issues found in 79 source files
+1372 passed, 11 deselected in 14.39s
+## brief Verify
+160 passed, 4 deselected in 1.91s

@@ -201,4 +201,4 @@ None with the roadmap or the spec. Interpretations (logged in the Decisions log)
 - [x] Run and save under `artifacts/`: `uv run pytest -q`, `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy src/atlas`, the brief's Verify command (plus `-v -W error`), `make check`, coverage of `atlas.data.events` and `atlas.data.sentiment`, docstring check, unit tests with dead proxies (no network).
 - [x] Self-review the branch diff; fix findings test-first.
 - [x] Write `verification.md` (ALL CRITERIA VERIFIED only with evidence), `worklog.md`, `PROGRESS.md` (tick, handoff note, Decisions rows, Backlog).
-- [ ] Review the staged diff; commit `stage-12: Events calendar & sentiment sources`; merge into `main`; re-run `uv run pytest -q` and `make check` on `main`; record hashes (records-only follow-up commit, as in Stages 09–11).
+- [x] Review the staged diff; commit `stage-12: Events calendar & sentiment sources`; merge into `main`; re-run `uv run pytest -q` and `make check` on `main`; record hashes (records-only follow-up commit, as in Stages 09–11).
