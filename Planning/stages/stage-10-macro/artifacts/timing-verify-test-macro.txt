@@ -1,0 +1,5 @@
+$ uv run pytest tests/unit/data/macro -q (brief's Verify)
+........................................................................ [ 97%]
+..                                                                       [100%]
+74 passed, 1 deselected in 1.01s
+exit=0

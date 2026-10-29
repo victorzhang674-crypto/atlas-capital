@@ -141,12 +141,13 @@ revision was published, then the revised value (`Macro(lake).pit(series_ids, as_
    decision time a statistic released that morning is first used the next day. FEDFUNDS has no
    fixed posting time and is taken at 17:00.
 2. **Market series use a fixed rule, not the vintage.** Treasury yields, credit spreads and VIX
-   are known `obs_date` + 1 calendar day at 08:00 New York (`market_lag_days`,
+   are known `obs_date` + 1 calendar day at 06:00 New York (`market_lag_days`,
    `market_available_time`), even where FRED posted the value later (Friday's yield appears on
-   FRED on Monday; the quote itself was public on Friday). Because a value must be known
-   *strictly before* the cutoff, a value available at 08:00 is **not** used at the 08:00
-   decision of that day, so with the defaults day D's yield first enters the decision of D + 2
-   (calendar days). Revisions of a market value wait for their own vintage.
+   FRED on Monday; the quote itself was public on Friday). The close of day D (VIX at 16:15,
+   Treasury yields and ICE spreads published that evening) is public by then, so it is used at
+   the 08:00 decision of D + 1. The time must stay before the decision time: a value must be
+   known *strictly before* the cutoff, so one available at 08:00 would wait until D + 2.
+   Revisions of a market value wait for their own vintage.
 3. **Credit spreads have three years of history.** ICE licensing limits FRED to the last
    three years of the ICE BofA option-adjusted spreads (`BAMLH0A0HYM2`, `BAMLC0A0CM`): data
    starts **2023-10-30** and ALFRED has no older vintages. A 2018+ backtest has no free

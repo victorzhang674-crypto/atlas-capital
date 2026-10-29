@@ -789,7 +789,7 @@ def test_macro_defaults() -> None:  # Stage 10 D6
         max_vintage_dates_per_request=2000,
         page_limit=100_000,
         market_lag_days=1,
-        market_available_time=time(8, 0),
+        market_available_time=time(6, 0),
         transform_lag_tolerance_days=7,
         zscore_window_years=10,
         zscore_min_years=5,

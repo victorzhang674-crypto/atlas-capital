@@ -413,10 +413,11 @@ class MacroConfig(_Frozen):
     maximum is 100000).
 
     Point in time: a market series' value is available `market_lag_days` calendar days after
-    its observation date at `market_available_time` (naive, America/New_York). Transforms find
-    a lagged value at most `transform_lag_tolerance_days` days before the target date; the
-    z-score uses a trailing window of `zscore_window_years` years and needs `zscore_min_years`
-    years of history.
+    its observation date at `market_available_time` (naive, America/New_York; keep it before
+    `calendar.decision_time`, since a value is known only strictly before the cutoff).
+    Transforms find a lagged value at most `transform_lag_tolerance_days` days before the
+    target date; the z-score uses a trailing window of `zscore_window_years` years and needs
+    `zscore_min_years` years of history.
     """
 
     api_url: str = "https://api.stlouisfed.org/fred"
@@ -430,7 +431,7 @@ class MacroConfig(_Frozen):
     max_vintage_dates_per_request: Annotated[int, Field(ge=2, le=2000)] = 2000
     page_limit: Annotated[int, Field(ge=1, le=100_000)] = 100_000
     market_lag_days: Annotated[int, Field(ge=1)] = 1
-    market_available_time: time = time(8, 0)
+    market_available_time: time = time(6, 0)
     transform_lag_tolerance_days: Annotated[int, Field(ge=0)] = 7
     zscore_window_years: Annotated[int, Field(gt=0)] = 10
     zscore_min_years: Annotated[int, Field(gt=0)] = 5

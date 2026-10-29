@@ -4,7 +4,7 @@
 # Each series has:
 #   kind:         market  (a market quote: Treasury yields, credit spreads, VIX). Its value for
 #                         date D is available D + data.macro.market_lag_days at
-#                         data.macro.market_available_time (default D + 1 day, 08:00 New York).
+#                         data.macro.market_available_time (default D + 1 day, 06:00 New York).
 #                 release (a published statistic). Its value is available on the vintage's
 #                         ALFRED realtime_start date at release_time.
 #   release_time: release series only: the publisher's scheduled release time, America/New_York,

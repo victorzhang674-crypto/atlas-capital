@@ -64,7 +64,7 @@ data:
     max_vintage_dates_per_request: 2000  # vintages per observations request (FRED's JSON limit)
     page_limit: 100000  # rows per observations page (FRED's maximum)
     market_lag_days: 1  # a market series' value is available this many calendar days after its date
-    market_available_time: "08:00"  # ... at this time, America/New_York; quoted for YAML
+    market_available_time: "06:00"  # ... at this time, America/New_York (before the 08:00 decision); quoted for YAML
     transform_lag_tolerance_days: 7  # a YoY / 3-month lagged value may be this many days early
     zscore_window_years: 10  # trailing window of the macro z-score, in years
     zscore_min_years: 5  # history needed before a z-score is given, in years

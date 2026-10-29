@@ -26,4 +26,6 @@ Environment for every command (no project change): `UV_CACHE_DIR=$TMPDIR/uv-cach
 - Waivers: none. Note: `test_live_fred_cpi` (`-m live`) was skipped because `FRED_API_KEY` is not set in `.env` (Rule 6 exception: missing owner secret); it covers no acceptance criterion. Unit fixtures are real ALFRED data in the API's JSON shape (see `tests/fixtures/macro/README.md`).
   - Follow-up the same day, after the owner added `FRED_API_KEY` (in `~/Projects/atlas-capital`, the project's new home outside iCloud): `uv run pytest tests/unit/data/macro -m live -v -rs` → `test_live_fred_cpi PASSED` (real FRED API; March 2020 CPI 257.953 as of 2020-04-15, absent as of 2020-04-05) · raw: [artifacts/live-fred.txt](artifacts/live-fred.txt)
 
+  - Follow-up 2026-10-29 (owner-approved: market series used on D + 1, available 06:00 ET the next day instead of the brief's 08:00): `make check` → exit 0, 1032 passed; brief's Verify → 74 passed; the point-in-time criteria still hold (`test_market_time_at_the_cutoff_is_not_known`, `test_dgs10_used_at_next_morning_decision`, the acceptance tests unchanged) · raw: [artifacts/timing-make-check.txt](artifacts/timing-make-check.txt)
+
 **Result:** ALL CRITERIA VERIFIED
