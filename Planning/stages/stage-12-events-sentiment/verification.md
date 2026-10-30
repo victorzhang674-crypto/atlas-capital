@@ -48,6 +48,7 @@ Owner's request: "can you fix the remaining gaps and limitations and complete th
   - [x] G5 point-in-time lexicon — `test_lexicon_for_year`, `test_removed_word_counts_before_removal`, `test_score_articles_uses_publish_year`, `test_load_lexicon_two_columns`
   - [x] G6 stored social posts, closable providers — `test_ingest_social_posts_roundtrip`, `test_failing_provider_recorded`, `test_social_reader_pit`, `test_social_reader_guard`, `test_provider_close_only_own_client`
   - [x] G7 Yahoo retry breadth — `test_yahoo_programming_error_not_retried`
+- On merged `main` (`a84d67d`, fast-forward from `5d54c0d`): `uv run pytest -q` → 1396 passed; `make check` → exit 0; brief's Verify → 183 passed · raw: [artifacts/merged-main-check-gaps.txt](artifacts/merged-main-check-gaps.txt)
 - The two acceptance criteria above still hold (all their tests passed in these runs). Waivers: none.
 
 **Result:** ALL CRITERIA VERIFIED

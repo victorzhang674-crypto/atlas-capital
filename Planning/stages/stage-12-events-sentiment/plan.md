@@ -229,4 +229,4 @@ The owner asked in chat: "can you fix the remaining gaps and limitations and com
 - [x] A3 G5: point-in-time lexicon
 - [x] A4 G6: stored social posts and closable providers
 - [x] A5 G7: Yahoo retry breadth
-- [ ] A6 Full verification, records, commit `stage-12: close remaining gaps`, merge, merged-main checks
+- [x] A6 Full verification, records, commit `stage-12: close remaining gaps`, merge, merged-main checks
