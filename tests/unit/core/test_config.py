@@ -25,11 +25,13 @@ from atlas.core.config import (
     MacroConfig,
     NewsConfig,
     PodStops,
+    QualityConfig,
     ReferenceDataConfig,
     Secrets,
     SentimentConfig,
     SocialConfig,
     TradableConfig,
+    ViewConfig,
     _deep_merge,
     _yaml_layers,
     config_fingerprint,
@@ -967,3 +969,59 @@ def test_events_config_rejects(values: dict[str, object], pattern: str) -> None:
 def test_sentiment_config_rejects(values: dict[str, object], pattern: str) -> None:
     with pytest.raises(ValidationError, match=pattern):
         SentimentConfig.model_validate(values)
+
+
+# --- Stage 13: data quality checks and the DataView cache --------------------------------------
+
+
+def test_quality_defaults() -> None:  # Stage 13 D1
+    q = AtlasConfig().data.quality
+    assert q == QualityConfig()
+    assert (q.window_sessions, q.stale_min_sessions, q.outlier_sigma) == (21, 5, 8.0)
+    assert (q.outlier_vol_window, q.outlier_min_returns, q.outlier_min_daily_vol) == (63, 20, 0.005)
+    assert q.split_ratios == (2.0, 3.0, 4.0, 5.0, 8.0, 10.0, 15.0, 20.0, 1.5)
+    assert (q.split_ratio_tolerance, q.fundamentals_jump_ratio) == (0.03, 10.0)
+    assert q.macro_max_gap_days.model_dump() == {
+        "daily": 7, "weekly": 14, "monthly": 45, "quarterly": 135, "annual": 400
+    }  # fmt: skip
+    assert q.macro_max_age_days.model_dump() == {
+        "daily": 10, "weekly": 21, "monthly": 100, "quarterly": 230, "annual": 550
+    }  # fmt: skip
+    assert q.severity.model_dump() == {
+        "missing_sessions": "warning",
+        "stale_price": "critical",
+        "return_outlier": "warning",
+        "ohlc_inconsistent": "critical",
+        "nonpositive_price": "critical",
+        "split_mismatch": "critical",
+        "fundamentals_jump": "warning",
+        "macro_gap": "warning",
+        "vendor_mix": "warning",
+    }
+
+
+@pytest.mark.parametrize(
+    ("values", "pattern"),
+    [
+        ({"window_sessions": 0}, "window_sessions"),
+        ({"stale_min_sessions": 1}, "stale_min_sessions"),
+        ({"outlier_sigma": 0}, "outlier_sigma"),
+        ({"outlier_min_returns": 1}, "outlier_min_returns"),
+        ({"outlier_vol_window": 10, "outlier_min_returns": 20}, "outlier_vol_window"),
+        ({"split_ratios": [1.0]}, "split_ratios"),
+        ({"split_ratio_tolerance": 0.5}, "split_ratio_tolerance"),
+        ({"fundamentals_jump_ratio": 1.0}, "fundamentals_jump_ratio"),
+        ({"severity": {"stale_price": "fatal"}}, "stale_price"),
+        ({"severity": {"no_such_check": "warning"}}, "no_such_check"),
+        ({"macro_max_gap_days": {"daily": 0}}, "daily"),
+    ],
+)
+def test_quality_validation(values: dict[str, object], pattern: str) -> None:
+    with pytest.raises(ValidationError, match=pattern):
+        QualityConfig.model_validate(values)
+
+
+def test_view_defaults() -> None:  # Stage 13 D8
+    assert AtlasConfig().data.view == ViewConfig(cache_size=256)
+    with pytest.raises(ValidationError, match="cache_size"):
+        ViewConfig(cache_size=0)

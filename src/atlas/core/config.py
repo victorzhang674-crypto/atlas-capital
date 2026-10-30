@@ -607,6 +607,99 @@ class SentimentConfig(_Frozen):
     social: SocialConfig = Field(default_factory=SocialConfig)
 
 
+_SeverityName = Literal["info", "warning", "critical"]
+
+
+class QualitySeverities(_Frozen):
+    """Severity of each data quality check (Stage 13). A `critical` issue blocks its symbol
+    (or macro series) in `DataView` on the report's day; `warning` and `info` are reported
+    only."""
+
+    missing_sessions: _SeverityName = "warning"
+    stale_price: _SeverityName = "critical"
+    return_outlier: _SeverityName = "warning"
+    ohlc_inconsistent: _SeverityName = "critical"
+    nonpositive_price: _SeverityName = "critical"
+    split_mismatch: _SeverityName = "critical"
+    fundamentals_jump: _SeverityName = "warning"
+    macro_gap: _SeverityName = "warning"
+    vendor_mix: _SeverityName = "warning"
+
+
+class FrequencyDays(_Frozen):
+    """A number of calendar days per observation frequency of a macro series."""
+
+    daily: Annotated[int, Field(gt=0)]
+    weekly: Annotated[int, Field(gt=0)]
+    monthly: Annotated[int, Field(gt=0)]
+    quarterly: Annotated[int, Field(gt=0)]
+    annual: Annotated[int, Field(gt=0)]
+
+
+class QualityConfig(_Frozen):
+    """Data quality checks run by `atlas.data.quality.quality_report` (Stage 13).
+
+    A report covers the last `window_sessions` sessions whose bars are known at the as-of
+    cutoff. `stale_min_sessions`: consecutive unchanged closes (each bar with volume > 0)
+    that make a stale price. A return outlier is a simple daily return whose magnitude
+    exceeds `outlier_sigma` times the standard deviation of the previous
+    `outlier_vol_window` returns (at least `outlier_min_returns` of them), floored at
+    `outlier_min_daily_vol` (a daily fraction). An outlier on a session without a corporate
+    action whose gross move is within `split_ratio_tolerance` (relative) of `1/k` or `k` for
+    a ratio `k` in `split_ratios` is an unrecorded split. `fundamentals_jump_ratio`: quarter
+    over quarter change factor of a fundamental value that is flagged (either way). Macro
+    series: `macro_max_gap_days` between consecutive observations and `macro_max_age_days`
+    of the last observation on the as-of day, by inferred frequency (calendar days).
+    """
+
+    window_sessions: Annotated[int, Field(ge=1)] = 21
+    stale_min_sessions: Annotated[int, Field(ge=2)] = 5
+    outlier_sigma: Annotated[float, Field(gt=0)] = 8.0
+    outlier_vol_window: Annotated[int, Field(ge=2)] = 63
+    outlier_min_returns: Annotated[int, Field(ge=2)] = 20
+    outlier_min_daily_vol: _NonNeg = 0.005
+    split_ratios: Annotated[tuple[Annotated[float, Field(gt=1)], ...], Field(min_length=1)] = (
+        2.0,
+        3.0,
+        4.0,
+        5.0,
+        8.0,
+        10.0,
+        15.0,
+        20.0,
+        1.5,
+    )
+    split_ratio_tolerance: Annotated[float, Field(gt=0, lt=0.2)] = 0.03
+    fundamentals_jump_ratio: Annotated[float, Field(gt=1)] = 10.0
+    macro_max_gap_days: FrequencyDays = Field(
+        default_factory=lambda: FrequencyDays(
+            daily=7, weekly=14, monthly=45, quarterly=135, annual=400
+        )
+    )
+    macro_max_age_days: FrequencyDays = Field(
+        default_factory=lambda: FrequencyDays(
+            daily=10, weekly=21, monthly=100, quarterly=230, annual=550
+        )
+    )
+    severity: QualitySeverities = Field(default_factory=QualitySeverities)
+
+    @model_validator(mode="after")
+    def _vol_window_covers_minimum(self) -> Self:
+        if self.outlier_vol_window < self.outlier_min_returns:
+            raise ValueError(
+                f"outlier_vol_window ({self.outlier_vol_window}) must be at least "
+                f"outlier_min_returns ({self.outlier_min_returns})"
+            )
+        return self
+
+
+class ViewConfig(_Frozen):
+    """`DataView` settings (Stage 13): `cache_size` is the number of results kept in the LRU
+    cache shared by a view and the views `advance` creates from it."""
+
+    cache_size: Annotated[int, Field(ge=1)] = 256
+
+
 class DataConfig(_Frozen):
     """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
 
@@ -619,6 +712,8 @@ class DataConfig(_Frozen):
     news: NewsConfig = Field(default_factory=NewsConfig)
     events: EventsConfig = Field(default_factory=EventsConfig)
     sentiment: SentimentConfig = Field(default_factory=SentimentConfig)
+    quality: QualityConfig = Field(default_factory=QualityConfig)
+    view: ViewConfig = Field(default_factory=ViewConfig)
     tradable: TradableConfig = Field(default_factory=TradableConfig)
     universes: _UniverseMap = Field(default_factory=_default_universes)
 

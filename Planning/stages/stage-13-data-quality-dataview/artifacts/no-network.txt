@@ -1,0 +1,6 @@
+$ HTTP_PROXY=HTTPS_PROXY=ALL_PROXY=http://127.0.0.1:9 (and lower-case) NO_PROXY= uv run pytest tests/unit/data/test_quality.py tests/unit/data/test_view_pit.py -q
+........................................................................ [ 45%]
+........................................................................ [ 91%]
+..............                                                           [100%]
+158 passed in 9.51s
+exit 0

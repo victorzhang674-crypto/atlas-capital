@@ -127,6 +127,45 @@ data:
       min_request_interval_seconds: 1.0  # rate limit: pause between requests, in seconds
       request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
       user_agent: AtlasCapital/0.1 (research and paper-trading simulator)  # sent with every request
+  # Data quality checks (Stage 13), run on the data known at the as-of cutoff; a critical issue blocks its symbol in DataView that day.
+  quality:
+    window_sessions: 21  # a report covers the last this many sessions whose bars are known
+    stale_min_sessions: 5  # this many consecutive unchanged closes (each with volume > 0) make a stale price
+    outlier_sigma: 8.0  # a daily return beyond this many standard deviations is an outlier
+    outlier_vol_window: 63  # trailing returns in the standard deviation (the day itself excluded)
+    outlier_min_returns: 20  # fewer trailing returns than this: the day is not checked
+    outlier_min_daily_vol: 0.005  # floor of the daily standard deviation, as a fraction (0.5%)
+    split_ratios: [2, 3, 4, 5, 8, 10, 15, 20, 1.5]  # an outlier moving the price by 1/k or k with no recorded action is an unrecorded split
+    split_ratio_tolerance: 0.03  # relative tolerance of that match (3%)
+    fundamentals_jump_ratio: 10.0  # a quarter-over-quarter change of more than this factor, either way, is flagged
+    # Largest gap between consecutive macro observations, calendar days, by inferred frequency.
+    macro_max_gap_days:
+      daily: 7  # daily series (market quotes)
+      weekly: 14  # weekly series (initial claims)
+      monthly: 45  # monthly series
+      quarterly: 135  # quarterly series
+      annual: 400  # annual series
+    # Largest age of the last macro observation on the as-of day, calendar days (publication lag included).
+    macro_max_age_days:
+      daily: 10  # daily series
+      weekly: 21  # weekly series
+      monthly: 100  # monthly series (core PCE comes about two months after its month starts)
+      quarterly: 230  # quarterly series
+      annual: 550  # annual series
+    # Severity per check: info | warning | critical (critical blocks the symbol or series).
+    severity:
+      missing_sessions: warning  # a session with no bar between a symbol's first and last bar in the window
+      stale_price: critical  # close unchanged for stale_min_sessions sessions with volume
+      return_outlier: warning  # return beyond outlier_sigma with no corporate action (can be real news)
+      ohlc_inconsistent: critical  # high/low not bounding open/close, missing OHLC or negative volume
+      nonpositive_price: critical  # an open, high, low or close at or below zero
+      split_mismatch: critical  # a recorded action that does not explain the move, or an unrecorded split
+      fundamentals_jump: warning  # a fundamental value changing more than fundamentals_jump_ratio in a quarter
+      macro_gap: warning  # a macro series with a gap or no recent observation
+      vendor_mix: warning  # bars from more than one vendor in the window (IEX vs consolidated volume)
+  # DataView (Stage 13): the single point-in-time door to the data.
+  view:
+    cache_size: 256  # results kept in the LRU cache shared by a view and the views advance() creates
   # Liquidity filters of Universe.tradable (Stage 08); only bars known before the cutoff count.
   tradable:
     min_price: 5.0  # last raw close, USD

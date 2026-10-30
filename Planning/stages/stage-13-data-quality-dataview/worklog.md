@@ -1,0 +1,65 @@
+# Stage 13 — Data quality checks & DataView facade · Work log
+
+Append entries in order. Record failures and dead ends as honestly as successes. Commands ran with `UV_CACHE_DIR=$TMPDIR/uv-cache UV_NO_SYNC=1` (the sandbox blocks `~/.cache/uv`).
+
+## 2026-10-30 — Gate check and setup
+- Did: read `Project.md`, `PROGRESS.md`, the brief, the roadmap row, spec §3/§11–§12, protocol §2–§6, the Stage 07–12 readers and the Backlog items addressed to Stage 13. Synced the worktree venv (`uv sync --group dev`, PyPI reached through the proxy).
+- Ran: Stage 12 `verification.md` → **ALL CRITERIA VERIFIED**; `uv run pytest -q` → 1396 passed, 11 deselected, exit 0 (raw: `artifacts/gate-check-pytest.txt`). A first run piped through `tail` showed only nanobind leak warnings printed at interpreter exit (exit 0); re-run with full output saved.
+- Did: copied `Planning/stages/_template/` into the stage folder; wrote `plan.md` (interpretations 1–8, D1–D8, Tasks 1–13). The first write had every box ticked by mistake; reset to unticked before any code.
+- Next: Task 1.
+
+## 2026-10-30 — Task 1: config `data.quality`, `data.view`
+- Did: `QualitySeverities`, `FrequencyDays`, `QualityConfig`, `ViewConfig` in `src/atlas/core/config.py`; YAML keys with comments in `config/fund.yaml`; tests in `tests/unit/core/test_config.py`.
+- Ran: `pytest tests/unit/core/test_config.py -k "quality or view"` → RED: collection error `ImportError: cannot import name 'QualityConfig'` (the plan expected an `AttributeError`; the import failed first). After implementing: whole module → 176 passed (YAML parity and comment tests included).
+
+## 2026-10-30 — Task 2: issue contract and table
+- Did: `src/atlas/data/quality.py` with `CHECKS`, `Severity` (ordered `StrEnum`), `QualityIssue` (frozen dataclass; rejects unknown checks and naive `available_at`), `ISSUE_COLUMNS`, `DATA_QUALITY_ISSUES`, `issues_frame`; helpers `tests/unit/data/view_helpers.py`.
+- Ran: `pytest tests/unit/data/test_quality.py` → RED (`ModuleNotFoundError`), then 4 passed.
+
+## 2026-10-30 — Task 3: price checks
+- Did: `check_missing_sessions`, `check_ohlc`, `check_nonpositive_prices`, `check_stale_prices`, `check_vendor_mix`.
+- Ran: RED (`ImportError`), then 16 passed. ruff flagged `# fmt: skip` long lines and the docstring table (E501); mypy rejected `np.searchsorted` on a date array → `bisect_left`; docstring table rewritten as a list. Clean afterwards.
+
+## 2026-10-30 — Task 4: return outliers and split mismatches
+- Did: `check_return_outliers` (both checks), `_valid_actions`, `_match_split`.
+- Ruling: on an action session, `split_mismatch` fires when the adjusted return is an outlier **and** the session has a split or the raw return is not an outlier. A real move on an ex-dividend day (raw and adjusted both outliers) is therefore not reported (`test_return_outlier_not_on_action_day`); the plan's D5 said "an outlier on an action day is a mismatch". Reason: an earnings move on an ex-dividend day must not block a name for a month.
+- Ran: RED (`ImportError`), then 25 passed; mypy: walrus loop variable reused as an `int` → renamed.
+
+## 2026-10-30 — Task 5: fundamentals jumps
+- Did: `check_fundamentals_jumps` (known facts per symbol → `resolve_concept` → `quarterly_values` for flows / instants for stocks; consecutive when period ends are `quarter_days` apart; one issue per symbol and day).
+- Ran: RED (`ImportError`), then 30 passed. The "late filing" test was tightened before GREEN so only the jumped quarter is unknown (first draft made all four unknown, which proved nothing).
+
+## 2026-10-30 — Task 6: macro gaps
+- Did: `infer_frequency`, `check_macro_gaps` (internal gaps ending in the window; stale tail dated on the as-of day).
+- Ran: RED (`ImportError`), then 35 passed; ruff RUF007 → `itertools.pairwise`.
+
+## 2026-10-30 — Task 7: report, persistence, block
+- Did: `latest_known_session`, `merge_issues`, `blocked_symbols`, `quality_report(lake, as_of, *, config, calendar, concept_map, persist)`, `_persist` (read, drop the day, overwrite), `read_quality_issues` (look-ahead guard).
+- Ran: RED (`ImportError`), then 45 passed / 1 failed: `test_persist_replaces_day` expected one issue for a zero close, but it is also a −100% `return_outlier` (warning). The behaviour is right; the test's expectation was wrong (Rule 1.6): it now asserts both issues. 46 passed; ruff import order fixed.
+
+## 2026-10-30 — Task 8: DataView core
+- Did: `src/atlas/data/view.py`: `DataView(lake, as_of, config, *, calendar, concept_map, catalog, lexicon)`, `__slots__` + `__setattr__`/`__delattr__` raising, `advance` (backwards → `ValueError`), `_Shared` (lake, config, calendar, readers, cache), `_LRU`, `guard_frame`, `guard_evidence`, `quality_issues`, `blocked`, `_require_unblocked`.
+- Ran: `pytest tests/unit/data/test_view_pit.py` → RED (`ModuleNotFoundError`), then 5 passed.
+
+## 2026-10-30 — Task 9: prices, returns, adv
+- Did: `prices` (raw OHLCV + our PIT `adj_close`; the vendor `adj_close` is dropped), `returns` (session grid, `pct_change(fill_method=None)`), `adv` (USD and split-adjusted shares; default `limits.adv_window_days`), `_bars`, `_sessions`, `_known`. Made `quality.usable_actions` public so the view skips the same bad dividends the quality check flags (logged `view.action_skipped`).
+- Ran: RED (13 failed: methods missing), then 18 passed. Removed an empty-symbols special case after checking that the lake accepts an empty `in` filter (scratch script). mypy: unused `type: ignore` comments removed.
+
+## 2026-10-30 — Task 10: delegated methods
+- Did: lazily built readers shared by advanced views (`Universe`, `Fundamentals`, `Macro`, `News`, `Events`, `Sentiment`, `Social`); `fundamentals`, `fundamentals_panel` (one read for all symbols), `macro` (blocked series dropped), `news`, `market_news`, `sentiment`, `sentiment_daily`, `social`, `events`, `past_events`, `earnings_reactions`, `universe`, `tradable`, `instrument`. Test world in `tests/unit/data/view_helpers.py` (`build_world(lake, future=...)`): prices/actions/instruments/membership/facts/macro/news/events/macro events/reactions/posts.
+- Ran: a scratch run of the world builder failed with `DataError: no table schema registered as 'instruments'` because `atlas.data.view` did not import the readers yet (expected; that is this task). Tests: RED (11 failed, `AttributeError`), then 30 passed; ruff RUF028 (`# fmt: skip` inside expressions in the helpers) fixed.
+
+## 2026-10-30 — Task 11: leak suite and blocked-symbol suite
+- Did: `METHODS` (every public data method) with `test_methods_cover_the_public_api`; `test_future_rows_never_leak[method]` (dirty == clean at 2024-03-01 08:00, timestamps before the cutoff), `test_injected_rows_are_visible_later[method]` (at 2024-03-18 the dirty answer differs: not vacuous; `instrument` excluded: static table), `test_guard_raises_if_filter_bypassed[method]` (17 methods; `universe` / `instrument` carry no timestamps), `test_blocked_symbol_raises[method]` (8 single-symbol methods), `test_blocked_symbol_absent[method]` (7 multi-symbol methods), `test_blocked_symbol_present_without_the_block`, `test_macro_drops_blocked_series`.
+- Ran: 104 passed, first run (the suite tests code written in Tasks 8–10), but in 30 s. Profiling: the fundamentals-jump check resolved all 15 concepts per symbol (0.4 s per report). Fix: resolve only concepts reported by a fact known since the window start (`quality.py`); and the world fixture now shares immutable views across tests (fresh views in guard tests). → 104 passed in 5 s; `test_quality.py` still 46 passed.
+- Mutation checks (raw: `artifacts/mutation-check.txt`): M1 `guard_frame` off → 6 guard tests fail; M2 `guard_evidence` off → 3 fail; M3 no quality block → 22 fail; M4 price window ignores the cutoff → 6 fail; M6 quality report without `pit_filter` → 2 fail. **M5 (view reads without `pit_filter`) survived**: every injected row was also excluded by the date bounds of the reads. Added to the dirty world an AAA dividend with a past ex-date (2024-02-20) recorded late (known 2024-03-04); M5 re-run → `test_future_rows_never_leak[prices|returns]` fail. All mutations restored (diff checked).
+
+## 2026-10-30 — Task 12: caching and immutability
+- Did: public `DataView.cache_info()` (`CacheInfo(hits, misses, size, maxsize)`, like `functools`) written together with the tests (no separate RED run for it; the cache itself exists since Task 8). Tests: `test_cache_hit_reads_lake_once` (no lake read on a repeat call, other spelling of the symbols), `test_cache_keyed_by_args_and_as_of`, `test_cache_returns_copies` (frame, Series, Evidence list, symbol list), `test_cache_lru_eviction` (size 3), `test_cache_misses_after_write` (generation key), `test_advanced_view_shares_cache`, `test_view_is_read_only` (no `write_table` call over every method).
+- Ran: 109 passed / 2 failed: the tests expected hits to rise by exactly 1 per repeat call, but every data method also hits the cached `blocked` set (rises by 2). The behaviour is right; the tests now assert "no new miss, no lake read" (Rule 1.6). → 111 passed. ruff: B018 (bare `view.blocked` → `_ = view.blocked`), RUF043 (raw regex), import order.
+
+## 2026-10-30 — Task 13: docs, docstrings, verification
+- Did: `docs/data-limitations.md › Data quality and DataView (Stage 13)` (8 limits) and `test_limitations_doc_has_stage_13_section` (written after the section: a presence test). Docstring checker adapted from Stage 12's (`artifacts/check_docstrings.py`): its `ast.walk` also flagged 7 nested `compute()` closures, which are not API; it now checks module- and class-level definitions only → none missing.
+- Ran (raw outputs in `artifacts/`): `uv run pytest -q` → 1567 passed, 11 deselected, exit 0; ruff → All checks passed!; format → 179 files already formatted; mypy → no issues in 81 source files; brief's Verify `uv run pytest tests/unit/data -q` → 848 passed, 11 deselected; `-v -W error` on the two stage files → 158 passed; `make check` → exit 0, 1567 passed; coverage `atlas.data.quality` 95%, `atlas.data.view` 98% (TOTAL 96%); proxies at a dead port → 158 passed.
+- Smoke run on real prices (`artifacts/smoke_real_prices.py`, Yahoo via Stage 07 into a scratch lake outside the repo; 16 large caps 2023-01-01..2024-09-30; 7008 rows, 85 actions, none failed): reports on 2023-12-01, 2024-06-03, 2024-06-14, 2024-07-01, 2024-09-30 → no critical issue, nothing blocked; one warning (WMT −8.09% on 2023-11-16, a real earnings drop: `return_outlier`). NVDA's 10:1 split (2024-06-10) gives +0.75% that day and ADV in shares switches to post-split units only once the split is known; AVGO and WMT splits raise nothing (`artifacts/smoke-real-prices.txt`).
+- Self-review of the whole diff (no reviewer subagent: the owner did not ask for one): found nothing further to fix beyond the items logged per task.

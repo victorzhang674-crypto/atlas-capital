@@ -1,0 +1,81 @@
+=== M1: guard_frame checks nothing
+___________ test_guard_raises_if_filter_bypassed[earnings_reactions] ___________
+    def test_guard_raises_if_filter_bypassed(
+_________________ test_guard_raises_if_filter_bypassed[events] _________________
+    def test_guard_raises_if_filter_bypassed(
+______________ test_guard_raises_if_filter_bypassed[fundamentals] ______________
+    def test_guard_raises_if_filter_bypassed(
+___________ test_guard_raises_if_filter_bypassed[fundamentals_panel] ___________
+    def test_guard_raises_if_filter_bypassed(
+_________________ test_guard_raises_if_filter_bypassed[macro] __________________
+    def test_guard_raises_if_filter_bypassed(
+______________ test_guard_raises_if_filter_bypassed[past_events] _______________
+    def test_guard_raises_if_filter_bypassed(
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[earnings_reactions]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[events]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[fundamentals]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[fundamentals_panel]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[macro]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[past_events]
+6 failed, 144 passed in 5.67s
+=== M2: guard_evidence checks nothing
+______________ test_guard_raises_if_filter_bypassed[market_news] _______________
+    def test_guard_raises_if_filter_bypassed(
+__________________ test_guard_raises_if_filter_bypassed[news] __________________
+    def test_guard_raises_if_filter_bypassed(
+_________________ test_guard_raises_if_filter_bypassed[social] _________________
+    def test_guard_raises_if_filter_bypassed(
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[market_news]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[news]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[social]
+3 failed, 147 passed in 5.42s
+=== M3: no quality block
+________________ test_guard_raises_if_filter_bypassed[blocked] _________________
+    def test_guard_raises_if_filter_bypassed(
+FAILED tests/unit/data/test_view_pit.py::test_quality_issues_and_blocked
+FAILED tests/unit/data/test_view_pit.py::test_fundamentals_panel_matches_reader
+FAILED tests/unit/data/test_view_pit.py::test_events_matches_reader
+FAILED tests/unit/data/test_view_pit.py::test_universe_and_tradable
+FAILED tests/unit/data/test_view_pit.py::test_injected_rows_are_visible_later[blocked]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[blocked]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_raises[earnings_reactions]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_raises[fundamentals]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_raises[instrument]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_raises[news]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_raises[past_events]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_raises[sentiment]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_raises[sentiment_daily]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_raises[social]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_absent[adv]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_absent[events]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_absent[fundamentals_panel]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_absent[prices]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_absent[returns]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_absent[tradable]
+FAILED tests/unit/data/test_view_pit.py::test_blocked_symbol_absent[universe]
+FAILED tests/unit/data/test_view_pit.py::test_macro_drops_blocked_series
+22 failed, 128 passed in 4.39s
+=== M4: price window ignores the cutoff (bar of the as-of day read)
+E         comparison failed. Mismatched elements: 1 / 2:
+E         comparison failed
+FAILED tests/unit/data/test_view_pit.py::test_prices_window_and_columns
+FAILED tests/unit/data/test_view_pit.py::test_returns_known_answer
+FAILED tests/unit/data/test_view_pit.py::test_returns_missing_bar_is_nan
+FAILED tests/unit/data/test_view_pit.py::test_returns_include_dividends
+FAILED tests/unit/data/test_view_pit.py::test_adv_known_answer
+FAILED tests/unit/data/test_view_pit.py::test_adv_default_window
+6 failed, 144 passed in 5.45s
+=== M5: view reads without pit_filter/assert (actions of later dates)
+150 passed in 5.43s
+=== M6: quality report reads without pit_filter/assert
+________________ test_guard_raises_if_filter_bypassed[blocked] _________________
+    def test_guard_raises_if_filter_bypassed(
+_____________ test_guard_raises_if_filter_bypassed[quality_issues] _____________
+    def test_guard_raises_if_filter_bypassed(
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[blocked]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[quality_issues]
+2 failed, 148 passed in 5.64s
+=== M5 (re-run after adding a late-recorded past action to the dirty world): view reads without pit_filter/assert
+FAILED tests/unit/data/test_view_pit.py::test_future_rows_never_leak[prices]
+FAILED tests/unit/data/test_view_pit.py::test_future_rows_never_leak[returns]
+2 failed, 148 passed in 5.42s

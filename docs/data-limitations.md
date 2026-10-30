@@ -281,3 +281,49 @@ Loughran-McDonald word lists (`atlas.data.sentiment`). Query them with
    in time (`Social(lake).evidence`); their free APIs serve recent posts only, so a backtest
    sees only posts stored before its dates. Reddit's public search is rate-limited and
    StockTwits may refuse automated clients; a failing provider is recorded and skipped.
+
+## Data quality and DataView (Stage 13)
+
+Strategy and agent code reads data only through `DataView(lake, as_of)` (`atlas.data.view`): one
+immutable, point-in-time door to prices, returns, ADV, fundamentals, macro, news, sentiment,
+social posts, events, the universe and instruments. Every result is checked again against the
+cutoff (a `LookAheadError` if a later row slipped through), and symbols with a `critical` data
+quality issue that day are left out (single-symbol methods raise `DataError`). The checks live in
+`atlas.data.quality`; `quality_report(lake, as_of, persist=True)` stores a day's issues in
+`data_quality_issues`.
+
+### What is left
+
+1. **A block lasts as long as the issue is in the window.** A report covers the last
+   `data.quality.window_sessions` (21) sessions whose bars are known. A critical issue (a stale,
+   non-positive or inconsistent bar, or a split mismatch) blocks the symbol on every day whose
+   window still contains it, about a month for one bad bar, unless the data is corrected: issues
+   are recomputed from the lake each day, so a re-ingest lifts the block. Issues older than the
+   window are not reported, so a long-ago bad bar still sits inside a 252-day feature window.
+2. **Split mismatches are found from prices, not from the vendor's adjusted close.** The stored
+   `adj_close` is the vendor's value at each bar's fetch time, so bars fetched on different days
+   disagree after every later dividend; the check uses our own adjustment with the actions known
+   at the cutoff. A recorded action whose session still shows an 8-sigma adjusted move does not
+   match the prices; an 8-sigma move on a day without an action that is within 3% of a common
+   split ratio (2, 3, 4, 5, 8, 10, 15, 20, 1.5, or their reverse) is an unrecorded split. An
+   unrecorded split of another ratio, or one hidden by a large real move the same day, shows only
+   as a `return_outlier` warning.
+3. **Return outliers are warnings.** An 8-sigma move with no corporate action can be real
+   (earnings, M&A), so it does not block by default (`severity.return_outlier`). A real move on
+   an ex-dividend day is not reported at all.
+4. **Fundamentals jumps are warnings,** compared quarter over quarter (10x either way, both values
+   non-zero). Values that cross zero or start from zero are not compared, and only concepts a
+   filing in the window reported are checked.
+5. **Macro gaps use an inferred frequency.** The frequency comes from the median spacing of the
+   known observation dates; a series with fewer than three observations is not checked, and the
+   staleness limits include the usual publication lag (monthly: 100 days). Macro issues are
+   warnings by default; made critical, they drop the series from `DataView.macro`.
+6. **Vendor mixing is only flagged.** A symbol whose window holds bars from two vendors (Yahoo's
+   consolidated volume and Alpaca's IEX-only volume) gets a `vendor_mix` warning; the volumes are
+   not reconciled.
+7. **Static and dated tables.** `instruments` has no knowledge time (today's names, sectors and
+   exchanges, Stage 08), and index membership is dated by its start and end dates, so neither
+   can be checked against the cutoff the way timestamped rows are.
+8. **The cache sees writes through the same `Lake` object only.** A view's results are cached
+   per cutoff, arguments and the lake's write generation; data written by another process after
+   a view was created is seen only by a new view.
