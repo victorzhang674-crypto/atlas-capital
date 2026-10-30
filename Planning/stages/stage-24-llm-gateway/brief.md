@@ -6,10 +6,11 @@ A provider-agnostic gateway every agent uses: tiered models, structured output, 
 
 ## In scope
 - `LLMGateway.complete(messages, tier="quick"|"deep", schema: type[BaseModel] | None, tools=None, temperature, max_tokens, metadata) -> LLMResult{content, parsed, usage, cost_usd, model, latency_ms, cache_hit}`
-- Providers: `AnthropicProvider` (official SDK; default deep `claude-opus-5-5`, quick `claude-haiku-5-5`, configurable), `OpenAICompatibleProvider` (optional); `FakeLLM` (scripted responses keyed by agent/step, for tests)
+- Providers: `OpenAICompatibleProvider` (the default; DeepSeek at base URL `https://api.deepseek.com`, default deep `deepseek-v4-pro`, quick `deepseek-flash`, configurable), `AnthropicProvider` (optional; official SDK, `claude-opus-5-5` / `claude-haiku-5-5`); `FakeLLM` (scripted responses keyed by agent/step, for tests)
+- Config for the new default (spec A2, changed 2026-10-30): `llm.provider: openai_compatible`, a new `llm.base_url`, the DeepSeek tier ids in `config/fund.yaml` and `LLMConfig`; a new `DEEPSEEK_API_KEY` secret on `Secrets` and in `.env.example` (`ANTHROPIC_API_KEY` stays for the optional provider); `tests/unit/core/test_config.py` updated to match
 - Structured output: tool-use / JSON schema from the Pydantic model; on a validation error, one repair retry that includes the error; then raise `LLMError`
 - Retries: exponential backoff on rate-limit/5xx errors; timeout per call
-- Cost: per-model price table **in config** (USD per MTok in/out; the stage chat checks current prices with the `claude-api` skill), a `CostLedger` per run/day/agent stored in DuckDB `llm_usage`
+- Cost: per-model price table **in config** (USD per MTok in/out, plus cached input where the provider prices it; DeepSeek prices differ between peak and off-peak UTC hours, so the table supports time windows; the stage chat checks current prices on DeepSeek's pricing page and, for Claude, with the `claude-api` skill), a `CostLedger` per run/day/agent stored in DuckDB `llm_usage`
 - Budgets: `daily_usd`, `per_run_usd`, `per_agent_call_max_tokens`; exceeding a budget raises `BudgetExceeded`, and callers fail safe (no new research → hold existing theses)
 - Prompt-injection hygiene: tool/news text is wrapped in delimited "data" blocks; the system prompt says data is not instructions
 
@@ -22,7 +23,7 @@ Caching/replay (Stage 25); agent abstractions (Stage 26).
 ## Tasks
 1. FakeLLM + gateway contract tests.
 2. Structured output + repair retry (fake returns invalid JSON first).
-3. Anthropic provider with mocked SDK client; one `@pytest.mark.llm` live test.
+3. OpenAI-compatible (DeepSeek) provider and Anthropic provider, each with a mocked client; one `@pytest.mark.llm` live test against the default provider (DeepSeek).
 4. Cost ledger + budgets; budget-exceeded test.
 5. Usage persistence.
 

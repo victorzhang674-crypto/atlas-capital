@@ -185,7 +185,7 @@ Each `Prediction` is settled after its horizon. Scores are Brier scores (directi
 | Numerics | numpy, scipy, statsmodels, scikit-learn, arch, hmmlearn | Factor models, cointegration, GARCH, HMM |
 | Optimisation | cvxpy (OSQP/Clarabel) | Constrained portfolio optimisation |
 | Calendars | exchange_calendars | Trading days and sessions |
-| LLM | Anthropic Claude by default (deep: `claude-opus-5-5`, quick: `claude-haiku-5-5`), OpenAI-compatible optional | Provider-agnostic gateway |
+| LLM | DeepSeek by default through its OpenAI-compatible API (deep: `deepseek-v4-pro`, quick: `deepseek-flash`), Anthropic Claude optional (`claude-opus-5-5` / `claude-haiku-5-5`) | Provider-agnostic gateway; DeepSeek chosen by the owner for cost (2026-10-30) |
 | Vector memory | ChromaDB (local) | Similar-situation retrieval |
 | Market data | yfinance (free), Alpaca market data (free with a paper account) | Free to start |
 | Fundamentals | SEC EDGAR companyfacts (XBRL, keyed by filing date) | Free and point-in-time |
@@ -253,7 +253,7 @@ Fund performance targets (out-of-sample walk-forward backtest, 2018-01 → lates
 | # | Decision | Default | Used from |
 |---|---|---|---|
 | A1 | Market | US equities (S&P 500) + ~30 ETFs | Stage 08 |
-| A2 | LLM provider | Anthropic Claude, provider-agnostic gateway | Stage 24 |
+| A2 | LLM provider | DeepSeek (OpenAI-compatible API), provider-agnostic gateway; Anthropic Claude optional | Stage 24 |
 | A3 | Data budget | Free sources only | Stage 07 |
 | A4 | Broker | Alpaca **paper** only; any live switch is owner-operated, behind a config flag plus a typed confirmation, and not built in v1 | Stage 60 |
 | A5 | Decision frequency | Daily risk, weekly LLM rebalancing | Stage 55 |
