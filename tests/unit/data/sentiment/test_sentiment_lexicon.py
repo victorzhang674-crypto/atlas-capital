@@ -34,12 +34,16 @@ def lexicon(tmp_path: Path) -> Lexicon:
 
 def test_build_lexicon_from_master() -> None:
     out = build_lm_lexicon(pd.read_csv(SAMPLE_MASTER))
-    assert list(out.columns) == ["word", "category"]
+    assert list(out.columns) == ["word", "category", "added", "removed"]
     pairs = set(zip(out["word"], out["category"], strict=True))
     assert ("STRONG", "positive") in pairs and ("WEAK", "negative") in pairs
     assert ("MAY", "uncertainty") in pairs
     assert {("VOLATILITY", "negative"), ("VOLATILITY", "uncertainty")} <= pairs
-    assert "BENEFIT" not in set(out["word"])  # removed from the positive list in 2020
+    benefit = out.loc[out["word"] == "BENEFIT"].iloc[0]  # removed from the positive list in 2020
+    assert (benefit["category"], benefit["removed"]) == ("positive", 2020)
+    assert pd.isna(benefit["added"])
+    strong = out.loc[out["word"] == "STRONG"].iloc[0]
+    assert (strong["added"], pd.isna(strong["removed"])) == (2009, True)
     assert "LAWSUIT" not in set(out["word"])  # litigious only
     assert out.equals(out.sort_values(["category", "word"]).reset_index(drop=True))
 
@@ -54,6 +58,41 @@ def test_load_lexicon(lexicon: Lexicon) -> None:
     assert {"WEAK", "DECLINE"} <= lexicon.negative
     assert {"MAY", "UNCERTAIN"} <= lexicon.uncertainty
     assert len(lexicon.version) == 12
+
+
+def test_lexicon_for_year(lexicon: Lexicon) -> None:
+    assert "BENEFIT" not in lexicon.positive  # the current lists
+    assert "BENEFIT" in lexicon.for_year(2019).positive
+    assert "BENEFIT" not in lexicon.for_year(2020).positive
+    assert "STRONG" in lexicon.for_year(2009).positive
+    assert "STRONG" not in lexicon.for_year(2008).positive  # added to the lists in 2009
+    assert lexicon.for_year(2019).version == lexicon.version
+
+
+def test_removed_word_counts_before_removal(lexicon: Lexicon) -> None:
+    assert score_text("A clear benefit", lexicon.for_year(2019)).pos == 1
+    assert score_text("A clear benefit", lexicon.for_year(2021)).pos == 0
+
+
+def test_load_lexicon_two_columns(tmp_path: Path) -> None:
+    path = tmp_path / "old.csv"
+    path.write_text("word,category\nGOOD,positive\nBAD,negative\n", encoding="utf-8")
+    lexicon = load_lexicon(path)
+    assert lexicon.positive == {"GOOD"} and lexicon.for_year(1990).negative == {"BAD"}
+
+
+def test_score_articles_uses_publish_year(lexicon: Lexicon) -> None:
+    frame = articles(
+        [
+            article(
+                article_id="alpaca-1", published_at=utc(2019, 6, 3), headline="A clear benefit"
+            ),
+            article(
+                article_id="alpaca-2", published_at=utc(2021, 6, 3), headline="A clear benefit"
+            ),
+        ]
+    )
+    assert score_articles(frame, lexicon)["score"].tolist() == [1.0, 0.0]
 
 
 def test_load_lexicon_missing_file_names_download(tmp_path: Path) -> None:

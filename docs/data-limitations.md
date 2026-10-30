@@ -229,41 +229,55 @@ Loughran-McDonald word lists (`atlas.data.sentiment`). Query them with
    gets `time_of_day` `unknown`; its reaction still starts that session. A filing without an
    acceptance time is skipped, and an 8-K item 2.02 for anything other than quarterly results
    (a guidance cut such as AAPL's 2019-01-02 letter) counts as an earnings event.
-2. **Scheduled earnings dates exist only from live snapshots.** No free source keeps the
-   history of announced dates, so in a backtest `upcoming` earnings appear only from the first
-   Yahoo snapshot the lake holds. Each snapshot is kept (the first knowledge of a date never
-   moves later) and a query uses each symbol's latest snapshot. A date-only Yahoo entry has no
-   time (`time_of_day` `unknown`). Yahoo's consensus estimates are not stored (paid-estimate
-   data is out of scope). A cadence-based estimate of the next date is a Backlog item.
-3. **Macro schedules are known from 1 January.** A scheduled FOMC decision, CPI or payroll
-   release in year Y is treated as known from 00:00 New York on 1 January Y; the real schedules
-   are public months earlier, so a December query does not see a January event yet. FRED shows
-   the dates that actually happened, so a release moved later (the 2013 and 2025 government
-   shutdowns) looks known from 1 January although the new date was announced later. Unscheduled
-   FOMC decisions (2020-03-03, 2020-03-15) are known only at their statement time; the cancelled
-   2020-03-18 meeting disappears at 17:00 ET on 2020-03-15. Notation votes and calls without a
-   policy statement are not events. The YAML covers 2018-2027 and must be extended each year.
+2. **Scheduled earnings dates come from live snapshots; earlier ones are estimated.** No free
+   source keeps the history of announced dates, so Yahoo's dates exist only from the first
+   snapshot the lake holds (each snapshot is kept; a query uses each symbol's latest one). Where
+   no current scheduled date exists (any backtest before the snapshots), `upcoming` gives an
+   **estimated** date (`source` `estimated`): a known report date plus 52 weeks, falling more
+   than 20 days after the latest known report, computed only from reports known at `as_of`
+   (AAPL: estimated 2024-05-02 and 2019-01-31 against real 2024-05-02 and 2019-01-29). It takes
+   the time of day of the report it is projected from. Companies that move their reporting week
+   are a few days off; a first-year company has no estimate. Yahoo's consensus estimates are not
+   stored (paid-estimate data is out of scope).
+3. **Macro schedules: known from 1 January, then from snapshots.** A scheduled FOMC, CPI or
+   payroll date in year Y is treated as known from 00:00 New York on 1 January Y (the real
+   schedules are public months earlier, so a December query does not see a January event).
+   FRED keeps no history of its release schedule, so every ingest also keeps a snapshot: a
+   future release date first seen at an ingest is known from that ingest at the earliest, and a
+   stored future date that FRED stops listing (moved or cancelled) is withdrawn from that
+   moment. Before snapshots existed, FRED's actual dates are all we have: for the 2025 federal
+   shutdown (delayed, cancelled and rescheduled BLS releases whose announcement times cannot be
+   verified; BLS refuses automated clients) `config/macro_calendar.yaml › schedule_disruptions`
+   makes every CPI and payroll release from 2025-10-01 to 2025-12-31 known only at its release
+   time, never in advance. Unscheduled FOMC decisions (2020-03-03, 2020-03-15) are known only at
+   their statement time; the cancelled 2020-03-18 meeting disappears at 17:00 ET on 2020-03-15.
+   Notation votes and calls without a policy statement are not events. The YAML covers
+   2015-2027 and must be extended each year.
 4. **FRED revision-only days are dropped.** FRED's release calendar also lists days on which a
    release only revised data (CPI seasonal factors each February until 2024; payroll benchmark
    previews such as 2024-08-21). A date counts only when the headline series (CPIAUCSL, PAYEMS)
    first published a month's value that day, or when it lies after the last such day
    (scheduled). Release times are BLS's scheduled 08:30.
-5. **Ex-dividend dates are known only on the ex-date.** Stage 07 records an action from its
-   ex-date bar, so a dividend is a past event, never an upcoming one (declaration dates are
-   not captured). Yahoo's calendar also lists the next ex-dividend date; it is not used.
+5. **Ex-dividend dates: seen on the ex-date, or scheduled from Yahoo.** Stage 07 records an
+   action from its ex-date bar (declaration dates are not captured), so a past ex-dividend is
+   known only once it happened. Yahoo's calendar also gives the next ex-dividend date, stored as
+   a scheduled event from its snapshot and dropped once the actual ex-date is seen; before the
+   first snapshot there is no upcoming ex-dividend date.
 6. **The earnings surprise is a price proxy.** No consensus estimates are used: the reaction is
    the gap (`open(D0) / close(D0-1) - 1`), the open-to-close return and its excess over SPY,
    and the 3-session buy-and-hold return over SPY (market-adjusted, beta 1). Prices are raw bars
    adjusted inside the window for splits and dividends. A reaction is known only after its
    window closes, and an event without every bar of the window (symbol and SPY) has none.
-7. **The lexicon is a fixed word list.** The 2025 Loughran-McDonald lists are applied to all
-   years (words added later count in earlier text). Scores use headlines and summaries only;
-   negation is handled only for positive words (no/not/none/neither/never/nobody up to three
-   words before), sarcasm and context not at all, and many market words are neutral in the
-   lists ("beats", "surge", "record"). The lists are free for academic research only, so they
-   are downloaded into the gitignored lake (`download_lm_lexicon` → `data/reference/`), never
-   committed. A symbol with no news has no score (NaN), never 0.
-8. **Social posts are optional and not stored.** StockTwits and Reddit posts (off by default)
-   are fetched live and returned as evidence; their free APIs serve recent posts only, so a
-   backtest has none. Reddit's public search is rate-limited and StockTwits may refuse
-   automated clients.
+7. **The lexicon is a fixed method.** The Loughran-McDonald lists are applied as they stood in
+   each article's publish year (17 words removed in 2020 still count in earlier news; all
+   additions date from 2009-2014). Scores use headlines and summaries only; negation is handled
+   only for positive words (no/not/none/neither/never/nobody up to three words before), sarcasm
+   and context not at all, and many market words are neutral in the lists ("beats", "surge",
+   "record"). The lists are free for academic research only, so they are downloaded into the
+   gitignored lake (`download_lm_lexicon` → `data/reference/`), never committed. A symbol with
+   no news has no score (NaN), never 0.
+8. **Social posts are optional and build history only from storage.** StockTwits and Reddit
+   posts (off by default) can be stored (`ingest_social_posts` → `social_posts`) and read point
+   in time (`Social(lake).evidence`); their free APIs serve recent posts only, so a backtest
+   sees only posts stored before its dates. Reddit's public search is rate-limited and
+   StockTwits may refuse automated clients; a failing provider is recorded and skipped.

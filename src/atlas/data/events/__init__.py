@@ -30,6 +30,7 @@ from atlas.data.events.earnings import (
     fetch_filings,
     ingest_earnings,
     ingest_upcoming_earnings,
+    ingest_upcoming_events,
     parse_filings,
 )
 from atlas.data.events.macro_calendar import (
@@ -43,6 +44,7 @@ from atlas.data.events.macro_calendar import (
 from atlas.data.events.pit import (
     Events,
     dividend_events,
+    estimated_earnings,
     event_view,
     known_reactions,
     past_events,
@@ -80,6 +82,7 @@ __all__ = [
     "earnings_events",
     "empty_events",
     "empty_macro_events",
+    "estimated_earnings",
     "event_view",
     "fetch_filings",
     "fomc_events",
@@ -87,6 +90,7 @@ __all__ = [
     "ingest_earnings_reactions",
     "ingest_macro_calendar",
     "ingest_upcoming_earnings",
+    "ingest_upcoming_events",
     "known_reactions",
     "load_macro_calendar",
     "normalize_events",

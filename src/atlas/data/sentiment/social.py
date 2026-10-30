@@ -12,17 +12,21 @@ Each provider answers `fetch_posts(symbol, start, end)` with a post frame (`POST
 | `text` | `str` | message body; Reddit: title, a blank line and the body |
 | `url` | `str` or `None` | link to the post |
 
-Posts are not stored (the free APIs serve recent posts only, so there is no history to replay);
-`social_evidence` turns fetched posts into citable `Evidence` (`id = "social:<post_id>"`),
-point in time. Requests send `user_agent`, are throttled, and retry transport errors, HTTP 429
-and 5xx; any other answer, or a body that is not the documented JSON object, raises
-`DataError`.
+The free APIs serve recent posts only, so history builds up from what is stored:
+`ingest_social_posts` upserts fetched posts into the `social_posts` table (one row per symbol
+and post), and `Social(lake).evidence(symbol, as_of)` / `social_evidence` turn them into
+citable `Evidence` (`id = "social:<post_id>"`), point in time. Providers own their HTTP client
+unless one is passed in: `close()` (or a `with` block) closes only their own. Requests send
+`user_agent`, are throttled, and retry transport errors, HTTP 429 and 5xx; any other answer,
+or a body that is not the documented JSON object, raises `DataError`.
 """
 
 import time
-from collections.abc import Callable, Mapping
-from datetime import UTC, datetime, timedelta
-from typing import Any, Final, Protocol, runtime_checkable
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass, field
+from datetime import UTC, date, datetime, timedelta
+from types import TracebackType
+from typing import Any, Final, Protocol, Self, runtime_checkable
 
 import httpx
 import pandas as pd
@@ -31,7 +35,16 @@ from atlas.core.config import AtlasConfig, SocialConfig
 from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.core.pit import AsOf, assert_no_lookahead, pit_filter
-from atlas.core.storage import AVAILABLE_AT
+from atlas.core.storage import (
+    AVAILABLE_AT,
+    DEFAULT_REGISTRY,
+    YEAR,
+    Column,
+    ColumnType,
+    Lake,
+    TableSchema,
+)
+from atlas.core.types.base import FrozenDict
 from atlas.core.types.instruments import normalize_symbol
 from atlas.core.types.research import Evidence
 from atlas.data.providers.base import RetryPolicy, Throttle, call_with_retry
@@ -43,6 +56,36 @@ POST_COLUMNS: Final = ("post_id", "symbol", "created_at", AVAILABLE_AT, "source"
 
 EVIDENCE_PREFIX: Final = "social:"
 """`Evidence.id` of a post is this prefix plus its `post_id`."""
+
+SOCIAL_POSTS = DEFAULT_REGISTRY.register(
+    TableSchema(
+        name="social_posts",
+        columns=(
+            Column(name="post_id", dtype=ColumnType.STRING),
+            Column(name="symbol", dtype=ColumnType.STRING),
+            Column(name="created_at", dtype=ColumnType.TIMESTAMP),
+            Column(name=AVAILABLE_AT, dtype=ColumnType.TIMESTAMP),
+            Column(name="source", dtype=ColumnType.STRING),
+            Column(name="text", dtype=ColumnType.STRING),
+            Column(name="url", dtype=ColumnType.STRING, nullable=True),
+        ),
+        primary_key=("symbol", "post_id", "created_at"),
+        partition_by=(YEAR,),
+        year_column="created_at",
+        description="Optional StockTwits / Reddit posts per symbol (text as posted); Stage 12",
+    )
+)
+"""The curated `social_posts` table (registered in `DEFAULT_REGISTRY` on import)."""
+
+
+@dataclass(frozen=True)
+class SocialIngestReport:
+    """Outcome of `ingest_social_posts`: `rows` upserted; `providers_failed` (in order) and
+    `failure_reasons` name the providers whose fetch failed (the others still ran)."""
+
+    rows: int
+    providers_failed: tuple[str, ...] = ()
+    failure_reasons: FrozenDict[str, str] = field(default_factory=lambda: FrozenDict({}))
 
 
 class _Retryable(Exception):
@@ -93,6 +136,7 @@ class _JsonSource:
         sleep: Callable[[float], None],
     ) -> None:
         self._settings = config if config is not None else SocialConfig()
+        self._owns_http = http is None
         self._http = (
             http
             if http is not None
@@ -105,6 +149,22 @@ class _JsonSource:
         )
         self._sleep = sleep
         self._throttle = Throttle(self._policy.min_interval_seconds, sleep)
+
+    def close(self) -> None:
+        """Close the HTTP connection pool (only if this provider created it)."""
+        if self._owns_http:
+            self._http.close()
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        self.close()
 
     def _get(self, url: str, params: Mapping[str, str]) -> dict[str, Any]:
         self._throttle.wait()
@@ -293,3 +353,74 @@ def social_evidence(
         )
         for row in recent.head(limit).to_dict("records")
     ]
+
+
+def ingest_social_posts(
+    lake: Lake,
+    providers: Sequence[SocialProvider],
+    symbols: Sequence[str],
+    start: datetime,
+    end: datetime,
+) -> SocialIngestReport:
+    """Fetch the posts about `symbols` created in `[start, end)` (aware) from each provider and
+    upsert them into `social_posts` (idempotent). A provider whose fetch raises `DataError` is
+    recorded and skipped; the others still run. A bare string raises `ValueError`."""
+    if isinstance(symbols, str):
+        raise ValueError("symbols must be a sequence of tickers, not one string")
+    wanted = tuple(dict.fromkeys(normalize_symbol(s) for s in symbols))
+    frames: list[pd.DataFrame] = []
+    reasons: dict[str, str] = {}
+    for provider in providers:
+        try:
+            frames.extend(provider.fetch_posts(s, start, end) for s in wanted)
+        except DataError as exc:
+            reasons[provider.name] = str(exc)
+            _log.warning("sentiment.provider_failed", provider=provider.name, error=str(exc))
+    posts = [f for f in frames if not f.empty]
+    rows = 0
+    if posts:
+        batch = pd.concat(posts, ignore_index=True)[list(POST_COLUMNS)]
+        batch = batch.drop_duplicates(subset=["symbol", "post_id", "created_at"])
+        lake.write_table(
+            SOCIAL_POSTS.name, batch, mode="upsert", keys=list(SOCIAL_POSTS.primary_key)
+        )
+        rows = len(batch)
+    _log.info("sentiment.ingest_social", rows=rows, providers_failed=len(reasons))
+    return SocialIngestReport(rows, tuple(reasons), FrozenDict(reasons))
+
+
+class Social:
+    """Point-in-time social posts read from the lake's `social_posts` table (empty when the
+    table was never written). `config` defaults to `AtlasConfig()` (its calendar sets the
+    decision time of a plain `date` as-of; `data.sentiment.social` the query defaults)."""
+
+    def __init__(self, lake: Lake, config: AtlasConfig | None = None) -> None:
+        self._lake = lake
+        self._cfg = config if config is not None else AtlasConfig()
+        self._settings = self._cfg.data.sentiment.social
+
+    def evidence(
+        self,
+        symbol: str,
+        as_of: date | AsOf,
+        lookback_days: int | None = None,
+        limit: int | None = None,
+    ) -> list[Evidence]:
+        """`social_evidence` of the stored posts about `symbol` at `as_of` (a `date` at the
+        configured decision time, or an `AsOf`); `lookback_days` (calendar days) and `limit`
+        default to `data.sentiment.social.lookback_days` / `.limit`."""
+        if isinstance(as_of, datetime):
+            raise TypeError("pass a trading day (date) or an AsOf, not a datetime")
+        point = (
+            as_of if isinstance(as_of, AsOf) else AsOf.for_session(as_of, config=self._cfg.calendar)
+        )
+        lookback = self._settings.lookback_days if lookback_days is None else lookback_days
+        count = self._settings.limit if limit is None else limit
+        if not self._lake.has_table(SOCIAL_POSTS.name):
+            return []
+        start = point.cutoff - timedelta(days=lookback)
+        posts = self._lake.read_table(
+            SOCIAL_POSTS.name,
+            filters=[("symbol", "=", normalize_symbol(symbol)), (AVAILABLE_AT, ">=", start)],
+        )
+        return social_evidence(posts, point, lookback_days=lookback, limit=count)

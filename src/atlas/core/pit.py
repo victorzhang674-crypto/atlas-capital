@@ -38,8 +38,9 @@ AVAILABILITY_RULES: Final = FrozenDict(
         "news": "the article's publish timestamp",
         "earnings_event": "the EDGAR acceptance timestamp of the 8-K (item 2.02) or 10-Q/10-K",
         "scheduled_event": (
-            "macro schedule: 00:00 New York on 1 January of the event's year (unscheduled: its "
-            "statement time); provider snapshot: the time it was taken"
+            "macro schedule: 00:00 New York on 1 January of the event's year, or the ingest "
+            "that first saw a future date if later (unscheduled or in a disruption window: its "
+            "own time); provider snapshot: the time it was taken"
         ),
         "earnings_reaction": "bar availability of the last session of the reaction window",
     }

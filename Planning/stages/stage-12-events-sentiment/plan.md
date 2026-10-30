@@ -202,3 +202,31 @@ None with the roadmap or the spec. Interpretations (logged in the Decisions log)
 - [x] Self-review the branch diff; fix findings test-first.
 - [x] Write `verification.md` (ALL CRITERIA VERIFIED only with evidence), `worklog.md`, `PROGRESS.md` (tick, handoff note, Decisions rows, Backlog).
 - [x] Review the staged diff; commit `stage-12: Events calendar & sentiment sources`; merge into `main`; re-run `uv run pytest -q` and `make check` on `main`; record hashes (records-only follow-up commit, as in Stages 09–11).
+
+---
+
+## Addendum — closing the remaining gaps (2026-10-29, after DONE)
+
+The owner asked in chat: "can you fix the remaining gaps and limitations and complete the stage?" This follow-up stays inside Stage 12's In scope (earnings calendar incl. upcoming dates, dividend ex-dates as events, macro calendar, lexicon sentiment, optional social providers behind a flag). Items owned by later stages stay in the Backlog: wiring the ingest functions into the sync CLI (Stage 14), the Yahoo news adapter's retry breadth (Stage 11 code). Items that no free source can fix are kept as documented limits (below).
+
+**Source probe (2026-10-29):** `fred/release/dates` with a past real-time window returns 0 dates (FRED keeps no vintages of its schedule); BLS schedule pages answer HTTP 403 to automated clients; the Fed's `fomchistorical2015/2016/2017.htm` pages list 8 scheduled meetings each; the LM master dictionary's year codes are 2009–2014 for additions and −2020 for 17 removed words.
+
+| # | Gap | Fix |
+|---|---|---|
+| G1 | FOMC calendar covered 2018–2027 only, but earnings history starts 2015 | Add 2015–2017 (24 meetings, decision days from the Fed pages); `test_load_macro_calendar_repo_file` → 104 meetings, 8 per year 2015–2027 |
+| G2 | Release dates moved later (government shutdown) looked known from 1 January | (a) Schedule snapshots: on each ingest, a FRED release date after the fetch time that was not stored before is known from the fetch time; a stored future date missing from FRED's new list is `withdrawn_at` the fetch time (moved or cancelled); stored rows keep their first `available_at`. (b) `config/macro_calendar.yaml › schedule_disruptions`: release dates inside a listed window (2025-10-01 → 2025-12-31, the federal shutdown from 1 October 2025 and its rescheduled releases) are known only at their own release time (never upcoming), since the rescheduled dates cannot be verified. Tests `test_new_future_release_known_from_fetch`, `test_moved_release_withdrawn_at_fetch`, `test_disruption_window_known_only_at_release` |
+| G3 | Backtests had no upcoming earnings (no free history of announced dates) | Estimated next earnings date at query time from known actual events only: every known actual earnings date + 364 days (52 weeks) that is more than `estimate_min_gap_days` (20) after the symbol's latest known actual event; the earliest is the estimate (`source="estimated"`, `event_id="est-<SYM>-<date>"`, `time_of_day` of the event it is projected from, `available_at` = the latest known actual event's). Dropped when the symbol has a current scheduled (Yahoo) date. Config `data.events.estimate_earnings` (true), `estimate_min_gap_days` (20). Tests `test_estimated_earnings_from_last_year`, `test_estimate_skips_guidance_8k_cluster`, `test_estimate_yields_to_scheduled_date`, `test_estimate_uses_only_known_events` |
+| G4 | Ex-dividend dates were never upcoming | The Yahoo provider also returns its `Ex-Dividend Date` as a scheduled `ex_dividend` row (`event_id="yahoo-div-<SYM>-<date>"`); queries keep each symbol's latest snapshot per event type and drop it once the actual ex-date (corporate actions) is known. Tests `test_yahoo_returns_ex_dividend`, `test_scheduled_ex_dividend_upcoming_until_seen` |
+| G5 | The 2025 lexicon was applied to all years (17 words removed in 2020 were missing from pre-2020 text) | Lexicon file `word,category,added,removed` (years; old two-column files still load); `Lexicon.for_year(y)` keeps a word when `added ≤ y < removed`; articles are scored with the lexicon of their publish year. Tests `test_lexicon_for_year`, `test_removed_word_counts_before_removal`, `test_score_articles_uses_publish_year` |
+| G6 | Social posts were not stored (no history could build up) and their HTTP clients could not be closed | `social_posts` table (PK `post_id, created_at`, year partitions), `ingest_social_posts(lake, providers, symbols, start, end) -> SocialIngestReport(rows, providers_failed)` (a failing provider is recorded, the others still run), `Social(lake, cfg).evidence(symbol, as_of, lookback_days=None, limit=None)`; providers get `close()` and context-manager support (closing only a client they created). Tests `test_ingest_social_posts_roundtrip`, `test_failing_provider_recorded`, `test_social_reader_pit`, `test_provider_close_only_own_client` |
+| G7 | The Yahoo calendar retried programming errors as if Yahoo were down | Only errors other than `TypeError`, `AttributeError`, `NameError`, `AssertionError` are retried; those propagate at once. Test `test_yahoo_programming_error_not_retried` |
+
+**Kept as documented limits (no free source or a method the brief fixes):** earnings known at the 8-K acceptance (not the press release); scheduled macro dates of past years known from 1 January (FRED keeps no schedule history; the snapshots fix it going forward); estimated earnings dates are estimates (marked); the brief's market-adjusted reaction model (beta 1); LM word coverage ("beats", "surge" neutral); social APIs serve recent posts only (history builds from stored snapshots on).
+
+### Addendum tasks (test-first; tick after the tests ran and passed)
+- [x] A1 G1 + G2: YAML 2015–2017 and `schedule_disruptions`; snapshot merge in `ingest_macro_calendar`
+- [x] A2 G3 + G4: estimated earnings and scheduled ex-dividend events
+- [x] A3 G5: point-in-time lexicon
+- [x] A4 G6: stored social posts and closable providers
+- [x] A5 G7: Yahoo retry breadth
+- [ ] A6 Full verification, records, commit `stage-12: close remaining gaps`, merge, merged-main checks

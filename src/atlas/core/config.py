@@ -516,7 +516,10 @@ class EventsConfig(_Frozen):
     on or after `scheduled_date - scheduled_match_days` (calendar days) is known. Reactions span
     `reaction_days` sessions from the reaction session and are measured against
     `reaction_benchmark`. `horizon_days` (calendar days after the as-of day) and `past_n`
-    (events returned) are the query defaults.
+    (events returned) are the query defaults. With `estimate_earnings`, a symbol without a
+    current scheduled date gets an estimated next earnings date: a known actual earnings date
+    plus 52 weeks that falls more than `estimate_min_gap_days` calendar days after its latest
+    known actual event.
     """
 
     macro_calendar_file: Path = Path("config/macro_calendar.yaml")
@@ -531,6 +534,8 @@ class EventsConfig(_Frozen):
     reaction_benchmark: str = "SPY"
     horizon_days: Annotated[int, Field(ge=1)] = 14
     past_n: Annotated[int, Field(ge=1)] = 8
+    estimate_earnings: bool = True
+    estimate_min_gap_days: Annotated[int, Field(ge=1)] = 20
 
     @field_validator("reaction_benchmark", mode="after")
     @classmethod
@@ -546,7 +551,8 @@ class SocialConfig(_Frozen):
     for at most `max_items` posts (Reddit's maximum is 100) and sends `user_agent`; a failed
     request is retried `max_retries` times, waiting `backoff_seconds` (doubling), with
     `min_request_interval_seconds` between requests and `request_timeout_seconds` per request.
-    `lookback_days` is the query default (calendar days before the cutoff).
+    `lookback_days` (calendar days before the cutoff) and `limit` (posts returned) are the query
+    defaults.
     """
 
     enabled: bool = False
@@ -560,6 +566,7 @@ class SocialConfig(_Frozen):
     )
     max_items: Annotated[int, Field(ge=1, le=100)] = 100
     lookback_days: Annotated[int, Field(ge=1)] = 7
+    limit: Annotated[int, Field(ge=1)] = 50
     max_retries: Annotated[int, Field(ge=0)] = 3
     backoff_seconds: _NonNeg = 1.0
     min_request_interval_seconds: _NonNeg = 1.0

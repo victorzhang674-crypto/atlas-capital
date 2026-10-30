@@ -10,8 +10,12 @@ factors each February until 2024, payroll benchmark previews), which are not mar
 
 Point in time: a scheduled date of year Y is known from 00:00 New York on 1 January Y
 (`scheduled_available_at`); an unscheduled decision only at its statement time; a cancelled
-meeting is `withdrawn_at` its cancellation. FRED shows actual dates, so a release moved later
-(a government shutdown) looks known from 1 January: a documented limitation.
+meeting is `withdrawn_at` its cancellation. FRED keeps no history of its schedule, so release
+dates are also kept as snapshots: on each ingest (at `known_at`) a future date not stored before
+is known from `known_at`, and a stored future date that FRED no longer lists (moved or
+cancelled) is `withdrawn_at` `known_at`; a stored row keeps its first `available_at`. Past dates
+follow FRED's current list. A release dated inside a `schedule_disruptions` window (rescheduled
+dates whose announcement time cannot be verified) is known only at its own release time.
 """
 
 from collections.abc import Sequence
@@ -23,6 +27,7 @@ import pandas as pd
 from pydantic import AwareDatetime, Field, ValidationError, model_validator
 
 from atlas.core.calendar import MARKET_TZ
+from atlas.core.clock import get_clock
 from atlas.core.config import AtlasConfig, read_config_file
 from atlas.core.errors import ConfigError, DataError
 from atlas.core.logging import get_logger
@@ -85,11 +90,30 @@ class ReleaseDefinition(AtlasModel):
     description: str = ""
 
 
+class ScheduleDisruption(AtlasModel):
+    """Release dates from `start` to `end` (inclusive) were rescheduled at unknown times."""
+
+    start: date
+    end: date
+    reason: str = ""
+
+    @model_validator(mode="after")
+    def _order(self) -> Self:
+        if self.start > self.end:
+            raise ValueError(f"disruption start {self.start} is after its end {self.end}")
+        return self
+
+    def covers(self, day: date) -> bool:
+        """Whether `day` lies in the window."""
+        return self.start <= day <= self.end
+
+
 class MacroCalendar(AtlasModel):
     """The contents of `config/macro_calendar.yaml` (see the module docstring)."""
 
     fomc: FomcCalendar
     releases: FrozenMap[Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]*$")], ReleaseDefinition]
+    disruptions: tuple[ScheduleDisruption, ...] = ()
 
 
 class _FomcFile(AtlasModel):
@@ -123,6 +147,7 @@ def load_macro_calendar(path: Path) -> MacroCalendar:
                 cancelled=fomc.cancelled,
             ),
             releases=data.get("releases"),
+            disruptions=data.get("schedule_disruptions") or (),
         )
     except ValidationError as exc:
         problems = "; ".join(
@@ -161,10 +186,13 @@ def release_events(
     definition: ReleaseDefinition,
     release_dates: Sequence[date],
     initial_dates: Sequence[date],
+    *,
+    disruptions: Sequence[ScheduleDisruption] = (),
 ) -> pd.DataFrame:
     """Release events `name` (`event_type`) from FRED's `release_dates` of the release and the
-    `initial_dates` of its headline series (see the module docstring). No initial dates at all
-    raises `DataError` (the revision-only days could not be told apart)."""
+    `initial_dates` of its headline series (see the module docstring); a date inside one of
+    `disruptions` is known only at its release time. No initial dates at all raises `DataError`
+    (the revision-only days could not be told apart)."""
     if not initial_dates:
         raise DataError(f"{definition.headline_series}: no initial release dates")
     first = set(initial_dates)
@@ -172,10 +200,42 @@ def release_events(
     days = sorted({d for d in release_dates if d in first or d > last})
     if not days:
         return empty_macro_events()
-    rows = [
-        _row(name, d, _at(d, definition.release_time), RELEASE_SOURCE, scheduled_available_at(d))
-        for d in days
-    ]
+    rows = []
+    for d in days:
+        when = _at(d, definition.release_time)
+        disrupted = any(w.covers(d) for w in disruptions)
+        known = when if disrupted else scheduled_available_at(d)
+        rows.append(_row(name, d, when, RELEASE_SOURCE, known))
+    return normalize_macro_events(pd.DataFrame(rows))
+
+
+def merge_release_snapshot(
+    stored: pd.DataFrame, fetched: pd.DataFrame, known_at: datetime
+) -> pd.DataFrame:
+    """Stored release rows updated with a fresh fetch made at `known_at` (see the module
+    docstring): stored rows keep their first `available_at`; a fetched future date not stored
+    before is known from `known_at` at the earliest; a stored future date missing from the fetch
+    is `withdrawn_at` `known_at` (unless already withdrawn); past dates follow the fetch."""
+    cutoff = pd.Timestamp(known_at)
+    previous = stored.set_index("event_id")
+    rows = []
+    for row in fetched.to_dict("records"):
+        old = previous.loc[row["event_id"]] if row["event_id"] in previous.index else None
+        if old is not None and pd.isna(old["withdrawn_at"]):
+            row["available_at"] = old["available_at"]
+        elif row["event_time"] > cutoff:
+            row["available_at"] = max(pd.Timestamp(row["available_at"]), cutoff)
+        rows.append(row)
+    fetched_ids = set(fetched["event_id"])
+    for event_id, old in previous.iterrows():
+        if event_id in fetched_ids or old["event_time"] <= cutoff:
+            continue
+        gone = old.to_dict() | {"event_id": event_id}
+        if pd.isna(gone["withdrawn_at"]):
+            gone["withdrawn_at"] = cutoff
+        rows.append(gone)
+    if not rows:
+        return empty_macro_events()
     return normalize_macro_events(pd.DataFrame(rows))
 
 
@@ -197,6 +257,7 @@ def ingest_macro_calendar(
     *,
     config: AtlasConfig | None = None,
     refresh: bool = True,
+    known_at: datetime | None = None,
 ) -> int:
     """Rebuild the `macro_events` table; returns the number of rows rebuilt.
 
@@ -204,10 +265,14 @@ def ingest_macro_calendar(
     working directory; `config` defaults to `AtlasConfig()`). With a `client`, each release's
     dates from `history_start` on are fetched, with the headline series' first releases from a
     year earlier (so January's release of December data is recognised); without one, the
-    release rows already stored are kept and a warning is logged. The rows of every source that
-    was rebuilt replace that source's stored rows, so a moved date does not linger. A FRED
-    `DataError` propagates before anything is written (fail safe).
+    release rows already stored are kept and a warning is logged. FOMC rows replace the stored
+    ones; release rows are merged with the stored ones as a snapshot taken at `known_at` (aware;
+    default `get_clock().now()`, see `merge_release_snapshot`). A FRED `DataError` propagates
+    before anything is written (fail safe).
     """
+    when = known_at if known_at is not None else get_clock().now()
+    if when.utcoffset() is None:
+        raise ValueError(f"naive datetime {when!r}; pass a timezone-aware datetime")
     cfg = config if config is not None else AtlasConfig()
     settings = cfg.data.events
     calendar = load_macro_calendar(settings.macro_calendar_file)
@@ -225,13 +290,21 @@ def ingest_macro_calendar(
             initial = client.initial_release_dates(
                 definition.headline_series, observation_start=first_obs, refresh=refresh
             )
-            frames.append(release_events(name, definition, dates, initial))
+            frames.append(
+                release_events(name, definition, dates, initial, disruptions=calendar.disruptions)
+            )
         sources.add(RELEASE_SOURCE)
-    rebuilt = normalize_macro_events(pd.concat(frames, ignore_index=True))
     kept = (
         lake.read_table(MACRO_EVENTS.name)
         if lake.has_table(MACRO_EVENTS.name)
         else empty_macro_events()
+    )
+    if RELEASE_SOURCE in sources:
+        fetched = normalize_macro_events(pd.concat(frames[1:], ignore_index=True))
+        stored = kept.loc[kept["source"] == RELEASE_SOURCE]
+        frames = [frames[0], merge_release_snapshot(stored, fetched, when)]
+    rebuilt = normalize_macro_events(
+        pd.concat([f for f in frames if not f.empty], ignore_index=True)
     )
     kept = kept.loc[~kept["source"].isin(sorted(sources))]
     table = pd.concat([df for df in (kept, rebuilt) if not df.empty], ignore_index=True)
@@ -247,10 +320,12 @@ __all__ = [
     "FomcCalendar",
     "MacroCalendar",
     "ReleaseDefinition",
+    "ScheduleDisruption",
     "UnscheduledMeeting",
     "fomc_events",
     "ingest_macro_calendar",
     "load_macro_calendar",
+    "merge_release_snapshot",
     "release_events",
     "scheduled_available_at",
 ]

@@ -1,6 +1,6 @@
 """Stage 12 Task 10: optional StockTwits / Reddit posts behind a flag (off by default)."""
 
-from datetime import date
+from datetime import date, datetime
 
 import httpx
 import pandas as pd
@@ -11,12 +11,16 @@ from sentiment_helpers import FIXTURES, utc
 from atlas.core.config import AtlasConfig, SocialConfig
 from atlas.core.errors import DataError, LookAheadError
 from atlas.core.pit import AsOf
+from atlas.core.storage import Lake
 from atlas.data.sentiment.social import (
     POST_COLUMNS,
+    SOCIAL_POSTS,
     RedditProvider,
+    Social,
     SocialProvider,
     StockTwitsProvider,
     build_social_providers,
+    ingest_social_posts,
     social_evidence,
 )
 
@@ -172,3 +176,74 @@ def test_social_evidence_guard(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("atlas.data.sentiment.social.pit_filter", lambda df, a, *x: df.copy())
     with pytest.raises(LookAheadError):
         social_evidence(_posts(), AsOf.for_session(date(2024, 3, 8)), lookback_days=7, limit=10)
+
+
+# --- gap-closing follow-up: stored posts and closable providers ---------------------------------
+
+
+class FakeSocial:
+    """A `SocialProvider` serving `posts` (or raising `error`)."""
+
+    def __init__(self, name: str, posts: pd.DataFrame, error: Exception | None = None) -> None:
+        self.name = name
+        self.posts = posts
+        self.error = error
+
+    def fetch_posts(self, symbol: str, start: datetime, end: datetime) -> pd.DataFrame:
+        if self.error is not None:
+            raise self.error
+        inside = (self.posts["created_at"] >= start) & (self.posts["created_at"] < end)
+        return self.posts.loc[inside & (self.posts["symbol"] == symbol)]
+
+
+def test_ingest_social_posts_roundtrip(tmp_lake: Lake) -> None:
+    report = ingest_social_posts(
+        tmp_lake, [FakeSocial("stocktwits", _posts())], ["AAPL"], utc(2024, 3, 1), utc(2024, 3, 9)
+    )
+    assert report.rows == 3 and report.providers_failed == ()
+    stored = tmp_lake.read_table(SOCIAL_POSTS.name)
+    assert sorted(stored["post_id"]) == ["reddit-a", "stocktwits-1", "stocktwits-2"]
+    again = ingest_social_posts(
+        tmp_lake, [FakeSocial("stocktwits", _posts())], ["AAPL"], utc(2024, 3, 1), utc(2024, 3, 9)
+    )
+    assert again.rows == 3 and len(tmp_lake.read_table(SOCIAL_POSTS.name)) == 3  # idempotent
+
+
+def test_failing_provider_recorded(tmp_lake: Lake) -> None:
+    providers = [
+        FakeSocial("stocktwits", _posts(), error=DataError("stocktwits is down")),
+        FakeSocial("reddit", _posts()),
+    ]
+    report = ingest_social_posts(tmp_lake, providers, ["AAPL"], utc(2024, 3, 1), utc(2024, 3, 9))
+    assert report.providers_failed == ("stocktwits",) and report.rows == 3
+    assert "down" in report.failure_reasons["stocktwits"]
+
+
+def test_social_reader_pit(tmp_lake: Lake) -> None:
+    ingest_social_posts(
+        tmp_lake, [FakeSocial("stocktwits", _posts())], ["AAPL"], utc(2024, 2, 1), utc(2024, 3, 9)
+    )
+    reader = Social(tmp_lake)
+    got = reader.evidence("AAPL", date(2024, 3, 8))
+    assert [e.id for e in got] == ["social:stocktwits-1", "social:reddit-a"]
+    assert reader.evidence("MSFT", date(2024, 3, 8)) == []
+    assert len(reader.evidence("AAPL", date(2024, 3, 8), lookback_days=30)) == 3
+    assert Social(Lake(tmp_lake.root.parent / "empty")).evidence("AAPL", date(2024, 3, 8)) == []
+
+
+def test_social_reader_guard(tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch) -> None:
+    ingest_social_posts(
+        tmp_lake, [FakeSocial("stocktwits", _posts())], ["AAPL"], utc(2024, 2, 1), utc(2024, 3, 9)
+    )
+    monkeypatch.setattr("atlas.data.sentiment.social.pit_filter", lambda df, a, *x: df.copy())
+    with pytest.raises(LookAheadError):
+        Social(tmp_lake).evidence("AAPL", date(2024, 3, 8))
+
+
+def test_provider_close_only_own_client() -> None:
+    with httpx.Client() as http:
+        StockTwitsProvider(http=http, sleep=NoSleep()).close()
+        assert not http.is_closed  # a client passed in belongs to the caller
+    with RedditProvider(sleep=NoSleep()) as provider:
+        own = provider._http
+    assert own.is_closed

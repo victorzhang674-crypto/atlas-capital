@@ -1,0 +1,3 @@
+checked 10 files
+none missing
+exit 0

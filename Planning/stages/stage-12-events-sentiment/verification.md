@@ -30,4 +30,24 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
   - [x] In scope also: dividend ex-dates as events (`test_past_events_newest_first_n`, `test_dividend_events_frame`); optional Reddit/StockTwits behind a flag, off by default, `Evidence` output (`test_disabled_by_default`, `test_enabled_builds_both`, `test_social_evidence_pit_and_ids`)
 - Waivers: none
 
+#### Verification evidence — Stage 12 gap-closing follow-up — 2026-10-29
+Owner's request: "can you fix the remaining gaps and limitations and complete the stage?" (plan addendum G1–G7).
+- Commands run (this chat):
+  - `uv run pytest -q` → 1396 passed, 0 failed, 11 deselected (live) · raw: [artifacts/pytest-gaps.txt](artifacts/pytest-gaps.txt)
+  - `uv run ruff check .` → All checks passed! · `uv run ruff format --check .` → 174 files already formatted · `uv run mypy src/atlas` → no issues in 79 source files · raw: [ruff-check-gaps.txt](artifacts/ruff-check-gaps.txt), [ruff-format-gaps.txt](artifacts/ruff-format-gaps.txt), [mypy-gaps.txt](artifacts/mypy-gaps.txt)
+  - Brief's Verify with `-v -W error` → 183 passed, 4 deselected · raw: [artifacts/verify-brief-gaps.txt](artifacts/verify-brief-gaps.txt)
+  - `make check` → exit 0, 1396 passed · raw: [artifacts/make-check-gaps.txt](artifacts/make-check-gaps.txt)
+  - Coverage of `atlas.data.events` + `atlas.data.sentiment` → 96% (1139 statements) · dead proxies → 183 passed (no network) · docstrings → none missing · raw: [coverage-gaps.txt](artifacts/coverage-gaps.txt), [no-network-gaps.txt](artifacts/no-network-gaps.txt), [docstrings-gaps.txt](artifacts/docstrings-gaps.txt)
+  - `-m live` → 4 passed (EDGAR, FRED, Yahoo with event types, LM download) · raw: [artifacts/live-tests-gaps.txt](artifacts/live-tests-gaps.txt)
+  - Smoke run on real sources → estimated AAPL dates 2024-02-01, 2024-05-02, 2025-10-30 (the real 8-Ks: same days); no CPI/NFP upcoming inside the 2025 shutdown window; 2015 FOMC covered (104 + 2 FOMC events, 392 macro rows); BENEFIT positive in 2019, not 2021; lexicon file in the year-aware format · raw: [artifacts/smoke-output-gaps.txt](artifacts/smoke-output-gaps.txt)
+- Gaps closed, each with its evidence:
+  - [x] G1 FOMC 2015–2017 — `test_load_macro_calendar_repo_file` (104 meetings, 8 a year 2015–2027)
+  - [x] G2 schedule point in time — `test_new_future_release_known_from_fetch`, `test_moved_release_withdrawn_at_fetch`, `test_past_release_dropped_by_fred_is_removed`, `test_disruption_window_known_only_at_release`, `test_ingest_uses_clock_by_default`
+  - [x] G3 estimated earnings dates — `test_estimated_earnings_from_last_year`, `test_estimate_skips_guidance_8k_cluster`, `test_estimate_yields_to_scheduled_date`, `test_estimate_uses_only_known_events`, `test_estimates_can_be_switched_off`
+  - [x] G4 scheduled ex-dividends — `test_yahoo_returns_ex_dividend`, `test_ingest_upcoming_stores_ex_dividend`, `test_scheduled_ex_dividend_upcoming_until_seen`
+  - [x] G5 point-in-time lexicon — `test_lexicon_for_year`, `test_removed_word_counts_before_removal`, `test_score_articles_uses_publish_year`, `test_load_lexicon_two_columns`
+  - [x] G6 stored social posts, closable providers — `test_ingest_social_posts_roundtrip`, `test_failing_provider_recorded`, `test_social_reader_pit`, `test_social_reader_guard`, `test_provider_close_only_own_client`
+  - [x] G7 Yahoo retry breadth — `test_yahoo_programming_error_not_retried`
+- The two acceptance criteria above still hold (all their tests passed in these runs). Waivers: none.
+
 **Result:** ALL CRITERIA VERIFIED

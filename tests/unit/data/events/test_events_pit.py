@@ -284,3 +284,88 @@ def test_frame_level_functions(tmp_lake: Lake) -> None:
     point = AsOf.for_session(date(2023, 8, 4))
     assert past_events(view, "AAPL", point, 5)["event_id"].tolist() == [EARNINGS["event_id"]]
     assert upcoming_events(view, point, 14, scheduled_match_days=10).empty
+
+
+# --- gap-closing follow-up: estimated earnings dates and scheduled ex-dividends ----------------
+
+
+def _actual(day: date, hour: int = 20) -> dict[str, Any]:
+    """An actual AAPL earnings 8-K accepted at `hour`:30 UTC on `day`."""
+    when = utc(day.year, day.month, day.day, hour, 30)
+    return event_row(event_id=f"sec-{day.isoformat()}", event_date=day, event_time=when,
+                     time_of_day="AMC" if hour >= 20 else "BMO", available_at=when)  # fmt: skip
+
+
+AAPL_2023 = [date(2023, 2, 2), date(2023, 5, 4), date(2023, 8, 3), date(2023, 11, 2),
+             date(2024, 2, 1)]  # fmt: skip
+
+
+def test_estimated_earnings_from_last_year(tmp_lake: Lake) -> None:
+    reader = _lake(tmp_lake, events=_events(*(_actual(d) for d in AAPL_2023)))
+    out = reader.upcoming(date(2024, 4, 20), horizon_days=14)
+    assert out["event_id"].tolist() == ["est-AAPL-2024-05-02"]  # 2023-05-04 + 52 weeks
+    row = out.iloc[0]
+    assert (row["source"], row["event_type"], row["time_of_day"]) == (
+        "estimated",
+        "earnings",
+        "AMC",
+    )
+    assert pd.isna(row["event_time"])
+    assert row["available_at"].to_pydatetime() == utc(2024, 2, 1, 20, 30)  # the last known 8-K
+    assert reader.past("AAPL", date(2024, 4, 20))["source"].tolist().count("estimated") == 0
+
+
+def test_estimate_skips_guidance_8k_cluster(tmp_lake: Lake) -> None:
+    days = [
+        date(2018, 2, 1),
+        date(2018, 5, 1),
+        date(2018, 7, 31),
+        date(2018, 11, 1),
+        date(2019, 1, 2),
+    ]  # fmt: skip  (2019-01-02: revenue warning 8-K item 2.02)
+    reader = _lake(tmp_lake, events=_events(*(_actual(d) for d in days)))
+    out = reader.upcoming(date(2019, 1, 10), horizon_days=30)
+    assert out["event_id"].tolist() == ["est-AAPL-2019-01-31"]  # the real report: 2019-01-29
+
+
+def test_estimate_yields_to_scheduled_date(tmp_lake: Lake) -> None:
+    scheduled = event_row(event_id="yahoo-AAPL-2024-05-02", event_date=date(2024, 5, 2),
+                          event_time=None, time_of_day="unknown", source="yahoo",
+                          available_at=utc(2024, 4, 5, 12))  # fmt: skip
+    reader = _lake(tmp_lake, events=_events(*(_actual(d) for d in AAPL_2023), scheduled))
+    assert reader.upcoming(date(2024, 4, 20))["event_id"].tolist() == ["yahoo-AAPL-2024-05-02"]
+    assert reader.upcoming(date(2024, 4, 1))["event_id"].tolist() == []  # estimate beyond 14 d
+    early = reader.upcoming(date(2024, 4, 1), horizon_days=40)["event_id"].tolist()
+    assert early == ["est-AAPL-2024-05-02"]  # the Yahoo snapshot is not known yet
+
+
+def test_estimate_uses_only_known_events(tmp_lake: Lake) -> None:
+    reader = _lake(tmp_lake, events=_events(*(_actual(d) for d in AAPL_2023)))
+    out = reader.upcoming(date(2024, 1, 25), horizon_days=14)  # before the 2024-02-01 8-K
+    assert out["event_id"].tolist() == ["est-AAPL-2024-02-01"]  # 2023-02-02 + 52 weeks
+    assert out.iloc[0]["available_at"].to_pydatetime() == utc(2023, 11, 2, 20, 30)
+
+
+def test_estimates_can_be_switched_off(tmp_lake: Lake) -> None:
+    view = _lake(tmp_lake, events=_events(*(_actual(d) for d in AAPL_2023))).view()
+    point = AsOf.for_session(date(2024, 4, 22))
+    assert upcoming_events(view, point, 14, scheduled_match_days=10).empty
+    with_estimates = upcoming_events(
+        view, point, 14, scheduled_match_days=10, estimate_min_gap_days=20
+    )
+    assert with_estimates["event_id"].tolist() == ["est-AAPL-2024-05-02"]
+
+
+def test_scheduled_ex_dividend_upcoming_until_seen(tmp_lake: Lake) -> None:
+    scheduled = event_row(event_id="yahoo-div-AAPL-2023-08-14", event_type="ex_dividend",
+                          event_date=date(2023, 8, 14), event_time=None, time_of_day="unknown",
+                          source="yahoo", available_at=utc(2023, 8, 1, 12))  # fmt: skip
+    reader = _lake(
+        tmp_lake,
+        events=_events(scheduled),
+        actions=_dividend("AAPL", date(2023, 8, 11), 0.24),
+    )
+    ahead = reader.upcoming(date(2023, 8, 7))
+    assert ahead["event_id"].tolist() == ["yahoo-div-AAPL-2023-08-14"]
+    assert ahead.iloc[0]["event_type"] == "ex_dividend"
+    assert reader.upcoming(date(2023, 8, 14)).empty  # the actual ex-date 08-11 was seen

@@ -7,10 +7,12 @@ row is known at `as_of` iff `available_at < as_of.cutoff` (`pit_filter`, checked
 `assert_no_lookahead`) and it was not withdrawn before the cutoff.
 
 - `upcoming_events`: known events dated from `as_of.day` to `as_of.day + horizon_days`
-  (calendar days, inclusive) that have not happened before the cutoff. Scheduled earnings
-  dates (`source` `yahoo`) come from each symbol's latest known snapshot only, and are dropped
-  once an actual earnings event of the symbol dated on or after `date - scheduled_match_days`
-  is known (it already happened, possibly early).
+  (calendar days, inclusive) that have not happened before the cutoff. Scheduled earnings and
+  ex-dividend dates (`source` `yahoo`) come from the latest known snapshot of each symbol and
+  event type only, and are dropped once an actual event of that type (an earnings filing, a
+  seen ex-date) dated on or after `date - scheduled_match_days` is known. Optionally, a symbol
+  without a current scheduled earnings date gets an estimated one (`estimated_earnings`:
+  a past report date plus 52 weeks, from known events only; `source` `estimated`).
 - `past_events`: the symbol's known events that happened before the cutoff, scheduled rows
   excluded, newest first.
 - `known_reactions`: the symbol's earnings reactions known at `as_of`, newest first.
@@ -37,7 +39,10 @@ from atlas.data.events.reactions import EARNINGS_REACTIONS, REACTION_COLUMNS
 from atlas.data.prices import CORPORATE_ACTIONS
 
 SCHEDULED_SOURCES = ("yahoo",)
-"""Sources of scheduled (not yet happened) earnings dates."""
+"""Sources of scheduled (not yet happened) earnings and ex-dividend dates."""
+
+ESTIMATED_SOURCE = "estimated"
+"""`source` of an estimated next earnings date (computed at query time, never stored)."""
 
 
 def _positive(name: str, value: int) -> None:
@@ -119,34 +124,99 @@ def _known(view: pd.DataFrame, as_of: AsOf) -> pd.DataFrame:
     return first.drop_duplicates(subset=["event_id"], keep="first")
 
 
+def _is_actual(frame: pd.DataFrame) -> pd.Series:
+    """Rows recording an event that happened: an earnings filing or a seen ex-dividend."""
+    earnings = (frame["event_type"] == "earnings") & frame["source"].str.startswith("sec_")
+    dividend = (frame["event_type"] == "ex_dividend") & (frame["source"] == "corporate_actions")
+    return earnings | dividend
+
+
 def _current_schedule(known: pd.DataFrame, scheduled_match_days: int) -> pd.DataFrame:
-    """`known` with scheduled rows reduced to each symbol's latest snapshot, minus those an
-    actual earnings event already covers."""
+    """`known` with scheduled rows reduced to the latest snapshot of each symbol and event
+    type, minus those an actual event of the same type already covers."""
     is_scheduled = known["source"].isin(SCHEDULED_SOURCES)
     scheduled = known.loc[is_scheduled]
     if scheduled.empty:
         return known
-    latest = scheduled.groupby("symbol")[AVAILABLE_AT].transform("max")
+    latest = scheduled.groupby(["symbol", "event_type"])[AVAILABLE_AT].transform("max")
     scheduled = scheduled.loc[scheduled[AVAILABLE_AT] == latest]
-    actual = known.loc[(known["event_type"] == "earnings") & known["source"].str.startswith("sec_")]
-    last_actual = actual.groupby("symbol")["event_date"].max().to_dict()
+    actual = known.loc[_is_actual(known)]
+    last_actual = actual.groupby(["symbol", "event_type"])["event_date"].max().to_dict()
     window = timedelta(days=scheduled_match_days)
     covered = [
-        s in last_actual and last_actual[s] >= d - window
-        for s, d in zip(scheduled["symbol"], scheduled["event_date"], strict=True)
+        (s, k) in last_actual and last_actual[(s, k)] >= d - window
+        for s, k, d in zip(
+            scheduled["symbol"], scheduled["event_type"], scheduled["event_date"], strict=True
+        )
     ]
     scheduled = scheduled.loc[[not c for c in covered]]
     return pd.concat([known.loc[~is_scheduled], scheduled])
 
 
+def estimated_earnings(known: pd.DataFrame, min_gap_days: int) -> pd.DataFrame:
+    """Estimated next earnings dates (event-view rows, `source` `estimated`) from the known
+    rows `known`: for each symbol without a current scheduled earnings date, the earliest
+    known actual earnings date plus 52 weeks that falls more than `min_gap_days` calendar days
+    after its latest known actual earnings event. The row takes the `time_of_day` of the event
+    it is projected from and the `available_at` of the latest actual event (it is computed only
+    from rows known by then)."""
+    actual = known.loc[_is_actual(known) & (known["event_type"] == "earnings")]
+    scheduled = set(
+        known.loc[known["source"].isin(SCHEDULED_SOURCES) & (known["event_type"] == "earnings"),
+                  "symbol"]
+    )  # fmt: skip
+    rows = []
+    for symbol, own in actual.groupby("symbol", sort=True):
+        if symbol in scheduled:
+            continue
+        latest = own.sort_values([AVAILABLE_AT, "event_id"]).iloc[-1]
+        floor = latest["event_date"] + timedelta(days=min_gap_days)
+        projected = own.assign(_next=[d + timedelta(weeks=52) for d in own["event_date"]])
+        projected = projected.loc[[n > floor for n in projected["_next"]]]
+        if projected.empty:
+            continue
+        source_row = projected.sort_values(["_next", "event_id"]).iloc[0]
+        day = source_row["_next"]
+        rows.append(
+            {
+                "event_id": f"est-{symbol}-{day.isoformat()}",
+                "symbol": symbol,
+                "event_type": "earnings",
+                "event_date": day,
+                "event_time": None,
+                "time_of_day": source_row["time_of_day"],
+                "source": ESTIMATED_SOURCE,
+                AVAILABLE_AT: latest[AVAILABLE_AT],
+                "withdrawn_at": None,
+            }
+        )
+    if not rows:
+        return _empty_view()
+    out = pd.DataFrame(rows, columns=list(EVENT_VIEW_COLUMNS))
+    for col in ("event_time", AVAILABLE_AT, "withdrawn_at"):
+        out[col] = _stamps(list(out[col]))
+    return out
+
+
 def upcoming_events(
-    view: pd.DataFrame, as_of: AsOf, horizon_days: int, *, scheduled_match_days: int
+    view: pd.DataFrame,
+    as_of: AsOf,
+    horizon_days: int,
+    *,
+    scheduled_match_days: int,
+    estimate_min_gap_days: int | None = None,
 ) -> pd.DataFrame:
     """Events expected from `as_of` to `horizon_days` calendar days after its day (see the
     module docstring), as `EVENT_COLUMNS`, sorted by date, time (none last), symbol (macro
-    first) and id. `scheduled_match_days` is in calendar days."""
+    first) and id. `scheduled_match_days` is in calendar days. With `estimate_min_gap_days`,
+    estimated earnings dates (`estimated_earnings`) are included."""
     _positive("horizon_days", horizon_days)
     known = _current_schedule(_known(view, as_of), scheduled_match_days)
+    if estimate_min_gap_days is not None:
+        _positive("estimate_min_gap_days", estimate_min_gap_days)
+        estimates = estimated_earnings(known, estimate_min_gap_days)
+        if not estimates.empty:
+            known = pd.concat([known, estimates], ignore_index=True)
     end = as_of.day + timedelta(days=horizon_days)
     in_window = known["event_date"].map(lambda d: as_of.day <= d <= end).astype(bool)
     not_yet = known["event_time"].isna() | (known["event_time"] >= pd.Timestamp(as_of.cutoff))
@@ -241,6 +311,9 @@ class Events:
             point,
             horizon,
             scheduled_match_days=self._settings.scheduled_match_days,
+            estimate_min_gap_days=(
+                self._settings.estimate_min_gap_days if self._settings.estimate_earnings else None
+            ),
         )
 
     def past(self, symbol: str, as_of: date | AsOf, n: int | None = None) -> pd.DataFrame:

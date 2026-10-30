@@ -8,10 +8,11 @@ report itself). The event's time and `available_at` are the filing's EDGAR accep
 press release may come out minutes earlier, so the market never knows the event early here.
 Filings without an acceptance time are skipped (counted, never guessed).
 
-Scheduled (upcoming) dates come from an optional `EarningsCalendarProvider` (Yahoo by
-default). A snapshot's rows are known from the moment it was taken (`known_at`), carry no time
-(`event_time` NaT, `time_of_day` `unknown`) and use `source="yahoo"`; every snapshot is kept, so
-the first knowledge of a date is never moved by a later fetch.
+Scheduled (upcoming) earnings and ex-dividend dates come from an optional
+`EarningsCalendarProvider` (Yahoo by default). A snapshot's rows are known from the moment it
+was taken (`known_at`), carry no time (`event_time` NaT, `time_of_day` `unknown`) and use
+`source="yahoo"`; every snapshot is kept, so the first knowledge of a date is never moved by a
+later fetch.
 """
 
 import time
@@ -260,28 +261,39 @@ def ingest_earnings(
 # --- scheduled (upcoming) dates --------------------------------------------------------------
 
 CalendarFn = Callable[[str], Mapping[str, Any]]
-"""`vendor symbol -> calendar mapping` holding `"Earnings Date": [date, ...]` (yfinance's
-`Ticker.calendar`)."""
+"""`vendor symbol -> calendar mapping` holding `"Earnings Date": [date, ...]` and
+`"Ex-Dividend Date": date` (yfinance's `Ticker.calendar`)."""
+
+SCHEDULED_COLUMNS: Final = ("symbol", "event_type", "event_date")
+"""Columns of `EarningsCalendarProvider.fetch_upcoming`."""
+
+PROGRAMMING_ERRORS: Final = (TypeError, AttributeError, NameError, AssertionError)
+"""Errors that mean a bug, not an outage: raised at once, never retried."""
+
+
+class _VendorError(Exception):
+    """Any other failure inside a calendar function: retried."""
 
 
 @runtime_checkable
 class EarningsCalendarProvider(Protocol):
-    """A source of scheduled earnings dates."""
+    """A source of scheduled corporate event dates (earnings, ex-dividend)."""
 
     name: str
 
     def fetch_upcoming(self, symbols: Sequence[str]) -> pd.DataFrame:
-        """The next scheduled earnings date of each of `symbols` that has one, as a frame with
-        columns `symbol` (canonical) and `event_date` (`date`)."""
+        """The next scheduled dates of `symbols`, as a frame with columns `SCHEDULED_COLUMNS`:
+        `symbol` (canonical), `event_type` (`earnings` or `ex_dividend`), `event_date`."""
         ...
 
 
 class YahooEarningsCalendar:
     """`EarningsCalendarProvider` backed by Yahoo Finance (`yf.Ticker(s).calendar`).
 
-    When Yahoo gives a date range (two dates, not yet confirmed), the earliest is kept. A
-    symbol without a usable date is left out. Any error inside `calendar_fn` is retried
-    (`max_retries`, `backoff_seconds` from `cfg.data.events`), then raises `DataError`.
+    Gives each symbol's next earnings date (of a range of two unconfirmed dates, the earliest)
+    and its ex-dividend date; a symbol or field without a usable date is left out. A failure
+    inside `calendar_fn` is retried (`max_retries`, `backoff_seconds` from `cfg.data.events`),
+    then raises `DataError`; a programming error (`PROGRAMMING_ERRORS`) propagates at once.
     `calendar_fn` and `sleep` are injectable for tests.
     """
 
@@ -305,6 +317,14 @@ class YahooEarningsCalendar:
         self._sleep = sleep
         self._throttle = Throttle(self._policy.min_interval_seconds, sleep)
 
+    def _call(self, ticker: str) -> Mapping[str, Any]:
+        try:
+            return self._fn(ticker)
+        except PROGRAMMING_ERRORS:
+            raise
+        except Exception as exc:
+            raise _VendorError(f"{type(exc).__name__}: {exc}") from exc
+
     def fetch_upcoming(self, symbols: Sequence[str]) -> pd.DataFrame:
         """See `EarningsCalendarProvider.fetch_upcoming`."""
         rows: list[dict[str, Any]] = []
@@ -312,23 +332,25 @@ class YahooEarningsCalendar:
             self._throttle.wait()
             ticker = vendor_symbol(symbol)
             answer = call_with_retry(
-                lambda t=ticker: self._fn(t),  # type: ignore[misc]
+                lambda t=ticker: self._call(t),  # type: ignore[misc]
                 self._policy,
                 self._sleep,
                 f"yahoo calendar {ticker}",
-                (Exception,),
+                (_VendorError,),
                 event="events.request_failed",
             )
-            day = _earliest_date(
-                answer.get("Earnings Date") if isinstance(answer, Mapping) else None
-            )
-            if day is None:
+            found = answer if isinstance(answer, Mapping) else {}
+            earnings = _earliest_date(found.get("Earnings Date"))
+            dividend = _earliest_date([found.get("Ex-Dividend Date")])
+            if earnings is None and dividend is None:
                 _log.debug("events.no_scheduled_date", symbol=symbol)
-                continue
-            rows.append({"symbol": symbol, "event_date": day})
+            for kind, day in (("earnings", earnings), ("ex_dividend", dividend)):
+                if day is not None:
+                    rows.append({"symbol": symbol, "event_type": kind, "event_date": day})
         return pd.DataFrame(
             {
                 "symbol": pd.Series([r["symbol"] for r in rows], dtype="str"),
+                "event_type": pd.Series([r["event_type"] for r in rows], dtype="str"),
                 "event_date": pd.Series([r["event_date"] for r in rows], dtype="object"),
             }
         )
@@ -347,14 +369,21 @@ def _earliest_date(value: Any) -> date | None:
     return min(valid) if valid else None
 
 
-def ingest_upcoming_earnings(
+def _scheduled_id(provider: str, kind: str, symbol: str, day: date) -> str:
+    prefix = f"{provider}-div" if kind == "ex_dividend" else provider
+    return f"{prefix}-{symbol}-{day.isoformat()}"
+
+
+def ingest_upcoming_events(
     lake: Lake,
     provider: EarningsCalendarProvider,
     symbols: Sequence[str],
     *,
     known_at: datetime | None = None,
 ) -> int:
-    """Fetch scheduled earnings dates and upsert them into `events`; returns the rows written.
+    """Fetch scheduled earnings and ex-dividend dates and upsert them into `events`; returns the
+    rows written. Ids: `<provider>-<SYMBOL>-<date>` (earnings), `<provider>-div-<SYMBOL>-<date>`
+    (ex-dividend).
 
     `known_at` (aware; default `get_clock().now()`) is the snapshot's `available_at`. Dates
     before its New York date are dropped (stale). A provider `DataError` propagates (nothing
@@ -370,21 +399,27 @@ def ingest_upcoming_earnings(
         return 0
     rows = [
         {
-            "event_id": f"{provider.name}-{symbol}-{day.isoformat()}",
+            "event_id": _scheduled_id(provider.name, kind, symbol, day),
             "symbol": symbol,
-            "event_type": "earnings",
+            "event_type": kind,
             "event_date": day,
             "event_time": None,
             "time_of_day": "unknown",
             "source": provider.name,
             "available_at": when,
         }
-        for symbol, day in zip(found["symbol"], found["event_date"], strict=True)
+        for symbol, kind, day in zip(
+            found["symbol"], found["event_type"], found["event_date"], strict=True
+        )
     ]
     events = normalize_events(pd.DataFrame(rows))
     lake.write_table(EVENTS.name, events, mode="upsert", keys=list(EVENTS.primary_key))
     _log.info("events.ingest_upcoming", provider=provider.name, rows=len(events))
     return len(events)
+
+
+ingest_upcoming_earnings = ingest_upcoming_events
+"""The Stage 12 name of `ingest_upcoming_events` (it now also stores ex-dividend dates)."""
 
 
 def build_upcoming_provider(config: AtlasConfig) -> EarningsCalendarProvider | None:

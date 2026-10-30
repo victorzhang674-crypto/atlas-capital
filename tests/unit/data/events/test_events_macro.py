@@ -2,7 +2,7 @@
 
 import json
 import logging
-from datetime import date, time
+from datetime import date, datetime, time
 from pathlib import Path
 from typing import Any
 
@@ -70,8 +70,13 @@ def calendar() -> MacroCalendar:
 
 def test_load_macro_calendar_repo_file(calendar: MacroCalendar) -> None:
     years = [d.year for d in calendar.fomc.meetings]
-    assert {y: years.count(y) for y in set(years)} == {y: 8 for y in range(2018, 2028)}
-    assert len(calendar.fomc.meetings) == 80
+    assert {y: years.count(y) for y in set(years)} == {y: 8 for y in range(2015, 2028)}
+    assert len(calendar.fomc.meetings) == 104
+    assert date(2015, 12, 16) in calendar.fomc.meetings  # first hike since 2006
+    assert date(2017, 11, 1) in calendar.fomc.meetings
+    assert [(d.start, d.end) for d in calendar.disruptions] == [
+        (date(2025, 10, 1), date(2025, 12, 31))
+    ]
     assert date(2020, 3, 18) in calendar.fomc.meetings
     assert [c.date for c in calendar.fomc.cancelled] == [date(2020, 3, 18)]
     assert [(u.date, u.time) for u in calendar.fomc.unscheduled] == [
@@ -153,7 +158,7 @@ def test_fomc_event_times(calendar: MacroCalendar) -> None:
     cancelled = out.loc["fomc-2020-03-18"]
     assert cancelled["withdrawn_at"].to_pydatetime() == utc(2020, 3, 15, 21)
     assert cancelled["available_at"].to_pydatetime() == utc(2020, 1, 1, 5)
-    assert len(out) == 82
+    assert len(out) == 106
 
 
 # --- release events -----------------------------------------------------------------------------
@@ -270,8 +275,20 @@ def test_fred_calendar_key_never_logged(caplog: pytest.LogCaptureFixture) -> Non
 # --- ingestion ----------------------------------------------------------------------------------
 
 
-def _ingest(lake: Lake, client: FredClient | None) -> int:
-    return ingest_macro_calendar(lake, client)
+FETCH = utc(2026, 10, 29, 16)  # the recording day; FRED's last first release was 2026-10-14
+
+
+def _ingest(lake: Lake, client: FredClient | None, known_at: datetime = FETCH) -> int:
+    return ingest_macro_calendar(lake, client, known_at=known_at)
+
+
+def _serve_ingest(lake: Lake, known_at: datetime = FETCH, moved: Any = None) -> None:
+    with respx.mock() as mock:
+        if moved is not None:
+            mock.get(f"{API}/release/dates").respond(json=moved)
+        mock.get(url__startswith=API).mock(side_effect=serve_fred)
+        with httpx.Client() as http:
+            _ingest(lake, _client(http), known_at)
 
 
 def test_ingest_macro_calendar(tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -283,7 +300,7 @@ def test_ingest_macro_calendar(tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch) 
     stored = tmp_lake.read_table(MACRO_EVENTS.name)
     assert rows == len(stored)
     counts = stored["event_type"].value_counts().to_dict()
-    assert counts["fomc"] == 82
+    assert counts["fomc"] == 106
     assert counts["cpi"] == 143 and counts["nfp"] == 143
 
 
@@ -291,27 +308,89 @@ def test_ingest_without_client_keeps_fomc_only(
     tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.chdir(REPO_ROOT)
-    assert _ingest(tmp_lake, None) == 82
+    assert _ingest(tmp_lake, None) == 106
     assert set(tmp_lake.read_table(MACRO_EVENTS.name)["source"]) == {"fomc_calendar"}
 
 
-def test_reingest_replaces_rebuilt_sources(tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_reingest_keeps_releases_without_client(
+    tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.chdir(REPO_ROOT)
-    moved = {"count": 1, "release_dates": [{"release_id": 10, "date": "2030-01-15"}]}
-    with respx.mock() as mock:
-        mock.get(url__startswith=API).mock(side_effect=serve_fred)
-        with httpx.Client() as http:
-            _ingest(tmp_lake, _client(http))
+    _serve_ingest(tmp_lake)
     before = tmp_lake.read_table(MACRO_EVENTS.name)
-    assert _ingest(tmp_lake, None) == 82  # FOMC rebuilt; releases kept
+    assert _ingest(tmp_lake, None) == 106  # FOMC rebuilt; releases kept
     pd.testing.assert_frame_equal(tmp_lake.read_table(MACRO_EVENTS.name), before)
-    with respx.mock() as mock:
-        mock.get(f"{API}/release/dates").respond(json=moved)
-        mock.get(f"{API}/series/observations").mock(side_effect=serve_fred)
-        with httpx.Client() as http:
-            _ingest(tmp_lake, _client(http))
-    cpi = tmp_lake.read_table(MACRO_EVENTS.name, filters=[("event_type", "=", "cpi")])
-    assert cpi["event_id"].tolist() == ["cpi-2030-01-15"]  # the old CPI rows are gone
+
+
+def _cpi(lake: Lake) -> pd.DataFrame:
+    return lake.read_table(MACRO_EVENTS.name, filters=[("event_type", "=", "cpi")]).set_index(
+        "event_id"
+    )
+
+
+def test_new_future_release_known_from_fetch(
+    tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(REPO_ROOT)
+    _serve_ingest(tmp_lake)
+    cpi = _cpi(tmp_lake)
+    assert cpi.loc["cpi-2026-11-10", "available_at"].to_pydatetime() == FETCH  # first seen now
+    assert cpi.loc["cpi-2026-10-14", "available_at"].to_pydatetime() == utc(2026, 1, 1, 5)
+    _serve_ingest(tmp_lake, known_at=utc(2026, 11, 2, 16))
+    again = _cpi(tmp_lake)
+    assert again.loc["cpi-2026-11-10", "available_at"].to_pydatetime() == FETCH  # first kept
+
+
+def test_moved_release_withdrawn_at_fetch(tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.chdir(REPO_ROOT)
+    _serve_ingest(tmp_lake)
+    later = utc(2026, 11, 2, 16)
+    rows = _json("release_dates_10.json")["release_dates"]
+    moved_rows = [r for r in rows if r["date"] != "2026-11-10"] + [
+        {"release_id": 10, "date": "2026-11-13"}
+    ]
+    _serve_ingest(tmp_lake, known_at=later,
+                  moved={"count": len(moved_rows), "release_dates": moved_rows})  # fmt: skip
+    cpi = _cpi(tmp_lake)
+    assert cpi.loc["cpi-2026-11-10", "withdrawn_at"].to_pydatetime() == later
+    assert cpi.loc["cpi-2026-11-13", "available_at"].to_pydatetime() == later
+    assert pd.isna(cpi.loc["cpi-2026-12-10", "withdrawn_at"])
+    assert cpi.loc["cpi-2024-01-11", "available_at"].to_pydatetime() == utc(2024, 1, 1, 5)
+
+
+def test_past_release_dropped_by_fred_is_removed(
+    tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(REPO_ROOT)
+    _serve_ingest(tmp_lake)
+    moved = {"count": 1, "release_dates": [{"release_id": 10, "date": "2030-01-15"}]}
+    _serve_ingest(tmp_lake, known_at=utc(2026, 11, 2, 16), moved=moved)
+    cpi = _cpi(tmp_lake)
+    assert "cpi-2024-01-11" not in cpi.index  # past dates follow FRED's current list
+    assert cpi.loc["cpi-2026-11-10", "withdrawn_at"].to_pydatetime() == utc(2026, 11, 2, 16)
+    # first seen 2026-11-02, but a 2030 date is known no earlier than 1 January 2030
+    assert cpi.loc["cpi-2030-01-15", "available_at"].to_pydatetime() == utc(2030, 1, 1, 5)
+
+
+def test_disruption_window_known_only_at_release(calendar: MacroCalendar) -> None:
+    cpi = release_events(
+        "cpi",
+        calendar.releases["cpi"],
+        _dates("release_dates_10.json"),
+        _initial("CPIAUCSL"),
+        disruptions=calendar.disruptions,
+    ).set_index("event_id")
+    inside = cpi.loc["cpi-2025-10-24"]
+    assert inside["available_at"] == inside["event_time"]  # rescheduled in the shutdown
+    before = cpi.loc["cpi-2025-09-11"]
+    assert before["available_at"].to_pydatetime() == utc(2025, 1, 1, 5)
+
+
+def test_ingest_uses_clock_by_default(
+    tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch, sim_clock: Any
+) -> None:
+    monkeypatch.chdir(REPO_ROOT)
+    assert ingest_macro_calendar(tmp_lake, None) == 106
 
 
 def test_ingest_fred_failure_writes_nothing(

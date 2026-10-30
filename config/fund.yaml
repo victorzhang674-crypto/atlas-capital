@@ -101,6 +101,8 @@ data:
     reaction_benchmark: SPY  # abnormal returns are measured against this symbol
     horizon_days: 14  # default window of upcoming events, calendar days after the as-of day
     past_n: 8  # default number of past events returned
+    estimate_earnings: true  # without a scheduled date, estimate the next earnings date (a past one + 52 weeks)
+    estimate_min_gap_days: 20  # an estimate must fall more than this many calendar days after the latest actual event
   # Numeric news sentiment (Stage 12). The lexicon is free for academic research only, so it is downloaded, not committed.
   sentiment:
     lexicon_file: data/reference/lm_lexicon.csv  # Loughran-McDonald word lists (word,category), relative to the repo root (gitignored)
@@ -119,6 +121,7 @@ data:
       reddit_subreddits: [wallstreetbets, stocks, investing]  # subreddits searched for the symbol
       max_items: 100  # posts asked per request; Reddit's maximum is 100
       lookback_days: 7  # default query window, calendar days before the cutoff
+      limit: 50  # default number of posts a query returns
       max_retries: 3  # retries after a failed request (transport error, HTTP 429 or 5xx)
       backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
       min_request_interval_seconds: 1.0  # rate limit: pause between requests, in seconds

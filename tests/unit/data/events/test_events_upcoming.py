@@ -18,6 +18,7 @@ from atlas.data.events.earnings import (
     YahooEarningsCalendar,
     build_upcoming_provider,
     ingest_upcoming_earnings,
+    ingest_upcoming_events,
 )
 
 
@@ -29,6 +30,7 @@ def _recorded() -> dict[str, dict[str, Any]]:
     for symbol, answer in raw.items():
         cal = dict(answer)
         cal["Earnings Date"] = [date.fromisoformat(d) for d in answer["Earnings Date"]]
+        cal["Ex-Dividend Date"] = date.fromisoformat(answer["Ex-Dividend Date"])
         out[symbol] = cal
     return out
 
@@ -60,12 +62,28 @@ def test_is_a_calendar_provider() -> None:
 
 def test_yahoo_parses_calendar() -> None:
     out = _provider(FakeCalendar(_recorded())).fetch_upcoming(["AAPL", "MSFT", "JPM"])
-    assert list(out.columns) == ["symbol", "event_date"]
-    assert dict(zip(out["symbol"], out["event_date"], strict=True)) == {
+    assert list(out.columns) == ["symbol", "event_type", "event_date"]
+    earnings = out.loc[out["event_type"] == "earnings"]
+    assert dict(zip(earnings["symbol"], earnings["event_date"], strict=True)) == {
         "AAPL": date(2026, 11, 2),
         "MSFT": date(2027, 1, 27),
         "JPM": date(2027, 1, 14),
     }
+
+
+def test_yahoo_returns_ex_dividend() -> None:
+    out = _provider(FakeCalendar(_recorded())).fetch_upcoming(["AAPL", "MSFT", "JPM"])
+    dividends = out.loc[out["event_type"] == "ex_dividend"]
+    assert dict(zip(dividends["symbol"], dividends["event_date"], strict=True)) == {
+        "AAPL": date(2026, 8, 9),
+        "MSFT": date(2026, 11, 18),
+        "JPM": date(2026, 10, 5),
+    }
+    only_div = FakeCalendar({"KO": {"Ex-Dividend Date": datetime(2026, 11, 30, 0, 0)}})
+    out = _provider(only_div).fetch_upcoming(["KO"])
+    assert out.to_dict("records") == [
+        {"symbol": "KO", "event_type": "ex_dividend", "event_date": date(2026, 11, 30)}
+    ]
 
 
 def test_yahoo_two_dates_keeps_earliest() -> None:
@@ -105,6 +123,19 @@ def test_yahoo_retries_then_data_error() -> None:
     assert sleep.calls == [1.0, 2.0, 4.0]
 
 
+def test_yahoo_programming_error_not_retried() -> None:
+    sleep = NoSleep()
+    calls: list[str] = []
+
+    def broken(symbol: str) -> Mapping[str, Any]:
+        calls.append(symbol)
+        raise TypeError("bug in the calendar function")
+
+    with pytest.raises(TypeError, match="bug"):
+        YahooEarningsCalendar(calendar_fn=broken, sleep=sleep).fetch_upcoming(["AAPL"])
+    assert calls == ["AAPL"] and sleep.calls == []
+
+
 def test_yahoo_rejects_bare_string() -> None:
     with pytest.raises(ValueError, match="sequence"):
         _provider(FakeCalendar({})).fetch_upcoming("AAPL")
@@ -130,6 +161,18 @@ def test_ingest_upcoming_keeps_each_snapshot(tmp_lake: Lake) -> None:
         utc(2024, 4, 1, 12),
         utc(2024, 4, 2, 12),
     ]
+
+
+def test_ingest_upcoming_stores_ex_dividend(tmp_lake: Lake) -> None:
+    fn = FakeCalendar(
+        {"AAPL": {"Earnings Date": [date(2024, 5, 2)], "Ex-Dividend Date": date(2024, 5, 10)}}
+    )
+    assert ingest_upcoming_events(tmp_lake, _provider(fn), ["AAPL"], known_at=utc(2024, 4, 1)) == 2
+    stored = tmp_lake.read_table(EVENTS.name).set_index("event_id")
+    row = stored.loc["yahoo-div-AAPL-2024-05-10"]
+    assert (row["event_type"], row["source"]) == ("ex_dividend", "yahoo")
+    assert stored.loc["yahoo-AAPL-2024-05-02", "event_type"] == "earnings"
+    assert ingest_upcoming_earnings is ingest_upcoming_events  # the Stage 12 name still works
 
 
 def test_ingest_upcoming_drops_past_dates(tmp_lake: Lake) -> None:

@@ -893,6 +893,7 @@ def test_events_config_defaults() -> None:
     assert cfg.scheduled_match_days == 10
     assert (cfg.reaction_days, cfg.reaction_benchmark) == (3, "SPY")
     assert (cfg.horizon_days, cfg.past_n) == (14, 8)
+    assert (cfg.estimate_earnings, cfg.estimate_min_gap_days) == (True, 20)
 
 
 def test_sentiment_config_defaults() -> None:
@@ -910,7 +911,7 @@ def test_sentiment_config_defaults() -> None:
     assert social.stocktwits_url == "https://api.stocktwits.com/api/2/streams/symbol"
     assert social.reddit_url == "https://www.reddit.com"
     assert social.reddit_subreddits == ("wallstreetbets", "stocks", "investing")
-    assert (social.max_items, social.lookback_days) == (100, 7)
+    assert (social.max_items, social.lookback_days, social.limit) == (100, 7, 50)
     assert (social.max_retries, social.backoff_seconds) == (3, 1.0)
     assert (social.min_request_interval_seconds, social.request_timeout_seconds) == (1.0, 30.0)
     assert social.user_agent == "AtlasCapital/0.1 (research and paper-trading simulator)"
@@ -940,6 +941,7 @@ def test_events_benchmark_normalised() -> None:
         ({"periodic_match_days": 0}, "periodic_match_days"),
         ({"scheduled_match_days": -1}, "scheduled_match_days"),
         ({"reaction_benchmark": "^GSPC"}, "invalid symbol"),
+        ({"estimate_min_gap_days": 0}, "estimate_min_gap_days"),
     ],
 )
 def test_events_config_rejects(values: dict[str, object], pattern: str) -> None:

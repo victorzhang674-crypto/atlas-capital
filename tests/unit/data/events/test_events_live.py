@@ -41,3 +41,4 @@ def test_live_fred_release_dates() -> None:
 def test_live_yahoo_calendar() -> None:
     out = YahooEarningsCalendar().fetch_upcoming(["AAPL", "MSFT"])
     assert set(out["symbol"]) <= {"AAPL", "MSFT"} and len(out) >= 1
+    assert set(out["event_type"]) <= {"earnings", "ex_dividend"}

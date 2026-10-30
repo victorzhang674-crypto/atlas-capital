@@ -24,10 +24,14 @@ from atlas.data.sentiment.lexicon import (
 )
 from atlas.data.sentiment.social import (
     POST_COLUMNS,
+    SOCIAL_POSTS,
     RedditProvider,
+    Social,
+    SocialIngestReport,
     SocialProvider,
     StockTwitsProvider,
     build_social_providers,
+    ingest_social_posts,
     social_evidence,
 )
 
@@ -37,10 +41,13 @@ __all__ = [
     "NEWS_SENTIMENT",
     "POST_COLUMNS",
     "SCORE_COLUMNS",
+    "SOCIAL_POSTS",
     "Lexicon",
     "RedditProvider",
     "Sentiment",
     "SentimentAggregate",
+    "Social",
+    "SocialIngestReport",
     "SocialProvider",
     "StockTwitsProvider",
     "TextSentiment",
@@ -49,6 +56,7 @@ __all__ = [
     "decayed_sentiment",
     "download_lm_lexicon",
     "ingest_news_sentiment",
+    "ingest_social_posts",
     "load_lexicon",
     "score_articles",
     "score_text",

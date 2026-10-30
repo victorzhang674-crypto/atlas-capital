@@ -6,13 +6,16 @@
 # known only at its statement time; a cancelled meeting stops being known at cancelled_at.
 
 # FOMC policy decisions. Source: federalreserve.gov fomccalendars.htm (2021-2027) and
-# fomchistorical2018/2019/2020.htm, checked 2026-10-29. Notation votes and conference calls
+# fomchistorical2015-2020.htm, checked 2026-10-29. Notation votes and conference calls
 # without a policy statement (2019-10-04, 2020-03-19/23/31, 2020-08-27, 2025-08-22) are not
 # meetings and are left out.
 fomc:
   statement_time: "14:00"  # policy statement release, America/New_York, on the meeting's last day
   # Scheduled meetings: the decision (last) day of each, by year.
   meetings:
+    2015: [2015-01-28, 2015-03-18, 2015-04-29, 2015-06-17, 2015-07-29, 2015-09-17, 2015-10-28, 2015-12-16]
+    2016: [2016-01-27, 2016-03-16, 2016-04-27, 2016-06-15, 2016-07-27, 2016-09-21, 2016-11-02, 2016-12-14]
+    2017: [2017-02-01, 2017-03-15, 2017-05-03, 2017-06-14, 2017-07-26, 2017-09-20, 2017-11-01, 2017-12-13]
     2018: [2018-01-31, 2018-03-21, 2018-05-02, 2018-06-13, 2018-08-01, 2018-09-26, 2018-11-08, 2018-12-19]
     2019: [2019-01-30, 2019-03-20, 2019-05-01, 2019-06-19, 2019-07-31, 2019-09-18, 2019-10-30, 2019-12-11]
     2020: [2020-01-29, 2020-03-18, 2020-04-29, 2020-06-10, 2020-07-29, 2020-09-16, 2020-11-05, 2020-12-16]
@@ -30,6 +33,12 @@ fomc:
   # Scheduled meetings that did not take place, with the instant the change became public.
   cancelled:
     - {date: 2020-03-18, cancelled_at: "2020-03-15T17:00:00-04:00"}  # replaced by the 2020-03-15 meeting
+
+# Periods in which the release schedule was disrupted and the rescheduled dates were announced
+# at times that cannot be verified here (BLS pages refuse automated clients). A release dated
+# inside a window is known only at its own release time, never in advance (fail safe).
+schedule_disruptions:
+  - {start: 2025-10-01, end: 2025-12-31, reason: "US federal government shutdown from 2025-10-01; BLS releases delayed, cancelled and rescheduled"}
 
 # Data releases whose dates come from the FRED release calendar (fred/release/dates). A release
 # date counts only if the headline series first published a month's value that day

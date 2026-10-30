@@ -3,16 +3,18 @@
 The Loughran-McDonald master dictionary (sraf.nd.edu; free for academic research, commercial
 licences on request, so it is downloaded into the gitignored lake, never committed) lists every
 word with, per sentiment category, the year it was added (> 0) or removed (< 0).
-`build_lm_lexicon` keeps the words currently in the `negative`, `positive` and `uncertainty`
-lists as a `word,category` table; `download_lm_lexicon` fetches the master dictionary and
-writes that table to `SentimentConfig.lexicon_file`.
+`build_lm_lexicon` keeps the words of the `negative`, `positive` and `uncertainty` lists, with
+the years they were added or removed, as a `word,category,added,removed` table;
+`download_lm_lexicon` fetches the master dictionary and writes that table to
+`SentimentConfig.lexicon_file`.
 
 Scoring (`score_text`): words are runs of ASCII letters, upper-cased. A positive word with one
 of NO, NOT, NONE, NEITHER, NEVER, NOBODY among the `negation_window` words before it is not
 counted (Loughran and McDonald 2011). `score = (pos - neg) / (pos + neg)` in [-1, 1], 0.0 when
 the text has neither; `pos`, `neg`, `uncertainty` and `words` are counts. A word may be in two
 lists (VOLATILITY is negative and uncertain) and counts in each. An article's text is its
-headline and summary.
+headline and summary, scored with the lists as they stood in its publish year (17 words left
+the lists in 2020; they still count in earlier news).
 """
 
 import hashlib
@@ -92,15 +94,39 @@ NEWS_SENTIMENT = DEFAULT_REGISTRY.register(
 """The curated `news_sentiment` table (registered in `DEFAULT_REGISTRY` on import)."""
 
 
+Span = tuple[str, str, int | None, int | None]
+"""`(word, category, added, removed)`: in the list from year `added` (`None`: from the start)
+until the year before `removed` (`None`: still in it)."""
+
+
 @dataclass(frozen=True)
 class Lexicon:
-    """Upper-case word sets per category; `version` identifies the word lists (the first 12
-    hex digits of the sha256 of the sorted `category,word` lines)."""
+    """Upper-case word sets per category, as the lists stand now; `version` identifies the word
+    lists (the first 12 hex digits of the sha256 of the sorted lines of the file). `spans`
+    records when each word was in its list, for `for_year`."""
 
     positive: frozenset[str]
     negative: frozenset[str]
     uncertainty: frozenset[str]
     version: str
+    spans: tuple[Span, ...] = ()
+
+    def for_year(self, year: int) -> "Lexicon":
+        """The lists as they stood in `year` (a word counts when `added <= year < removed`);
+        the lexicon itself when it has no year information."""
+        if not self.spans:
+            return self
+        sets: dict[str, set[str]] = {c: set() for c in CATEGORIES}
+        for word, category, added, removed in self.spans:
+            if (added is None or added <= year) and (removed is None or year < removed):
+                sets[category].add(word)
+        return Lexicon(
+            frozenset(sets["positive"]),
+            frozenset(sets["negative"]),
+            frozenset(sets["uncertainty"]),
+            self.version,
+            self.spans,
+        )
 
 
 class TextSentiment(NamedTuple):
@@ -114,19 +140,29 @@ class TextSentiment(NamedTuple):
 
 
 def build_lm_lexicon(master: pd.DataFrame) -> pd.DataFrame:
-    """The `word,category` table of the master dictionary `master` (columns `Word`,
-    `Negative`, `Positive`, `Uncertainty`): a word is in a category when its value there is
-    above 0. Sorted by category, then word. A missing column raises `DataError`."""
+    """The `word,category,added,removed` table of the master dictionary `master` (columns
+    `Word`, `Negative`, `Positive`, `Uncertainty`). A value above 0 is the year the word was
+    added to that category (`added`); below 0, minus the year it was removed (`removed`; it was
+    in the list before). Sorted by category, then word. A missing column raises `DataError`."""
     needed = ["Word", *_MASTER_COLUMNS.values()]
     missing = [c for c in needed if c not in master.columns]
     if missing:
         raise DataError(f"LM master dictionary lacks columns {missing}")
     parts = []
     for category, column in _MASTER_COLUMNS.items():
-        values = pd.to_numeric(master[column], errors="coerce").fillna(0)
-        words = master.loc[values > 0, "Word"].astype(str).str.strip().str.upper()
-        parts.append(pd.DataFrame({"word": words, "category": category}))
-    out = pd.concat(parts, ignore_index=True).drop_duplicates()
+        values = pd.to_numeric(master[column], errors="coerce").fillna(0).astype("int64")
+        listed = values != 0
+        parts.append(
+            pd.DataFrame(
+                {
+                    "word": master.loc[listed, "Word"].astype(str).str.strip().str.upper(),
+                    "category": category,
+                    "added": values[listed].where(values[listed] > 0).astype("Int64"),
+                    "removed": (-values[listed]).where(values[listed] < 0).astype("Int64"),
+                }
+            )
+        )
+    out = pd.concat(parts, ignore_index=True).drop_duplicates(subset=["word", "category"])
     out = out.loc[out["word"] != ""]
     return out.sort_values(["category", "word"], kind="stable").reset_index(drop=True)
 
@@ -163,21 +199,49 @@ def download_lm_lexicon(config: SentimentConfig, *, http: httpx.Client | None = 
 
 
 def load_lexicon(path: Path) -> Lexicon:
-    """The lexicon in `path` (`word,category`). A missing file, a missing column or an unknown
-    category raises `DataError` (a missing file names `download_lm_lexicon`)."""
+    """The lexicon in `path`: `word,category,added,removed` (years, blank when none) or the
+    older `word,category` (no year information). A missing file, other columns, an unknown
+    category or a bad year raises `DataError` (a missing file names `download_lm_lexicon`)."""
     if not path.is_file():
         raise DataError(f"{path}: lexicon not found; run download_lm_lexicon first")
     table = pd.read_csv(path, dtype=str, keep_default_na=False)
-    if list(table.columns) != ["word", "category"]:
-        raise DataError(f"{path}: expected columns word,category, got {list(table.columns)}")
+    columns = list(table.columns)
+    if columns not in (["word", "category"], ["word", "category", "added", "removed"]):
+        raise DataError(f"{path}: expected columns word,category[,added,removed], got {columns}")
     unknown = sorted(set(table["category"]) - set(CATEGORIES))
     if unknown:
         raise DataError(f"{path}: unknown categories {unknown}")
     words = table["word"].str.strip().str.upper()
-    sets = {c: frozenset(words[table["category"] == c]) for c in CATEGORIES}
-    lines = sorted(f"{c},{w}" for c, w in zip(table["category"], words, strict=True))
+    years = len(columns) == 4
+    try:
+        added = [_year(v) for v in table["added"]] if years else [None] * len(table)
+        removed = [_year(v) for v in table["removed"]] if years else [None] * len(table)
+    except ValueError as exc:
+        raise DataError(f"{path}: bad year ({exc})") from exc
+    spans = tuple(zip(words, table["category"], added, removed, strict=True))
+    current = {c: frozenset(w for w, k, _, r in spans if k == c and r is None) for c in CATEGORIES}
+    if years:
+        lines = sorted(f"{k},{w},{a or ''},{r or ''}" for w, k, a, r in spans)
+    else:
+        lines = sorted(f"{k},{w}" for w, k, _, _ in spans)
     version = hashlib.sha256("\n".join(lines).encode("utf-8")).hexdigest()[:12]
-    return Lexicon(sets["positive"], sets["negative"], sets["uncertainty"], version)
+    return Lexicon(
+        current["positive"],
+        current["negative"],
+        current["uncertainty"],
+        version,
+        spans if years else (),
+    )
+
+
+def _year(value: str) -> int | None:
+    """A year cell: blank → `None`; `2009` or `2009.0` (a pandas round trip) → 2009."""
+    if not value.strip():
+        return None
+    number = float(value)
+    if not number.is_integer():
+        raise ValueError(f"{value!r} is not a whole year")
+    return int(number)
 
 
 def tokenize(text: str) -> list[str]:
@@ -204,12 +268,18 @@ def score_articles(
     articles: pd.DataFrame, lexicon: Lexicon, settings: SentimentConfig | None = None
 ) -> pd.DataFrame:
     """`SCORE_COLUMNS` for each article of `articles` (Stage 11 article frame; headline plus
-    summary scored), in the order given."""
+    summary scored with the lexicon of the article's publish year, `Lexicon.for_year`), in the
+    order given."""
     cfg = settings if settings is not None else SentimentConfig()
-    scores = [
-        score_text(f"{h} {s}", lexicon, cfg.negation_window)
-        for h, s in zip(articles["headline"], articles["summary"], strict=True)
-    ]
+    by_year: dict[int, Lexicon] = {}
+    scores = []
+    for h, s, published in zip(
+        articles["headline"], articles["summary"], articles["published_at"], strict=True
+    ):
+        year = pd.Timestamp(published).year
+        if year not in by_year:
+            by_year[year] = lexicon.for_year(year)
+        scores.append(score_text(f"{h} {s}", by_year[year], cfg.negation_window))
     out = pd.DataFrame(
         {
             "article_id": articles["article_id"].astype("str").to_numpy(),
