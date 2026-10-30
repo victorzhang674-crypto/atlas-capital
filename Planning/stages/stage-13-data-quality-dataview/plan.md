@@ -124,4 +124,4 @@ Commands below are run as `UV_CACHE_DIR=$TMPDIR/uv-cache UV_NO_SYNC=1 uv run …
 - Files: `docs/data-limitations.md › Data quality and DataView (Stage 13)`, `Planning/PROGRESS.md`, stage `worklog.md`, `verification.md`, `artifacts/`
 - [x] Docstring check on the new modules (none missing)
 - [x] Full verification (`pytest -q`, ruff, format, mypy, brief's Verify, `-v -W error`, coverage, no-network run, `make check`); acceptance criteria one by one
-- [ ] Records, commit `stage-13: Data quality checks & DataView facade`, merge into `main`, merged-main checks, records-only follow-up commit
+- [x ] Records, commit `stage-13: Data quality checks & DataView facade`, merge into `main`, merged-main checks, records-only follow-up commit
