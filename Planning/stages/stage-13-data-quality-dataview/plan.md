@@ -139,4 +139,4 @@ Owner's request: "can you help me to audit this stage by comparing the work that
 - [x ] Time `_in_window` and the new-facts filter on 500 symbols before the change
 - [x ] Vectorise both; run `tests/unit/data/test_quality.py` and `tests/unit/data/test_view_pit.py` → PASS; time again
 - [x ] Full verification (`pytest -q`, ruff, format, mypy, brief's Verify, `make check`) → raw output in `artifacts/audit-*.txt`
-- [ ] Worklog, Decisions log, verification.md and PROGRESS.md entries; commit `stage-13: post-DONE audit fixes`; fast-forward `main`; merged-main checks; records-only commit `stage-13: audit merged-main records`; fast-forward `main`
+- [x ] Worklog, Decisions log, verification.md and PROGRESS.md entries; commit `stage-13: post-DONE audit fixes`; fast-forward `main`; merged-main checks; records-only commit `stage-13: audit merged-main records`; fast-forward `main`

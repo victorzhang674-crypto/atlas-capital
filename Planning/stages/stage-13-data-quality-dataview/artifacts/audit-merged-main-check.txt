@@ -1,0 +1,26 @@
+$ git rev-parse main main^{tree} claude/stage-13-plan-implement-834617^{tree}
+16de379c0e14172fbcf3819f2b665bfc6aa38e7a
+36deb8b31cb0ab47d4a2b7f085ec367591dda97f
+36deb8b31cb0ab47d4a2b7f085ec367591dda97f
+$ git status --short   (empty = clean)
+$ git branch --merged main | grep stage-13
++ claude/stage-13-plan-implement-834617
+$ git archive main | tar -x (checks run on the export, worktree venv, PYTHONPATH=export/src)
+$ python -c 'import atlas; print(atlas.__file__)'
+/tmp/claude-501/main-export-audit/src/atlas/__init__.py
+$ uv run pytest -q
+1569 passed, 11 deselected in 24.06s
+exit 0
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+179 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 81 source files
+uv run pytest -q
+1569 passed, 11 deselected in 22.97s
+exit 0
+$ uv run pytest tests/unit/data -q (brief's Verify)
+850 passed, 11 deselected in 17.69s
+exit 0
