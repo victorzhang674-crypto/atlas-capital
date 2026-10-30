@@ -220,7 +220,7 @@ def _sorted(bars: pd.DataFrame) -> pd.DataFrame:
 
 
 def _in_window(bars: pd.DataFrame, since: date) -> pd.DataFrame:
-    return _sorted(bars[bars["date"].map(lambda d: d >= since).astype(bool)])
+    return _sorted(bars[(bars["date"] >= since).to_numpy(dtype=bool)])
 
 
 def _fmt(value: float) -> str:
@@ -548,6 +548,13 @@ def check_return_outliers(
 _FACTS = "fundamentals_facts"
 
 
+def _known_since(facts: pd.DataFrame, since: date) -> pd.DataFrame:
+    """The rows of `facts` whose `available_at` falls on or after `since` in New York (at or
+    after 00:00 New York that day)."""
+    start = pd.Timestamp(datetime.combine(since, time(0), tzinfo=MARKET_TZ))
+    return facts[(facts[AVAILABLE_AT] >= start).to_numpy(dtype=bool)]
+
+
 def check_fundamentals_jumps(
     facts: pd.DataFrame,
     as_of: AsOf,
@@ -572,7 +579,7 @@ def check_fundamentals_jumps(
     found: dict[tuple[str, date], tuple[list[str], pd.Timestamp]] = {}
     for symbol, own in facts.groupby("symbol", sort=True):
         known = known_facts(own, as_of)
-        new = known[[market_date(t.to_pydatetime()) >= since for t in known[AVAILABLE_AT]]]
+        new = _known_since(known, since)
         new_tags = set(zip(new["taxonomy"], new["tag"], strict=True))
         for concept in concept_map.values():
             if not concept.tags() & new_tags:

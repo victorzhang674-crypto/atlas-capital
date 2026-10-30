@@ -125,3 +125,18 @@ Commands below are run as `UV_CACHE_DIR=$TMPDIR/uv-cache UV_NO_SYNC=1 uv run …
 - [x] Docstring check on the new modules (none missing)
 - [x] Full verification (`pytest -q`, ruff, format, mypy, brief's Verify, `-v -W error`, coverage, no-network run, `make check`); acceptance criteria one by one
 - [x ] Records, commit `stage-13: Data quality checks & DataView facade`, merge into `main`, merged-main checks, records-only follow-up commit
+
+## Addendum — post-DONE audit (2026-10-30)
+
+Owner's request: "can you help me to audit this stage by comparing the work that you have currently done with the plan you have made?", then "Yes, fix and record". The audit found every task, design decision, brief criterion and Definition-of-Done item met, plus four findings:
+
+- **A1 Two per-row Python loops** (protocol §4: vectorise; no Python loops over tickers × dates) in `src/atlas/data/quality.py`: `_in_window` filters bars with `Series.map(lambda d: d >= since)`, and `check_fundamentals_jumps` finds the facts known since the window start with a list comprehension of `market_date(...)`. Fix: a vectorised comparison of the `date` column, and of `available_at` with 00:00 New York of `since` (the same set: `market_date(t) >= since` ⇔ `t >= since 00:00 New York`). Behaviour is unchanged, so the existing tests are the guard (`test_missing_sessions_ignores_before_first_bar_and_outside_window`, `test_vendor_mix`, `test_ohlc_inconsistent_cases`, `test_fundamentals_jump_only_new_filings`, the whole leak suite); time the two before and after on 500 symbols.
+- **A2 Unlogged test rename:** the plan's `test_missing_sessions_ignores_before_first_bar` (Task 3) was written as `test_missing_sessions_ignores_before_first_bar_and_outside_window` (it also covers a gap before the window). Record it.
+- **A3 Stale plan text:** interpretation 3 and D5 give the first split-mismatch rule. As executed (Task 4 ruling): on an action session, a `split_mismatch` needs the adjusted return to be an outlier **and** the session to have a split or the raw return not to be an outlier; a real move on an ex-dividend day is not reported. This addendum is the amendment.
+- **A4 Tests beyond the plan's lists** (additions, none replacing a planned test): `test_severity_order`, `test_latest_known_session`, `test_adv_default_window`, `test_returns_include_dividends`, `test_symbols_must_be_a_sequence`, `test_methods_cover_the_public_api`, `test_every_method_has_a_guard_test`, `test_every_method_has_a_block_test`, `test_blocked_symbol_raises`, `test_blocked_symbol_present_without_the_block`, `test_macro_drops_blocked_series`, `test_view_is_read_only`, `test_limitations_doc_has_stage_13_section` (and the renamed test of A2). Record them.
+
+### Task A — fix and record
+- [x ] Time `_in_window` and the new-facts filter on 500 symbols before the change
+- [x ] Vectorise both; run `tests/unit/data/test_quality.py` and `tests/unit/data/test_view_pit.py` → PASS; time again
+- [x ] Full verification (`pytest -q`, ruff, format, mypy, brief's Verify, `make check`) → raw output in `artifacts/audit-*.txt`
+- [ ] Worklog, Decisions log, verification.md and PROGRESS.md entries; commit `stage-13: post-DONE audit fixes`; fast-forward `main`; merged-main checks; records-only commit `stage-13: audit merged-main records`; fast-forward `main`

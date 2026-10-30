@@ -370,6 +370,22 @@ def test_fundamentals_jump_only_new_filings() -> None:
     assert _jumps(late) == []  # filed after the 08:00 cutoff: not known yet
 
 
+@pytest.mark.parametrize(
+    ("stamp", "reported"),
+    [
+        (utc(2024, 1, 31, 4, 59), False),  # 23:59 New York on 2024-01-30: before the window
+        (utc(2024, 1, 31, 5, 0), True),  # 00:00 New York on 2024-01-31, the first window day
+    ],
+)
+def test_fundamentals_jump_window_boundary_new_york_midnight(
+    stamp: datetime, reported: bool
+) -> None:
+    assert sessions_ending(END, 21)[0] == date(2024, 1, 31)  # the window's first day
+    facts = quarterly_facts("AAA", "Revenues", [100e6, 105e6, 110e6, 1.2e9])
+    facts.loc[facts.index[-1], ["available_at", "accepted_at"]] = pd.Timestamp(stamp)
+    assert bool(_jumps(facts)) is reported
+
+
 # --- Task 6: macro gaps ------------------------------------------------------------------------
 
 GAP = QC.macro_max_gap_days

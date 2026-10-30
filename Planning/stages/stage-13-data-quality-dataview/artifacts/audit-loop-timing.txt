@@ -1,0 +1,4 @@
+$ python audit_loop_timing.py before
+before: _in_window on 45000 bars = 3.4 ms; new-facts filter on 30000 facts = 30.0 ms
+$ python audit_loop_timing.py after
+after: _in_window on 45000 bars = 2.1 ms; new-facts filter on 30000 facts = 0.1 ms

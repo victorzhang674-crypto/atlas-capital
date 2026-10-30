@@ -1,0 +1,4 @@
+$ uv run python /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-13-plan-implement-834617/Planning/stages/stage-13-data-quality-dataview/artifacts/check_docstrings.py
+checked 2 files + 4 config classes
+none missing
+exit 0
