@@ -124,7 +124,7 @@ Commands below are run as `UV_CACHE_DIR=$TMPDIR/uv-cache UV_NO_SYNC=1 uv run …
 - Files: `docs/data-limitations.md › Data quality and DataView (Stage 13)`, `Planning/PROGRESS.md`, stage `worklog.md`, `verification.md`, `artifacts/`
 - [x] Docstring check on the new modules (none missing)
 - [x] Full verification (`pytest -q`, ruff, format, mypy, brief's Verify, `-v -W error`, coverage, no-network run, `make check`); acceptance criteria one by one
-- [x ] Records, commit `stage-13: Data quality checks & DataView facade`, merge into `main`, merged-main checks, records-only follow-up commit
+- [x] Records, commit `stage-13: Data quality checks & DataView facade`, merge into `main`, merged-main checks, records-only follow-up commit
 
 ## Addendum — post-DONE audit (2026-10-30)
 
@@ -136,7 +136,7 @@ Owner's request: "can you help me to audit this stage by comparing the work that
 - **A4 Tests beyond the plan's lists** (additions, none replacing a planned test): `test_severity_order`, `test_latest_known_session`, `test_adv_default_window`, `test_returns_include_dividends`, `test_symbols_must_be_a_sequence`, `test_methods_cover_the_public_api`, `test_every_method_has_a_guard_test`, `test_every_method_has_a_block_test`, `test_blocked_symbol_raises`, `test_blocked_symbol_present_without_the_block`, `test_macro_drops_blocked_series`, `test_view_is_read_only`, `test_limitations_doc_has_stage_13_section` (and the renamed test of A2). Record them.
 
 ### Task A — fix and record
-- [x ] Time `_in_window` and the new-facts filter on 500 symbols before the change
-- [x ] Vectorise both; run `tests/unit/data/test_quality.py` and `tests/unit/data/test_view_pit.py` → PASS; time again
-- [x ] Full verification (`pytest -q`, ruff, format, mypy, brief's Verify, `make check`) → raw output in `artifacts/audit-*.txt`
-- [x ] Worklog, Decisions log, verification.md and PROGRESS.md entries; commit `stage-13: post-DONE audit fixes`; fast-forward `main`; merged-main checks; records-only commit `stage-13: audit merged-main records`; fast-forward `main`
+- [x] Time `_in_window` and the new-facts filter on 500 symbols before the change
+- [x] Vectorise both; run `tests/unit/data/test_quality.py` and `tests/unit/data/test_view_pit.py` → PASS; time again
+- [x] Full verification (`pytest -q`, ruff, format, mypy, brief's Verify, `make check`) → raw output in `artifacts/audit-*.txt`
+- [x] Worklog, Decisions log, verification.md and PROGRESS.md entries; commit `stage-13: post-DONE audit fixes`; fast-forward `main`; merged-main checks; records-only commit `stage-13: audit merged-main records`; fast-forward `main`
