@@ -1,4 +1,5 @@
-# Optional local hooks: `uv run pre-commit install`. Not run in CI (there is none in v1).
+# Local hooks: `uv run pre-commit install` from the main checkout. CI (.github/workflows/ci.yml)
+# runs `make check` instead, which covers the ruff hooks.
 # Every hook runs a tool from uv.lock through `uv run`, so the hooks use the same versions as
 # `make check` and need no network (remote hook repos pin their own versions and fetch them
 # from GitHub at install time). Recorded fixtures under tests/fixtures/ stay byte-exact.

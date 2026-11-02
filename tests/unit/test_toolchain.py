@@ -38,3 +38,14 @@ def test_pre_commit_hooks_run_the_locked_tools_offline(repo_root: Path) -> None:
         assert hook["entry"].startswith("uv run --no-sync "), hook["id"]
     for hook_id in ("end-of-file-fixer", "trailing-whitespace"):  # recordings stay byte-exact
         assert "tests/fixtures/" in hooks[hook_id]["exclude"]
+
+
+def test_ci_runs_the_full_check_offline(repo_root: Path) -> None:
+    # CI runs exactly what a stage must pass locally (`make check`) plus the integration
+    # tests, from the lock file, and needs no secrets: live/llm tests stay deselected.
+    text = (repo_root / ".github" / "workflows" / "ci.yml").read_text()
+    workflow = yaml.safe_load(text)
+    runs = [step.get("run", "") for job in workflow["jobs"].values() for step in job["steps"]]
+    assert "uv sync --locked --group dev" in runs
+    assert runs.index("make check") < runs.index("make test-integration")
+    assert "secrets." not in text

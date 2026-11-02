@@ -1,0 +1,29 @@
+# Runs on every push and pull request: the same gate as a stage's verification (`make check`:
+# ruff, format check, mypy, unit tests) plus the integration tests, from uv.lock. Offline by
+# design: live/llm tests stay deselected, so no secrets are needed or available here.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+      - run: uv sync --locked --group dev
+      - run: make check
+      - run: make test-integration

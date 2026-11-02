@@ -1,0 +1,23 @@
+# CI setup (Stage 01): verification on the working tree (base 41c24d5) · 2026-11-02 13:39 EST
+## new test before the workflow existed
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/.github/workflows/ci.yml'
+FAILED tests/unit/test_toolchain.py::test_ci_runs_the_full_check_offline - Fi...
+1 failed, 3 passed in 0.37s
+
+$ uv sync --locked --group dev
+Resolved 80 packages in 14ms
+Checked 79 packages in 15ms
+exit=0
+
+$ make check
+Success: no issues found in 88 source files
+uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.17 s (limit 20 s)
+2118 passed, 12 deselected in 31.61s
+ - ... skipped remainder
+exit=0
+
+$ make test-integration
+uv run pytest -m integration -q
+1 passed, 2129 deselected in 1.79s
+exit=0
