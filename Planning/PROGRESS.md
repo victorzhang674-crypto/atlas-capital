@@ -443,7 +443,7 @@ Full block and raw output: [verification.md](stages/stage-03-logging-audit/verif
   - [x] Logs carry the run_id — evidence: `test_every_file_line_is_json_with_run_id` (incl. third-party stdlib lines), `test_console_is_pretty_text`; artifacts/acceptance-demo.txt
 - Waivers: none
 - Phase 0 checkpoint follow-up — 2026-11-02: [stage-03 verification](stages/stage-03-logging-audit/verification.md): caller log values under run keys kept in `shadowed` (`test_run_keys_win_and_caller_values_are_kept`); brief's Verify 704 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
-- Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02: [stage-03 verification](stages/stage-03-logging-audit/verification.md): audit event ids from the installed id source (reproducible under `SeededIds`), cross-process `flock` on appends (4 new tests); brief's Verify 788 passed; full suite 2108 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02: [stage-03 verification](stages/stage-03-logging-audit/verification.md): audit event ids from the installed id source (reproducible under `SeededIds`), cross-process `flock` on appends (4 new tests); brief's Verify 788 passed; full suite 2108 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0; merged into `main` as `d846205` (fast-forward), same results there
 
 ### Stage 04 — Core domain model — DONE 2026-10-26
 - Folder: [stages/stage-04-domain-model/](stages/stage-04-domain-model/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -471,7 +471,7 @@ Full block and raw output: [verification.md](stages/stage-04-domain-model/verifi
   - [x] mypy strict passes for `core/types` — evidence: `uv run mypy src/atlas/core` → Success (artifacts/verify.txt)
 - Waivers: none
 - Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-04 verification](stages/stage-04-domain-model/verification.md): ASCII-only symbols, `[0-7]` ULIDs, `NonEmptyStr` tuple items, `NameMap` keys, REJECTED/no-self-parent/unique-pod `Order`, `Prediction.outcome >= -1` (26 new test cases); brief's Verify 269 passed, mypy core Success (23 files); full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0; merged into `main` as `af7c1bd` (fast-forward), same results there
-- Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02: [stage-04 verification](stages/stage-04-domain-model/verification.md): `IdSource` / `SeededIds` / `use_ids` for reproducible ids, `exp_return` units cross-referenced (6 new tests); brief's Verify 275 passed, mypy core Success (23 files); full suite 2108 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02: [stage-04 verification](stages/stage-04-domain-model/verification.md): `IdSource` / `SeededIds` / `use_ids` for reproducible ids, `exp_return` units cross-referenced (6 new tests); brief's Verify 275 passed, mypy core Success (23 files); full suite 2108 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0; merged into `main` as `d846205` (fast-forward), same results there
 
 ### Stage 05 — Clock, trading calendar & point-in-time guard — DONE 2026-10-26
 - Folder: [stages/stage-05-clock-pit/](stages/stage-05-clock-pit/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -530,7 +530,7 @@ Full block and raw output: [verification.md](stages/stage-06-storage/verificatio
   - [x] All tests green — evidence: `uv run pytest -q` 626 passed, `make check` exit 0, brief's Verify 114 passed
 - Waivers: none
 - Phase 0 checkpoint follow-up — 2026-11-02: [stage-06 verification](stages/stage-06-storage/verification.md): the 1M-row upsert missed 5 s under heavy machine load (5.66–12.41 s) with no code change; test now takes the best of up to 3 timings, 5 s limit unchanged; idle run 0.89 s PASSED; brief's Verify 126 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
-- Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02: [stage-06 verification](stages/stage-06-storage/verification.md): `Database` file access confined to the lake and locked (10 new test cases); brief's Verify 136 passed; 1M-row upsert 0.69 s; full suite 2108 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02: [stage-06 verification](stages/stage-06-storage/verification.md): `Database` file access confined to the lake and locked (10 new test cases); brief's Verify 136 passed; 1M-row upsert 0.69 s; full suite 2108 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0; merged into `main` as `d846205` (fast-forward), same results there
 
 ### Stage 07 — Price data providers (yfinance, Alpaca) — DONE 2026-10-27
 - Folder: [stages/stage-07-price-data/](stages/stage-07-price-data/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
