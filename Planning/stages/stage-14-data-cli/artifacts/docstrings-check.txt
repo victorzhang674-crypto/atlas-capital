@@ -1,0 +1,2 @@
+Public module-level functions/classes (and their public methods) in src/atlas/data/sync.py, src/atlas/cli/app.py, src/atlas/cli/data_cmd.py, src/atlas/core/config.py, src/atlas/data/providers/base.py, src/atlas/core/logging.py
+checked: 111 without a docstring: 0

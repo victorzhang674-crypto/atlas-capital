@@ -1,0 +1,9 @@
+news             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 50/50 0:00:57
+Run 01M6C7J2SPBMZ6EM3K4CKG5P4G: log and audit trail in /tmp/claude-501/s14/news-probe/runs/01M6C7J2SPBMZ6EM3K4CKG5P4G
+                  Sync summary (sync 2024-01-01 .. 2024-03-31)                   
+┏━━━━━━┳━━━━━━┳━━━━━━━━━┳━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━┳━━━━━━┓
+┃ step ┃ keys ┃ skipped ┃ ok ┃ empty ┃ failed ┃  rows ┃ chunks ┃ seconds ┃ note ┃
+┡━━━━━━╇━━━━━━╇━━━━━━━━━╇━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━┩
+│ news │   50 │       0 │ 50 │     0 │      0 │ 3,519 │      1 │    57.0 │      │
+└──────┴──────┴─────────┴────┴───────┴────────┴───────┴────────┴─────────┴──────┘
+uv run atlas data sync --datasets news --symbols $SYMS --from 2024-01-01 --to  4.40s user 0.50s system 7% cpu 1:02.24 total

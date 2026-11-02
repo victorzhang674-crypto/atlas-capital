@@ -66,19 +66,27 @@ def _formatter(renderer: Processor) -> structlog.stdlib.ProcessorFormatter:
 
 
 def configure_logging(
-    *, level: str = "INFO", log_file: Path | None = None, console: TextIO | None = None
+    *,
+    level: str = "INFO",
+    log_file: Path | None = None,
+    console: TextIO | None = None,
+    console_level: str | None = None,
 ) -> None:
     """Send all logging to the console (pretty text) and, if `log_file` is given, to that
     file as JSON lines (parent directories are created).
 
-    `level` is a stdlib level name applied to the root logger; `console` defaults to
-    `sys.stderr`. Calling it again closes and replaces the handlers installed last time.
+    `level` is a stdlib level name applied to the root logger; `console_level` (default: no
+    extra filter) raises the console's threshold only, so a CLI can keep the console quiet
+    while the file keeps every record. `console` defaults to `sys.stderr`. Calling it again
+    closes and replaces the handlers installed last time.
     """
     reset_logging()
     _configure_structlog()
     stream = console if console is not None else sys.stderr
     console_handler = logging.StreamHandler(stream)
     console_handler.setFormatter(_formatter(structlog.dev.ConsoleRenderer(colors=stream.isatty())))
+    if console_level is not None:
+        console_handler.setLevel(console_level)
     handlers: list[logging.Handler] = [console_handler]
     if log_file is not None:
         log_file.parent.mkdir(parents=True, exist_ok=True)

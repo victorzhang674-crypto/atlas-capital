@@ -27,6 +27,7 @@ Both fetch methods include `start` and `end`. Providers raise `DataError` when t
 fails (after retries) and simply leave out symbols they have no data for (a delisted name).
 """
 
+import threading
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -202,19 +203,25 @@ def call_with_retry[T](
 
 
 class Throttle:
-    """Rate limit: `wait()` pauses `min_interval` seconds before every call but the first."""
+    """Rate limit: `wait()` pauses `min_interval` seconds before every call but the first.
+
+    Thread-safe (Stage 14): callers queue on a lock held during the pause, so requests from
+    several threads sharing one client still start at least `min_interval` seconds apart.
+    """
 
     def __init__(self, min_interval: float, sleep: Callable[[float], None]) -> None:
         """A throttle that sleeps with `sleep` (seconds)."""
         self._min_interval = min_interval
         self._sleep = sleep
         self._started = False
+        self._lock = threading.Lock()
 
     def wait(self) -> None:
         """Pause before the next vendor request (no pause before the first one)."""
-        if self._started and self._min_interval > 0:
-            self._sleep(self._min_interval)
-        self._started = True
+        with self._lock:
+            if self._started and self._min_interval > 0:
+                self._sleep(self._min_interval)
+            self._started = True
 
 
 def _require_columns(df: pd.DataFrame, columns: Sequence[str], what: str) -> None:

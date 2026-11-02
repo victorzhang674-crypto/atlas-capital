@@ -700,6 +700,65 @@ class ViewConfig(_Frozen):
     cache_size: Annotated[int, Field(ge=1)] = 256
 
 
+class SyncWorkers(_Frozen):
+    """Threads in each provider's pool during a sync (Stage 14). Request rates are still
+    bounded by each client's own throttle, shared by its threads. `yahoo` should stay 1:
+    yfinance keeps module-level state and is not thread-safe. `local` runs lake-only steps."""
+
+    yahoo: Annotated[int, Field(ge=1)] = 1
+    sec: Annotated[int, Field(ge=1)] = 4
+    fred: Annotated[int, Field(ge=1)] = 2
+    alpaca: Annotated[int, Field(ge=1)] = 2
+    wikipedia: Annotated[int, Field(ge=1)] = 1
+    local: Annotated[int, Field(ge=1)] = 1
+
+
+class SyncChunks(_Frozen):
+    """Keys (symbols, or macro series ids) per sync chunk, per step (Stage 14). The checkpoint
+    is written after each chunk, so smaller chunks lose less work when a run stops."""
+
+    prices: Annotated[int, Field(ge=1)] = 50
+    fundamentals: Annotated[int, Field(ge=1)] = 20
+    macro: Annotated[int, Field(ge=1)] = 2
+    news: Annotated[int, Field(ge=1)] = 50
+    earnings: Annotated[int, Field(ge=1)] = 20
+    upcoming: Annotated[int, Field(ge=1)] = 50
+    social: Annotated[int, Field(ge=1)] = 20
+
+
+class SyncConfig(_Frozen):
+    """The data sync and backfill (`atlas data sync|update`, Stage 14).
+
+    `default_start` is the first date of a sync without `--from`. `state_file` is the resume
+    checkpoint, relative to the lake root. Windowed datasets re-fetch `update_overlap_days`
+    calendar days before a key's covered end (late vendor corrections); a key the vendor had
+    no data for over its whole covered history (`empty`, e.g. a delisted name) is asked again
+    for new days only once its last check is `empty_retry_days` days old. News is fetched and
+    checkpointed in windows of `news_window_days` calendar days, news scoring in windows of
+    `sentiment_window_days`. `status` counts a symbol as having enough price history when its
+    first and last bars are `status_min_price_years` years apart. `universe` is the index
+    universe whose members (at any time in the window) are synced.
+    """
+
+    default_start: date = date(2015, 1, 1)
+    state_file: Path = Path("cache/sync_state.json")
+    update_overlap_days: Annotated[int, Field(ge=0)] = 5
+    empty_retry_days: Annotated[int, Field(ge=0)] = 30
+    news_window_days: Annotated[int, Field(ge=1)] = 90
+    sentiment_window_days: Annotated[int, Field(ge=1)] = 365
+    status_min_price_years: Annotated[float, Field(gt=0)] = 8.0
+    universe: Annotated[str, Field(min_length=1)] = "sp500"
+    workers: SyncWorkers = Field(default_factory=SyncWorkers)
+    chunk_size: SyncChunks = Field(default_factory=SyncChunks)
+
+    @field_validator("state_file")
+    @classmethod
+    def _relative_state_file(cls, value: Path) -> Path:
+        if value.is_absolute():
+            raise ValueError("state_file must be relative to the lake root")
+        return value
+
+
 class DataConfig(_Frozen):
     """Data settings. `lake_path` is relative to the repo root and is not resolved here."""
 
@@ -714,6 +773,7 @@ class DataConfig(_Frozen):
     sentiment: SentimentConfig = Field(default_factory=SentimentConfig)
     quality: QualityConfig = Field(default_factory=QualityConfig)
     view: ViewConfig = Field(default_factory=ViewConfig)
+    sync: SyncConfig = Field(default_factory=SyncConfig)
     tradable: TradableConfig = Field(default_factory=TradableConfig)
     universes: _UniverseMap = Field(default_factory=_default_universes)
 

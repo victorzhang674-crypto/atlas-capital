@@ -173,6 +173,20 @@ data:
     adv_window_days: 20  # bars in the ADV average
     min_history_days: 252  # bars of price history required
     max_stale_sessions: 5  # the last bar may lag the latest known session by this many sessions
+  # Data sync and backfill (Stage 14): atlas data sync | update | status | quality.
+  sync:
+    default_start: 2015-01-01  # first date of a sync without --from
+    state_file: cache/sync_state.json  # resume checkpoint, relative to the lake root
+    update_overlap_days: 5  # windowed datasets re-fetch this many calendar days before a key's covered end
+    empty_retry_days: 30  # a key with no vendor data in its whole history (delisted) is re-checked after this many days
+    news_window_days: 90  # news is fetched and checkpointed in windows of this many calendar days
+    sentiment_window_days: 365  # news scoring runs in windows of this many calendar days
+    status_min_price_years: 8.0  # status: years between first and last bar for "enough price history"
+    universe: sp500  # index universe whose members (at any time in the window) are synced
+    # Threads per provider pool; each client's throttle still bounds its request rate.
+    workers: {yahoo: 1, sec: 4, fred: 2, alpaca: 2, wikipedia: 1, local: 1}  # yahoo stays 1: yfinance is not thread-safe
+    # Keys (symbols or macro series) per chunk; the checkpoint is written after each chunk.
+    chunk_size: {prices: 50, fundamentals: 20, macro: 2, news: 50, earnings: 20, upcoming: 50, social: 20}  # per step
 
 # LLM gateway values (consumed by Stage 24).
 llm:

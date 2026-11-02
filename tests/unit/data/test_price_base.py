@@ -175,3 +175,42 @@ def test_price_config_defaults_and_yaml(repo_root: Path) -> None:
 def test_price_config_rejects_percent_typed_as_fraction() -> None:
     with pytest.raises(ValueError):
         PriceDataConfig(adj_mismatch_tolerance=5)
+
+
+def test_throttle_spaces_requests_across_threads() -> None:  # Stage 14 D5 (interpretation 5)
+    import itertools
+    import threading
+    import time
+
+    interval = 0.02
+    throttle = Throttle(interval, time.sleep)
+    passed: list[float] = []
+    lock = threading.Lock()
+
+    def worker() -> None:
+        for _ in range(3):
+            throttle.wait()
+            with lock:
+                passed.append(time.perf_counter())
+
+    threads = [threading.Thread(target=worker) for _ in range(8)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    stamps = sorted(passed)
+    gaps = [b - a for a, b in itertools.pairwise(stamps)]
+    assert len(stamps) == 24
+    assert min(gaps) >= interval * 0.9  # every request start after the first waited its turn
+
+
+def test_throttle_first_call_does_not_wait_from_any_thread() -> None:
+    import threading
+
+    sleeps: list[float] = []
+    throttle = Throttle(0.5, sleeps.append)
+    thread = threading.Thread(target=throttle.wait)
+    thread.start()
+    thread.join()
+    throttle.wait()
+    assert sleeps == [0.5]

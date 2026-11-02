@@ -1,0 +1,55 @@
+2026-11-01T18:38:05.992846Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2017-09-01 detail=DuPont index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=DD
+2026-11-01T18:38:05.993243Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2015-09-18 detail='Twenty-First Century Fox Class B' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=FOX
+2026-11-01T18:38:05.993353Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2015-03-23 detail=Allergan index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=AGN
+2026-11-01T18:38:05.993425Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2011-02-25 detail='Joy Global' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=JOYG
+2026-11-01T18:38:05.993487Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2005-11-18 detail='AT&T Corporation' index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=T
+2026-11-01T18:38:05.993543Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1999-04-12 detail=Actavis index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=ACT
+2026-11-01T18:38:05.993599Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1998-12-11 detail=Firstar index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=FSR
+2026-11-01T18:38:05.993648Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1998-12-11 detail=Amoco index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=AN
+2026-11-01T18:38:05.993699Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1998-12-11 detail=SunAmerica index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=SUN
+2026-11-01T18:38:05.993752Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1997-06-17 detail='Countrywide Credit Industries' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=CCR
+2026-11-01T18:38:05.993804Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1994-09-30 detail='National City' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=NCC
+2026-11-01T18:38:05.993863Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1994-09-30 detail=McKesson index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=MCK
+2026-11-01T18:38:05.993912Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1976-07-01 detail='Anheuser Busch' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=BUD
+2026-11-01T18:38:26.769151Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2017-09-01 detail=DuPont index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=DD
+2026-11-01T18:38:26.769536Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2015-09-18 detail='Twenty-First Century Fox Class B' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=FOX
+2026-11-01T18:38:26.769627Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2015-03-23 detail=Allergan index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=AGN
+2026-11-01T18:38:26.769698Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2011-02-25 detail='Joy Global' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=JOYG
+2026-11-01T18:38:26.769758Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2005-11-18 detail='AT&T Corporation' index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=T
+2026-11-01T18:38:26.769830Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1999-04-12 detail=Actavis index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=ACT
+2026-11-01T18:38:26.769883Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1998-12-11 detail=Firstar index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=FSR
+2026-11-01T18:38:26.769933Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1998-12-11 detail=Amoco index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=AN
+2026-11-01T18:38:26.769984Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1998-12-11 detail=SunAmerica index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=SUN
+2026-11-01T18:38:26.770034Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1997-06-17 detail='Countrywide Credit Industries' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=CCR
+2026-11-01T18:38:26.770086Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1994-09-30 detail='National City' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=NCC
+2026-11-01T18:38:26.770136Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1994-09-30 detail=McKesson index_id=SP500 kind=removed_while_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=MCK
+2026-11-01T18:38:26.770189Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=1976-07-01 detail='Anheuser Busch' index_id=SP500 kind=added_not_member mode=dev run_id=01M6C6EWZ721176B8DADBGMNQN stage=data.sync symbol=BUD
+universe         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1   0:00:06
+prices           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3/3   0:00:20
+fundamentals     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2/2   0:00:07
+macro            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 22/22 0:02:12
+news             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3/3   0:10:09
+earnings         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2/2   0:00:03
+upcoming         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2/2   0:00:06
+macro_calendar   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1   0:00:05
+reactions        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1   0:00:00
+news_sentiment   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1   0:00:00
+quality          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1   0:00:00
+Run 01M6C6EWZ721176B8DADBGMNQN: log and audit trail in 
+/tmp/claude-501/s14/smoke-lake/runs/01M6C6EWZ721176B8DADBGMNQN
+                  Sync summary (sync 2024-01-01 .. 2026-11-01)                  
+┏━━━━━━━━┳━━━━━━┳━━━━━━━━┳━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━┓
+┃ step   ┃ keys ┃ skipp… ┃ ok ┃ empty ┃ failed ┃  rows ┃ chunks ┃ seco… ┃ note ┃
+┡━━━━━━━━╇━━━━━━╇━━━━━━━━╇━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━┩
+│ unive… │    1 │      0 │  1 │     0 │      0 │ 1,769 │      1 │   6.6 │      │
+│ prices │    3 │      0 │  3 │     0 │      0 │ 2,166 │      1 │  20.6 │      │
+│ funda… │    2 │      0 │  2 │     0 │      0 │ 8,203 │      1 │   7.5 │      │
+│ macro  │   22 │      0 │ 22 │     0 │      0 │ 523,… │     11 │ 132.9 │      │
+│ news   │    3 │      0 │  3 │     0 │      0 │ 39,8… │      1 │ 609.0 │      │
+│ earni… │    2 │      0 │  2 │     0 │      0 │    96 │      1 │   3.5 │      │
+│ upcom… │    2 │      0 │  2 │     0 │      0 │     3 │      1 │   6.3 │      │
+│ macro… │    1 │      0 │  1 │     0 │      0 │   392 │      1 │   5.7 │      │
+│ react… │    1 │      0 │  1 │     0 │      0 │    22 │      1 │   0.3 │      │
+│ news_… │    1 │      0 │  1 │     0 │      0 │ 39,8… │      1 │   1.0 │      │
+│ quali… │    1 │      0 │  1 │     0 │      0 │     0 │      1 │   0.6 │      │
+└────────┴──────┴────────┴────┴───────┴────────┴───────┴────────┴───────┴──────┘

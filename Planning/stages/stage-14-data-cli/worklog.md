@@ -1,0 +1,71 @@
+# Stage 14 — Data sync CLI & bootstrap backfill · Work log
+
+Append entries in order. Record failures and dead ends as honestly as successes.
+
+## 2026-11-01 — Set-up and gate check
+- Did: read `Project.md`, `PROGRESS.md` (Stage 13 handoff notes and the Backlog items addressed to Stage 14), the roadmap (row 14, M1), the spec (§10–§12: Typer + Rich, `cli/`), the stage protocol and the brief. New worktree: copied the root `.env` (all five secrets set, values not printed), `uv sync --group dev` with `UV_CACHE_DIR=$TMPDIR/uv-cache-s14` (the shared `$TMPDIR/uv-cache` had a half-extracted hatchling wheel).
+- Ran: `uv run pytest -q` → 1569 passed, 11 deselected, exit 0 · raw: [artifacts/gate-check-pytest.txt](artifacts/gate-check-pytest.txt). Stage 13 `verification.md` says **ALL CRITERIA VERIFIED**. Gate passed.
+- Did: copied `_template/` files; `uv add "typer>=0.12" "rich>=13.7"` → typer 0.27.3, rich 15.0.0 (+ click, shellingham, markdown-it-py, mdurl, pygments) locked; wrote `plan.md`; set Stage 14 `IN PROGRESS` in `PROGRESS.md`.
+- Next: Task 1.
+
+## 2026-11-01 — Task 1: dependencies and `SyncConfig`
+- Did: `[project.scripts] atlas = "atlas.cli.app:main"`; `SyncWorkers`, `SyncChunks`, `SyncConfig` (`cfg.data.sync`) in `src/atlas/core/config.py`; `config/fund.yaml › data.sync` with a comment per key.
+- Ran: `uv run pytest tests/unit/core/test_config.py -q -k sync` → collection error (no `SyncConfig`: red); after the code → `uv run pytest tests/unit/core/test_config.py -q` → 182 passed (includes the every-key-in-YAML / every-key-commented tests).
+
+## 2026-11-01 — Task 2: thread-safe `Throttle`
+- Did: `Throttle.wait` holds a lock across the pause (`src/atlas/data/providers/base.py`), so threads sharing one client start requests at least `min_interval` apart.
+- Ran: `uv run pytest tests/unit/data/test_price_base.py -q -k throttle` → 1 failed (`test_throttle_spaces_requests_across_threads`: threads passed together), 2 passed; after the fix → 17 passed; `uv run pytest tests/unit/data -q -x` → 852 passed.
+
+## 2026-11-01 — Task 3: sync state and planning
+- Did: `src/atlas/data/sync.py` first section: `Coverage`, `SyncState` (load/save atomic via `atomic_write`, merge of contiguous windows, thread-safe, runs capped at 50), `plan_window`, `plan_snapshot`, `Chunk`, `group_chunks`.
+- Ran: `uv run pytest tests/unit/data/test_sync_state.py -q` → collection error (red); then 25 passed.
+
+## 2026-11-01 — Task 4: orchestrator core
+- Did: `split_window`, `serial_lake` (`_SerialLake`: `write_table` under a lock), `ChunkOutcome`, `StepSpec`, `StepReport` (+ `payload()`), `SyncProgress`, `run_step`, `finish_step`. Workers run each chunk in `contextvars.copy_context()` (the clock and run context are `ContextVar`s, so a bare worker thread would have no clock).
+- Ran: `uv run pytest tests/unit/data/test_sync_engine.py -q` → collection error (red); then 16 passed, 1 failed: `test_chunks_run_concurrently_on_provider_pool` stored 8 of 24 rows with 3 workers on a plain `Lake` (lost read-modify-write upserts in one partition). That is the failure `serial_lake` prevents; the test was wrong to drive a plain lake (`run_sync` always passes a serial one) and now uses `serial_lake(lake)` → 17 passed, three runs in a row.
+
+## 2026-11-01 — Task 5: dataset steps, `run_sync`, `run_update`
+- Did: `DATASETS`, `DATASET_STEPS`, `SyncSources` (+ `live`), `_Resources`, `SyncReport`, `next_decision_day`, `last_published_session`, the twelve step builders, `parse_datasets`, `state_path`, `run_sync`, `run_update`, `SyncState.truncate`; `tests/unit/data/sync_helpers.py` (fake world: tiny Wikipedia pages, `WorldPrices`, `WorldNews`, `WorldCalendar`, `WorldFred`, EDGAR fixtures over respx, test lexicon).
+- Ran: `uv run pytest tests/unit/data/test_sync_datasets.py -q -x` → 6 passed, then `test_resume_after_price_crash` failed: after the second chunk raised `KeyboardInterrupt`, the single worker had already started the queued third chunk before the main thread cancelled it (SPY/QQQ were covered). Fix: a shared `threading.Event` set by the crashing chunk; no chunk or sub-window starts once it is set. Then 19 passed, 1 failed: `test_reference_refreshed_after_prices` expected AAPL's first trade date 2023-12-01, but the sync fetched from 2024-01-02, so 2024-01-02 (the first stored bar) is right; the test's expectation was wrong and was corrected. Then 62 sync tests passed three runs in a row; `uv run pytest tests/unit/data -q` → 914 passed, 11 deselected; ruff and `mypy src/atlas` clean.
+
+## 2026-11-01 — Task 6: status and quality summaries
+- Did: `STATUS_TABLES`, `STATUS_COLUMNS`, `CoverageLine`, `LakeStatus`, `lake_status` (in-memory DuckDB over the Parquet globs, glob passed as a bound parameter; coverage per interpretation 8), `_quality_summary` (latest persisted report via `read_quality_issues`, so the PIT guard applies).
+- Ran: `uv run pytest tests/unit/data/test_sync_status.py -q` → collection error (red); then 7 passed; ruff clean; `mypy src/atlas` → one error (`Series >= float` in the years test), fixed with `.to_numpy()` → clean.
+
+## 2026-11-01 — Task 7: CLI
+- Did: `configure_logging(..., console_level=...)` (console threshold only; test `test_console_level_quiets_console_only`: red → green); `src/atlas/cli/app.py` (Typer root, `--profile`, `--config-dir`, `main`), `src/atlas/cli/data_cmd.py` (`sync`, `update`, `status`, `quality`, `RichProgress`, summary/status/quality tables; patchable `build_sources` / `make_clock`); `tests/unit/cli/conftest.py` (puts `tests/unit/data` on `sys.path` for the shared fake world), `tests/unit/cli/test_data_cmd.py`.
+- Ran: `uv run pytest tests/unit/cli -q` → collection error (red); then 17 passed; mypy: two `Table.add_row` argument types (pandas scalars) → `str(...)`; clean. `uv sync --group dev` installed the `atlas` script; `uv run atlas --help` and `uv run atlas data --help` list the `data` group and its four commands.
+
+## 2026-11-01 — Task 8: `docs/data.md`
+- Did: `docs/data.md` (datasets table, sources, licences/ToS notes, limitations, how to refresh/resume/check, logs and audit); test `test_data_doc_sections` in `tests/unit/test_repo_docs.py`.
+- Ran: `uv run pytest tests/unit/test_repo_docs.py -q` → 1 failed (no file: red); after writing the doc → 3 passed.
+
+## 2026-11-01 — Task 9: live smoke run
+- Did: copied the root LM lexicon into `data/reference/`. Smoke run on a scratch lake: `ATLAS__DATA__LAKE_PATH=$TMPDIR/s14/smoke-lake uv run atlas data sync --from 2024-01-01 --symbols AAPL,MSFT,SPY` (network: Wikipedia, Yahoo, SEC, FRED, Alpaca).
+- Seen so far: universe ok (1 769 rows, 6.6 s), prices 3/3 (2 166 rows, 20.6 s), fundamentals 2/2 (8 203 facts, 7.5 s), macro 22/22 (523 749 vintage rows, 132.9 s); news ~3 800 Alpaca articles per 90-day window for these three symbols at about one request per second (0.3 s throttle + latency, one chunk so one worker). News is the long pole of a full backfill.
+
+## 2026-11-01 — Task 9 (cont.): fixes found by the live runs
+- Smoke run finished, exit 0, every step ok (news 39 8xx articles in 609 s; earnings 96 rows, upcoming 3, macro calendar 392, reactions 22, news scoring 39 8xx, quality 0 issues). Raw: `$TMPDIR/s14/smoke.txt` (copied to artifacts at the end).
+- Fix 1 (summary truncated without a terminal): Rich falls back to 80 columns when output is a pipe, so the summary table was abbreviated in logs. Test `test_summary_not_truncated_without_terminal` (red) → `_console()` uses 160 columns when not a terminal → 18 CLI tests pass.
+- Full backfill started in the background (all datasets but news first): `uv run atlas data sync --from 2015-01-01 --datasets universe,prices,fundamentals,macro,events,sentiment,quality` → `artifacts/backfill-sync.log`. Prices are slow by vendor: yfinance spends ~25 s on each delisted former member ("possibly delisted; no timezone found") and a few seconds per symbol on the split-history request; 50 symbols in ~8 min.
+- Fix 2 (upcoming snapshot): one bad ticker made Yahoo's calendar fail its whole 50-symbol chunk, and former members (delisted) were asked for scheduled dates. Tests `test_upcoming_uses_current_members_only`, `test_upcoming_chunk_failure_retried_per_symbol` (red; `test_equity_only_steps_skip_etfs` updated: upcoming keys 4 → 3, the spec change) → the step takes the members on the run's end date and retries a failed chunk one symbol at a time → green.
+- Fix 3 (no-network test of the live sources): `test_live_sources_are_lazy_and_fail_safe` (no FRED key → calendar without FRED, `sources.fred()` raises `ConfigError`; Alpaca keys → `AlpacaNewsProvider` alone).
+- News probe (scratch lake): 50 current members × 2024 Q1 → 3 519 articles in 57 s. Estimate for the full news backfill: ~14 symbol groups × 44 quarters ≈ 43k pages ≈ 4 h at Alpaca's 200 requests/min with 3 workers.
+- Fix 4 (`update` cost of delisted names): windowed steps would re-ask Yahoo for every new tail window of each `empty` (delisted) key, ~25 s each. New `data.sync.empty_retry_days` (30): an `empty` key whose coverage spans the request start is re-checked only once its last check is that old. Tests `test_plan_window_empty_key_rechecked_only_after_retry_days`, `test_empty_key_not_refetched_for_new_days_until_retry`, `test_sync_empty_retry_days` (red) → green; 275 tests in the touched files pass; ruff, mypy clean. (The running backfill uses the code loaded at its start; the state format is unchanged.)
+
+## 2026-11-01 — Task 9 (cont.): full backfill without news
+- Ran (background): `uv run atlas data sync --from 2015-01-01 --datasets universe,prices,fundamentals,macro,events,sentiment,quality` → exit 0, 18:52:18 → 20:30:59 UTC (1 h 39 min) · raw: [artifacts/backfill-sync.log](artifacts/backfill-sync.log). Run `01M6C79AK6WV1VM3YDQDMN7D57`.
+- Per step (keys / ok / empty / failed / rows / seconds): universe 1/1/0/0/1 769/7; prices 777/713/63/1/1 879 235/3 791; fundamentals 747/685/62/0/1 990 925/530; macro 22/22/0/0/523 749/61; earnings 747/686/61/0/32 316/123; upcoming 747/747/0/0/617/1 220 (this process started before Fix 2, so it still asked all 747 equities); macro_calendar 1/1/0/0/392/6; reactions 1/1/0/0/29 911/146; news_sentiment 1/0/1/0/0/0 (no news yet: `empty`); quality 1/1/0/0/88/27. Lake 2.8 GB (mostly `raw/sec/`).
+- The one price failure: AVB (a former member, not in today's index) — "prices_daily.open: 1 null value(s) in a non-nullable column": one Yahoo bar with a null open makes Stage 07's `ingest_prices` skip the whole symbol. Out of this stage's scope (Stage 07 ingest rule) → Backlog.
+- `uv run atlas data status` → [artifacts/status-after-backfill.txt](artifacts/status-after-backfill.txt): 503 current members; prices ≥ 8 years 475/503 (94.4%); fundamentals 502/503 (99.8%; VYLR, listed 2026-10-01, has no filing yet); macro 22/22; events 503/503; news 0/503 (not run yet); quality report 2026-11-02: 2 critical, 86 warnings, blocked WBD.
+- Price misses, checked one by one · raw: [artifacts/price-coverage-misses.txt](artifacts/price-coverage-misses.txt): all 28 are members whose stock first traded less than 8 years ago (IPOs and spin-offs: ABNB, APP, CARR, CEG, COIN, CRWD, DASH, DDOG, DOW, EXE, FDXF, FOX, FOXA, GEHC, GEV, HONA, HOOD, KVUE, MRNA 7.90 y, OTIS, PLTR, Q, RDDT, SNDK, SOLV, UBER, VLTO, VYLR); each has bars from its first trading day to 2026-10-30. No data gap: every member listed for at least 8 years has ≥ 8 years (475/475). 95% of 503 needs 478, which today's index cannot give → the criterion as written is not met; raised with the owner (Rule 1.4 / 3).
+- News backfill started (background): `ATLAS__DATA__SYNC__WORKERS__ALPACA=3 uv run atlas data sync --from 2015-01-01 --datasets news,sentiment,quality` → `artifacts/backfill-news.log`.
+
+## 2026-11-01 — Task 9 (cont.): owner decision and news backfill
+- Asked the owner about the price criterion (475/503 = 94.4%, the 28 others listed < 8 years). Owner's answer: "Approve listed-8y reading (Recommended)" → counted over members listed ≥ 8 years: 475/475. Recorded in the Decisions log and `verification.md`; the brief is not edited.
+- News backfill finished: exit 0, 20:32:48 → 22:48:33 UTC (2 h 16 min), news 777/777 ok, 1 171 897 rows fetched (845 313 unique articles), 16 chunks on 3 Alpaca workers; news scoring 845 313 rows in 7 s; quality already covered for the day · raw: [artifacts/backfill-news.log](artifacts/backfill-news.log).
+
+## 2026-11-02 00:48 UTC — Task 10: verification
+- Ran the brief's Verify: `uv run atlas data sync --from 2015-01-01 && uv run atlas data status` → exit 0 in 17 s: every covered key skipped; the one failed key (AVB) retried and failed again (same vendor bar; Backlog); status: prices 475/503 (all 475 listed ≥ 8 y), fundamentals 502/503, macro 22/22, news 503/503, events 503/503 · raw: [artifacts/verify.txt](artifacts/verify.txt), [artifacts/status.txt](artifacts/status.txt).
+- Ran: `uv run pytest -q` → 1673 passed, 11 deselected; `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 190 files already formatted; `uv run mypy src/atlas` → Success (84 files); `make check` → exit 0; stage tests `-v -W error` → 93 passed; coverage of the new code 95% · raw in `artifacts/`.
+- Wrote `verification.md` (ALL CRITERIA VERIFIED), the `PROGRESS.md` handoff note, the evidence summary, Backlog items; ticked Stage 14, set it DONE.

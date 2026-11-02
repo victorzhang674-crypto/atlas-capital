@@ -109,3 +109,16 @@ def test_get_logger_before_configure() -> None:
     assert not structlog.is_configured()
     get_logger("atlas.test").info("ok")
     assert structlog.is_configured()
+
+
+def test_console_level_quiets_console_only(tmp_path: Path) -> None:  # Stage 14 (CLI)
+    console = io.StringIO()
+    configure_logging(
+        level="INFO", log_file=tmp_path / "a.log", console=console, console_level="WARNING"
+    )
+    log = get_logger("atlas.test")
+    log.info("detail")
+    log.warning("problem")
+    assert [line["event"] for line in _json_lines(tmp_path / "a.log")] == ["detail", "problem"]
+    assert "problem" in console.getvalue()
+    assert "detail" not in console.getvalue()

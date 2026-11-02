@@ -30,6 +30,9 @@ from atlas.core.config import (
     Secrets,
     SentimentConfig,
     SocialConfig,
+    SyncChunks,
+    SyncConfig,
+    SyncWorkers,
     TradableConfig,
     ViewConfig,
     _deep_merge,
@@ -1025,3 +1028,50 @@ def test_view_defaults() -> None:  # Stage 13 D8
     assert AtlasConfig().data.view == ViewConfig(cache_size=256)
     with pytest.raises(ValidationError, match="cache_size"):
         ViewConfig(cache_size=0)
+
+
+def test_sync_defaults() -> None:  # Stage 14 D1
+    s = AtlasConfig().data.sync
+    assert s == SyncConfig()
+    assert s.default_start == date(2015, 1, 1)
+    assert s.state_file == Path("cache/sync_state.json")
+    assert (s.update_overlap_days, s.news_window_days, s.sentiment_window_days) == (5, 90, 365)
+    assert (s.status_min_price_years, s.universe) == (8.0, "sp500")
+    assert s.workers.model_dump() == {
+        "yahoo": 1, "sec": 4, "fred": 2, "alpaca": 2, "wikipedia": 1, "local": 1
+    }  # fmt: skip
+    assert s.chunk_size.model_dump() == {
+        "prices": 50, "fundamentals": 20, "macro": 2, "news": 50, "earnings": 20,
+        "upcoming": 50, "social": 20,
+    }  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("update_overlap_days", -1),
+        ("news_window_days", 0),
+        ("sentiment_window_days", 0),
+        ("status_min_price_years", 0),
+    ],
+)
+def test_sync_validation(field: str, value: object) -> None:
+    with pytest.raises(ValidationError, match=field):
+        SyncConfig(**{field: value})
+
+
+def test_sync_workers_and_chunks_positive() -> None:
+    with pytest.raises(ValidationError, match="sec"):
+        SyncWorkers(sec=0)
+    with pytest.raises(ValidationError, match="prices"):
+        SyncChunks(prices=0)
+    with pytest.raises(ValidationError, match="universe"):
+        SyncConfig(universe="")
+    with pytest.raises(ValidationError, match="state_file"):
+        SyncConfig(state_file=Path("/abs/state.json"))
+
+
+def test_sync_empty_retry_days() -> None:
+    assert SyncConfig().empty_retry_days == 30
+    with pytest.raises(ValidationError, match="empty_retry_days"):
+        SyncConfig(empty_retry_days=-1)
