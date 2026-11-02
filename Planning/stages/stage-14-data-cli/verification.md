@@ -53,5 +53,6 @@ Owner-requested follow-up (see worklog, 2026-11-02): every writing `atlas data` 
 Owner-requested follow-up (see worklog, 2026-11-02): the 3 runs logged before the Tier 1 mirror existed are now in DuckDB `audit_events`. No code changed, so the live Verify was not re-run.
 - One-time mirror in the main checkout: 3 chains valid; 30 events inserted (12, 5, 13); a second run inserted 0; checkout clean · raw: [artifacts/checkpoint-2026-11-02-mirror-old-audit-logs.txt](artifacts/checkpoint-2026-11-02-mirror-old-audit-logs.txt) (script: same name, `.py`)
 - `uv run pytest -q` → 2117 passed, 0 failed, 12 deselected, exit 0; `make check` → exit 0 · raw: [artifacts/checkpoint-2026-11-02-followup-verify.txt](artifacts/checkpoint-2026-11-02-followup-verify.txt)
+- On merged `main` (`26eb29e`, fast-forward from `ccf61cb`; run in the owner's Terminal panel): `uv run pytest -q` → 2117 passed; Stage 04's Verify → 276 passed, mypy core Success (23 files); `make check` → exit 0; `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after · raw: [stage-04 artifacts/checkpoint-2026-11-02-followup-merged-main-check.txt](../stage-04-domain-model/artifacts/checkpoint-2026-11-02-followup-merged-main-check.txt)
 
 **Result:** ALL CRITERIA VERIFIED
