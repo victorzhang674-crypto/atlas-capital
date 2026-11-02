@@ -19,6 +19,7 @@ from atlas.core.config import (
     AtlasConfig,
     CalendarConfig,
     EventsConfig,
+    FeaturesConfig,
     FundamentalsConfig,
     FundConfig,
     LimitsConfig,
@@ -26,9 +27,11 @@ from atlas.core.config import (
     NewsConfig,
     PodStops,
     QualityConfig,
+    QuantConfig,
     ReferenceDataConfig,
     Secrets,
     SentimentConfig,
+    SnapshotConfig,
     SocialConfig,
     SyncChunks,
     SyncConfig,
@@ -1075,3 +1078,36 @@ def test_sync_empty_retry_days() -> None:
     assert SyncConfig().empty_retry_days == 30
     with pytest.raises(ValidationError, match="empty_retry_days"):
         SyncConfig(empty_retry_days=-1)
+
+
+def test_quant_features_defaults() -> None:  # Stage 15 D1
+    q = AtlasConfig().quant
+    assert q == QuantConfig()
+    f = q.features
+    assert f == FeaturesConfig()
+    assert (f.buffer_sessions, f.sessions_per_year) == (63, 252)
+    assert f.snapshot == SnapshotConfig()
+    assert f.snapshot.model_dump() == {
+        "history_sessions": 252, "min_history": 63, "universe": "sp500", "min_universe": 20
+    }  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("model", "field", "value"),
+    [
+        (FeaturesConfig, "buffer_sessions", -1),
+        (FeaturesConfig, "sessions_per_year", 0),
+        (SnapshotConfig, "history_sessions", 1),
+        (SnapshotConfig, "min_history", 0),
+        (SnapshotConfig, "min_universe", 0),
+        (SnapshotConfig, "universe", ""),
+    ],
+)
+def test_quant_features_validation(model: type, field: str, value: object) -> None:
+    with pytest.raises(ValidationError, match=field):
+        model(**{field: value})
+
+
+def test_quant_snapshot_min_history_within_history() -> None:
+    with pytest.raises(ValidationError, match="min_history"):
+        SnapshotConfig(history_sessions=50, min_history=51)

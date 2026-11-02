@@ -1,0 +1,17 @@
+CAUGHT  vol ddof 1 -> 0                               -> 1 failed, 9 passed in 0.57s
+CAUGHT  EMA alpha 2/(n+1) -> 2/n                      -> 1 failed, 15 passed in 0.58s
+CAUGHT  Wilder alpha 1/n -> 1/(n+1)                   -> 1 failed, 12 passed in 0.56s
+CAUGHT  smoother skips NaN state rule                 -> 1 failed, 12 passed in 0.58s
+CAUGHT  Bollinger population -> sample std            -> 1 failed, 18 passed in 0.66s
+CAUGHT  max drawdown skips first bar                  -> 1 failed, 45 passed in 0.62s
+CAUGHT  idio vol ddof 2 -> 1                          -> 1 failed, 40 passed in 0.64s
+CAUGHT  volume z includes today                       -> 1 failed, 34 passed in 0.67s
+CAUGHT  momentum skips 22 not 21                      -> 1 failed, 7 passed in 0.58s
+CAUGHT  LOOK-AHEAD: gap uses next close               -> 1 failed, 111 passed in 0.76s
+CAUGHT  LOOK-AHEAD: centred SMA                       -> 1 failed, 54 passed in 0.81s
+CAUGHT  LOOK-AHEAD: market window shifted forward     -> 1 failed, 99 passed in 0.74s
+CAUGHT  lookback buffer dropped                       -> 1 failed, 8 passed in 1.34s
+CAUGHT  blocked symbols kept                          -> 1 failed, 10 passed in 1.04s
+CAUGHT  snapshot mid-rank -> upper rank               -> 1 failed, 2 passed in 0.84s
+CAUGHT  snapshot USD features ranked                  -> 1 failed, 4 passed in 1.08s
+mutations: 16, caught: 16, missed: 0

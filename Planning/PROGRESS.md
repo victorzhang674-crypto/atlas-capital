@@ -4,9 +4,9 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 > **Rules (from [`Project.md`](../Project.md)):** statuses are `NOT STARTED` / `IN PROGRESS` / `BLOCKED` / `DONE`. A box may be ticked, and a stage set to `DONE`, **only after** a *Verification evidence* block with real output from that stage's chat is written in the stage folder's `verification.md` and summarised below (Rule 1). Each stage's records live in its folder `stages/stage-NN-<slug>/` (Rule 2A). Stage N cannot start until Stage N−1 is `DONE` (Rule 4).
 
-- **Current stage:** 15 — Technical feature library — `NOT STARTED`
-- **Stages done:** 14 / 66
-- **Last updated:** 2026-11-01 (Stage 14 DONE; M1 reached)
+- **Current stage:** 16 — Fundamental factor library — `NOT STARTED`
+- **Stages done:** 15 / 66
+- **Last updated:** 2026-11-02 (Stage 15 DONE)
 
 ## Stage checklist
 
@@ -29,7 +29,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - [x] **14** [Data sync CLI & bootstrap backfill](stages/stage-14-data-cli/brief.md)
 
 ### Phase 2 Quant Engine → M2
-- [ ] **15** [Technical feature library](stages/stage-15-technical-features/brief.md)
+- [x] **15** [Technical feature library](stages/stage-15-technical-features/brief.md)
 - [ ] **16** [Fundamental factor library](stages/stage-16-fundamental-factors/brief.md)
 - [ ] **17** [Signal research toolkit (IC, quantiles, decay)](stages/stage-17-signal-research/brief.md)
 - [ ] **18** [Covariance & volatility forecasting](stages/stage-18-covariance-vol/brief.md)
@@ -252,6 +252,12 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-11-02 | 14 | Merge: the sandbox refused the fast-forward in the main checkout (`Operation not permitted`), as in Stage 13; it was run in the owner's Terminal panel (approved in the app) with the merged-main checks; then a records-only follow-up commit with the hashes, against the DoD's "one git commit" | Rule 6 exception (sandbox); see [stage-14 worklog](stages/stage-14-data-cli/worklog.md) |
 | 2026-11-01 | 14 | **Owner decision on the price criterion.** "≥ 8 years of prices for ≥ 95% of current members" gave 475/503 = 94.4%: the other 28 members first traded less than 8 years ago (IPOs and spin-offs, each with bars from its first day), so no data could close the gap. Asked in chat; owner's answer: "Approve listed-8y reading (Recommended)" — the criterion is counted over current members that have traded for at least 8 years: 475/475 = 100%, with the raw 94.4% recorded alongside. The brief is not edited | Rule 1.4 / Rule 3: the AI may not reinterpret a criterion alone; see [stage-14 verification](stages/stage-14-data-cli/verification.md) |
 | 2026-11-02 | 14 | Post-DONE audit at the owner's request ("please audit whether everything has been completed"): every brief task, in-scope item, acceptance criterion and DoD item has evidence; three record gaps fixed (consolidated file list in the worklog incl. `tests/unit/core/test_logging.py`; the two-run backfill noted in plan Task 9; the follow-up `3d74a67` and its fast-forward recorded) in an audit-records commit | See [stage-14 worklog](stages/stage-14-data-cli/worklog.md) |
+| 2026-11-02 | 15 | Stage 15 planned and executed in one go (inline TDD, no subagents), as the owner asked in chat: "According to the planning markdown files, please help me to generate a fully broken-down stage 15 plan then implement the plans. Aim for full completion for this stage." Ledger = the stage `worklog.md`; one stage commit (Rule 2A) | Owner instruction; see [stage-15 plan](stages/stage-15-technical-features/plan.md) |
+| 2026-11-02 | 15 | Collisions check: none with the roadmap or the spec (row 15, M2, spec §3/§11/§12, protocol §4–§5). Interpretations 1–8: reference values from an independent plain-Python implementation written to fixture CSVs (TA-Lib is not a dependency; its conventions are followed); all 40 brief features are `ts` (`xs` plumbing tested with a test-local feature); `lookback` = sessions for the first value, the view loads `max(lookback) + buffer + history − 1`; prices adjusted with the view's `adj_close` (O/H/L scaled by the same factor), volume features on raw dollar volume; benchmark = `fund.benchmark`, missing/blocked → NaN; missing bars NaN with whole-window rules; snapshot universe = `sp500` members + requested symbols, USD features get no universe percentile; robust old-bad-bar handling and feature persistence left out (not in scope) | [plan › Collisions](stages/stage-15-technical-features/plan.md) |
+| 2026-11-02 | 15 | D1–D7 (plan): `cfg.quant.features` (`buffer_sessions` 63, `sessions_per_year` 252, `snapshot`: `history_sessions` 252, `min_history` 63, `universe` sp500, `min_universe` 20; new top-level `quant` section); `DataView.sessions(lookback)`; `FeatureSpec`/`FeatureRegistry`/`@feature`; `PricePanel`; `compute_panel` (pure) / `compute_features` (wide or long); 40 features with TA-Lib-style smoothers (SMA-seeded EMA/Wilder, state kept across a missing input); `TechnicalSnapshot` with mid-rank percentiles | [plan › Design decisions](stages/stage-15-technical-features/plan.md) |
+| 2026-11-02 | 15 | Earlier-stage code change (Stage 13): new public `DataView.sessions(lookback)` (the session grid of `prices`; raises `LookAheadError` if it ever ends at a bar published after the cutoff), added to the Stage 13 leak-suite tables (`METHODS`, `LEAKS`, `STATIC`, `NOT_PER_SYMBOL`). The protocol §5 `tiny_universe` fixture is built now (`tests/tiny_universe.py` + `tests/conftest.py`) | Needed by "the view loads exactly lookback + buffer sessions"; see [stage-15 worklog](stages/stage-15-technical-features/worklog.md) |
+| 2026-11-02 | 15 | Process deviation recorded: the plan's Tasks 7–13 asked for one red→green cycle per feature group; the tests of all seven groups were written first and failed together, then `technical.py` passed on its first run. Covered by 16 mutation checks (one gap found and closed: a max-drawdown edge case). Test files are prefixed (`test_feature_*.py`) because test basenames must be unique without `__init__.py` | [stage-15 worklog](stages/stage-15-technical-features/worklog.md) |
+
 ## Backlog (out-of-scope ideas captured during stages)
 
 - PCA/statistical risk model alongside the fundamental model
@@ -287,7 +293,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 06 audit) `atlas.core.logging.add_run_context` silently overwrites log keys named `run_id`, `mode`, `as_of` or `stage` with the current run's values (Stage 06 hit it with `mode=` and `run_id=`). Consider making it keep or warn on an existing key, or a lint/test that bans those names in `_log.*(...)` calls
 - (Stage 07) Alpaca adapter is tested only against built (not recorded) fixtures, and its live smoke test was skipped (no keys). Run `uv run pytest tests/unit/data -m live` with paper data keys and re-record the Alpaca fixtures from real responses
 - (Stage 07) Alpaca's free IEX feed reports IEX-only volume, unlike Yahoo's consolidated volume; a fallback that mixes vendors gives inconsistent volume (and slightly different prices) across symbols. Stage 13 quality scoring should flag the vendor mix; consider SIP or one vendor per symbol history. (Done 2026-10-30 in part: Stage 13's `vendor_mix` warning flags it; volumes are not reconciled)
-- (Stage 07) `adj_close` embeds actions after the bar's date (vendor value at fetch time): not point-in-time. Features (Stage 15) and DataView (Stage 13) should derive returns from raw prices + `corporate_actions`; `atlas.data.prices.adjustment_factors` already does it. (Done 2026-10-30 for DataView: `prices`/`returns` use our adjustment with the actions known at `as_of`; the vendor value is never exposed)
+- (Stage 07) `adj_close` embeds actions after the bar's date (vendor value at fetch time): not point-in-time. Features (Stage 15) and DataView (Stage 13) should derive returns from raw prices + `corporate_actions`; `atlas.data.prices.adjustment_factors` already does it. (Done 2026-10-30 for DataView: `prices`/`returns` use our adjustment with the actions known at `as_of`; the vendor value is never exposed; done 2026-11-02 for the Stage 15 features, which read only `DataView.prices`' `adj_close`)
 - (Stage 07) Not mapped: Alpaca stock dividends, spin-offs and other corporate action kinds; yfinance's `Capital Gains` column (fund distributions). Needed by Stage 52 accounting for ETFs with capital-gain distributions
 - (Stage 07) `corporate_actions.available_at` uses the ex-date bar (conservative); announcement/declaration dates are not captured, so an action is "known" later than in reality. Add `declared_at` if an event-driven pod needs announced splits/dividends (Stage 12/39)
 - (Stage 07) Raw vendor payloads are not archived under `raw/<vendor>/` (the on-disk cache under `cache/` serves repeat fetches). Consider archiving raw payloads in the Stage 14 backfill for audit/replay
@@ -327,12 +333,17 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 13) `_persist` rewrites the whole `data_quality_issues` table on every persisted report; replace only the report day's year partition once the table grows
 - (Stage 13) `fundamentals_panel` runs `fundamentals_pit_detail` once per symbol (~10 ms each, ~5 s for 500 names); vectorise or cache per partition if Stage 16 needs it (Stage 09 item)
 - (Stage 13) An unrecorded split of a ratio outside `data.quality.split_ratios`, or one hidden by a large real move on the same day, shows only as a `return_outlier` warning; a vendor action feed cross-check (declared splits) would catch it
-- (Stage 13) A block lasts while the issue is in the 21-session window; a bad bar older than that still sits inside 252-day feature windows (Stage 15 may want its own robust handling)
+- (Stage 13) A block lasts while the issue is in the 21-session window; a bad bar older than that still sits inside 252-day feature windows (Stage 15 may want its own robust handling; not in Stage 15's scope, kept open: see "Stage 15" below)
 - (Stage 14) One vendor bar with a null OHLC field makes Stage 07's `ingest_prices` skip the whole symbol (the 2026-11-01 backfill lost all of AVB's 2015–2026 history to one bad Yahoo bar). Consider dropping only the bad bar with a warning (the Stage 13 `missing_sessions` check then flags the gap), or retrying that symbol from Alpaca
 - (Stage 14) `src/atlas/data/sync.py` is ~1 700 lines (state, engine, steps, status); split it into a package when it next grows (Stage 65 CLI polish)
 - (Stage 14) yfinance spends ~25 s on each delisted symbol and logs "possibly delisted" / "Cookie/crumb fetch failed" lines; a backfill's prices step took 63 min for 777 symbols. `data.sync.empty_retry_days` keeps `update` from paying this daily; a persistent "known delisted" list would avoid it on fresh backfills too
 - (Stage 14) The 13 known pre-2018 membership anomalies are logged as warnings on every universe refresh (twice per sync); demote known ones to info
 - (Stage 14) Untagged market-wide news is not backfilled (only articles tagged with a synced symbol, SPY/QQQ included); add a capped market-news step if a strategy needs it
+- (Stage 15) Bad bars older than the quality window still sit inside 252-session feature windows (Stage 13 item, not in Stage 15's scope): features use whatever bars `DataView` returns; a robust variant (e.g. winsorised returns) is open
+- (Stage 15) Recursive features (EMA, Wilder ATR/RSI, MACD) depend on where the loaded window starts (seed weight decays geometrically; `quant.features.buffer_sessions` = 63 is the warm-up). Backtest (Stage 56) and live runs must use the same buffer to get identical values; a longer buffer or stored smoother state would remove the dependence
+- (Stage 15) Features are recomputed on every call (2.5 s for 500 symbols × 2,000 sessions); add a lake cache like Stage 16's `factor_exposures` if Stages 17/22 need repeated panels
+- (Stage 15) Volume features use raw dollar volume (split-invariant); a split-adjusted share-volume variant needs `DataView` to expose the split factor
+- (Stage 15) No `xs` feature is registered; cross-sectional transforms (ranks, z-scores, neutralisation) belong to Stage 16's cleaning pipeline and Stage 22
 
 ## Handoff notes
 
@@ -739,3 +750,27 @@ Full block and raw output: [verification.md](stages/stage-14-data-cli/verificati
   - [x] fundamentals for ≥ 90% — evidence: `atlas data status` 502/503 = 99.8%
   - [x] all macro series — evidence: `atlas data status` 22/22
 - Waivers: none (owner-approved reading of the price criterion, Decisions log 2026-11-01)
+
+### Stage 15 — Technical feature library — DONE 2026-11-02
+- Folder: [stages/stage-15-technical-features/](stages/stage-15-technical-features/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
+- Built: `atlas.quant.features` — `registry.py` (`FeatureSpec`, `FeatureRegistry`, `REGISTRY`, `@feature`, `PricePanel`, `compute_panel`, `compute_features`, `normalize_symbols`), `technical.py` (40 features: `ret_{1,5,21,63,126,252}d`, `momentum_12_1`, `reversal_5d`, `vol_21d`, `vol_63d`, `downside_vol_63d`, `atr_14`, `atr_pct_14`, `rsi_14`, `macd`, `macd_signal`, `macd_hist`, `bb_pctb_20`, `sma_/ema_{20,50,200}`, `price_to_sma_/price_to_ema_{20,50,200}`, `dist_52w_high`, `dist_52w_low`, `max_dd_252d`, `beta_252d`, `idio_vol_252d`, `volume_z_21d`, `amihud_21d`, `gap_1d`, `gap_mean_21d`, `gap_std_63d`; smoothers `smooth`/`ema`/`wilder`), `snapshot.py` (`FeatureReading`, `TechnicalSnapshot`, `build_snapshots`, `percentile_rank`); config `cfg.quant.features` (`QuantConfig`/`FeaturesConfig`/`SnapshotConfig`, YAML in `config/fund.yaml`); `DataView.sessions(lookback)`; test world `tests/tiny_universe.py` + fixture `tiny_universe`; reference `tests/unit/quant/features/feature_reference.py` + `tests/fixtures/features/{ohlcv,expected}.csv`
+- Key interfaces: `compute_features(view, symbols, names=None, *, history=1, layout="wide"|"long", registry=REGISTRY)` → `{name: DataFrame[date × symbol]}` or a `(date, symbol) × feature` frame for the last `history` known sessions; `compute_panel(panel, names)` (pure); `build_snapshots(view, symbols, *, names=None, universe=None) -> dict[str, TechnicalSnapshot]` (`.reading(name)`, `.value(name)`; `pct_own` / `pct_universe` fractions); `REGISTRY.get(name)` → `lookback`, `kind`, `unit`, `description`, `comparable`
+- Decisions: Decisions log rows dated 2026-11-02, stage 15 (execution, interpretations 1–8, D1–D7, the Stage 13 `DataView.sessions` change and `tiny_universe`, the Tasks 7–13 process deviation)
+- Collisions with the overall plan: none (interpretations only)
+- Deviations from brief: none in scope or criteria; reference values come from an independent Python implementation (the brief allowed "hand-computed or TA-Lib-reference"); tolerance rtol 1e-6 with an absolute floor 1e-9
+- Known gaps → backlog: old bad bars inside long windows; recursive features depend on the window start (keep `buffer_sessions` equal in backtest and live); no feature cache; dollar-volume (not share) volume features; no `xs` features (see Backlog, "Stage 15")
+- Next stage should know: importing `atlas.quant.features` registers the 40 features. Feature names follow Stage 17's example (`momentum_12_1`). Units are in `FeatureSpec.unit` (`fraction`, `annual_fraction`, `usd`, `ratio`, `index_0_100`, `zscore`, `return_per_usd_mm`); USD features are not comparable across symbols. Rows are trading sessions (`DataView.sessions`): a missing bar is NaN and window features stay NaN until the gap leaves the window; blocked symbols are absent; a missing or blocked benchmark gives NaN betas. Results are float64 with no infinities. Tests can use the `tiny_universe` fixture (5 tickers × 300 sessions with known betas 0.5/1.0/1.3/1.8, `sp500` membership) and `add_future_rows` from `tests/tiny_universe.py` for leak tests; test basenames must be unique across `tests/`. In this sandbox run `uv` with `UV_CACHE_DIR=$TMPDIR/uv-cache-s15 UV_NO_SYNC=1`
+
+#### Verification evidence — Stage 15 — 2026-11-02
+Full block and raw output: [verification.md](stages/stage-15-technical-features/verification.md) (**ALL CRITERIA VERIFIED**).
+- Commands run (this chat):
+  - `uv run pytest -q` → 2027 passed, 0 failed, 11 deselected (live)
+  - `uv run ruff check .` → All checks passed!
+  - `uv run ruff format --check .` → 204 files already formatted
+  - `uv run mypy src/atlas` → Success: no issues found in 88 source files
+  - `uv run pytest tests/unit/quant/features -q` (brief's Verify) → 339 passed
+  - `make check` → exit 0; stage tests with `-W error` → 339 passed; coverage of `atlas.quant.features` 100%; performance 500 × 2,000 all features 2.52 s (< 20 s); mutation checks 16/16 caught; docstrings → none missing
+- Acceptance criteria:
+  - [x] Every feature matches reference values within 1e-6 — evidence: `test_matches_reference[…]` × 40 vs `expected.csv` (independent reference, `test_expected_csv_is_current`), hand cases, known beta 1.3 (exact to 1e-9)
+  - [x] No look-ahead, enforced by a shift test — evidence: `test_shift_future_data_changes_nothing[…]` × 120, `test_truncating_the_future_changes_nothing[…]` × 40, `test_view_future_rows_never_leak`, `test_snapshot_no_lookahead`, leak suite on `DataView.sessions`; 3 look-ahead mutants caught
+- Waivers: none

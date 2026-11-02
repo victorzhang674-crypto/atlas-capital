@@ -1,0 +1,4 @@
+
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.52 s (limit 20 s)
+.
+1 passed in 3.76s

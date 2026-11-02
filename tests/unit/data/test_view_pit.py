@@ -4,7 +4,7 @@ import dataclasses
 import math
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -191,6 +191,22 @@ def test_lookback_validation(tmp_lake: Lake, bad: object) -> None:
         view.returns(["AAA"], bad)  # type: ignore[arg-type]
 
 
+def test_sessions_window(tmp_lake: Lake) -> None:  # Stage 15 D2
+    _bars_lake(tmp_lake, make_bars("AAA", walk(60), end=date(2024, 3, 1)))
+    view = DataView(tmp_lake, AS_OF)
+    assert view.sessions(5) == tuple(sessions_ending(END, 5))  # the 03-01 bar is unknown at 08:00
+    assert list(view.prices(["AAA"], 5)["date"]) == list(view.sessions(5))
+    evening = AsOf.for_session(date(2024, 3, 1), time(19, 0))  # after the bar is published
+    assert DataView(tmp_lake, evening).sessions(2) == (END, date(2024, 3, 1))
+    assert view.sessions(1) == (END,)
+
+
+@pytest.mark.parametrize("bad", [0, -1, True, 1.5])
+def test_sessions_lookback_validation(tmp_lake: Lake, bad: object) -> None:
+    with pytest.raises(ValueError, match="lookback"):
+        DataView(tmp_lake, AS_OF).sessions(bad)  # type: ignore[arg-type]
+
+
 def test_symbols_must_be_a_sequence(tmp_lake: Lake) -> None:
     with pytest.raises(ValueError, match="sequence"):
         DataView(tmp_lake, AS_OF).prices("AAA", 5)
@@ -366,6 +382,7 @@ METHODS: dict[str, Callable[[DataView], Any]] = {
     "instrument": lambda v: v.instrument("AAA"),
     "quality_issues": lambda v: v.quality_issues(),
     "blocked": lambda v: v.blocked,
+    "sessions": lambda v: v.sessions(30),
 }
 """Every public data method of `DataView`, called as strategy or agent code would."""
 
@@ -414,7 +431,10 @@ def test_future_rows_never_leak(world: World, method: str) -> None:
     _assert_known(dirty, AS_OF)
 
 
-STATIC = {"instrument": "instruments is static reference data (no knowledge time to inject)"}
+STATIC = {
+    "instrument": "instruments is static reference data (no knowledge time to inject)",
+    "sessions": "the session grid moves with the as-of and the calendar, not with lake rows",
+}
 
 
 @pytest.mark.parametrize("method", sorted(set(METHODS) - set(STATIC)))
@@ -507,6 +527,7 @@ LEAKS: dict[str, Callable[[pytest.MonkeyPatch], None]] = {
     "tradable": _leak_universe,
     "quality_issues": _leak_quality,
     "blocked": _leak_quality,
+    "sessions": _leak_bars,
 }
 """How to make each method's delegate leak a row from after the cutoff."""
 
@@ -559,6 +580,7 @@ NOT_PER_SYMBOL = {
     "market_news": "market-wide, about no single symbol",
     "quality_issues": "the report itself names the blocked symbol",
     "blocked": "the blocked set itself",
+    "sessions": "the session grid, about no symbol",
 }
 
 

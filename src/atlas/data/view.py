@@ -29,7 +29,7 @@ from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
 from atlas.core.errors import DataError, LookAheadError
 from atlas.core.logging import get_logger
-from atlas.core.pit import AsOf, assert_no_lookahead, pit_filter
+from atlas.core.pit import AsOf, assert_no_lookahead, bar_available_at, pit_filter
 from atlas.core.storage import AVAILABLE_AT, Lake
 from atlas.core.types.instruments import Instrument, normalize_symbol
 from atlas.core.types.research import Evidence
@@ -317,6 +317,25 @@ class DataView:
         return cal.sessions(cal.offset(last, -(n - 1)), last)
 
     # --- prices ---------------------------------------------------------------------------------
+
+    def sessions(self, lookback: int) -> tuple[date, ...]:
+        """The last `lookback` trading sessions whose daily bars are known at `as_of`, oldest
+        first: the session grid of `prices`, `returns` and `adv` (the last one is the latest
+        session whose bar is published before the cutoff). Raises `LookAheadError` if that
+        grid ever ends at a bar published after the cutoff."""
+        n = _positive("lookback", lookback)
+
+        def compute() -> tuple[date, ...]:
+            days = self._sessions(n)
+            published = bar_available_at(days[-1], self._shared.calendar)
+            if not self._as_of.knows(published):
+                raise LookAheadError(
+                    f"session {days[-1].isoformat()} is published at {published.isoformat()}, "
+                    f"not before the cutoff {self._as_of.cutoff.isoformat()}"
+                )
+            return days
+
+        return self._cached("sessions", (n,), compute)
 
     def _bars(self, symbols: tuple[str, ...], n: int) -> pd.DataFrame:
         """Known bars of `symbols` over the last `n` sessions plus our adjustment columns

@@ -8,6 +8,7 @@ import pytest
 
 from atlas.core.clock import SimClock, use_clock
 from atlas.core.storage import DEFAULT_REGISTRY, Lake
+from tiny_universe import TinyUniverse, build_tiny_universe
 
 
 @pytest.fixture(scope="session")
@@ -28,3 +29,10 @@ def sim_clock() -> Iterator[SimClock]:
 def tmp_lake(tmp_path: Path) -> Lake:
     """An empty `Lake` under `tmp_path/"lake"`, with its own copy of `DEFAULT_REGISTRY`."""
     return Lake(tmp_path / "lake", registry=DEFAULT_REGISTRY.copy())
+
+
+@pytest.fixture
+def tiny_universe(tmp_lake: Lake) -> TinyUniverse:
+    """5 tickers (AAA, BBB, CCC, DDD, SPY) x 300 sessions to 2024-02-29 with known betas to SPY
+    (0.5, 1.0, 1.3, 1.8) and daily vols, in `tmp_lake`; `.view()` reads it at 2024-03-01."""
+    return build_tiny_universe(tmp_lake)

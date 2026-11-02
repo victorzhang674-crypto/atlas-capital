@@ -864,6 +864,50 @@ class Secrets(_Frozen):
     sec_user_agent: SecretStr | None = None
 
 
+class SnapshotConfig(_Frozen):
+    """The per-symbol `TechnicalSnapshot` for the agents (Stage 15).
+
+    A latest value's percentile against the symbol's own history uses its last
+    `history_sessions` values of that feature (today's included) and needs at least
+    `min_history` of them; the percentile against the universe compares it with the latest
+    values of the members of `universe` at `as_of` (plus the requested symbols) and needs at
+    least `min_universe` of them.
+    """
+
+    history_sessions: Annotated[int, Field(ge=2)] = 252
+    min_history: Annotated[int, Field(ge=1)] = 63
+    universe: Annotated[str, Field(min_length=1)] = "sp500"
+    min_universe: Annotated[int, Field(ge=1)] = 20
+
+    @model_validator(mode="after")
+    def _min_history_fits(self) -> Self:
+        if self.min_history > self.history_sessions:
+            raise ValueError(
+                f"min_history ({self.min_history}) must not exceed history_sessions "
+                f"({self.history_sessions})"
+            )
+        return self
+
+
+class FeaturesConfig(_Frozen):
+    """The technical feature library (`atlas.quant.features`, Stage 15).
+
+    `compute_features` loads each feature's lookback plus `buffer_sessions` sessions (room for
+    missing bars and the warm-up of recursive smoothers such as EMAs). Volatilities are
+    annualised with `sessions_per_year` trading sessions.
+    """
+
+    buffer_sessions: Annotated[int, Field(ge=0)] = 63
+    sessions_per_year: Annotated[int, Field(ge=1)] = 252
+    snapshot: SnapshotConfig = Field(default_factory=SnapshotConfig)
+
+
+class QuantConfig(_Frozen):
+    """Quant engine settings (Phase 2)."""
+
+    features: FeaturesConfig = Field(default_factory=FeaturesConfig)
+
+
 class AtlasConfig(BaseSettings):
     """The whole configuration. Build it with `load_config()`; `AtlasConfig()` alone gives
     the code defaults and reads nothing from the environment."""
@@ -877,6 +921,7 @@ class AtlasConfig(BaseSettings):
     limits: LimitsConfig = Field(default_factory=LimitsConfig)
     pods: _PodMap = Field(default_factory=_default_pods)
     data: DataConfig = Field(default_factory=DataConfig)
+    quant: QuantConfig = Field(default_factory=QuantConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
     backtest: BacktestConfig = Field(default_factory=BacktestConfig)
     calendar: CalendarConfig = Field(default_factory=CalendarConfig)
@@ -989,7 +1034,7 @@ def _deep_merge(*layers: Mapping[str, Any]) -> dict[str, Any]:
 
 _ENV_PREFIX = "ATLAS__"
 # Top-level keys that YAML, env vars and overrides may set.
-_SECTIONS = frozenset({"fund", "limits", "pods", "data", "llm", "backtest", "calendar"})
+_SECTIONS = frozenset({"fund", "limits", "pods", "data", "quant", "llm", "backtest", "calendar"})
 _RESERVED = {
     "secrets": "'secrets' may only come from environment variables or .env",
     "profile": "'profile' may only come from load_config(profile=...)",
