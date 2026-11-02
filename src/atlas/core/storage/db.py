@@ -3,7 +3,10 @@
 The database file is `<lake root>/atlas.duckdb`. It stores only native tables (today the
 append-only `audit_events` mirror). Curated Parquet tables are exposed as views registered on
 this connection alone, never stored in the file, so moving the lake or opening the file
-read-only (the dashboard) never meets stale paths. The connection runs with `TimeZone = 'UTC'`.
+read-only (the dashboard) never meets stale paths. The connection runs with `TimeZone = 'UTC'`
+and can touch no file outside the lake root: `enable_external_access = false` with the lake as
+the only allowed directory, and the configuration locked, so a query cannot read
+`read_csv('/any/path')` or turn the setting back on.
 
 No SQL is built by formatting values into text: values are bound as `?` / `$name`
 parameters, and views are created through the relation API.
@@ -74,6 +77,7 @@ class Database:
             self._con.execute("SET TimeZone = 'UTC'")
             if not read_only:
                 self._con.execute(_AUDIT_DDL)
+            self._confine_to_lake()
             self.refresh()
         except BaseException:
             self.close()
@@ -98,6 +102,15 @@ class Database:
     def closed(self) -> bool:
         """`True` after `close()`."""
         return self._con is None
+
+    def _confine_to_lake(self) -> None:
+        """Allow file access only under the lake root (as given and resolved), then lock the
+        configuration so no later statement can widen it."""
+        con = self._connection()
+        roots = sorted({f"{self._lake.root}/", f"{self._lake.root.resolve()}/"})
+        con.execute("SET allowed_directories = ?", [roots])
+        con.execute("SET enable_external_access = false")
+        con.execute("SET lock_configuration = true")
 
     def _connection(self) -> duckdb.DuckDBPyConnection:
         if self._con is None:

@@ -8,9 +8,11 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
+from atlas.core.clock import SimClock
 from atlas.core.config import AtlasConfig, config_fingerprint
 from atlas.core.errors import AtlasError
 from atlas.core.run_context import RunContext, current_run_context, run_context, run_dir
+from atlas.core.types.ids import SeededIds, use_ids
 
 
 def _in_thread(fn: object) -> list[object]:
@@ -126,3 +128,13 @@ def test_run_context_is_frozen() -> None:
 
 def test_run_dir() -> None:
     assert run_dir(Path("data"), "01ABC") == Path("data/runs/01ABC")
+
+
+def test_run_id_stays_fresh_under_seeded_ids() -> None:  # Phase 0 checkpoint, Tier 3
+    # A re-run must not reuse (and append to) the earlier run's `runs/<run_id>/` files.
+    clock = SimClock(start=date(2024, 3, 1))
+    ids = []
+    for _ in range(2):
+        with use_ids(SeededIds(1, clock)), run_context(mode="backtest") as ctx:
+            ids.append(ctx.run_id)
+    assert ids[0] != ids[1]

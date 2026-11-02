@@ -4,19 +4,24 @@ Each run writes JSON lines to `<lake>/runs/<run_id>/audit.jsonl`. Every event st
 of the event before it, and its own hash is SHA-256 of that previous hash followed by the
 canonical JSON of the event (without the `hash` field), so editing, deleting or reordering
 any line breaks the chain and `AuditLog.verify_chain` returns `False`.
+
+Several processes may write one file: each append holds an exclusive `flock` on it and first
+re-reads the chain's tail if another process has appended since (POSIX only).
 """
 
+import fcntl
 import hashlib
 import json
 import os
 import threading
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from enum import Enum, StrEnum
 from pathlib import Path
-from typing import Annotated, Any
+from typing import IO, Annotated, Any
 
 from pydantic import (
     AwareDatetime,
@@ -27,10 +32,10 @@ from pydantic import (
     ValidationError,
     field_validator,
 )
-from ulid import ULID
 
 from atlas.core.errors import AtlasError
 from atlas.core.run_context import current_run_context, run_dir
+from atlas.core.types.ids import new_ulid
 
 GENESIS_HASH = "0" * 64
 """`prev_hash` of the first event in a log."""
@@ -99,11 +104,12 @@ def canonical_json(obj: object) -> str:
 class AuditEvent(BaseModel):
     """One line of the audit log.
 
-    `event_id` is a 26-char ULID and `ts` (tz-aware UTC, millisecond precision) is the time
-    embedded in it, i.e. when the event was recorded. `run_id` and `as_of` (the trading day
-    being decided, or `None`) come from the run context. `payload` holds JSON values only
-    (see `canonical_json`). `hash` is SHA-256 hex of `prev_hash` + the canonical JSON of every
-    other field.
+    `event_id` is a 26-char ULID from the current id source and `ts` (tz-aware UTC,
+    millisecond precision) is the time embedded in it, i.e. when the event was recorded: the
+    wall clock by default, the simulated clock under `use_ids(SeededIds(seed, clock))`.
+    `run_id` and `as_of` (the trading day being decided, or `None`) come from the run context.
+    `payload` holds JSON values only (see `canonical_json`). `hash` is SHA-256 hex of
+    `prev_hash` + the canonical JSON of every other field.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -160,10 +166,23 @@ def _last_verified_hash(path: Path) -> str | None:
 @dataclass
 class _ChainState:
     """Tail of one audit file, shared by every `AuditLog` on that file in this process.
-    `last_hash` is `None` once a write has failed: the file can no longer be trusted."""
+    `last_hash` is `None` once a write has failed: the file can no longer be trusted. `size`
+    is the file's length in bytes after this process last read or wrote it; any other length
+    means another process has appended since."""
 
     lock: threading.Lock = field(default_factory=threading.Lock)
     last_hash: str | None = GENESIS_HASH
+    size: int = 0
+
+
+@contextmanager
+def _flocked(fh: IO[Any], operation: int) -> Iterator[None]:
+    """Hold `fcntl.flock(fh, operation)` (shared or exclusive) for the `with` block."""
+    fcntl.flock(fh.fileno(), operation)
+    try:
+        yield
+    finally:
+        fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
 
 
 _STATES: dict[Path, _ChainState] = {}
@@ -180,9 +199,10 @@ class AuditLog:
 
     Opening an existing file verifies its whole chain first and raises `AtlasError` if it is
     broken: a tampered or half-written log is never extended. Appends are serialised by a lock
-    shared by every `AuditLog` on the same file in this process, and each line is flushed and
-    fsynced before `record` returns. Writing one file from several processes is not supported
-    (each run has its own file).
+    shared by every `AuditLog` on the same file in this process and by an exclusive `flock`
+    across processes; an append that finds the file grown by another process verifies the
+    whole chain again and continues from its real tail. Each line is flushed and fsynced
+    before `record` returns.
     """
 
     def __init__(self, path: Path) -> None:
@@ -191,12 +211,17 @@ class AuditLog:
         path.parent.mkdir(parents=True, exist_ok=True)
         self._state = _state_for(path)
         with self._state.lock:
-            last = _last_verified_hash(path) if path.exists() else GENESIS_HASH
+            last: str | None = GENESIS_HASH
+            size = 0
+            if path.exists():
+                with path.open("rb") as fh, _flocked(fh, fcntl.LOCK_SH):
+                    last = _last_verified_hash(path)
+                    size = os.fstat(fh.fileno()).st_size
             if last is None:
                 raise AtlasError(
                     f"audit log {path} fails hash-chain verification; refusing to append"
                 )
-            self._state.last_hash = last
+            self._state.last_hash, self._state.size = last, size
 
     @property
     def path(self) -> Path:
@@ -215,34 +240,46 @@ class AuditLog:
             raise AtlasError("AuditLog.record needs an active run context (use run_context())")
         normalised = json.loads(canonical_json(dict(payload)))
         with self._state.lock:
-            prev_hash = self._state.last_hash
-            if prev_hash is None:
+            if self._state.last_hash is None:
                 raise AtlasError(f"audit log {self._path} is unusable after a failed write")
-            ulid = ULID()
-            draft = AuditEvent(
-                event_id=str(ulid),
-                run_id=ctx.run_id,
-                ts=ulid.datetime,
-                as_of=ctx.as_of,
-                actor=actor,
-                event_type=event_type,
-                payload=normalised,
-                prev_hash=prev_hash,
-                hash=GENESIS_HASH,  # placeholder, replaced below
-            )
-            body = draft.model_dump(mode="json", exclude={"hash"})
-            event = draft.model_copy(update={"hash": _chain_hash(prev_hash, body)})
-            line = canonical_json(event.model_dump(mode="json")) + "\n"
-            try:
-                with self._path.open("a", encoding="utf-8") as fh:
+            with self._path.open("a", encoding="utf-8") as fh, _flocked(fh, fcntl.LOCK_EX):
+                prev_hash = self._tail(os.fstat(fh.fileno()).st_size)
+                ulid = new_ulid()
+                draft = AuditEvent(
+                    event_id=str(ulid),
+                    run_id=ctx.run_id,
+                    ts=ulid.datetime,
+                    as_of=ctx.as_of,
+                    actor=actor,
+                    event_type=event_type,
+                    payload=normalised,
+                    prev_hash=prev_hash,
+                    hash=GENESIS_HASH,  # placeholder, replaced below
+                )
+                body = draft.model_dump(mode="json", exclude={"hash"})
+                event = draft.model_copy(update={"hash": _chain_hash(prev_hash, body)})
+                line = canonical_json(event.model_dump(mode="json")) + "\n"
+                try:
                     fh.write(line)
                     fh.flush()
                     os.fsync(fh.fileno())
-            except BaseException:
-                self._state.last_hash = None
-                raise
-            self._state.last_hash = event.hash
+                except BaseException:
+                    self._state.last_hash = None
+                    raise
+                self._state.last_hash = event.hash
+                self._state.size = os.fstat(fh.fileno()).st_size
         return event
+
+    def _tail(self, size: int) -> str:
+        """The hash to chain the next event to, given the file's current `size`; caller holds
+        the exclusive file lock. If another process appended, re-verify the whole file."""
+        last = self._state.last_hash
+        if size != self._state.size:
+            last = _last_verified_hash(self._path)
+            self._state.last_hash, self._state.size = last, size
+        if last is None:
+            raise AtlasError(f"audit log {self._path} fails hash-chain verification")
+        return last
 
     @staticmethod
     def verify_chain(path: Path) -> bool:

@@ -165,9 +165,10 @@ class ThesisStatus(StrEnum):
 class InvestmentThesis(AtlasModel):
     """The Research Director's structured thesis on `ticker` (spec §7).
 
-    `exp_return` is the distribution of the simple return over `horizon_days` trading days;
-    `conviction` is in [0, 1]; `kill_criteria` are checkable conditions in Stage 36's DSL (for
-    example `price_below(300)`); `evidence` holds cited `Evidence.id`s.
+    `exp_return` is the distribution of the simple return over `horizon_days` trading days,
+    not annualised (unlike `View.exp_return`, which is); `conviction` is in [0, 1];
+    `kill_criteria` are checkable conditions in Stage 36's DSL (for example
+    `price_below(300)`); `evidence` holds cited `Evidence.id`s.
     """
 
     id: ThesisId

@@ -24,7 +24,12 @@ _Fraction = Annotated[float, Field(ge=0, le=1)]
 
 class View(AtlasModel):
     """A pod's expected return on `ticker`: `exp_return` is the annualised simple return,
-    `confidence` in [0, 1], over `horizon_days` trading days."""
+    `confidence` in [0, 1], over `horizon_days` trading days.
+
+    Not the same unit as `InvestmentThesis.exp_return` (a distribution of the simple return
+    over the whole horizon, spec §7 uses one name for both): a horizon return `r` becomes
+    `(1 + r) ** (252 / horizon_days) - 1` here.
+    """
 
     ticker: Symbol
     exp_return: Real

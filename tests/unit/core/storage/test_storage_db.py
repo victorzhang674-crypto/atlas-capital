@@ -2,6 +2,7 @@
 
 from collections.abc import Iterator
 from datetime import date
+from pathlib import Path
 
 import duckdb
 import pytest
@@ -191,3 +192,54 @@ def test_views_follow_registry_changes(lake: Lake, db: Database, prices_frame: P
     assert db.query("select count(*) as n from late")["n"].tolist() == [4]
     lake.registry.register(make_prices_schema(name="later"))  # no write: generation unchanged
     assert db.query("select count(*) as n from later")["n"].tolist() == [0]
+
+
+# --- Phase 0 checkpoint, Tier 3: no file access outside the lake ------------------------------
+
+
+def _outside_files(tmp_path: Path) -> dict[str, Path]:
+    """A CSV and a Parquet file in a sibling of the lake whose name starts like the lake's."""
+    outside = tmp_path / "lake2"
+    outside.mkdir()
+    csv = outside / "secret.csv"
+    csv.write_text("a\n1\n")
+    parquet = outside / "secret.parquet"
+    duckdb.sql(f"COPY (SELECT 1 AS a) TO '{parquet}'")
+    return {"csv": csv, "parquet": parquet}
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "select * from read_csv(?)",
+        "select * from read_text(?)",
+        "select * from read_parquet(?)",
+        "select * from read_blob(?)",
+    ],
+)
+@pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+def test_query_cannot_read_files_outside_the_lake(
+    lake: Lake, tmp_path: Path, sql: str, read_only: bool
+) -> None:
+    files = _outside_files(tmp_path)
+    target = files["parquet"] if "parquet" in sql else files["csv"]
+    Database(lake).close()
+    with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+        db.query(sql, [str(target)])
+    with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+        db.query(sql, [str(lake.root / ".." / "lake2" / target.name)])
+
+
+def test_query_still_reads_lake_files(lake: Lake, db: Database, prices_frame: PricesFrame) -> None:
+    lake.write_table("prices_daily", prices_frame())
+    glob = str(lake.table_path("prices_daily") / "**" / "*.parquet")
+    assert len(db.query("select * from read_parquet(?)", [glob])) == 4
+    assert len(db.query("select * from prices_daily")) == 4
+
+
+def test_file_access_setting_cannot_be_reopened(db: Database) -> None:
+    con = db._connection()
+    with pytest.raises(duckdb.Error):
+        con.execute("SET enable_external_access = true")
+    settings = db.query("select value from duckdb_settings() where name = 'enable_external_access'")
+    assert settings["value"].tolist() == ["false"]

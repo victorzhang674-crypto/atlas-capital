@@ -53,12 +53,14 @@ def run_context(
 ) -> Iterator[RunContext]:
     """Open a run, or a scope inside the current run, for the duration of the `with` block.
 
-    At top level this starts a **new run** with a fresh ULID. `mode` defaults to
-    `config.profile` when `config` is given, else `"dev"`; a `mode` that disagrees with
-    `config.profile` raises `AtlasError`. Nested inside a run it opens a **child scope**:
-    `run_id`, `mode` and `config_fingerprint` are inherited and only `as_of` and `stage` may
-    change (arguments left as `None` keep the parent's value); passing `mode` or `config`
-    raises `AtlasError`. The previous context is restored on exit, also on an exception.
+    At top level this starts a **new run** with a fresh random ULID, also under a seeded id
+    source (`use_ids`): a re-run must not reuse, and append to, an earlier run's
+    `runs/<run_id>/` files. `mode` defaults to `config.profile` when `config` is given, else
+    `"dev"`; a `mode` that disagrees with `config.profile` raises `AtlasError`. Nested inside a
+    run it opens a **child scope**: `run_id`, `mode` and `config_fingerprint` are inherited and
+    only `as_of` and `stage` may change (arguments left as `None` keep the parent's value);
+    passing `mode` or `config` raises `AtlasError`. The previous context is restored on exit,
+    also on an exception.
     """
     parent = _CURRENT.get()
     if parent is None:

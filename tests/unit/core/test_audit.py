@@ -3,7 +3,10 @@
 import contextvars
 import hashlib
 import json
+import subprocess
+import sys
 import threading
+import time
 from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
@@ -21,8 +24,10 @@ from atlas.core.audit import (
     audit_path,
     canonical_json,
 )
+from atlas.core.clock import SimClock
 from atlas.core.errors import AtlasError
 from atlas.core.run_context import run_context
+from atlas.core.types.ids import SeededIds, use_ids
 
 # --- canonical JSON -------------------------------------------------------------------------
 
@@ -342,3 +347,87 @@ def test_audit_event_is_frozen(log_path: Path) -> None:
     assert isinstance(event, AuditEvent)
     with pytest.raises(ValidationError):
         event.actor = "someone else"  # type: ignore[misc]
+
+
+# --- Phase 0 checkpoint, Tier 3: reproducible event ids --------------------------------------
+
+
+def _seeded_events(path: Path) -> tuple[list[AuditEvent], datetime]:
+    clock = SimClock(start=date(2024, 3, 1))
+    log = AuditLog(path)
+    with use_ids(SeededIds(3, clock)), run_context(mode="backtest", as_of=clock.today()):
+        events = [log.record(EventType.ORDER, "oms", {"n": n}) for n in range(3)]
+    return events, clock.now()
+
+
+def test_event_ids_and_times_follow_the_installed_id_source(tmp_path: Path) -> None:
+    first, now = _seeded_events(tmp_path / "a" / "audit.jsonl")
+    second, _ = _seeded_events(tmp_path / "b" / "audit.jsonl")
+    assert [e.event_id for e in first] == [e.event_id for e in second]
+    assert [e.ts for e in first] == [now] * 3  # simulated time, not the wall clock
+    assert first[0].run_id != second[0].run_id  # each run still gets its own id
+    assert AuditLog.verify_chain(tmp_path / "a" / "audit.jsonl")
+
+
+# --- Phase 0 checkpoint, Tier 3: several processes on one file -------------------------------
+
+# Opens the log, signals `ready`, waits for `go` (a barrier set by the test), then appends.
+_WRITER = """
+import sys, time
+from pathlib import Path
+from atlas.core.audit import AuditLog, EventType
+from atlas.core.run_context import run_context
+log_path, ready, go = (Path(arg) for arg in sys.argv[1:4])
+count = int(sys.argv[4])
+log = AuditLog(log_path)
+ready.touch()
+for _ in range(3000):
+    if go.exists():
+        break
+    time.sleep(0.01)
+with run_context():
+    for n in range(count):
+        log.record(EventType.FILL, f"proc-{ready.name}", {"n": n})
+"""
+
+
+def _writer(log_path: Path, tmp_path: Path, name: str, count: int) -> subprocess.Popen[bytes]:
+    args = [str(log_path), str(tmp_path / name), str(tmp_path / "go"), str(count)]
+    return subprocess.Popen([sys.executable, "-c", _WRITER, *args])
+
+
+def _wait_ready(tmp_path: Path, names: list[str]) -> None:
+    for _ in range(3000):
+        if all((tmp_path / name).exists() for name in names):
+            return
+        time.sleep(0.01)
+    raise AssertionError(f"writers never became ready: {names}")
+
+
+def test_appends_from_another_process_are_picked_up(log_path: Path, tmp_path: Path) -> None:
+    (tmp_path / "go").touch()
+    with run_context():
+        audit = AuditLog(log_path)
+        audit.record(EventType.ORDER, "here", {"n": 1})
+        assert _writer(log_path, tmp_path, "other", 2).wait(timeout=60) == 0
+        last = audit.record(EventType.ORDER, "here", {"n": 2})
+    lines = _lines(log_path)
+    assert len(lines) == 4
+    assert last.prev_hash == lines[2]["hash"]
+    assert AuditLog.verify_chain(log_path) is True
+
+
+def test_concurrent_processes_keep_chain_valid(log_path: Path, tmp_path: Path) -> None:
+    names = [f"w{i}" for i in range(4)]
+    procs = [_writer(log_path, tmp_path, name, 25) for name in names]
+    try:
+        _wait_ready(tmp_path, names)  # every writer has opened the log before anyone writes
+        (tmp_path / "go").touch()
+        assert [proc.wait(timeout=120) for proc in procs] == [0, 0, 0, 0]
+    finally:
+        for proc in procs:
+            proc.kill()
+    lines = _lines(log_path)
+    assert len(lines) == 100
+    assert len({line["event_id"] for line in lines}) == 100
+    assert AuditLog.verify_chain(log_path) is True

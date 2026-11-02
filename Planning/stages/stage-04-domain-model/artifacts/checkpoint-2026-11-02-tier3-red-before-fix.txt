@@ -1,0 +1,60 @@
++(eval):2> PYTHONPATH=/tmp/claude-501/redbase3/src uv run pytest -q -p no:cacheprovider tests/unit/core/types/test_types_ids.py tests/unit/core/test_audit.py tests/unit/core/test_run_context.py
+
+==================================== ERRORS ====================================
+___________ ERROR collecting tests/unit/core/types/test_types_ids.py ___________
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/types/test_types_ids.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/core/types/test_types_ids.py:13: in <module>
+    from atlas.core.types.ids import (
+E   ImportError: cannot import name 'RandomIds' from 'atlas.core.types.ids' (/tmp/claude-501/redbase3/src/atlas/core/types/ids.py)
+________________ ERROR collecting tests/unit/core/test_audit.py ________________
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_audit.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/core/test_audit.py:30: in <module>
+    from atlas.core.types.ids import SeededIds, use_ids
+E   ImportError: cannot import name 'SeededIds' from 'atlas.core.types.ids' (/tmp/claude-501/redbase3/src/atlas/core/types/ids.py)
+_____________ ERROR collecting tests/unit/core/test_run_context.py _____________
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_run_context.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/core/test_run_context.py:15: in <module>
+    from atlas.core.types.ids import SeededIds, use_ids
+E   ImportError: cannot import name 'SeededIds' from 'atlas.core.types.ids' (/tmp/claude-501/redbase3/src/atlas/core/types/ids.py)
+=========================== short test summary info ============================
+ERROR tests/unit/core/types/test_types_ids.py
+ERROR tests/unit/core/test_audit.py
+ERROR tests/unit/core/test_run_context.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!!
+3 errors in 0.59s
+exit 2
++(eval):3> PYTHONPATH=/tmp/claude-501/redbase3/src uv run pytest -q -p no:cacheprovider tests/unit/core/types/test_types_portfolio.py -k exp_return
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________________ test_exp_return_units_are_cross_referenced __________________
+
+    def test_exp_return_units_are_cross_referenced() -> None:  # Phase 0 checkpoint, Tier 3
+        # Spec §7 names both fields `exp_return`, in two units: annualised on a `View`, over the
+        # horizon on a thesis (and a forecast's `returns`). Each docstring must point at the other.
+        view = View.__doc__ or ""
+        thesis = InvestmentThesis.__doc__ or ""
+        forecast = Forecast.__doc__ or ""
+        assert "annualised" in view
+>       assert "InvestmentThesis.exp_return" in view
+E       assert 'InvestmentThesis.exp_return' in "A pod's expected return on `ticker`: `exp_return` is the annualised simple return,\n    `confidence` in [0, 1], over `horizon_days` trading days."
+
+tests/unit/core/types/test_types_portfolio.py:228: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/types/test_types_portfolio.py::test_exp_return_units_are_cross_referenced
+1 failed, 27 deselected in 0.59s
+exit 1

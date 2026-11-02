@@ -1,0 +1,10 @@
++(eval):4> uv run pytest tests/unit/core/types -q
+........................................................................ [ 26%]
+........................................................................ [ 52%]
+........................................................................ [ 78%]
+...........................................................              [100%]
+275 passed in 1.27s
++(eval):4> uv run mypy src/atlas/core
+pyproject.toml: note: unused section(s): module = ['atlas.accounting.*', 'atlas.execution.*', 'atlas.risk.*', 'yfinance']
+Success: no issues found in 23 source files
+exit 0

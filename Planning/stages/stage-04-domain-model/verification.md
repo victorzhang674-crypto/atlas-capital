@@ -40,3 +40,15 @@ Owner-requested follow-up (see worklog, 2026-11-02): ASCII-only symbols, possibl
 - On merged `main` (`af7c1bd`, fast-forward from `a7a1e09`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv run pytest -q` → 2088 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 205 files already formatted; `mypy src/atlas` → Success (88 files); the three briefs' Verify commands → 201 passed (02), 269 passed + mypy core Success (04), 768 passed + ruff clean (05); `make check` → exit 0 (2088 passed); `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 13 commands exit 0 · raw: [stage-04 artifacts/checkpoint-2026-11-02-tier2-merged-main-check.txt](artifacts/checkpoint-2026-11-02-tier2-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): reproducible ids through `use_ids(SeededIds(seed, clock))`; `exp_return` units cross-referenced (spec name kept, Rule 3). Re-run in this chat on the final working tree (base commit `e458f2f`):
+- Brief's Verify `uv run pytest tests/unit/core/types -q && uv run mypy src/atlas/core` → 275 passed; Success: no issues found in 23 source files; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-verify.txt](artifacts/checkpoint-2026-11-02-tier3-verify.txt)
+- The 6 new tests failed on `e458f2f`'s code (import error; cross-reference assertion) and PASS now · raw: [artifacts/checkpoint-2026-11-02-tier3-red-before-fix.txt](artifacts/checkpoint-2026-11-02-tier3-red-before-fix.txt)
+- `uv run pytest -q` → 2108 passed, 0 failed, 11 deselected (live/llm/integration), exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-pytest.txt](artifacts/checkpoint-2026-11-02-tier3-pytest.txt)
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 205 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files · raw: [artifacts/checkpoint-2026-11-02-tier3-lint-type.txt](artifacts/checkpoint-2026-11-02-tier3-lint-type.txt)
+- `make check` → lint, format check, mypy clean; 2108 passed; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-make-check.txt](artifacts/checkpoint-2026-11-02-tier3-make-check.txt)
+- Machine load during these runs: 11.68 → 6.43 (`uptime`) · raw: [artifacts/checkpoint-2026-11-02-tier3-load.txt](artifacts/checkpoint-2026-11-02-tier3-load.txt)
+- The acceptance criterion still holds (every spec §7 contract exists, validated and round-trippable; mypy strict for `core/types`): `test_every_model_has_a_sample`, `test_json_roundtrip[*]`, `test_every_public_model_and_enum_is_exported` pass; `uv run mypy src/atlas/core` → Success.
+
+**Result:** ALL CRITERIA VERIFIED

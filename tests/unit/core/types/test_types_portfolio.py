@@ -10,6 +10,7 @@ from hypothesis import strategies as st
 from pydantic import ValidationError
 
 from atlas.core.types.ids import IdPrefix, new_id
+from atlas.core.types.performance import Forecast
 from atlas.core.types.portfolio import (
     Breach,
     CapitalAllocation,
@@ -22,6 +23,7 @@ from atlas.core.types.portfolio import (
     View,
     Violation,
 )
+from atlas.core.types.research import InvestmentThesis
 from atlas.core.types.trading import Order, OrderType, Side
 
 AS_OF = date(2024, 1, 2)
@@ -214,3 +216,16 @@ def test_pod_and_metric_names_non_empty_and_unique() -> None:  # Phase 0 checkpo
         _alloc(pod_weights=twice, risk_budgets=twice)
     with pytest.raises(ValidationError, match="at least 1 character"):
         RiskDecision(status=RiskStatus.RESIZE, adjusted_weights={}, metrics={"": 1.0})
+
+
+def test_exp_return_units_are_cross_referenced() -> None:  # Phase 0 checkpoint, Tier 3
+    # Spec §7 names both fields `exp_return`, in two units: annualised on a `View`, over the
+    # horizon on a thesis (and a forecast's `returns`). Each docstring must point at the other.
+    view = View.__doc__ or ""
+    thesis = InvestmentThesis.__doc__ or ""
+    forecast = Forecast.__doc__ or ""
+    assert "annualised" in view
+    assert "InvestmentThesis.exp_return" in view
+    assert "252 / horizon_days" in view  # how to convert one into the other
+    assert "View.exp_return" in thesis
+    assert "View.exp_return" in forecast

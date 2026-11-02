@@ -1,0 +1,247 @@
++(eval):4> PYTHONPATH=/tmp/claude-501/redbase3/src uv run pytest -q -p no:cacheprovider tests/unit/core/storage/test_storage_db.py -k 'outside_the_lake or still_reads_lake or reopened'
+FFFFFFFF.F                                                               [100%]
+=================================== FAILURES ===================================
+_ test_query_cannot_read_files_outside_the_lake[read-write-select * from read_csv(?)] _
+
+lake = <atlas.core.storage.lake.Lake object at 0x119527650>
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-714/test_query_cannot_read_files_o0')
+sql = 'select * from read_csv(?)', read_only = False
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            "select * from read_csv(?)",
+            "select * from read_text(?)",
+            "select * from read_parquet(?)",
+            "select * from read_blob(?)",
+        ],
+    )
+    @pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+    def test_query_cannot_read_files_outside_the_lake(
+        lake: Lake, tmp_path: Path, sql: str, read_only: bool
+    ) -> None:
+        files = _outside_files(tmp_path)
+        target = files["parquet"] if "parquet" in sql else files["csv"]
+        Database(lake).close()
+>       with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionException
+
+tests/unit/core/storage/test_storage_db.py:227: Failed
+_ test_query_cannot_read_files_outside_the_lake[read-write-select * from read_text(?)] _
+
+lake = <atlas.core.storage.lake.Lake object at 0x11950b230>
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-714/test_query_cannot_read_files_o1')
+sql = 'select * from read_text(?)', read_only = False
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            "select * from read_csv(?)",
+            "select * from read_text(?)",
+            "select * from read_parquet(?)",
+            "select * from read_blob(?)",
+        ],
+    )
+    @pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+    def test_query_cannot_read_files_outside_the_lake(
+        lake: Lake, tmp_path: Path, sql: str, read_only: bool
+    ) -> None:
+        files = _outside_files(tmp_path)
+        target = files["parquet"] if "parquet" in sql else files["csv"]
+        Database(lake).close()
+>       with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionException
+
+tests/unit/core/storage/test_storage_db.py:227: Failed
+_ test_query_cannot_read_files_outside_the_lake[read-write-select * from read_parquet(?)] _
+
+lake = <atlas.core.storage.lake.Lake object at 0x1195316a0>
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-714/test_query_cannot_read_files_o2')
+sql = 'select * from read_parquet(?)', read_only = False
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            "select * from read_csv(?)",
+            "select * from read_text(?)",
+            "select * from read_parquet(?)",
+            "select * from read_blob(?)",
+        ],
+    )
+    @pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+    def test_query_cannot_read_files_outside_the_lake(
+        lake: Lake, tmp_path: Path, sql: str, read_only: bool
+    ) -> None:
+        files = _outside_files(tmp_path)
+        target = files["parquet"] if "parquet" in sql else files["csv"]
+        Database(lake).close()
+>       with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionException
+
+tests/unit/core/storage/test_storage_db.py:227: Failed
+_ test_query_cannot_read_files_outside_the_lake[read-write-select * from read_blob(?)] _
+
+lake = <atlas.core.storage.lake.Lake object at 0x119533680>
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-714/test_query_cannot_read_files_o3')
+sql = 'select * from read_blob(?)', read_only = False
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            "select * from read_csv(?)",
+            "select * from read_text(?)",
+            "select * from read_parquet(?)",
+            "select * from read_blob(?)",
+        ],
+    )
+    @pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+    def test_query_cannot_read_files_outside_the_lake(
+        lake: Lake, tmp_path: Path, sql: str, read_only: bool
+    ) -> None:
+        files = _outside_files(tmp_path)
+        target = files["parquet"] if "parquet" in sql else files["csv"]
+        Database(lake).close()
+>       with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionException
+
+tests/unit/core/storage/test_storage_db.py:227: Failed
+_ test_query_cannot_read_files_outside_the_lake[read-only-select * from read_csv(?)] _
+
+lake = <atlas.core.storage.lake.Lake object at 0x119509af0>
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-714/test_query_cannot_read_files_o4')
+sql = 'select * from read_csv(?)', read_only = True
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            "select * from read_csv(?)",
+            "select * from read_text(?)",
+            "select * from read_parquet(?)",
+            "select * from read_blob(?)",
+        ],
+    )
+    @pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+    def test_query_cannot_read_files_outside_the_lake(
+        lake: Lake, tmp_path: Path, sql: str, read_only: bool
+    ) -> None:
+        files = _outside_files(tmp_path)
+        target = files["parquet"] if "parquet" in sql else files["csv"]
+        Database(lake).close()
+>       with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionException
+
+tests/unit/core/storage/test_storage_db.py:227: Failed
+_ test_query_cannot_read_files_outside_the_lake[read-only-select * from read_text(?)] _
+
+lake = <atlas.core.storage.lake.Lake object at 0x1195316a0>
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-714/test_query_cannot_read_files_o5')
+sql = 'select * from read_text(?)', read_only = True
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            "select * from read_csv(?)",
+            "select * from read_text(?)",
+            "select * from read_parquet(?)",
+            "select * from read_blob(?)",
+        ],
+    )
+    @pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+    def test_query_cannot_read_files_outside_the_lake(
+        lake: Lake, tmp_path: Path, sql: str, read_only: bool
+    ) -> None:
+        files = _outside_files(tmp_path)
+        target = files["parquet"] if "parquet" in sql else files["csv"]
+        Database(lake).close()
+>       with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionException
+
+tests/unit/core/storage/test_storage_db.py:227: Failed
+_ test_query_cannot_read_files_outside_the_lake[read-only-select * from read_parquet(?)] _
+
+lake = <atlas.core.storage.lake.Lake object at 0x11951efc0>
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-714/test_query_cannot_read_files_o6')
+sql = 'select * from read_parquet(?)', read_only = True
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            "select * from read_csv(?)",
+            "select * from read_text(?)",
+            "select * from read_parquet(?)",
+            "select * from read_blob(?)",
+        ],
+    )
+    @pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+    def test_query_cannot_read_files_outside_the_lake(
+        lake: Lake, tmp_path: Path, sql: str, read_only: bool
+    ) -> None:
+        files = _outside_files(tmp_path)
+        target = files["parquet"] if "parquet" in sql else files["csv"]
+        Database(lake).close()
+>       with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionException
+
+tests/unit/core/storage/test_storage_db.py:227: Failed
+_ test_query_cannot_read_files_outside_the_lake[read-only-select * from read_blob(?)] _
+
+lake = <atlas.core.storage.lake.Lake object at 0x11973f980>
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-714/test_query_cannot_read_files_o7')
+sql = 'select * from read_blob(?)', read_only = True
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            "select * from read_csv(?)",
+            "select * from read_text(?)",
+            "select * from read_parquet(?)",
+            "select * from read_blob(?)",
+        ],
+    )
+    @pytest.mark.parametrize("read_only", [False, True], ids=["read-write", "read-only"])
+    def test_query_cannot_read_files_outside_the_lake(
+        lake: Lake, tmp_path: Path, sql: str, read_only: bool
+    ) -> None:
+        files = _outside_files(tmp_path)
+        target = files["parquet"] if "parquet" in sql else files["csv"]
+        Database(lake).close()
+>       with Database(lake, read_only=read_only) as db, pytest.raises(duckdb.PermissionException):
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE PermissionException
+
+tests/unit/core/storage/test_storage_db.py:227: Failed
+_________________ test_file_access_setting_cannot_be_reopened __________________
+
+db = <atlas.core.storage.db.Database object at 0x11973e8a0>
+
+    def test_file_access_setting_cannot_be_reopened(db: Database) -> None:
+        con = db._connection()
+        with pytest.raises(duckdb.Error):
+            con.execute("SET enable_external_access = true")
+        settings = db.query("select value from duckdb_settings() where name = 'enable_external_access'")
+>       assert settings["value"].tolist() == ["false"]
+E       AssertionError: assert ['true'] == ['false']
+E         
+E         At index 0 diff: 'true' != 'false'
+E         Use -v to get more diff
+
+tests/unit/core/storage/test_storage_db.py:245: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_cannot_read_files_outside_the_lake[read-write-select * from read_csv(?)]
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_cannot_read_files_outside_the_lake[read-write-select * from read_text(?)]
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_cannot_read_files_outside_the_lake[read-write-select * from read_parquet(?)]
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_cannot_read_files_outside_the_lake[read-write-select * from read_blob(?)]
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_cannot_read_files_outside_the_lake[read-only-select * from read_csv(?)]
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_cannot_read_files_outside_the_lake[read-only-select * from read_text(?)]
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_cannot_read_files_outside_the_lake[read-only-select * from read_parquet(?)]
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_cannot_read_files_outside_the_lake[read-only-select * from read_blob(?)]
+FAILED tests/unit/core/storage/test_storage_db.py::test_file_access_setting_cannot_be_reopened
+9 failed, 1 passed, 24 deselected in 0.87s
+exit 1

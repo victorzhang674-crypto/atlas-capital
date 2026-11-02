@@ -38,3 +38,15 @@ Owner-requested follow-up (see worklog, 2026-11-02): a caller's log value under 
 - On merged `main` (`d9cffb6`, fast-forward from `473629f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv run pytest -q` → 1678 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); 1M-row upsert → 0.73 s PASSED; `make check` → exit 0; `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 11 commands exit 0 · raw: [stage-06 artifacts/checkpoint-2026-11-02-merged-main-check.txt](../stage-06-storage/artifacts/checkpoint-2026-11-02-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): audit event ids come from the installed id source (reproducible under `SeededIds`), and several processes can append to one audit file safely. Re-run in this chat on the final working tree (base commit `e458f2f`):
+- Brief's Verify `uv run pytest tests/unit/core -q` → 788 passed, exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-verify.txt](artifacts/checkpoint-2026-11-02-tier3-verify.txt)
+- The 4 new tests failed on `e458f2f`'s code (2 import errors, 2 assertion failures: stale tail hash, broken chain) and PASS now · raw: [artifacts/checkpoint-2026-11-02-tier3-red-before-fix.txt](artifacts/checkpoint-2026-11-02-tier3-red-before-fix.txt)
+- `uv run pytest -q` → 2108 passed, 0 failed, 11 deselected (live/llm/integration), exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-pytest.txt](artifacts/checkpoint-2026-11-02-tier3-pytest.txt)
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 205 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files · raw: [artifacts/checkpoint-2026-11-02-tier3-lint-type.txt](artifacts/checkpoint-2026-11-02-tier3-lint-type.txt)
+- `make check` → lint, format check, mypy clean; 2108 passed; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-make-check.txt](artifacts/checkpoint-2026-11-02-tier3-make-check.txt)
+- Machine load during these runs: 11.68 → 6.43 (`uptime`) · raw: [artifacts/checkpoint-2026-11-02-tier3-load.txt](artifacts/checkpoint-2026-11-02-tier3-load.txt)
+- The acceptance criterion still holds (every audit event chained and verifiable; logs carry the run_id): `test_record_chains_events`, the `test_tamper_*` tests, `test_concurrent_threads_keep_chain_valid` and the two new cross-process tests pass; `test_event_ids_and_times_follow_the_installed_id_source` checks each run's own `run_id`.
+
+**Result:** ALL CRITERIA VERIFIED

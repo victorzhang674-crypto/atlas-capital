@@ -21,7 +21,8 @@ _PositiveDecimal = Annotated[Decimal, Field(gt=0)]
 
 class Forecast(AtlasModel):
     """What a prediction says: the `direction`, the probability in [0, 1] that the direction
-    is right (`confidence`), and the distribution of the simple return over the horizon."""
+    is right (`confidence`), and the distribution of the simple return over the horizon (not
+    annualised, unlike `View.exp_return`)."""
 
     direction: Direction
     confidence: UnitInterval

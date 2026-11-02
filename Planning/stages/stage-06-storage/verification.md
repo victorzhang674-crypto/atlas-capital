@@ -50,3 +50,15 @@ The checkpoint found the 1M-row upsert over 5 s on a heavily loaded machine (11.
 - On merged `main` (`d9cffb6`, fast-forward from `473629f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv run pytest -q` → 1678 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); 1M-row upsert → 0.73 s PASSED; `make check` → exit 0; `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 11 commands exit 0 · raw: [artifacts/checkpoint-2026-11-02-merged-main-check.txt](artifacts/checkpoint-2026-11-02-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 3) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): DuckDB file access confined to the lake root and locked. Re-run in this chat on the final working tree (base commit `e458f2f`):
+- Brief's Verify `uv run pytest tests/unit/core/storage -q` → 136 passed, exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-verify.txt](artifacts/checkpoint-2026-11-02-tier3-verify.txt)
+- The 9 new failing cases failed on `e458f2f`'s code and PASS now · raw: [artifacts/checkpoint-2026-11-02-tier3-red-before-fix.txt](artifacts/checkpoint-2026-11-02-tier3-red-before-fix.txt)
+- `uv run pytest -q` → 2108 passed, 0 failed, 11 deselected (live/llm/integration), exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-pytest.txt](artifacts/checkpoint-2026-11-02-tier3-pytest.txt)
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 205 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files · raw: [artifacts/checkpoint-2026-11-02-tier3-lint-type.txt](artifacts/checkpoint-2026-11-02-tier3-lint-type.txt)
+- `make check` → lint, format check, mypy clean; 2108 passed; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier3-make-check.txt](artifacts/checkpoint-2026-11-02-tier3-make-check.txt)
+- Machine load during these runs: 11.68 → 6.43 (`uptime`) · raw: [artifacts/checkpoint-2026-11-02-tier3-load.txt](artifacts/checkpoint-2026-11-02-tier3-load.txt)
+- The acceptance criterion still holds: 1M-row upsert 0.69 s (under 5 s) PASSED · raw: [artifacts/checkpoint-2026-11-02-tier3-speed.txt](artifacts/checkpoint-2026-11-02-tier3-speed.txt); all tests green.
+
+**Result:** ALL CRITERIA VERIFIED

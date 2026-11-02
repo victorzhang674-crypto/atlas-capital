@@ -1,0 +1,93 @@
++(eval):2> PYTHONPATH=/tmp/claude-501/redbase3/src uv run pytest -q -p no:cacheprovider tests/unit/core/types/test_types_ids.py tests/unit/core/test_audit.py tests/unit/core/test_run_context.py
+
+==================================== ERRORS ====================================
+___________ ERROR collecting tests/unit/core/types/test_types_ids.py ___________
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/types/test_types_ids.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/core/types/test_types_ids.py:13: in <module>
+    from atlas.core.types.ids import (
+E   ImportError: cannot import name 'RandomIds' from 'atlas.core.types.ids' (/tmp/claude-501/redbase3/src/atlas/core/types/ids.py)
+________________ ERROR collecting tests/unit/core/test_audit.py ________________
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_audit.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/core/test_audit.py:30: in <module>
+    from atlas.core.types.ids import SeededIds, use_ids
+E   ImportError: cannot import name 'SeededIds' from 'atlas.core.types.ids' (/tmp/claude-501/redbase3/src/atlas/core/types/ids.py)
+_____________ ERROR collecting tests/unit/core/test_run_context.py _____________
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_run_context.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/core/test_run_context.py:15: in <module>
+    from atlas.core.types.ids import SeededIds, use_ids
+E   ImportError: cannot import name 'SeededIds' from 'atlas.core.types.ids' (/tmp/claude-501/redbase3/src/atlas/core/types/ids.py)
+=========================== short test summary info ============================
+ERROR tests/unit/core/types/test_types_ids.py
+ERROR tests/unit/core/test_audit.py
+ERROR tests/unit/core/test_run_context.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!!
+3 errors in 0.59s
+exit 2
++(eval):10> PYTHONPATH=/tmp/claude-501/redbase3/src uv run pytest -q -p no:cacheprovider tests/unit/core/test_audit_lock_redcopy.py -k process
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______________ test_appends_from_another_process_are_picked_up ________________
+
+log_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-715/test_appends_from_another_proc0/run/audit.jsonl')
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-715/test_appends_from_another_proc0')
+
+    def test_appends_from_another_process_are_picked_up(log_path: Path, tmp_path: Path) -> None:
+        (tmp_path / "go").touch()
+        with run_context():
+            audit = AuditLog(log_path)
+            audit.record(EventType.ORDER, "here", {"n": 1})
+            assert _writer(log_path, tmp_path, "other", 2).wait(timeout=60) == 0
+            last = audit.record(EventType.ORDER, "here", {"n": 2})
+        lines = _lines(log_path)
+        assert len(lines) == 4
+>       assert last.prev_hash == lines[2]["hash"]
+E       AssertionError: assert '1d01205ce06b...ff9937534944a' == '7da19a60c229...f606a69ac16f4'
+E         
+E         - 7da19a60c229ed08ce767e6dfa36fdca10a2e72be095200e57af606a69ac16f4
+E         + 1d01205ce06b842c4b2e794c92158453997189dc61000a70988ff9937534944a
+
+tests/unit/core/test_audit_lock_redcopy.py:394: AssertionError
+__________________ test_concurrent_processes_keep_chain_valid __________________
+
+log_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-715/test_concurrent_processes_keep0/run/audit.jsonl')
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-715/test_concurrent_processes_keep0')
+
+    def test_concurrent_processes_keep_chain_valid(log_path: Path, tmp_path: Path) -> None:
+        names = [f"w{i}" for i in range(4)]
+        procs = [_writer(log_path, tmp_path, name, 25) for name in names]
+        try:
+            _wait_ready(tmp_path, names)  # every writer has opened the log before anyone writes
+            (tmp_path / "go").touch()
+            assert [proc.wait(timeout=120) for proc in procs] == [0, 0, 0, 0]
+        finally:
+            for proc in procs:
+                proc.kill()
+        lines = _lines(log_path)
+        assert len(lines) == 100
+        assert len({line["event_id"] for line in lines}) == 100
+>       assert AuditLog.verify_chain(log_path) is True
+E       AssertionError: assert False is True
+E        +  where False = <function AuditLog.verify_chain at 0x10d996ca0>(PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-715/test_concurrent_processes_keep0/run/audit.jsonl'))
+E        +    where <function AuditLog.verify_chain at 0x10d996ca0> = AuditLog.verify_chain
+
+tests/unit/core/test_audit_lock_redcopy.py:411: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_audit_lock_redcopy.py::test_appends_from_another_process_are_picked_up
+FAILED tests/unit/core/test_audit_lock_redcopy.py::test_concurrent_processes_keep_chain_valid
+2 failed, 32 deselected in 1.68s
+exit 1
