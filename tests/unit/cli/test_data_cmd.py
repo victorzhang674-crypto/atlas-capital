@@ -2,6 +2,7 @@
 the fake world's sources patched in (no network)."""
 
 import json
+import re
 import shutil
 import tomllib
 from collections.abc import Iterator
@@ -75,17 +76,24 @@ def run_dirs(root: Path) -> list[Path]:
     return sorted(p for p in runs.iterdir() if p.is_dir()) if runs.exists() else []
 
 
+def _plain(text: str) -> str:
+    """`text` without ANSI escape sequences (Rich styling)."""
+    return re.sub(r"\x1b\[[0-9;]*m", "", text)
+
+
 def test_help_lists_commands() -> None:
+    # Help text is compared unstyled: under GitHub Actions (or FORCE_COLOR) Typer forces Rich's
+    # terminal mode, which styles every option name.
     result = CliRunner().invoke(app, ["--help"], env=ENV)
     assert result.exit_code == 0
-    assert "data" in result.output
+    assert "data" in _plain(result.output)
     data_help = CliRunner().invoke(app, ["data", "--help"], env=ENV)
     assert data_help.exit_code == 0
     for command in ("sync", "update", "status", "quality"):
-        assert command in data_help.output
+        assert command in _plain(data_help.output)
     sync_help = CliRunner().invoke(app, ["data", "sync", "--help"], env=ENV)
     for option in ("--from", "--to", "--datasets", "--symbols"):
-        assert option in sync_help.output
+        assert option in _plain(sync_help.output)
 
 
 def test_sync_runs_and_prints_summary(world: World, tmp_path: Path) -> None:
@@ -267,6 +275,7 @@ def test_summary_not_truncated_without_terminal(
     world: World, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.delenv("COLUMNS", raising=False)
+    monkeypatch.delenv("FORCE_COLOR", raising=False)  # it makes Rich act as a terminal
     result = CliRunner().invoke(
         app, ["data", "sync", "--from", START.isoformat(), "--datasets", "universe,prices"],
         env={"NO_COLOR": "1"},

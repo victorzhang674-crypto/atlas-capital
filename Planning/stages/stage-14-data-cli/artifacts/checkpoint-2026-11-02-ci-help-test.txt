@@ -1,0 +1,25 @@
+# CI follow-up (Stage 14 test): help text compared unstyled · 2026-11-02 13:52 EST
+## CI run 41503861448 on 0208206 (ubuntu-24.04): make check -> 1 failed, 2117 passed (log: stage-01 artifacts/checkpoint-2026-11-02-ci-run-2-failed.txt)
+## reproduced locally before the fix
+$ GITHUB_ACTIONS=true CI=true uv run pytest -q
+FAILED tests/unit/cli/test_data_cmd.py::test_help_lists_commands - AssertionError: assert '--from' in '\x1b[1m                                                                                                              ...──────────────────────────────────────────────────────────────────────────────────────────────────────────╯\x1b[0m\n\n'
+1 failed, 2117 passed, 12 deselected in 39.74s
+
+## after the fix (help text unstyled; FORCE_COLOR unset in the no-terminal summary test)
+$ GITHUB_ACTIONS=true CI=true uv run pytest -q
+2118 passed, 12 deselected in 56.82s
+$ FORCE_COLOR=1 uv run pytest -q
+2118 passed, 12 deselected in 69.52s (0:01:09)
+$ uv sync --locked --group dev
+Resolved 80 packages in 1ms
+Checked 79 packages in 11ms
+exit=0
+$ make check
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.20 s (limit 20 s)
+2118 passed, 12 deselected in 55.91s
+ - ... skipped remainder
+exit=0
+$ make test-integration
+uv run pytest -m integration -q
+1 passed, 2129 deselected in 4.25s
+exit=0

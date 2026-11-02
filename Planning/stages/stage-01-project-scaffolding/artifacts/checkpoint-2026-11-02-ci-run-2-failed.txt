@@ -1,0 +1,91 @@
+check	Run make check	﻿2026-11-02T18:47:30.7526078Z ##[group]Run make check
+check	Run make check	2026-11-02T18:47:30.7526381Z ^[[36;1mmake check^[[0m
+check	Run make check	2026-11-02T18:47:30.7547260Z shell: /usr/bin/bash -e {0}
+check	Run make check	2026-11-02T18:47:30.7547518Z env:
+check	Run make check	2026-11-02T18:47:30.7547807Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+check	Run make check	2026-11-02T18:47:30.7548215Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+check	Run make check	2026-11-02T18:47:30.7548524Z ##[endgroup]
+check	Run make check	2026-11-02T18:47:30.7619277Z uv run ruff check .
+check	Run make check	2026-11-02T18:47:30.9070623Z All checks passed!
+check	Run make check	2026-11-02T18:47:30.9093415Z uv run ruff format --check .
+check	Run make check	2026-11-02T18:47:31.0135298Z 206 files already formatted
+check	Run make check	2026-11-02T18:47:31.0189865Z uv run mypy src/atlas
+check	Run make check	2026-11-02T18:47:45.2294816Z Success: no issues found in 88 source files
+check	Run make check	2026-11-02T18:47:45.2635823Z uv run pytest -q
+check	Run make check	2026-11-02T18:47:59.7441120Z F....................................................................... [  3%]
+check	Run make check	2026-11-02T18:48:00.0873312Z ........................................................................ [  6%]
+check	Run make check	2026-11-02T18:48:05.4022352Z ........................................................................ [ 10%]
+check	Run make check	2026-11-02T18:48:06.7039186Z ........................................................................ [ 13%]
+check	Run make check	2026-11-02T18:48:07.4801755Z ........................................................................ [ 16%]
+check	Run make check	2026-11-02T18:48:07.7711225Z ........................................................................ [ 20%]
+check	Run make check	2026-11-02T18:48:07.8867058Z ........................................................................ [ 23%]
+check	Run make check	2026-11-02T18:48:07.9702700Z ........................................................................ [ 27%]
+check	Run make check	2026-11-02T18:48:10.6292595Z ........................................................................ [ 30%]
+check	Run make check	2026-11-02T18:48:10.6884024Z ........................................................................ [ 33%]
+check	Run make check	2026-11-02T18:48:10.7480585Z ........................................................................ [ 37%]
+check	Run make check	2026-11-02T18:48:11.2754953Z ........................................................................ [ 40%]
+check	Run make check	2026-11-02T18:48:14.0655608Z ........................................................................ [ 44%]
+check	Run make check	2026-11-02T18:48:18.5075804Z ........................................................................ [ 47%]
+check	Run make check	2026-11-02T18:48:24.6127621Z ........................................................................ [ 50%]
+check	Run make check	2026-11-02T18:48:26.4460629Z ........................................................................ [ 54%]
+check	Run make check	2026-11-02T18:48:27.3003880Z ........................................................................ [ 57%]
+check	Run make check	2026-11-02T18:48:28.9162081Z ........................................................................ [ 61%]
+check	Run make check	2026-11-02T18:48:30.2802583Z ........................................................................ [ 64%]
+check	Run make check	2026-11-02T18:48:32.3445290Z ........................................................................ [ 67%]
+check	Run make check	2026-11-02T18:48:40.3453479Z ........................................................................ [ 71%]
+check	Run make check	2026-11-02T18:48:43.3572040Z ........................................................................ [ 74%]
+check	Run make check	2026-11-02T18:48:50.2743373Z ........................................................................ [ 78%]
+check	Run make check	2026-11-02T18:48:58.7998890Z ........................................................................ [ 81%]
+check	Run make check	2026-11-02T18:49:05.2734865Z ........................................................................ [ 84%]
+check	Run make check	2026-11-02T18:49:05.6508966Z ........................................................................ [ 88%]
+check	Run make check	2026-11-02T18:49:06.0940952Z ........................................................................ [ 91%]
+check	Run make check	2026-11-02T18:49:13.9019922Z .............................................................
+check	Run make check	2026-11-02T18:49:13.9023346Z compute_features: 40 features x 500 symbols x 2000 sessions in 5.58 s (limit 20 s)
+check	Run make check	2026-11-02T18:49:14.0960648Z ........... [ 95%]
+check	Run make check	2026-11-02T18:49:17.8412654Z ........................................................................ [ 98%]
+check	Run make check	2026-11-02T18:49:18.1050696Z ..............................                                           [100%]
+check	Run make check	2026-11-02T18:49:18.1051750Z =================================== FAILURES ===================================
+check	Run make check	2026-11-02T18:49:18.1055741Z ___________________________ test_help_lists_commands ___________________________
+check	Run make check	2026-11-02T18:49:18.1056604Z 
+check	Run make check	2026-11-02T18:49:18.1057021Z     def test_help_lists_commands() -> None:
+check	Run make check	2026-11-02T18:49:18.1057761Z         result = CliRunner().invoke(app, ["--help"], env=ENV)
+check	Run make check	2026-11-02T18:49:18.1058465Z         assert result.exit_code == 0
+check	Run make check	2026-11-02T18:49:18.1059074Z         assert "data" in result.output
+check	Run make check	2026-11-02T18:49:18.1059788Z         data_help = CliRunner().invoke(app, ["data", "--help"], env=ENV)
+check	Run make check	2026-11-02T18:49:18.1061003Z         assert data_help.exit_code == 0
+check	Run make check	2026-11-02T18:49:18.1061672Z         for command in ("sync", "update", "status", "quality"):
+check	Run make check	2026-11-02T18:49:18.1062384Z             assert command in data_help.output
+check	Run make check	2026-11-02T18:49:18.1063171Z         sync_help = CliRunner().invoke(app, ["data", "sync", "--help"], env=ENV)
+check	Run make check	2026-11-02T18:49:18.1064057Z         for option in ("--from", "--to", "--datasets", "--symbols"):
+check	Run make check	2026-11-02T18:49:18.1065057Z >           assert option in sync_help.output
+check	Run make check	2026-11-02T18:49:18.1068385Z E           AssertionError: assert '--from' in '\x1b[1m                                                                                                              ...──────────────────────────────────────────────────────────────────────────────────────────────────────────╯\x1b[0m\n\n'
+check	Run make check	2026-11-02T18:49:18.1071128Z E            +  where '\x1b[1m                                                                                                              ...──────────────────────────────────────────────────────────────────────────────────────────────────────────╯\x1b[0m\n\n' = <Result okay>.output
+check	Run make check	2026-11-02T18:49:18.1077662Z 
+check	Run make check	2026-11-02T18:49:18.1078178Z tests/unit/cli/test_data_cmd.py:88: AssertionError
+check	Run make check	2026-11-02T18:49:18.1078988Z =========================== short test summary info ============================
+check	Run make check	2026-11-02T18:49:18.1081454Z FAILED tests/unit/cli/test_data_cmd.py::test_help_lists_commands - AssertionError: assert '--from' in '\x1b[1m                                                                                                              ...──────────────────────────────────────────────────────────────────────────────────────────────────────────╯\x1b[0m\n\n'
+check	Run make check	2026-11-02T18:49:18.1084124Z  +  where '\x1b[1m                                                                                                              ...──────────────────────────────────────────────────────────────────────────────────────────────────────────╯\x1b[0m\n\n' = <Result okay>.output
+check	Run make check	2026-11-02T18:49:18.1085770Z 1 failed, 2117 passed, 12 deselected in 88.41s (0:01:28)
+check	Run make check	2026-11-02T18:49:18.4534369Z nanobind: leaked 27 instances!
+check	Run make check	2026-11-02T18:49:18.4535162Z nanobind: leaked 6 types!
+check	Run make check	2026-11-02T18:49:18.4535857Z  - leaked type "_duckdb._sqltypes.DuckDBPyType"
+check	Run make check	2026-11-02T18:49:18.4536923Z  - leaked type "_duckdb.DuckDBPyConnection"
+check	Run make check	2026-11-02T18:49:18.4537570Z  - leaked type "FunctionNullHandling"
+check	Run make check	2026-11-02T18:49:18.4538156Z  - leaked type "PythonUDFType"
+check	Run make check	2026-11-02T18:49:18.4538694Z  - leaked type "ExplainType"
+check	Run make check	2026-11-02T18:49:18.4539255Z  - leaked type "PythonExceptionHandling"
+check	Run make check	2026-11-02T18:49:18.4539855Z nanobind: leaked 84 functions!
+check	Run make check	2026-11-02T18:49:18.4540408Z  - leaked function "enable_profiling"
+check	Run make check	2026-11-02T18:49:18.4541056Z  - leaked function "__getattr__"
+check	Run make check	2026-11-02T18:49:18.4541694Z  - leaked function "union_type"
+check	Run make check	2026-11-02T18:49:18.4542356Z  - leaked function "fetchnumpy"
+check	Run make check	2026-11-02T18:49:18.4542978Z  - leaked function "_own_sources"
+check	Run make check	2026-11-02T18:49:18.4543521Z  - leaked function "list_filesystems"
+check	Run make check	2026-11-02T18:49:18.4544115Z  - leaked function "_prepare_script"
+check	Run make check	2026-11-02T18:49:18.4544961Z  - leaked function "executemany"
+check	Run make check	2026-11-02T18:49:18.4545551Z  - leaked function "__getitem__"
+check	Run make check	2026-11-02T18:49:18.4551859Z  - leaked function "interrupt"
+check	Run make check	2026-11-02T18:49:18.4555673Z  - ... skipped remainder
+check	Run make check	2026-11-02T18:49:18.4556574Z nanobind: this is likely caused by a reference counting issue in the binding code.
+check	Run make check	2026-11-02T18:49:18.4820991Z See https://nanobind.readthedocs.io/en/latest/refleaks.htmlmake: *** [Makefile:8: test] Error 1
+check	Run make check	2026-11-02T18:49:18.4847190Z ##[error]Process completed with exit code 2.
