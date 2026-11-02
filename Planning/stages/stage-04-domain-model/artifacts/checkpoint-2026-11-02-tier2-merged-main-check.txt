@@ -1,0 +1,290 @@
+# Phase 0 checkpoint Tier 2: fast-forward + verification on merged main · 2026-11-02 07:01 EST ·  7:01  up 22 days, 22:02, 2 users, load averages: 6.23 5.97 6.48
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/phase-one-checkpoint-28fcd7
+Updating a7a1e09..af7c1bd
+Fast-forward
+ Planning/PROGRESS.md                               |  26 +-
+ .../checkpoint-2026-11-02-tier2-fingerprints.txt   |  11 +
+ .../checkpoint-2026-11-02-tier2-lint-type.txt      |  12 +
+ .../artifacts/checkpoint-2026-11-02-tier2-load.txt |   3 +
+ .../checkpoint-2026-11-02-tier2-make-check.txt     |  62 ++++
+ ...heckpoint-2026-11-02-tier2-pytest-first-run.txt |  73 +++++
+ .../checkpoint-2026-11-02-tier2-pytest.txt         |  55 ++++
+ .../checkpoint-2026-11-02-tier2-red-before-fix.txt | 131 ++++++++
+ .../checkpoint-2026-11-02-tier2-verify.txt         |   6 +
+ .../stages/stage-02-configuration/verification.md  |  13 +
+ Planning/stages/stage-02-configuration/worklog.md  |  10 +
+ .../checkpoint-2026-11-02-tier2-lint-type.txt      |  12 +
+ .../artifacts/checkpoint-2026-11-02-tier2-load.txt |   3 +
+ .../checkpoint-2026-11-02-tier2-make-check.txt     |  62 ++++
+ ...heckpoint-2026-11-02-tier2-merged-main-check.sh |  15 +
+ ...heckpoint-2026-11-02-tier2-pytest-first-run.txt |  73 +++++
+ .../checkpoint-2026-11-02-tier2-pytest.txt         |  55 ++++
+ .../checkpoint-2026-11-02-tier2-red-before-fix.txt | 334 +++++++++++++++++++++
+ .../checkpoint-2026-11-02-tier2-verify.txt         |  10 +
+ .../stages/stage-04-domain-model/verification.md   |  12 +
+ Planning/stages/stage-04-domain-model/worklog.md   |  12 +
+ .../checkpoint-2026-11-02-tier2-lint-type.txt      |  12 +
+ .../artifacts/checkpoint-2026-11-02-tier2-load.txt |   3 +
+ .../checkpoint-2026-11-02-tier2-make-check.txt     |  62 ++++
+ ...heckpoint-2026-11-02-tier2-pytest-first-run.txt |  73 +++++
+ .../checkpoint-2026-11-02-tier2-pytest.txt         |  55 ++++
+ .../checkpoint-2026-11-02-tier2-red-before-fix.txt | 189 ++++++++++++
+ .../checkpoint-2026-11-02-tier2-verify.txt         |  37 +++
+ Planning/stages/stage-05-clock-pit/verification.md |  12 +
+ Planning/stages/stage-05-clock-pit/worklog.md      |  10 +
+ src/atlas/core/calendar.py                         |  18 +-
+ src/atlas/core/clock.py                            |   9 +-
+ src/atlas/core/config.py                           |  14 +-
+ src/atlas/core/types/__init__.py                   |   2 +
+ src/atlas/core/types/base.py                       |  28 ++
+ src/atlas/core/types/ids.py                        |   3 +-
+ src/atlas/core/types/instruments.py                |   7 +-
+ src/atlas/core/types/performance.py                |  10 +-
+ src/atlas/core/types/portfolio.py                  |  11 +-
+ src/atlas/core/types/research.py                   |  25 +-
+ src/atlas/core/types/trading.py                    |  21 +-
+ tests/unit/core/test_calendar.py                   |  37 +++
+ tests/unit/core/test_clock.py                      |  30 +-
+ tests/unit/core/test_config.py                     |  43 ++-
+ tests/unit/core/test_pit.py                        |  38 +++
+ tests/unit/core/types/test_types_ids.py            |  11 +-
+ tests/unit/core/types/test_types_instruments.py    |  18 ++
+ tests/unit/core/types/test_types_performance.py    |  20 ++
+ tests/unit/core/types/test_types_portfolio.py      |  13 +
+ tests/unit/core/types/test_types_research.py       |  37 +++
+ tests/unit/core/types/test_types_trading.py        |  30 ++
+ 51 files changed, 1813 insertions(+), 55 deletions(-)
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier2-fingerprints.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier2-lint-type.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier2-load.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier2-make-check.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier2-pytest.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier2-verify.txt
+ create mode 100644 Planning/stages/stage-04-domain-model/artifacts/checkpoint-2026-11-02-tier2-lint-type.txt
+ create mode 100644 Planning/stages/stage-04-domain-model/artifacts/checkpoint-2026-11-02-tier2-load.txt
+ create mode 100644 Planning/stages/stage-04-domain-model/artifacts/checkpoint-2026-11-02-tier2-make-check.txt
+ create mode 100644 Planning/stages/stage-04-domain-model/artifacts/checkpoint-2026-11-02-tier2-merged-main-check.sh
+ create mode 100644 Planning/stages/stage-04-domain-model/artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt
+ create mode 100644 Planning/stages/stage-04-domain-model/artifacts/checkpoint-2026-11-02-tier2-pytest.txt
+ create mode 100644 Planning/stages/stage-04-domain-model/artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-04-domain-model/artifacts/checkpoint-2026-11-02-tier2-verify.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-tier2-lint-type.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-tier2-load.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-tier2-make-check.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-tier2-pytest.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-tier2-verify.txt
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD af7c1bd
+
+$ uv sync --group dev
+Resolved 78 packages in 15ms
+Checked 77 packages in 20ms
+exit=0
+
+$ uv run pytest -q
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 93%]
+..................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.92 s (limit 20 s)
+...................................... [ 96%]
+........................................................................ [100%]
+2088 passed, 11 deselected in 36.02s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "__getitem__"
+ - leaked function "array_type"
+ - leaked function "unregister"
+ - leaked function "append"
+ - leaked function ""
+ - leaked function "dtype"
+ - leaked function "register"
+ - leaked function "type"
+ - leaked function "string_type"
+ - leaked function ""
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+205 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 88 source files
+exit=0
+
+$ uv run pytest tests/unit/core/test_config.py -q
+........................................................................ [ 35%]
+........................................................................ [ 71%]
+.........................................................                [100%]
+201 passed in 1.25s
+exit=0
+
+$ uv run pytest tests/unit/core/types -q && uv run mypy src/atlas/core
+........................................................................ [ 26%]
+........................................................................ [ 53%]
+........................................................................ [ 80%]
+.....................................................                    [100%]
+269 passed in 0.65s
+pyproject.toml: note: unused section(s): module = ['atlas.accounting.*', 'atlas.execution.*', 'atlas.risk.*', 'yfinance']
+Success: no issues found in 23 source files
+exit=0
+
+$ uv run pytest tests/unit/core -q && uv run ruff check .
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 28%]
+........................................................................ [ 37%]
+........................................................................ [ 46%]
+........................................................................ [ 56%]
+........................................................................ [ 65%]
+........................................................................ [ 75%]
+........................................................................ [ 84%]
+........................................................................ [ 93%]
+................................................                         [100%]
+768 passed in 5.83s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "__getitem__"
+ - leaked function "register_filesystem"
+ - leaked function "fetchmany"
+ - leaked function "__eq__"
+ - leaked function "executemany"
+ - leaked function "torch"
+ - leaked function "install_extension"
+ - leaked function "create_function"
+ - leaked function "unregister_filesystem"
+ - leaked function "_result_as_arrow"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlAll checks passed!
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+205 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 93%]
+..................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.54 s (limit 20 s)
+...................................... [ 96%]
+........................................................................ [100%]
+2088 passed, 11 deselected in 32.54s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "__eq__"
+ - leaked function "fetchall"
+ - leaked function "fetchone"
+ - leaked function "register_filesystem"
+ - leaked function "query_appender"
+ - leaked function "duplicate"
+ - leaked function "_own_sources"
+ - leaked function "_statement_count"
+ - leaked function "load_extension"
+ - leaked function "rollback"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0

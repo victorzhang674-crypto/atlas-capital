@@ -412,7 +412,7 @@ Full block and raw output: [verification.md](stages/stage-02-configuration/verif
   - [x] Every limit in spec §9 exists as a typed field — evidence: `test_limits_cover_spec_section_9[*]`, `test_drawdown_tiers_and_pod_stops_defaults`
 - Waivers: none
 - Phase 0 checkpoint follow-up — 2026-11-02: [stage-02 verification](stages/stage-02-configuration/verification.md): `config_fingerprint` normalises Decimals (`test_fingerprint_same_for_equal_decimals_written_differently`); brief's Verify 184 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
-- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-02 verification](stages/stage-02-configuration/verification.md): config floats reject NaN/inf, `initial_capital > 0`, drawdown tiers escalate (`test_no_config_model_accepts_infinity`, new `test_invalid_config_raises` cases); fingerprints unchanged; brief's Verify 201 passed; full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-02 verification](stages/stage-02-configuration/verification.md): config floats reject NaN/inf, `initial_capital > 0`, drawdown tiers escalate (`test_no_config_model_accepts_infinity`, new `test_invalid_config_raises` cases); fingerprints unchanged; brief's Verify 201 passed; full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0; merged into `main` as `af7c1bd` (fast-forward), same results there
 
 ### Stage 03 — Logging, run context & audit trail — DONE 2026-10-26
 - Folder: [stages/stage-03-logging-audit/](stages/stage-03-logging-audit/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -467,7 +467,7 @@ Full block and raw output: [verification.md](stages/stage-04-domain-model/verifi
   - [x] Every contract in spec §7 exists, validated and round-trippable — evidence: artifacts/section7-coverage.txt; `test_every_model_has_a_sample`, `test_json_roundtrip[*]` (28 models), validation tests listed in verification.md
   - [x] mypy strict passes for `core/types` — evidence: `uv run mypy src/atlas/core` → Success (artifacts/verify.txt)
 - Waivers: none
-- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-04 verification](stages/stage-04-domain-model/verification.md): ASCII-only symbols, `[0-7]` ULIDs, `NonEmptyStr` tuple items, `NameMap` keys, REJECTED/no-self-parent/unique-pod `Order`, `Prediction.outcome >= -1` (26 new test cases); brief's Verify 269 passed, mypy core Success (23 files); full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-04 verification](stages/stage-04-domain-model/verification.md): ASCII-only symbols, `[0-7]` ULIDs, `NonEmptyStr` tuple items, `NameMap` keys, REJECTED/no-self-parent/unique-pod `Order`, `Prediction.outcome >= -1` (26 new test cases); brief's Verify 269 passed, mypy core Success (23 files); full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0; merged into `main` as `af7c1bd` (fast-forward), same results there
 
 ### Stage 05 — Clock, trading calendar & point-in-time guard — DONE 2026-10-26
 - Folder: [stages/stage-05-clock-pit/](stages/stage-05-clock-pit/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -495,7 +495,7 @@ Full block and raw output: [verification.md](stages/stage-05-clock-pit/verificat
   - [x] PIT boundary tests pass — evidence: `test_bar_not_visible_same_morning`, `test_bar_visible_next_session_morning`, `test_knows_is_strict`, `test_pit_filter_keeps_only_known_rows`, `test_injected_future_bar_is_caught` (artifacts/stage-tests-verbose.txt)
 - Waivers: none
 - Phase 0 checkpoint follow-up — 2026-11-02: [stage-05 verification](stages/stage-05-clock-pit/verification.md): `pandas>=3.0` / `pandas-stubs>=3.0` (`test_pandas_floor_is_pandas_3`); brief's Verify 704 passed, ruff clean; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
-- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-05 verification](stages/stage-05-clock-pit/verification.md): calendar rejects `datetime` with a `market_date()` hint, `SimClock` checks instant bounds, DST fall-back / early-close / duplicate-label tests; brief's Verify 768 passed, ruff clean; full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-05 verification](stages/stage-05-clock-pit/verification.md): calendar rejects `datetime` with a `market_date()` hint, `SimClock` checks instant bounds, DST fall-back / early-close / duplicate-label tests; brief's Verify 768 passed, ruff clean; full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0; merged into `main` as `af7c1bd` (fast-forward), same results there
 
 ### Stage 06 — Storage layer (DuckDB + Parquet lake) — DONE 2026-10-27
 - Folder: [stages/stage-06-storage/](stages/stage-06-storage/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
