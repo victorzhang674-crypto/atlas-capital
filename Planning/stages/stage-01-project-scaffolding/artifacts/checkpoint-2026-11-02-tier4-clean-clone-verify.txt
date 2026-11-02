@@ -1,0 +1,23 @@
+# Phase 0 checkpoint Tier 4 (Stage 01): brief's Verify on a fresh clone of be247fb · 2026-11-02 13:17 EST
+# clone: git clone --branch claude/phase-one-checkpoint-28fcd7 <repo> $TMPDIR/t4/clone; HEAD be247fb
+$ uv sync --group dev && make check && git log --oneline
+ + websockets==17.3
+ + yfinance==1.7.0
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+206 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+............................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.16 s (limit 20 s)
+2116 passed, 12 deselected in 33.11s
+ - ... skipped remainder
+be247fb phase-0 checkpoint: Tier 4 follow-ups (stages 01, 02, 06)
+81ada1e phase-0 checkpoint: Tier 3 merged-main check records
+d846205 phase-0 checkpoint: Tier 3 follow-ups (stages 03, 04, 06)
+exit=0
+$ make test-integration
+1 passed, 2127 deselected in 1.95s
+exit=0

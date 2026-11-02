@@ -1,0 +1,198 @@
+# Phase 0 checkpoint Tier 4: fast-forward + verification on merged main · 2026-11-02 13:19 EST · 13:19  up 23 days,  4:21, 2 users, load averages: 5.77 5.78 5.56
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/phase-one-checkpoint-28fcd7
+Updating 81ada1e..be247fb
+Fast-forward
+ .pre-commit-config.yaml                            | 32 ++++++---
+ Makefile                                           |  5 +-
+ Planning/PROGRESS.md                               | 17 +++--
+ .../checkpoint-2026-11-02-tier4-pre-commit.txt     |  7 ++
+ .../checkpoint-2026-11-02-tier4-red-before-fix.txt | 20 ++++++
+ .../checkpoint-2026-11-02-tier4-verify.txt         | 49 ++++++++++++++
+ .../stage-01-project-scaffolding/verification.md   |  9 +++
+ .../stages/stage-01-project-scaffolding/worklog.md | 13 ++++
+ .../checkpoint-2026-11-02-tier4-fingerprints.txt   | 13 ++++
+ .../checkpoint-2026-11-02-tier4-red-before-fix.txt | 28 ++++++++
+ .../checkpoint-2026-11-02-tier4-verify.txt         | 49 ++++++++++++++
+ .../stages/stage-02-configuration/verification.md  | 10 +++
+ Planning/stages/stage-02-configuration/worklog.md  | 12 ++++
+ .../checkpoint-2026-11-02-tier4-floors.txt         |  9 +++
+ .../checkpoint-2026-11-02-tier4-nanobind.txt       | 38 +++++++++++
+ .../checkpoint-2026-11-02-tier4-red-before-fix.txt | 55 ++++++++++++++++
+ .../checkpoint-2026-11-02-tier4-verify.txt         | 49 ++++++++++++++
+ Planning/stages/stage-06-storage/verification.md   | 11 ++++
+ Planning/stages/stage-06-storage/worklog.md        | 11 ++++
+ README.md                                          |  2 +-
+ pyproject.toml                                     |  5 +-
+ src/atlas/core/config.py                           | 75 +++++++---------------
+ tests/integration/test_phase0_run.py               | 61 ++++++++++++++++++
+ tests/unit/core/test_config.py                     | 57 ++++++++++++++++
+ tests/unit/test_dependency_floors.py               | 11 ++++
+ tests/unit/test_toolchain.py                       | 15 +++++
+ uv.lock                                            | 27 +++++++-
+ 27 files changed, 619 insertions(+), 71 deletions(-)
+ create mode 100644 Planning/stages/stage-01-project-scaffolding/artifacts/checkpoint-2026-11-02-tier4-pre-commit.txt
+ create mode 100644 Planning/stages/stage-01-project-scaffolding/artifacts/checkpoint-2026-11-02-tier4-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-01-project-scaffolding/artifacts/checkpoint-2026-11-02-tier4-verify.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier4-fingerprints.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier4-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-tier4-verify.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-tier4-floors.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-tier4-nanobind.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-tier4-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-tier4-verify.txt
+ create mode 100644 tests/integration/test_phase0_run.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD be247fb
+
+$ uv sync --group dev
+ ~ atlas-capital==0.1.0 (from file:///Users/zzjsmacbookair/Projects/atlas-capital)
+ + pre-commit-hooks==6.0.0
+ + ruamel-yaml==0.19.1
+exit=0
+
+$ uv lock --check
+Resolved 80 packages in 3ms
+exit=0
+
+$ uv run pytest -q
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+............................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.26 s (limit 20 s)
+............ [ 95%]
+........................................................................ [ 98%]
+............................                                             [100%]
+2116 passed, 12 deselected in 30.90s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest -m integration -q
+.                                                                        [100%]
+1 passed, 2127 deselected in 1.15s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+206 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 88 source files
+exit=0
+
+$ uv run pytest tests/unit/core/test_config.py -q
+........................................................................ [ 34%]
+........................................................................ [ 69%]
+...............................................................          [100%]
+207 passed in 1.17s
+exit=0
+
+$ uv run pytest tests/unit/core/storage -q
+........................................................................ [ 52%]
+................................................................         [100%]
+136 passed in 2.69s
+exit=0
+
+$ uv run pre-commit run --all-files
+ruff.....................................................................Passed
+ruff format..............................................................Passed
+fix end of files.........................................................Passed
+trim trailing whitespace.................................................Passed
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+206 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+............................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.53 s (limit 20 s)
+............ [ 95%]
+........................................................................ [ 98%]
+............................                                             [100%]
+2116 passed, 12 deselected in 29.80s
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+be247fb phase-0 checkpoint: Tier 4 follow-ups (stages 01, 02, 06)
+81ada1e phase-0 checkpoint: Tier 3 merged-main check records
+d846205 phase-0 checkpoint: Tier 3 follow-ups (stages 03, 04, 06)
+exit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
