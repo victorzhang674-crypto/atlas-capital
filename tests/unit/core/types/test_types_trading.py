@@ -180,3 +180,33 @@ def test_position_market_value_short() -> None:
     assert not flat.is_long and not flat.is_short
     with pytest.raises(ValidationError):
         Position(symbol="TSLA", quantity=Decimal("1"), avg_cost=Decimal("-1"))
+
+
+# --- Phase 0 checkpoint, Tier 2 -------------------------------------------------------------
+
+
+def test_rejected_order_has_no_fills() -> None:
+    assert _order(status=OrderStatus.REJECTED).filled_quantity == 0
+    with pytest.raises(ValidationError, match="REJECTED order cannot have fills"):
+        _order(status=OrderStatus.REJECTED, filled_quantity=Decimal("10"))
+
+
+def test_order_cannot_be_its_own_parent() -> None:
+    oid = new_id(IdPrefix.ORDER)
+    assert _order(id=oid, parent_id=new_id(IdPrefix.ORDER)).parent_id != oid
+    with pytest.raises(ValidationError, match="its own parent"):
+        _order(id=oid, parent_id=oid)
+
+
+def test_order_pods_unique() -> None:
+    assert _order(pods=("statarb", "systematic")).pods == ("statarb", "systematic")
+    for pods in (("systematic", "systematic"), (" systematic", "Systematic")):
+        with pytest.raises(ValidationError, match="duplicate pod"):
+            _order(pods=pods)
+
+
+def test_position_pod_non_empty() -> None:
+    held = Position(symbol="AAPL", quantity=Decimal("1"), avg_cost=Decimal("1"), pod=" statarb ")
+    assert held.pod == "statarb"
+    with pytest.raises(ValidationError, match="at least 1 character"):
+        Position(symbol="AAPL", quantity=Decimal("1"), avg_cost=Decimal("1"), pod=" ")

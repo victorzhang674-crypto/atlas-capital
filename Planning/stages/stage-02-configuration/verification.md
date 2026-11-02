@@ -36,3 +36,16 @@ Owner-requested follow-up (see worklog, 2026-11-02): equal `Decimal` settings wr
 - On merged `main` (`d9cffb6`, fast-forward from `473629f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv run pytest -q` → 1678 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); 1M-row upsert → 0.73 s PASSED; `make check` → exit 0; `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 11 commands exit 0 · raw: [stage-06 artifacts/checkpoint-2026-11-02-merged-main-check.txt](../stage-06-storage/artifacts/checkpoint-2026-11-02-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): every config float rejects NaN/inf, `initial_capital > 0`, drawdown tiers never switch `block_new_names`/`halt` back off. Re-run in this chat on the final working tree (base commit `a7a1e09`):
+- Brief's Verify `uv run pytest tests/unit/core/test_config.py -q` → 201 passed, exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-verify.txt](artifacts/checkpoint-2026-11-02-tier2-verify.txt)
+- The 9 new tests (`test_invalid_config_raises` cases 6–13, `test_no_config_model_accepts_infinity`) FAILED on `a7a1e09`'s code and PASS now · raw: [artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt](artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt)
+- `config_fingerprint` unchanged for the default config and the dev/backtest/paper profiles · raw: [artifacts/checkpoint-2026-11-02-tier2-fingerprints.txt](artifacts/checkpoint-2026-11-02-tier2-fingerprints.txt)
+- `uv run pytest -q` → 2088 passed, 0 failed, 11 deselected (live/llm/integration), exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-pytest.txt](artifacts/checkpoint-2026-11-02-tier2-pytest.txt) (a first run had 1 failure from two empty harness folders under `src/`/`tests/`, removed; see worklog · raw: [artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt](artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt))
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 205 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files · raw: [artifacts/checkpoint-2026-11-02-tier2-lint-type.txt](artifacts/checkpoint-2026-11-02-tier2-lint-type.txt)
+- `make check` → lint, format check, mypy clean; 2088 passed; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-make-check.txt](artifacts/checkpoint-2026-11-02-tier2-make-check.txt)
+- Machine load during these runs: 6.88 → 7.56 (`uptime`) · raw: [artifacts/checkpoint-2026-11-02-tier2-load.txt](artifacts/checkpoint-2026-11-02-tier2-load.txt)
+- Both acceptance criteria still hold (`load_config("backtest")` fully populated, bad YAML raises `ConfigError` naming the key; every §9 limit typed): `test_repo_backtest_profile_fully_populated`, `test_invalid_config_raises[*]`, `test_limits_cover_spec_section_9[*]` pass in the runs above.
+
+**Result:** ALL CRITERIA VERIFIED

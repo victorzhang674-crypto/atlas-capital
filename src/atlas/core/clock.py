@@ -38,7 +38,8 @@ class SimClock:
     """A settable clock for backtests and tests that moves from session to session.
 
     `start` is either a trading session (the clock starts at that session's decision time) or
-    a timezone-aware instant. `decision_time` is a naive time read in America/New_York
+    a timezone-aware instant whose New York date lies inside the calendar's bounds (checked
+    here, not on the first `advance()`). `decision_time` is a naive time read in America/New_York
     (default: `calendar.config.decision_time`, 08:00 unless configured). The clock never
     moves backwards.
     """
@@ -58,6 +59,12 @@ class SimClock:
             raise ValueError("decision_time must be naive (it is read in America/New_York)")
         if isinstance(start, datetime):
             self._now = _require_aware(start).astimezone(UTC)
+            day, cal = market_date(self._now), self._calendar
+            if not cal.start <= day <= cal.end:
+                raise ValueError(
+                    f"start {start.isoformat()} is on {day}, outside the calendar "
+                    f"[{cal.start}, {cal.end}]"
+                )
         elif self._calendar.is_session(start):
             self._now = self._decision_instant(start)
         else:

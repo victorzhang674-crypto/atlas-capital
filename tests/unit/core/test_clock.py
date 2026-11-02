@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from atlas.core.calendar import market_date
+from atlas.core.calendar import TradingCalendar, market_date
 from atlas.core.clock import Clock, LiveClock, SimClock, get_clock, use_clock
 from atlas.core.errors import AtlasError
 
@@ -235,3 +235,31 @@ def test_no_string_clock_reads_outside_clock_module(repo_root: Path) -> None:
     clock_module = repo_root / "src" / "atlas" / "core" / "clock.py"
     hits = [hit for f in files if f != clock_module for hit in _string_clock_reads(f)]
     assert hits == []
+
+
+# --- Phase 0 checkpoint, Tier 2 -------------------------------------------------------------
+
+
+def test_simclock_advance_across_dst_fall_back() -> None:
+    clock = SimClock(start=date(2024, 11, 1))  # Friday, EDT
+    assert clock.now() == datetime(2024, 11, 1, 12, 0, tzinfo=UTC)
+    assert clock.advance() == datetime(2024, 11, 4, 13, 0, tzinfo=UTC)  # Monday 08:00 EST
+    assert clock.today() == date(2024, 11, 4)
+
+
+@pytest.mark.parametrize(
+    "start",
+    [datetime(2035, 1, 2, 15, 0, tzinfo=UTC), datetime(1999, 12, 31, 15, 0, tzinfo=UTC)],
+    ids=["after-end", "before-start"],
+)
+def test_simclock_rejects_instant_outside_calendar(start: datetime) -> None:
+    with pytest.raises(ValueError, match="outside the calendar"):
+        SimClock(start=start)
+
+
+def test_simclock_accepts_instant_on_calendar_edges() -> None:
+    small = TradingCalendar(start=date(2024, 1, 1), end=date(2024, 12, 31))
+    first = SimClock(start=datetime(2024, 1, 1, 15, 0, tzinfo=UTC), calendar=small)
+    assert first.today() == date(2024, 1, 1)
+    with pytest.raises(ValueError, match="outside the calendar"):
+        SimClock(start=datetime(2025, 1, 2, 15, 0, tzinfo=UTC), calendar=small)

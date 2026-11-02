@@ -254,3 +254,41 @@ def test_injected_future_bar_is_caught(cal: TradingCalendar) -> None:
     with pytest.raises(LookAheadError):
         assert_no_lookahead(injected, AS_OF)
     assert len(pit_filter(injected, AS_OF)) == 3
+
+
+# --- Phase 0 checkpoint, Tier 2 -------------------------------------------------------------
+
+
+def test_dst_fall_back_cutoff() -> None:
+    assert AsOf.for_session(date(2024, 11, 1)).cutoff == datetime(2024, 11, 1, 12, 0, tzinfo=UTC)
+    assert AsOf.for_session(date(2024, 11, 4)).cutoff == datetime(2024, 11, 4, 13, 0, tzinfo=UTC)
+
+
+@pytest.mark.parametrize(
+    ("day", "decision", "known"),
+    [
+        (date(2024, 11, 29), time(14, 0), True),  # early close 13:00 ET: bar known 13:15 ET
+        (date(2024, 11, 29), time(13, 15), False),  # exactly at availability: not known
+        (date(2024, 11, 29), time(13, 10), False),
+        (date(2024, 11, 26), time(14, 0), False),  # regular day: bar known only at 16:15 ET
+        (date(2024, 11, 26), time(16, 30), True),
+    ],
+)
+def test_same_day_bar_after_early_close(
+    cal: TradingCalendar, day: date, decision: time, known: bool
+) -> None:
+    as_of = AsOf.for_session(day, decision)
+    assert as_of.knows(bar_available_at(day, cal)) is known
+
+
+def test_pit_filter_with_duplicate_index_labels() -> None:
+    stamps = pd.to_datetime([STAMPS[0], STAMPS[3], STAMPS[1], STAMPS[2]], utc=True)
+    frame = pd.DataFrame(
+        {"value": [1.0, 2.0, 3.0, 4.0], "available_at": stamps}, index=["x", "x", "y", "y"]
+    )
+    out = pit_filter(frame, AS_OF)
+    assert list(out.index) == ["x", "y"]
+    assert list(out["value"]) == [1.0, 3.0]
+    with pytest.raises(LookAheadError, match="2 row"):
+        assert_no_lookahead(frame, AS_OF)
+    assert assert_no_lookahead(out, AS_OF) is None

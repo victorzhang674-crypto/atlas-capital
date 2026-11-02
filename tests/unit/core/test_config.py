@@ -8,12 +8,13 @@ import shutil
 import subprocess
 import sys
 import traceback
+import typing
 from datetime import date, time
 from decimal import Decimal
 from pathlib import Path
 
 import pytest
-from pydantic import SecretStr, ValidationError
+from pydantic import BaseModel, SecretStr, ValidationError
 
 from atlas.core.config import (
     AtlasConfig,
@@ -311,6 +312,24 @@ INVALID = [
     ),
     ({"limits": {"drawdown_tiers": []}}, r"drawdown_tiers"),
     (
+        {"limits": {"drawdown_tiers": _tiers((0.05, 0.25, True, True), (0.10, 0.5, True, False))}},
+        r"drawdown_tiers.*halt.*deeper",
+    ),
+    (
+        {
+            "limits": {
+                "drawdown_tiers": _tiers((0.05, 0.25, True, False), (0.10, 0.5, False, False))
+            }
+        },
+        r"drawdown_tiers.*block_new_names.*deeper",
+    ),
+    ({"fund": {"initial_capital": 0}}, r"fund\.initial_capital"),
+    ({"fund": {"initial_capital": "-1000"}}, r"fund\.initial_capital"),
+    ({"limits": {"max_liquidation_days": float("inf")}}, r"limits\.max_liquidation_days"),
+    ({"backtest": {"costs": {"half_spread_bps": float("inf")}}}, r"costs\.half_spread_bps"),
+    ({"backtest": {"costs": {"impact_k": float("inf")}}}, r"costs\.impact_k"),
+    ({"backtest": {"costs": {"borrow_gc_annual": float("inf")}}}, r"costs\.borrow_gc_annual"),
+    (
         {"limits": {"pod_stops": {"halve_budget_at": 0.12, "freeze_at": 0.08}}},
         r"halve_budget_at .* freeze_at",
     ),
@@ -341,6 +360,28 @@ INVALID = [
 def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
     with pytest.raises(ConfigError, match=pattern):
         load_config(overrides=overrides, config_dir=write_config(tmp_path, {}))
+
+
+def _config_models() -> list[type[BaseModel]]:
+    """Every model `AtlasConfig` nests, found by walking its field annotations."""
+    seen: list[type[BaseModel]] = []
+    todo: list[object] = [AtlasConfig]
+    while todo:
+        tp = todo.pop()
+        if isinstance(tp, type) and issubclass(tp, BaseModel):
+            if tp in seen:
+                continue
+            seen.append(tp)
+            todo.extend(f.annotation for f in tp.model_fields.values())
+        todo.extend(typing.get_args(tp))
+    return seen
+
+
+def test_no_config_model_accepts_infinity() -> None:  # Phase 0 checkpoint, Tier 2
+    nested = [m for m in _config_models() if m is not AtlasConfig]
+    assert len(nested) > 20
+    lax = [m.__name__ for m in nested if m.model_config.get("allow_inf_nan") is not False]
+    assert lax == []
 
 
 def test_calendar_defaults() -> None:  # Stage 05 D1

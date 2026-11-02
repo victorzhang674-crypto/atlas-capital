@@ -1,0 +1,189 @@
++(eval):5> PYTHONPATH=/tmp/claude-501/redbase/src uv run pytest -q -p no:cacheprovider tests/unit/core/test_calendar.py tests/unit/core/test_clock.py tests/unit/core/test_pit.py -k 'market_date_hint or datetime_bounds or dst_fall_back or outside_calendar or calendar_edges or early_close or duplicate_index'
+...FFFFFFFFF..FFF........                                                [100%]
+=================================== FAILURES ===================================
+_________ test_datetime_rejected_with_market_date_hint[is_early_close] _________
+
+cal = <atlas.core.calendar.TradingCalendar object at 0x116f4acc0>
+method = 'is_early_close'
+
+    @pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+    def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+        # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:137: AssertionError
+___________ test_datetime_rejected_with_market_date_hint[is_session] ___________
+
+cal = <atlas.core.calendar.TradingCalendar object at 0x116f4acc0>
+method = 'is_session'
+
+    @pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+    def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+        # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:137: AssertionError
+__________ test_datetime_rejected_with_market_date_hint[next_session] __________
+
+cal = <atlas.core.calendar.TradingCalendar object at 0x116f4acc0>
+method = 'next_session'
+
+    @pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+    def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+        # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:137: AssertionError
+_____________ test_datetime_rejected_with_market_date_hint[offset] _____________
+
+cal = <atlas.core.calendar.TradingCalendar object at 0x116f4acc0>
+method = 'offset'
+
+    @pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+    def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+        # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:137: AssertionError
+__________ test_datetime_rejected_with_market_date_hint[prev_session] __________
+
+cal = <atlas.core.calendar.TradingCalendar object at 0x116f4acc0>
+method = 'prev_session'
+
+    @pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+    def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+        # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:137: AssertionError
+_________ test_datetime_rejected_with_market_date_hint[session_close] __________
+
+cal = <atlas.core.calendar.TradingCalendar object at 0x116f4acc0>
+method = 'session_close'
+
+    @pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+    def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+        # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:137: AssertionError
+__________ test_datetime_rejected_with_market_date_hint[session_open] __________
+
+cal = <atlas.core.calendar.TradingCalendar object at 0x116f4acc0>
+method = 'session_open'
+
+    @pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+    def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+        # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:137: AssertionError
+____________ test_datetime_rejected_with_market_date_hint[sessions] ____________
+
+cal = <atlas.core.calendar.TradingCalendar object at 0x116f4acc0>
+method = 'sessions'
+
+    @pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+    def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+        # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:137: AssertionError
+________________________ test_datetime_bounds_rejected _________________________
+
+    def test_datetime_bounds_rejected() -> None:
+>       with pytest.raises(TypeError, match=r"market_date\(\)"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'market_date\\(\\)'
+E         Actual message: "can't compare datetime.datetime to datetime.date"
+
+tests/unit/core/test_calendar.py:143: AssertionError
+__________ test_simclock_rejects_instant_outside_calendar[after-end] ___________
+
+start = datetime.datetime(2035, 1, 2, 15, 0, tzinfo=datetime.timezone.utc)
+
+    @pytest.mark.parametrize(
+        "start",
+        [datetime(2035, 1, 2, 15, 0, tzinfo=UTC), datetime(1999, 12, 31, 15, 0, tzinfo=UTC)],
+        ids=["after-end", "before-start"],
+    )
+    def test_simclock_rejects_instant_outside_calendar(start: datetime) -> None:
+>       with pytest.raises(ValueError, match="outside the calendar"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/core/test_clock.py:256: Failed
+_________ test_simclock_rejects_instant_outside_calendar[before-start] _________
+
+start = datetime.datetime(1999, 12, 31, 15, 0, tzinfo=datetime.timezone.utc)
+
+    @pytest.mark.parametrize(
+        "start",
+        [datetime(2035, 1, 2, 15, 0, tzinfo=UTC), datetime(1999, 12, 31, 15, 0, tzinfo=UTC)],
+        ids=["after-end", "before-start"],
+    )
+    def test_simclock_rejects_instant_outside_calendar(start: datetime) -> None:
+>       with pytest.raises(ValueError, match="outside the calendar"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/core/test_clock.py:256: Failed
+_______________ test_simclock_accepts_instant_on_calendar_edges ________________
+
+    def test_simclock_accepts_instant_on_calendar_edges() -> None:
+        small = TradingCalendar(start=date(2024, 1, 1), end=date(2024, 12, 31))
+        first = SimClock(start=datetime(2024, 1, 1, 15, 0, tzinfo=UTC), calendar=small)
+        assert first.today() == date(2024, 1, 1)
+>       with pytest.raises(ValueError, match="outside the calendar"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/core/test_clock.py:264: Failed
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_calendar.py::test_datetime_rejected_with_market_date_hint[is_early_close]
+FAILED tests/unit/core/test_calendar.py::test_datetime_rejected_with_market_date_hint[is_session]
+FAILED tests/unit/core/test_calendar.py::test_datetime_rejected_with_market_date_hint[next_session]
+FAILED tests/unit/core/test_calendar.py::test_datetime_rejected_with_market_date_hint[offset]
+FAILED tests/unit/core/test_calendar.py::test_datetime_rejected_with_market_date_hint[prev_session]
+FAILED tests/unit/core/test_calendar.py::test_datetime_rejected_with_market_date_hint[session_close]
+FAILED tests/unit/core/test_calendar.py::test_datetime_rejected_with_market_date_hint[session_open]
+FAILED tests/unit/core/test_calendar.py::test_datetime_rejected_with_market_date_hint[sessions]
+FAILED tests/unit/core/test_calendar.py::test_datetime_bounds_rejected - Asse...
+FAILED tests/unit/core/test_clock.py::test_simclock_rejects_instant_outside_calendar[after-end]
+FAILED tests/unit/core/test_clock.py::test_simclock_rejects_instant_outside_calendar[before-start]
+FAILED tests/unit/core/test_clock.py::test_simclock_accepts_instant_on_calendar_edges
+12 failed, 13 passed, 77 deselected in 0.56s
+exit 1

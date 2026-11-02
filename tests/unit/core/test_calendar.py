@@ -113,3 +113,40 @@ def test_out_of_bounds_raises() -> None:
 def test_default_bounds_from_config(cal: TradingCalendar) -> None:
     assert cal.is_session(date(2000, 1, 3)) is True
     assert cal.is_session(date(2030, 12, 31)) is True
+
+
+# --- Phase 0 checkpoint, Tier 2 -------------------------------------------------------------
+
+_INSTANT = datetime(2024, 3, 1, 15, 0, tzinfo=UTC)
+
+_DATE_METHODS = {
+    "is_session": lambda c, d: c.is_session(d),
+    "sessions": lambda c, d: c.sessions(d, date(2024, 3, 8)),
+    "next_session": lambda c, d: c.next_session(d),
+    "prev_session": lambda c, d: c.prev_session(d),
+    "offset": lambda c, d: c.offset(d, 1),
+    "session_open": lambda c, d: c.session_open(d),
+    "session_close": lambda c, d: c.session_close(d),
+    "is_early_close": lambda c, d: c.is_early_close(d),
+}
+
+
+@pytest.mark.parametrize("method", sorted(_DATE_METHODS))
+def test_datetime_rejected_with_market_date_hint(cal: TradingCalendar, method: str) -> None:
+    # `datetime` subclasses `date`; without the check this raised "can't compare datetime".
+    with pytest.raises(TypeError, match=r"market_date\(\)"):
+        _DATE_METHODS[method](cal, _INSTANT)
+    _DATE_METHODS[method](cal, market_date(_INSTANT))  # the hinted fix works
+
+
+def test_datetime_bounds_rejected() -> None:
+    with pytest.raises(TypeError, match=r"market_date\(\)"):
+        TradingCalendar(start=_INSTANT, end=date(2024, 12, 31))
+    with pytest.raises(TypeError, match=r"market_date\(\)"):
+        TradingCalendar(start=date(2024, 1, 1), end=datetime(2024, 12, 31, 15, tzinfo=UTC))
+
+
+def test_dst_fall_back_close(cal: TradingCalendar) -> None:
+    # Clocks go back on Sunday 2024-11-03: the close moves from 20:00 to 21:00 UTC.
+    assert cal.session_close(date(2024, 11, 1)) == datetime(2024, 11, 1, 20, 0, tzinfo=UTC)
+    assert cal.session_close(date(2024, 11, 4)) == datetime(2024, 11, 4, 21, 0, tzinfo=UTC)

@@ -201,3 +201,16 @@ def test_compliance_result_severity_buckets_and_passed() -> None:
         ComplianceResult(warnings=(block,))
     with pytest.raises(ValidationError):
         Violation(rule="r", severity=Severity.BLOCK, message="m", order_id=new_id(IdPrefix.FILL))
+
+
+def test_pod_and_metric_names_non_empty_and_unique() -> None:  # Phase 0 checkpoint, Tier 2
+    alloc = _alloc(pod_weights={" a ": 0.6, "b": 0.4})
+    assert alloc.pod_weights == {"a": 0.6, "b": 0.4}
+    empty = {"": 0.6, "b": 0.4}
+    with pytest.raises(ValidationError, match="at least 1 character"):
+        _alloc(pod_weights=empty, risk_budgets=empty)
+    twice = {"a": 0.6, "A": 0.4}
+    with pytest.raises(ValidationError, match="same entry"):
+        _alloc(pod_weights=twice, risk_budgets=twice)
+    with pytest.raises(ValidationError, match="at least 1 character"):
+        RiskDecision(status=RiskStatus.RESIZE, adjusted_weights={}, metrics={"": 1.0})

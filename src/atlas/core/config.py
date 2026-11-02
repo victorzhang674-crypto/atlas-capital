@@ -55,9 +55,10 @@ _NonNeg = Annotated[float, Field(ge=0)]
 
 
 class _Frozen(BaseModel):
-    """Immutable model that rejects unknown keys. List fields are tuples for the same reason."""
+    """Immutable model that rejects unknown keys and NaN/infinite numbers. List fields are
+    tuples for the same reason."""
 
-    model_config = ConfigDict(frozen=True, extra="forbid")
+    model_config = ConfigDict(frozen=True, extra="forbid", allow_inf_nan=False)
 
 
 class _FrozenDict[K, V](Mapping[K, V]):
@@ -93,11 +94,11 @@ def _thaw(value: Mapping[str, Any], handler: SerializerFunctionWrapHandler) -> A
 
 
 class FundConfig(_Frozen):
-    """The fund mandate. `initial_capital` is in the base currency (spec A6)."""
+    """The fund mandate. `initial_capital` is in the base currency and positive (spec A6)."""
 
     name: str = "Atlas Capital"
     base_currency: Literal["USD"] = "USD"
-    initial_capital: Decimal = Decimal("10000000")
+    initial_capital: Annotated[Decimal, Field(gt=0)] = Decimal("10000000")
     benchmark: str = "SPY"
 
 
@@ -106,6 +107,8 @@ class DrawdownTier(_Frozen):
 
     `drawdown` is a positive fraction from the high-water mark (0.05 = -5%); `degross_frac`
     is the fraction of gross exposure to remove; `halt` stops trading until the owner resets.
+    Tiers only escalate: a deeper tier never removes less, and never switches
+    `block_new_names` or `halt` back off.
     """
 
     drawdown: _OpenFrac
@@ -180,6 +183,9 @@ class LimitsConfig(_Frozen):
             raise ValueError("drawdown_tiers: drawdown thresholds must be strictly increasing")
         if any(a.degross_frac > b.degross_frac for a, b in pairwise(tiers)):
             raise ValueError("drawdown_tiers: degross_frac must be non-decreasing")
+        for flag in ("block_new_names", "halt"):
+            if any(getattr(a, flag) and not getattr(b, flag) for a, b in pairwise(tiers)):
+                raise ValueError(f"drawdown_tiers: {flag} cannot switch off at a deeper tier")
         return self
 
 

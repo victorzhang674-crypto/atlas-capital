@@ -1,0 +1,12 @@
++(eval):7> uv run ruff check .
+All checks passed!
++(eval):7> echo 'exit 0'
+exit 0
++(eval):7> uv run ruff format --check .
+205 files already formatted
++(eval):7> echo 'exit 0'
+exit 0
++(eval):7> uv run mypy src/atlas
+Success: no issues found in 88 source files
++(eval):7> echo 'exit 0'
+exit 0

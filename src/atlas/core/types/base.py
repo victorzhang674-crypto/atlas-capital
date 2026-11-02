@@ -93,6 +93,25 @@ type FrozenMap[K, V] = Annotated[Mapping[K, V], AfterValidator(freeze), WrapSeri
 """A read-only mapping field: validated item by item, stored as a `FrozenDict`, dumped as a
 plain dict."""
 
+
+def unique_name_keys(value: object) -> object:
+    """Validator step: strip the `str` keys of a mapping and refuse two keys that are equal
+    ignoring case (`"Energy"`, `"energy "`), which would otherwise collapse or both survive."""
+    if not isinstance(value, Mapping):
+        return value
+    out: dict[object, object] = {}
+    seen: dict[str, str] = {}
+    for key, item in value.items():
+        if isinstance(key, str):
+            key = key.strip()
+            folded = key.casefold()
+            if folded in seen:
+                raise ValueError(f"keys {seen[folded]!r} and {key!r} name the same entry")
+            seen[folded] = key
+        out[key] = item
+    return out
+
+
 Real = Annotated[float, BeforeValidator(reject_bool)]
 """A finite float that refuses `True`/`False`."""
 
@@ -101,6 +120,15 @@ UnitInterval = Annotated[float, BeforeValidator(reject_bool), Field(ge=0, le=1)]
 
 NonEmptyStr = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 """Text with surrounding whitespace stripped; must not be empty afterwards."""
+
+type NameMap[V] = Annotated[
+    Mapping[NonEmptyStr, V],
+    BeforeValidator(unique_name_keys),
+    AfterValidator(freeze),
+    WrapSerializer(thaw),
+]
+"""A read-only `{name: value}` field (pods, sectors, metrics): keys are stripped, non-empty,
+and unique ignoring case; stored as a `FrozenDict`, dumped as a plain dict."""
 
 UtcDatetime = Annotated[AwareDatetime, AfterValidator(_to_utc)]
 """A tz-aware timestamp, converted to UTC; naive datetimes are rejected."""

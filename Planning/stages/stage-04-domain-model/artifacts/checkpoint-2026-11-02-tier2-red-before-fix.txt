@@ -1,0 +1,334 @@
++(eval):4> PYTHONPATH=/tmp/claude-501/redbase/src uv run pytest -q -p no:cacheprovider tests/unit/core/types -k 'non_ascii or impossible_ulid or empty_text_items or text_items_are_stripped or sector_tilt_keys or pod_and_metric_names or rejected_order_has_no_fills or own_parent or order_pods_unique or position_pod_non_empty or minus_one or lesson_text_items or new_id_format'
+.FFFFFFFFFFFFFFFFFFFFFFFFFF                                              [100%]
+=================================== FAILURES ===================================
+___________________ test_prefixed_id_rejects_impossible_ulid ___________________
+
+    def test_prefixed_id_rejects_impossible_ulid() -> None:  # Phase 0 checkpoint, Tier 2
+        # The first ULID character holds the top 3 bits of the 48-bit timestamp: only 0-7 exist.
+        highest = "th_7" + "Z" * 25
+        assert _HasThesisId(id=highest).id == highest
+        for first in "89ABZ":
+>           with pytest.raises(ValidationError):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_ids.py:59: Failed
+_________________ test_normalize_rejects_non_ascii[stra\xdfe] __________________
+
+raw = 'straße'
+
+    @pytest.mark.parametrize("raw", _NON_ASCII)
+    def test_normalize_rejects_non_ascii(raw: str) -> None:  # Phase 0 checkpoint, Tier 2
+>       with pytest.raises(ValueError, match="ASCII"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/core/types/test_types_instruments.py:149: Failed
+__________________ test_normalize_rejects_non_ascii[\u0131bm] __________________
+
+raw = 'ıbm'
+
+    @pytest.mark.parametrize("raw", _NON_ASCII)
+    def test_normalize_rejects_non_ascii(raw: str) -> None:  # Phase 0 checkpoint, Tier 2
+>       with pytest.raises(ValueError, match="ASCII"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/core/types/test_types_instruments.py:149: Failed
+__________________ test_normalize_rejects_non_ascii[\ufb01x] ___________________
+
+raw = 'ﬁx'
+
+    @pytest.mark.parametrize("raw", _NON_ASCII)
+    def test_normalize_rejects_non_ascii(raw: str) -> None:  # Phase 0 checkpoint, Tier 2
+>       with pytest.raises(ValueError, match="ASCII"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/core/types/test_types_instruments.py:149: Failed
+___________________ test_normalize_rejects_non_ascii[\xc4PL] ___________________
+
+raw = 'ÄPL'
+
+    @pytest.mark.parametrize("raw", _NON_ASCII)
+    def test_normalize_rejects_non_ascii(raw: str) -> None:  # Phase 0 checkpoint, Tier 2
+>       with pytest.raises(ValueError, match="ASCII"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'ASCII'
+E         Actual message: "invalid symbol 'ÄPL'"
+
+tests/unit/core/types/test_types_instruments.py:149: AssertionError
+__________ test_normalize_rejects_non_ascii[\uff21\uff21\uff30\uff2c] __________
+
+raw = 'ＡＡＰＬ'
+
+    @pytest.mark.parametrize("raw", _NON_ASCII)
+    def test_normalize_rejects_non_ascii(raw: str) -> None:  # Phase 0 checkpoint, Tier 2
+>       with pytest.raises(ValueError, match="ASCII"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'ASCII'
+E         Actual message: "invalid symbol 'ＡＡＰＬ'"
+
+tests/unit/core/types/test_types_instruments.py:149: AssertionError
+__________________ test_normalize_rejects_non_ascii[AAPL\xa0] __________________
+
+raw = 'AAPL\xa0'
+
+    @pytest.mark.parametrize("raw", _NON_ASCII)
+    def test_normalize_rejects_non_ascii(raw: str) -> None:  # Phase 0 checkpoint, Tier 2
+>       with pytest.raises(ValueError, match="ASCII"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/unit/core/types/test_types_instruments.py:149: Failed
+________________ test_outcome_is_a_return_of_at_least_minus_one ________________
+
+    def test_outcome_is_a_return_of_at_least_minus_one() -> None:
+        later = MADE + timedelta(days=30)
+        assert _prediction(settled_at=later, outcome=-1.0).outcome == -1.0
+>       with pytest.raises(ValidationError, match="greater than or equal to -1"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_performance.py:150: Failed
+____________________ test_lesson_text_items_non_empty[tags] ____________________
+
+field = 'tags'
+
+    @pytest.mark.parametrize("field", ["tags", "source_episode_ids"])
+    def test_lesson_text_items_non_empty(field: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_performance.py:158: Failed
+_____________ test_lesson_text_items_non_empty[source_episode_ids] _____________
+
+field = 'source_episode_ids'
+
+    @pytest.mark.parametrize("field", ["tags", "source_episode_ids"])
+    def test_lesson_text_items_non_empty(field: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_performance.py:158: Failed
+________________ test_pod_and_metric_names_non_empty_and_unique ________________
+
+    def test_pod_and_metric_names_non_empty_and_unique() -> None:  # Phase 0 checkpoint, Tier 2
+>       alloc = _alloc(pod_weights={" a ": 0.6, "b": 0.4})
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/unit/core/types/test_types_portfolio.py:207: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kw = {'pod_weights': {' a ': 0.6, 'b': 0.4}}
+
+    def _alloc(**kw: Any) -> CapitalAllocation:
+        base: dict[str, Any] = {
+            "as_of": AS_OF,
+            "pod_weights": {"a": 0.6, "b": 0.4},
+            "risk_budgets": {"a": 0.7, "b": 0.3},
+            "rationale": "risk parity",
+        }
+>       return CapitalAllocation(**{**base, **kw})
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for CapitalAllocation
+E         Value error, pod_weights and risk_budgets must name the same pods [type=value_error, input_value={'as_of': datetime.date(2...tionale': 'risk parity'}, input_type=dict]
+E           For further information visit https://errors.pydantic.dev/2.14/v/value_error
+
+tests/unit/core/types/test_types_portfolio.py:149: ValidationError
+______________ test_empty_text_items_rejected[claim.evidence_ids] ______________
+
+case = 'claim.evidence_ids'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+________________ test_empty_text_items_rejected[macro.evidence] ________________
+
+case = 'macro.evidence'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+_________________ test_empty_text_items_rejected[macro.risks] __________________
+
+case = 'macro.risks'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+_________________ test_empty_text_items_rejected[report.risks] _________________
+
+case = 'report.risks'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+_____________ test_empty_text_items_rejected[signal.evidence_ids] ______________
+
+case = 'signal.evidence_ids'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+_______________ test_empty_text_items_rejected[thesis.evidence] ________________
+
+case = 'thesis.evidence'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+_____________ test_empty_text_items_rejected[thesis.kill_criteria] _____________
+
+case = 'thesis.kill_criteria'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+_______________ test_empty_text_items_rejected[turn.concessions] _______________
+
+case = 'turn.concessions'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+________________ test_empty_text_items_rejected[turn.questions] ________________
+
+case = 'turn.questions'
+
+    @pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+    def test_empty_text_items_rejected(case: str) -> None:
+>       with pytest.raises(ValidationError, match="at least 1 character"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_research.py:194: Failed
+_________________________ test_text_items_are_stripped _________________________
+
+    def test_text_items_are_stripped() -> None:
+>       assert _thesis(evidence=(" news:1 ",)).evidence == ("news:1",)
+E       AssertionError: assert (' news:1 ',) == ('news:1',)
+E         
+E         At index 0 diff: ' news:1 ' != 'news:1'
+E         Use -v to get more diff
+
+tests/unit/core/types/test_types_research.py:199: AssertionError
+__________________ test_sector_tilt_keys_non_empty_and_unique __________________
+
+    def test_sector_tilt_keys_non_empty_and_unique() -> None:
+>       assert _macro(sector_tilts={" Energy ": 0.5}).sector_tilts == {"Energy": 0.5}
+E       AssertionError: assert FrozenDict({' Energy ': 0.5}) == {'Energy': 0.5}
+E         
+E         Left contains 1 more item:
+E         {' Energy ': 0.5}
+E         Right contains 1 more item:
+E         {'Energy': 0.5}
+E         Use -v to get more diff
+
+tests/unit/core/types/test_types_research.py:204: AssertionError
+_______________________ test_rejected_order_has_no_fills _______________________
+
+    def test_rejected_order_has_no_fills() -> None:
+        assert _order(status=OrderStatus.REJECTED).filled_quantity == 0
+>       with pytest.raises(ValidationError, match="REJECTED order cannot have fills"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_trading.py:190: Failed
+_____________________ test_order_cannot_be_its_own_parent ______________________
+
+    def test_order_cannot_be_its_own_parent() -> None:
+        oid = new_id(IdPrefix.ORDER)
+        assert _order(id=oid, parent_id=new_id(IdPrefix.ORDER)).parent_id != oid
+>       with pytest.raises(ValidationError, match="its own parent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_trading.py:197: Failed
+____________________________ test_order_pods_unique ____________________________
+
+    def test_order_pods_unique() -> None:
+        assert _order(pods=("statarb", "systematic")).pods == ("statarb", "systematic")
+        for pods in (("systematic", "systematic"), (" systematic", "Systematic")):
+>           with pytest.raises(ValidationError, match="duplicate pod"):
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE ValidationError
+
+tests/unit/core/types/test_types_trading.py:204: Failed
+_________________________ test_position_pod_non_empty __________________________
+
+    def test_position_pod_non_empty() -> None:
+        held = Position(symbol="AAPL", quantity=Decimal("1"), avg_cost=Decimal("1"), pod=" statarb ")
+>       assert held.pod == "statarb"
+E       AssertionError: assert ' statarb ' == 'statarb'
+E         
+E         - statarb
+E         +  statarb 
+E         ? +       +
+
+tests/unit/core/types/test_types_trading.py:210: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/types/test_types_ids.py::test_prefixed_id_rejects_impossible_ulid
+FAILED tests/unit/core/types/test_types_instruments.py::test_normalize_rejects_non_ascii[stra\xdfe]
+FAILED tests/unit/core/types/test_types_instruments.py::test_normalize_rejects_non_ascii[\u0131bm]
+FAILED tests/unit/core/types/test_types_instruments.py::test_normalize_rejects_non_ascii[\ufb01x]
+FAILED tests/unit/core/types/test_types_instruments.py::test_normalize_rejects_non_ascii[\xc4PL]
+FAILED tests/unit/core/types/test_types_instruments.py::test_normalize_rejects_non_ascii[\uff21\uff21\uff30\uff2c]
+FAILED tests/unit/core/types/test_types_instruments.py::test_normalize_rejects_non_ascii[AAPL\xa0]
+FAILED tests/unit/core/types/test_types_performance.py::test_outcome_is_a_return_of_at_least_minus_one
+FAILED tests/unit/core/types/test_types_performance.py::test_lesson_text_items_non_empty[tags]
+FAILED tests/unit/core/types/test_types_performance.py::test_lesson_text_items_non_empty[source_episode_ids]
+FAILED tests/unit/core/types/test_types_portfolio.py::test_pod_and_metric_names_non_empty_and_unique
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[claim.evidence_ids]
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[macro.evidence]
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[macro.risks]
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[report.risks]
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[signal.evidence_ids]
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[thesis.evidence]
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[thesis.kill_criteria]
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[turn.concessions]
+FAILED tests/unit/core/types/test_types_research.py::test_empty_text_items_rejected[turn.questions]
+FAILED tests/unit/core/types/test_types_research.py::test_text_items_are_stripped
+FAILED tests/unit/core/types/test_types_research.py::test_sector_tilt_keys_non_empty_and_unique
+FAILED tests/unit/core/types/test_types_trading.py::test_rejected_order_has_no_fills
+FAILED tests/unit/core/types/test_types_trading.py::test_order_cannot_be_its_own_parent
+FAILED tests/unit/core/types/test_types_trading.py::test_order_pods_unique - ...
+FAILED tests/unit/core/types/test_types_trading.py::test_position_pod_non_empty
+26 failed, 1 passed, 242 deselected in 0.55s
+exit 1

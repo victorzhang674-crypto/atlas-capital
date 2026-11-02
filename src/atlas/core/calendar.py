@@ -3,7 +3,8 @@
 Trading days go in and come out as `date`s. Open and close times come out as timezone-aware
 UTC `datetime`s. The market's own time zone is `MARKET_TZ` (America/New_York). The calendar
 covers `[start, end]` (from `CalendarConfig`); a query outside that range raises `ValueError`
-rather than guessing.
+rather than guessing. A `datetime` where a trading day is expected raises `TypeError` (convert
+an instant with `market_date()` first).
 """
 
 import warnings
@@ -43,6 +44,15 @@ def _utc(ts: pd.Timestamp) -> datetime:
     return ts.to_pydatetime().astimezone(UTC)
 
 
+def _require_day(d: date) -> date:
+    """`d` itself; a `datetime` (a `date` subclass) raises `TypeError` with the fix."""
+    if isinstance(d, datetime):
+        raise TypeError(
+            f"{d!r} is a datetime; pass a trading day `date` (market_date() converts an instant)"
+        )
+    return d
+
+
 class TradingCalendar:
     """XNYS trading calendar over `[start, end]`, carrying the run's `CalendarConfig`.
 
@@ -62,15 +72,15 @@ class TradingCalendar:
         config: CalendarConfig | None = None,
     ) -> None:
         self.config = config if config is not None else CalendarConfig()
-        self.start = start if start is not None else self.config.start
-        self.end = end if end is not None else self.config.end
+        self.start = _require_day(start) if start is not None else self.config.start
+        self.end = _require_day(end) if end is not None else self.config.end
         if self.start >= self.end:
             raise ValueError(f"start ({self.start}) must be before end ({self.end})")
         self._cal = _xnys(self.start, self.end)
         self._sessions: pd.DatetimeIndex = self._cal.sessions
 
     def _check(self, d: date) -> pd.Timestamp:
-        if not self.start <= d <= self.end:
+        if not self.start <= _require_day(d) <= self.end:
             raise ValueError(f"{d} is outside the calendar [{self.start}, {self.end}]")
         return pd.Timestamp(d)
 

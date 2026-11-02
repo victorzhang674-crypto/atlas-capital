@@ -1,0 +1,131 @@
++(eval):3> PYTHONPATH=/tmp/claude-501/redbase/src uv run pytest -q -p no:cacheprovider tests/unit/core/test_config.py -k 'invalid_config_raises or infinity'
+......FFFFFFFF...........F                                               [100%]
+=================================== FAILURES ===================================
+_____ test_invalid_config_raises[overrides6-drawdown_tiers.*halt.*deeper] ______
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-700/test_invalid_config_raises_ove6')
+overrides = {'limits': {'drawdown_tiers': [{'drawdown': 0.05, 'degross_frac': 0.25, 'block_new_names': True, 'halt': True}, {'drawdown': 0.1, 'degross_frac': 0.5, 'block_new_names': True, 'halt': False}]}}
+pattern = 'drawdown_tiers.*halt.*deeper'
+
+    @pytest.mark.parametrize(("overrides", "pattern"), INVALID)
+    def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+>       with pytest.raises(ConfigError, match=pattern):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConfigError
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:361: Failed
+_ test_invalid_config_raises[overrides7-drawdown_tiers.*block_new_names.*deeper] _
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-700/test_invalid_config_raises_ove7')
+overrides = {'limits': {'drawdown_tiers': [{'drawdown': 0.05, 'degross_frac': 0.25, 'block_new_names': True, 'halt': False}, {'drawdown': 0.1, 'degross_frac': 0.5, 'block_new_names': False, 'halt': False}]}}
+pattern = 'drawdown_tiers.*block_new_names.*deeper'
+
+    @pytest.mark.parametrize(("overrides", "pattern"), INVALID)
+    def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+>       with pytest.raises(ConfigError, match=pattern):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConfigError
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:361: Failed
+________ test_invalid_config_raises[overrides8-fund\\.initial_capital] _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-700/test_invalid_config_raises_ove8')
+overrides = {'fund': {'initial_capital': 0}}, pattern = 'fund\\.initial_capital'
+
+    @pytest.mark.parametrize(("overrides", "pattern"), INVALID)
+    def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+>       with pytest.raises(ConfigError, match=pattern):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConfigError
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:361: Failed
+________ test_invalid_config_raises[overrides9-fund\\.initial_capital] _________
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-700/test_invalid_config_raises_ove9')
+overrides = {'fund': {'initial_capital': '-1000'}}
+pattern = 'fund\\.initial_capital'
+
+    @pytest.mark.parametrize(("overrides", "pattern"), INVALID)
+    def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+>       with pytest.raises(ConfigError, match=pattern):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConfigError
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:361: Failed
+____ test_invalid_config_raises[overrides10-limits\\.max_liquidation_days] _____
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-700/test_invalid_config_raises_ove10')
+overrides = {'limits': {'max_liquidation_days': inf}}
+pattern = 'limits\\.max_liquidation_days'
+
+    @pytest.mark.parametrize(("overrides", "pattern"), INVALID)
+    def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+>       with pytest.raises(ConfigError, match=pattern):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConfigError
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:361: Failed
+_______ test_invalid_config_raises[overrides11-costs\\.half_spread_bps] ________
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-700/test_invalid_config_raises_ove11')
+overrides = {'backtest': {'costs': {'half_spread_bps': inf}}}
+pattern = 'costs\\.half_spread_bps'
+
+    @pytest.mark.parametrize(("overrides", "pattern"), INVALID)
+    def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+>       with pytest.raises(ConfigError, match=pattern):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConfigError
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:361: Failed
+___________ test_invalid_config_raises[overrides12-costs\\.impact_k] ___________
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-700/test_invalid_config_raises_ove12')
+overrides = {'backtest': {'costs': {'impact_k': inf}}}
+pattern = 'costs\\.impact_k'
+
+    @pytest.mark.parametrize(("overrides", "pattern"), INVALID)
+    def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+>       with pytest.raises(ConfigError, match=pattern):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConfigError
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:361: Failed
+_______ test_invalid_config_raises[overrides13-costs\\.borrow_gc_annual] _______
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-700/test_invalid_config_raises_ove13')
+overrides = {'backtest': {'costs': {'borrow_gc_annual': inf}}}
+pattern = 'costs\\.borrow_gc_annual'
+
+    @pytest.mark.parametrize(("overrides", "pattern"), INVALID)
+    def test_invalid_config_raises(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+>       with pytest.raises(ConfigError, match=pattern):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ConfigError
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:361: Failed
+____________________ test_no_config_model_accepts_infinity _____________________
+
+    def test_no_config_model_accepts_infinity() -> None:  # Phase 0 checkpoint, Tier 2
+        nested = [m for m in _config_models() if m is not AtlasConfig]
+        assert len(nested) > 20
+        lax = [m.__name__ for m in nested if m.model_config.get("allow_inf_nan") is not False]
+>       assert lax == []
+E       AssertionError: assert ['Secrets', '...Budgets', ...] == []
+E         
+E         Left contains 34 more items, first extra item: 'Secrets'
+E         Use -v to get more diff
+
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/tests/unit/core/test_config.py:384: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/core/test_config.py::test_invalid_config_raises[overrides6-drawdown_tiers.*halt.*deeper]
+FAILED tests/unit/core/test_config.py::test_invalid_config_raises[overrides7-drawdown_tiers.*block_new_names.*deeper]
+FAILED tests/unit/core/test_config.py::test_invalid_config_raises[overrides8-fund\\.initial_capital]
+FAILED tests/unit/core/test_config.py::test_invalid_config_raises[overrides9-fund\\.initial_capital]
+FAILED tests/unit/core/test_config.py::test_invalid_config_raises[overrides10-limits\\.max_liquidation_days]
+FAILED tests/unit/core/test_config.py::test_invalid_config_raises[overrides11-costs\\.half_spread_bps]
+FAILED tests/unit/core/test_config.py::test_invalid_config_raises[overrides12-costs\\.impact_k]
+FAILED tests/unit/core/test_config.py::test_invalid_config_raises[overrides13-costs\\.borrow_gc_annual]
+FAILED tests/unit/core/test_config.py::test_no_config_model_accepts_infinity
+9 failed, 17 passed, 175 deselected in 1.00s
+exit 1

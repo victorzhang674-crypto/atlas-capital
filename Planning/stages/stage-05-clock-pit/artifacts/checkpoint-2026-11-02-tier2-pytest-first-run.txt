@@ -1,0 +1,73 @@
++(eval):6> uv run pytest -q
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 93%]
+..................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.37 s (limit 20 s)
+...................................... [ 96%]
+................................................................F....... [100%]
+=================================== FAILURES ===================================
+________________________ test_every_source_dir_has_init ________________________
+
+repo_root = PosixPath('/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7')
+
+    def test_every_source_dir_has_init(repo_root: Path) -> None:
+        src = repo_root / "src" / "atlas"
+        dirs = [src, *(d for d in src.rglob("*") if d.is_dir() and d.name != "__pycache__")]
+        missing = [d for d in dirs if not (d / "__init__.py").is_file()]
+>       assert missing == []
+E       AssertionError: assert [PosixPath('/.../.cc-writes')] == []
+E         
+E         Left contains 2 more items, first extra item: PosixPath('/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/src/atlas/core/types/.claude')
+E         Use -v to get more diff
+
+tests/unit/test_package_layout.py:50: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_package_layout.py::test_every_source_dir_has_init - As...
+1 failed, 2087 passed, 11 deselected in 38.27s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "fetchdf"
+ - leaked function "_result_as_arrow"
+ - leaked function "unregister"
+ - leaked function "df"
+ - leaked function "sqltype"
+ - leaked function ""
+ - leaked function "struct_type"
+ - leaked function "map_type"
+ - leaked function "df"
+ - leaked function "close"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit 1

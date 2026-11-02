@@ -23,9 +23,12 @@ def normalize_symbol(raw: str) -> str:
     """Canonical form of a ticker: whitespace stripped, upper case, `-` or `/` before a share
     class turned into `.` (`" brk-b "` → `"BRK.B"`).
 
-    Raises `ValueError` if the result is not 1-10 letters/digits starting with a letter,
-    optionally followed by `.` and a 1-4 character class suffix.
+    Raises `ValueError` for non-ASCII input (`upper()` would turn `"straße"` into `"STRASSE"`),
+    or if the result is not 1-10 letters/digits starting with a letter, optionally followed
+    by `.` and a 1-4 character class suffix.
     """
+    if not raw.isascii():
+        raise ValueError(f"invalid symbol {raw!r}: only ASCII characters are allowed")
     symbol = raw.strip().upper().translate(_SEPARATORS)
     if not _CANONICAL_RE.fullmatch(symbol):
         raise ValueError(f"invalid symbol {raw!r}")

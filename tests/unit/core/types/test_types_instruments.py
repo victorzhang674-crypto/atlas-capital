@@ -130,3 +130,21 @@ def test_instrument_trade_dates_ordered() -> None:
         last_trade_date=date(2020, 1, 2),
     )
     assert same.first_trade_date == same.last_trade_date
+
+
+# Written as escapes: s-sharp, dotless i, the fi ligature, A-umlaut, full-width letters
+# and a trailing no-break space. `upper()` maps several to plain letters ("STRASSE", "IBM").
+_NON_ASCII = [
+    "stra\u00dfe",
+    "\u0131bm",
+    "\ufb01x",
+    "\u00c4PL",
+    "\uff21\uff21\uff30\uff2c",
+    "AAPL\u00a0",
+]
+
+
+@pytest.mark.parametrize("raw", _NON_ASCII)
+def test_normalize_rejects_non_ascii(raw: str) -> None:  # Phase 0 checkpoint, Tier 2
+    with pytest.raises(ValueError, match="ASCII"):
+        normalize_symbol(raw)

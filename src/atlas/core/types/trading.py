@@ -71,17 +71,20 @@ class OrderStatus(StrEnum):
 _TERMINAL = frozenset(
     {OrderStatus.FILLED, OrderStatus.CANCELED, OrderStatus.REJECTED, OrderStatus.EXPIRED}
 )
-_UNFILLED = frozenset({OrderStatus.NEW, OrderStatus.ACCEPTED, OrderStatus.SUBMITTED})
+_NO_FILLS = frozenset(
+    {OrderStatus.NEW, OrderStatus.ACCEPTED, OrderStatus.SUBMITTED, OrderStatus.REJECTED}
+)
 
 
 class Order(AtlasModel):
     """An order for `quantity` shares (always positive; `side` gives the sign).
 
     `limit_price` (per share) is set exactly when `order_type` is LIMIT; a MOO order uses
-    time-in-force OPG. `filled_quantity` (shares) agrees with `status`: zero before any fill,
-    strictly between zero and `quantity` when PARTIALLY_FILLED, equal to it when FILLED.
-    `pods` tags the pod(s) the order trades for; `as_of` is the decision's trading day,
-    `created_at` the UTC creation time; `parent_id` links a child slice to its parent order.
+    time-in-force OPG. `filled_quantity` (shares) agrees with `status`: zero before any fill
+    and when REJECTED, strictly between zero and `quantity` when PARTIALLY_FILLED, equal to it
+    when FILLED. `pods` tags the pod(s) the order trades for (no pod twice, ignoring case);
+    `as_of` is the decision's trading day, `created_at` the UTC creation time; `parent_id`
+    links a child slice to its parent order (never the order itself).
     """
 
     id: OrderId
@@ -107,12 +110,16 @@ class Order(AtlasModel):
         filled, qty = self.filled_quantity, self.quantity
         if filled > qty:
             raise ValueError(f"filled_quantity {filled} exceeds quantity {qty}")
-        if self.status in _UNFILLED and filled != 0:
+        if self.status in _NO_FILLS and filled != 0:
             raise ValueError(f"a {self.status} order cannot have fills")
         if self.status is OrderStatus.PARTIALLY_FILLED and not 0 < filled < qty:
             raise ValueError("a PARTIALLY_FILLED order needs 0 < filled_quantity < quantity")
         if self.status is OrderStatus.FILLED and filled != qty:
             raise ValueError("a FILLED order needs filled_quantity == quantity")
+        if len({pod.casefold() for pod in self.pods}) != len(self.pods):
+            raise ValueError(f"duplicate pod in pods {self.pods}")
+        if self.parent_id == self.id:
+            raise ValueError("an order cannot be its own parent (parent_id == id)")
         return self
 
     @property
@@ -153,7 +160,7 @@ class Position(AtlasModel):
     symbol: Symbol
     quantity: Decimal
     avg_cost: _NonNegDecimal
-    pod: str | None = None
+    pod: NonEmptyStr | None = None
 
     @property
     def is_long(self) -> bool:

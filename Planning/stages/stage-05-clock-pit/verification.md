@@ -56,3 +56,15 @@ Owner-requested follow-up (see worklog, 2026-11-02): the declared pandas floor n
 - On merged `main` (`d9cffb6`, fast-forward from `473629f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv run pytest -q` → 1678 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); 1M-row upsert → 0.73 s PASSED; `make check` → exit 0; `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 11 commands exit 0 · raw: [stage-06 artifacts/checkpoint-2026-11-02-merged-main-check.txt](../stage-06-storage/artifacts/checkpoint-2026-11-02-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): `TradingCalendar` rejects a `datetime` with a `market_date()` hint, `SimClock` checks an instant start against the calendar bounds, and DST fall-back, early-close decision times and duplicate index labels are pinned by tests. Re-run in this chat on the final working tree (base commit `a7a1e09`):
+- Brief's Verify `uv run pytest tests/unit/core -q && uv run ruff check .` → 768 passed; All checks passed!; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-verify.txt](artifacts/checkpoint-2026-11-02-tier2-verify.txt)
+- The 12 new fix tests FAILED on `a7a1e09`'s code and PASS now; the 13 pin tests pass on both · raw: [artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt](artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt)
+- `uv run pytest -q` → 2088 passed, 0 failed, 11 deselected (live/llm/integration), exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-pytest.txt](artifacts/checkpoint-2026-11-02-tier2-pytest.txt) (a first run had 1 failure from two empty harness folders under `src/`/`tests/`, removed; see worklog · raw: [artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt](artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt))
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 205 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files · raw: [artifacts/checkpoint-2026-11-02-tier2-lint-type.txt](artifacts/checkpoint-2026-11-02-tier2-lint-type.txt)
+- `make check` → lint, format check, mypy clean; 2088 passed; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-make-check.txt](artifacts/checkpoint-2026-11-02-tier2-make-check.txt)
+- Machine load during these runs: 6.88 → 7.56 (`uptime`) · raw: [artifacts/checkpoint-2026-11-02-tier2-load.txt](artifacts/checkpoint-2026-11-02-tier2-load.txt)
+- The acceptance criterion still holds: ruff's banned-api rule (`ruff check .` above, `test_ruff_bans_wall_clock_outside_clock_module[*]`) finds no wall-clock call outside `clock.py`; point-in-time boundary tests pass.
+
+**Result:** ALL CRITERIA VERIFIED

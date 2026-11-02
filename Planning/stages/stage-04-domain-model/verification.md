@@ -27,3 +27,15 @@ Fill this in **only** with output from commands actually run in this stage's fin
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): ASCII-only symbols, possible ULIDs only, non-empty text items and unique name keys (`NameMap`), REJECTED orders without fills, no self-parent, no duplicate pods, `Prediction.outcome >= -1`. Re-run in this chat on the final working tree (base commit `a7a1e09`):
+- Brief's Verify `uv run pytest tests/unit/core/types -q && uv run mypy src/atlas/core` → 269 passed; Success: no issues found in 23 source files; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-verify.txt](artifacts/checkpoint-2026-11-02-tier2-verify.txt)
+- The 26 new test cases FAILED on `a7a1e09`'s code and PASS now · raw: [artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt](artifacts/checkpoint-2026-11-02-tier2-red-before-fix.txt)
+- `uv run pytest -q` → 2088 passed, 0 failed, 11 deselected (live/llm/integration), exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-pytest.txt](artifacts/checkpoint-2026-11-02-tier2-pytest.txt) (a first run had 1 failure from two empty harness folders under `src/`/`tests/`, removed; see worklog · raw: [artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt](artifacts/checkpoint-2026-11-02-tier2-pytest-first-run.txt))
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 205 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files · raw: [artifacts/checkpoint-2026-11-02-tier2-lint-type.txt](artifacts/checkpoint-2026-11-02-tier2-lint-type.txt)
+- `make check` → lint, format check, mypy clean; 2088 passed; exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier2-make-check.txt](artifacts/checkpoint-2026-11-02-tier2-make-check.txt)
+- Machine load during these runs: 6.88 → 7.56 (`uptime`) · raw: [artifacts/checkpoint-2026-11-02-tier2-load.txt](artifacts/checkpoint-2026-11-02-tier2-load.txt)
+- The acceptance criterion still holds (every spec §7 contract exists, validated and round-trippable; mypy strict for `core/types`): `test_every_model_has_a_sample`, `test_json_roundtrip[*]` and the validation tests pass in the runs above; `uv run mypy src/atlas/core` → Success.
+
+**Result:** ALL CRITERIA VERIFIED

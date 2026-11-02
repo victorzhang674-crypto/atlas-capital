@@ -6,7 +6,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 
 - **Current stage:** 16 — Fundamental factor library — `NOT STARTED`
 - **Stages done:** 15 / 66
-- **Last updated:** 2026-11-02 (Stage 15 DONE; Phase 0 checkpoint: Tier 1 follow-ups to Stages 02, 03, 05, 06, 14)
+- **Last updated:** 2026-11-02 (Stage 15 DONE; Phase 0 checkpoint: Tier 1 follow-ups to Stages 02, 03, 05, 06, 14; Tier 2 follow-ups to Stages 02, 04, 05)
 
 ## Stage checklist
 
@@ -259,6 +259,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 | 2026-11-02 | 15 | Earlier-stage code change (Stage 13): new public `DataView.sessions(lookback)` (the session grid of `prices`; raises `LookAheadError` if it ever ends at a bar published after the cutoff), added to the Stage 13 leak-suite tables (`METHODS`, `LEAKS`, `STATIC`, `NOT_PER_SYMBOL`). The protocol §5 `tiny_universe` fixture is built now (`tests/tiny_universe.py` + `tests/conftest.py`) | Needed by "the view loads exactly lookback + buffer sessions"; see [stage-15 worklog](stages/stage-15-technical-features/worklog.md) |
 | 2026-11-02 | 15 | Process deviation recorded: the plan's Tasks 7–13 asked for one red→green cycle per feature group; the tests of all seven groups were written first and failed together, then `technical.py` passed on its first run. Covered by 16 mutation checks (one gap found and closed: a max-drawdown edge case). Test files are prefixed (`test_feature_*.py`) because test basenames must be unique without `__init__.py` | [stage-15 worklog](stages/stage-15-technical-features/worklog.md) |
 | 2026-11-02 | 15 | Merge: `main` had moved on (phase-0 checkpoint `d9cffb6`, `4edc709`) → merged into the stage branch (`7dea6a4`; `PROGRESS.md` conflict, both sides kept; merged tree green); the sandbox refused the fast-forward in the main checkout (`Operation not permitted`), so it ran in the owner's Terminal panel (approved in the app) with the merged-main checks; then a records-only follow-up commit, as in Stage 14 | Rule 6A / Rule 6 exception (sandbox); see [stage-15 worklog](stages/stage-15-technical-features/worklog.md) |
+| 2026-11-02 | 02, 04, 05 | **Phase 0 checkpoint, Tier 2 follow-ups (validation hardening).** Made test-first as post-DONE follow-ups, each recorded in the folder of the stage whose code it changes (as Tier 1): config floats reject NaN/inf, `initial_capital > 0`, drawdown tiers never switch `block_new_names`/`halt` back off (02); ASCII-only symbols, ULID first character `[0-7]`, non-empty text items and `NameMap` keys (stripped, unique ignoring case), REJECTED orders without fills, no self-parent, no duplicate pods, `Prediction.outcome >= -1` (04); `TradingCalendar` rejects a `datetime` with a `market_date()` hint, `SimClock` checks an instant start against the calendar bounds, DST fall-back / early-close / duplicate-label tests (05). Existing `config_fingerprint` tags unchanged; full suite and Stages 07–15 green with the stricter contracts. Owner's words: "Start Tier 2" | Owner decision in chat; Tiers 3–4 of the checkpoint report are not started; the two Stage 04 test-quality Backlog items were not part of Tier 2 and stay open |
 
 ## Backlog (out-of-scope ideas captured during stages)
 
@@ -268,25 +269,25 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - Earnings-call transcript analysis
 - Options overlay (real tail hedges) and futures for macro
 - Paid data adapters (point-in-time constituents, consensus estimates, short interest)
-- (Stage 02 review, minor) `FundConfig.initial_capital` accepts ≤ 0, and `.inf` is accepted for `max_liquidation_days` and cost fields — add `gt=0` / `allow_inf_nan=False`
+- (Stage 02 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): `initial_capital` has `gt=0` and every config model has `allow_inf_nan=False` (`test_no_config_model_accepts_infinity`) (was: `FundConfig.initial_capital` accepts ≤ 0, and `.inf` is accepted for `max_liquidation_days` and cost fields — add `gt=0` / `allow_inf_nan=False`)
 - (Stage 02 review, minor) Done 2026-11-02 (Phase 0 checkpoint): equal Decimals written differently (`1.0e7` vs `10000000`) now give the same `config_fingerprint`; existing tags unchanged
 - (Stage 02 review, minor) YAML merge keys (`<<: *anchor` plus an override) are rejected as duplicate keys — support or document
-- (Stage 02 review, minor) Drawdown tiers do not check that `halt` / `block_new_names` escalate (a halting tier followed by a non-halting one is accepted)
+- (Stage 02 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): a deeper tier cannot switch `block_new_names` or `halt` back off (was: Drawdown tiers do not check that `halt` / `block_new_names` escalate (a halting tier followed by a non-halting one is accepted))
 - (Stage 03) The audit hash chain has no external anchor: rewriting the whole file with freshly computed hashes still passes `verify_chain`. Anchor the last hash somewhere else (e.g. the Stage 06 DuckDB mirror or the Stage 55 run summary). (Done 2026-11-02 in part, Phase 0 checkpoint: every `atlas data` run mirrors its log into DuckDB `audit_events`, whose prefix check rejects a rewritten log; logs written outside the CLI, and runs before 2026-11-02, are not mirrored)
 - (Stage 03) `AuditLog` supports one writer process per file (threads are fine); add a file lock (`fcntl.flock`) if several processes ever share one run's log
 - (Stage 04, D9) `atlas.core.types.base.FrozenDict` duplicates `atlas.core.config._FrozenDict`; make config import the public one
-- (Stage 04 review, minor) Strings inside tuples and map keys are unchecked: empty evidence ids / kill criteria / risks, duplicate `Order.pods`, `sector_tilts` keys `""` or case-duplicates, empty pod names in `CapitalAllocation`, `Position.pod=""` — use `NonEmptyStr` items and keys
-- (Stage 04 review, minor) `normalize_symbol` upper-cases non-ASCII (`ß` → `SS`); reject non-ASCII input
-- (Stage 04 review, minor) Id pattern accepts impossible ULIDs (first character 8–Z); tighten to `[0-7]`
-- (Stage 04 review, minor) `Order` accepts REJECTED with fills and `parent_id == id`; `Prediction.outcome` has no `ge=-1` bound
+- (Stage 04 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): every text tuple item is `NonEmptyStr`; `NameMap` keys (`sector_tilts`, pod weights/budgets, metrics) are stripped, non-empty, unique ignoring case; `Order.pods` refuses duplicates; `Position.pod` non-empty (was: Strings inside tuples and map keys are unchecked: empty evidence ids / kill criteria / risks, duplicate `Order.pods`, `sector_tilts` keys `""` or case-duplicates, empty pod names in `CapitalAllocation`, `Position.pod=""` — use `NonEmptyStr` items and keys)
+- (Stage 04 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): non-ASCII input is rejected (was: `normalize_symbol` upper-cases non-ASCII (`ß` → `SS`); reject non-ASCII input)
+- (Stage 04 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): pattern `[0-7][0-9A-HJKMNP-TV-Z]{25}` (was: Id pattern accepts impossible ULIDs (first character 8–Z); tighten to `[0-7]`)
+- (Stage 04 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): REJECTED orders cannot have fills, `parent_id == id` is refused, `Prediction.outcome` has `ge=-1` (was: `Order` accepts REJECTED with fills and `parent_id == id`; `Prediction.outcome` has no `ge=-1` bound)
 - (Stage 04 review, minor) `exp_return` is annualised in `View` but over-the-horizon in `InvestmentThesis`/`Forecast`; rename (`exp_return_annual`) or cross-reference before Stages 38/41
 - (Stage 04 review, minor) `new_id` (like Stage 03's run/event ids) uses ULID randomness and wall-clock time with no seed/clock parameter, so ids differ across backtest reruns; consider routing through Stage 05's clock
 - (Stage 04 review, minor) Tests: `test_roundtrip_missing_id_fails` omits `PodProposal`; the Order/Fill cases of `test_decimal_fields_reject_nan` also trip `gt=0`
 - (Stage 04, D8) Fields later briefs add to Stage 04 contracts are not built yet (Stage 08 built `Instrument` name/first/last trade dates): `AnalystReport.low_quality` (26), report catalysts (31), `PodProposal.exits` (38), `View` source (41), `stop_level` (43), order urgency and idempotency key (50), `Instrument` name/first/last trade dates (08); `ICDecision` (49), `RiskMemo` (47), `StatusUpdate` (50) are owned by those stages
 - (Stage 05 review, minor) Done 2026-11-02 (Phase 0 checkpoint): `pandas>=3.0` and `pandas-stubs>=3.0` (the code imports `pandas.errors.Pandas4Warning`, pandas 3 only); pinned by `test_pandas_floor_is_pandas_3`
-- (Stage 05 review, minor) `TradingCalendar` methods given a `datetime` (a `date` subclass) raise a confusing `TypeError`; reject `datetime` in `_check` with a hint to `market_date()`
-- (Stage 05 review, minor) `SimClock(start=<aware instant>)` accepts an instant outside the calendar bounds; the error only appears on the first `advance()`; check bounds in `__init__`
-- (Stage 05 review, minor) Untested but working: `SimClock.advance` across the November DST fall-back; an early-close decision time between 13:15 and 16:15 ET; `pit_filter` with duplicate index labels — pin with tests
+- (Stage 05 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): `TypeError` naming `market_date()` from every date method and the constructor bounds (was: `TradingCalendar` methods given a `datetime` (a `date` subclass) raise a confusing `TypeError`; reject `datetime` in `_check` with a hint to `market_date()`)
+- (Stage 05 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): checked in `__init__` ("outside the calendar") (was: `SimClock(start=<aware instant>)` accepts an instant outside the calendar bounds; the error only appears on the first `advance()`; check bounds in `__init__`)
+- (Stage 05 review, minor) Done 2026-11-02 (Phase 0 checkpoint, Tier 2): pinned by `test_simclock_advance_across_dst_fall_back`, `test_dst_fall_back_close`/`_cutoff`, `test_same_day_bar_after_early_close[*]`, `test_pit_filter_with_duplicate_index_labels` (was: Untested but working: `SimClock.advance` across the November DST fall-back; an early-close decision time between 13:15 and 16:15 ET; `pit_filter` with duplicate index labels — pin with tests)
 - (Stage 06, D1) Column types: add a list-of-strings type (Stage 11 `news.symbols[]`) and a `Decimal` type (Stages 50/52 ledger, orders, fills) when those stages need them
 - (Stage 06, D6) Multi-partition writes and the `_meta.json` update are not one atomic step; a crash mid-write leaves some partitions new (a retried upsert repairs it). Add a manifest / transaction log if crash-consistency across partitions is ever needed
 - (Stage 06 review) `Database.query` accepts any single `SELECT`, which can call DuckDB table functions (`read_csv`, `read_parquet`) on any readable path; consider `enable_external_access = false` with `allowed_directories` set to the lake before the dashboard (Stage 64) exposes queries
@@ -343,7 +344,7 @@ Update this file at the start and end of **every** stage (see `02-stage-protocol
 - (Stage 14) Untagged market-wide news is not backfilled (only articles tagged with a synced symbol, SPY/QQQ included); add a capped market-news step if a strategy needs it
 - (Phase 0 checkpoint) Audit logs of `atlas data` runs before 2026-11-02 (the Stage 14 backfill included) are not in DuckDB `audit_events`; mirror them once (a small `atlas data audit` command, or `Database.mirror_audit_log` over `runs/*/audit.jsonl`)
 - (Phase 0 checkpoint) A `atlas data` run exits 1 if another process holds `data/atlas.duckdb` open (DuckDB allows one writing process), even though the data steps succeeded; revisit when the Stage 61 scheduler or the Stage 64 dashboard keeps the database open
-- (Phase 0 checkpoint) Tiers 2–4 of the 2026-11-02 checkpoint report (validation hardening, deterministic ids before Stage 56, `exp_return` naming before Stages 38/41, `Database.query` file access before Stage 64, housekeeping) are the open Stage 02–06 items above
+- (Phase 0 checkpoint) Tiers 3–4 of the 2026-11-02 checkpoint report (deterministic ids before Stage 56, `exp_return` naming before Stages 38/41, `Database.query` file access before Stage 64, audit file lock before Stage 61, housekeeping) are the open Stage 02–06 items above; Tier 2 done 2026-11-02
 - (Stage 15) Bad bars older than the quality window still sit inside 252-session feature windows (Stage 13 item, not in Stage 15's scope): features use whatever bars `DataView` returns; a robust variant (e.g. winsorised returns) is open
 - (Stage 15) Recursive features (EMA, Wilder ATR/RSI, MACD) depend on where the loaded window starts (seed weight decays geometrically; `quant.features.buffer_sessions` = 63 is the warm-up). Backtest (Stage 56) and live runs must use the same buffer to get identical values; a longer buffer or stored smoother state would remove the dependence
 - (Stage 15) Features are recomputed on every call (2.5 s for 500 symbols × 2,000 sessions); add a lake cache like Stage 16's `factor_exposures` if Stages 17/22 need repeated panels
@@ -411,6 +412,7 @@ Full block and raw output: [verification.md](stages/stage-02-configuration/verif
   - [x] Every limit in spec §9 exists as a typed field — evidence: `test_limits_cover_spec_section_9[*]`, `test_drawdown_tiers_and_pod_stops_defaults`
 - Waivers: none
 - Phase 0 checkpoint follow-up — 2026-11-02: [stage-02 verification](stages/stage-02-configuration/verification.md): `config_fingerprint` normalises Decimals (`test_fingerprint_same_for_equal_decimals_written_differently`); brief's Verify 184 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
+- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-02 verification](stages/stage-02-configuration/verification.md): config floats reject NaN/inf, `initial_capital > 0`, drawdown tiers escalate (`test_no_config_model_accepts_infinity`, new `test_invalid_config_raises` cases); fingerprints unchanged; brief's Verify 201 passed; full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
 
 ### Stage 03 — Logging, run context & audit trail — DONE 2026-10-26
 - Folder: [stages/stage-03-logging-audit/](stages/stage-03-logging-audit/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -465,6 +467,7 @@ Full block and raw output: [verification.md](stages/stage-04-domain-model/verifi
   - [x] Every contract in spec §7 exists, validated and round-trippable — evidence: artifacts/section7-coverage.txt; `test_every_model_has_a_sample`, `test_json_roundtrip[*]` (28 models), validation tests listed in verification.md
   - [x] mypy strict passes for `core/types` — evidence: `uv run mypy src/atlas/core` → Success (artifacts/verify.txt)
 - Waivers: none
+- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-04 verification](stages/stage-04-domain-model/verification.md): ASCII-only symbols, `[0-7]` ULIDs, `NonEmptyStr` tuple items, `NameMap` keys, REJECTED/no-self-parent/unique-pod `Order`, `Prediction.outcome >= -1` (26 new test cases); brief's Verify 269 passed, mypy core Success (23 files); full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
 
 ### Stage 05 — Clock, trading calendar & point-in-time guard — DONE 2026-10-26
 - Folder: [stages/stage-05-clock-pit/](stages/stage-05-clock-pit/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -492,6 +495,7 @@ Full block and raw output: [verification.md](stages/stage-05-clock-pit/verificat
   - [x] PIT boundary tests pass — evidence: `test_bar_not_visible_same_morning`, `test_bar_visible_next_session_morning`, `test_knows_is_strict`, `test_pit_filter_keeps_only_known_rows`, `test_injected_future_bar_is_caught` (artifacts/stage-tests-verbose.txt)
 - Waivers: none
 - Phase 0 checkpoint follow-up — 2026-11-02: [stage-05 verification](stages/stage-05-clock-pit/verification.md): `pandas>=3.0` / `pandas-stubs>=3.0` (`test_pandas_floor_is_pandas_3`); brief's Verify 704 passed, ruff clean; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
+- Phase 0 checkpoint follow-up (Tier 2) — 2026-11-02: [stage-05 verification](stages/stage-05-clock-pit/verification.md): calendar rejects `datetime` with a `market_date()` hint, `SimClock` checks instant bounds, DST fall-back / early-close / duplicate-label tests; brief's Verify 768 passed, ruff clean; full suite 2088 passed, 0 failed; ruff, format (205 files), mypy (88 files) clean; `make check` exit 0
 
 ### Stage 06 — Storage layer (DuckDB + Parquet lake) — DONE 2026-10-27
 - Folder: [stages/stage-06-storage/](stages/stage-06-storage/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)

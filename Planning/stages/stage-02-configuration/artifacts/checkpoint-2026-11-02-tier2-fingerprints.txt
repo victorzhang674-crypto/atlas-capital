@@ -1,0 +1,11 @@
+# config_fingerprint before (main a7a1e09, code from git archive) and after (Tier 2 working tree)
+## before (a7a1e09)
+default 801637033751
+dev 784ecfadb9a1
+backtest e23b11829a2f
+paper 7ef796f61636
+## after (working tree)
+default 801637033751
+dev 784ecfadb9a1
+backtest e23b11829a2f
+paper 7ef796f61636

@@ -12,7 +12,8 @@ from pydantic import Field
 from ulid import ULID
 
 _PREFIX_RE = re.compile(r"[a-z]{2,5}")
-_ULID_PATTERN = "[0-9A-HJKMNP-TV-Z]{26}"
+# Crockford base32; the first character carries the top 3 bits of a 48-bit time, so 0-7 only.
+_ULID_PATTERN = "[0-7][0-9A-HJKMNP-TV-Z]{25}"
 
 
 class IdPrefix(StrEnum):

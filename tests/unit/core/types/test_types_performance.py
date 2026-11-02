@@ -139,3 +139,23 @@ def test_ledger_amount_positive_decimal() -> None:
             entry.model_validate({**entry.model_dump(), "amount": bad})
     with pytest.raises(ValidationError):
         entry.model_validate({**entry.model_dump(), "account": ""})
+
+
+# --- Phase 0 checkpoint, Tier 2 -------------------------------------------------------------
+
+
+def test_outcome_is_a_return_of_at_least_minus_one() -> None:
+    later = MADE + timedelta(days=30)
+    assert _prediction(settled_at=later, outcome=-1.0).outcome == -1.0
+    with pytest.raises(ValidationError, match="greater than or equal to -1"):
+        _prediction(settled_at=later, outcome=-1.01)
+    with pytest.raises(ValidationError, match="bool"):
+        _prediction(settled_at=later, outcome=True)
+
+
+@pytest.mark.parametrize("field", ["tags", "source_episode_ids"])
+def test_lesson_text_items_non_empty(field: str) -> None:
+    with pytest.raises(ValidationError, match="at least 1 character"):
+        Lesson(
+            id=new_id(IdPrefix.LESSON), agent="global", created_at=MADE, text="t", **{field: (" ",)}
+        )

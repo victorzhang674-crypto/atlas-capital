@@ -12,7 +12,7 @@ from typing import Annotated, Self
 
 from pydantic import Field, model_validator
 
-from atlas.core.types.base import AtlasModel, FrozenMap, NonEmptyStr, Real, UnitInterval
+from atlas.core.types.base import AtlasModel, NameMap, NonEmptyStr, Real, UnitInterval
 from atlas.core.types.ids import OrderId, ProposalId
 from atlas.core.types.instruments import Symbol, SymbolWeights
 from atlas.core.types.research import HorizonDays
@@ -46,11 +46,12 @@ class PodProposal(AtlasModel):
 
 class CapitalAllocation(AtlasModel):
     """The CIO's split of the fund across pods: `pod_weights` (capital) and `risk_budgets`
-    (risk), each a fraction in [0, 1] per pod, each summing to 1, over the same pods."""
+    (risk), each a fraction in [0, 1] per pod, each summing to 1, over the same pods (pod
+    names unique ignoring case)."""
 
     as_of: date
-    pod_weights: FrozenMap[str, _Fraction]
-    risk_budgets: FrozenMap[str, _Fraction]
+    pod_weights: NameMap[_Fraction]
+    risk_budgets: NameMap[_Fraction]
     rationale: NonEmptyStr
 
     @model_validator(mode="after")
@@ -135,7 +136,7 @@ class RiskDecision(AtlasModel):
     status: RiskStatus
     adjusted_weights: SymbolWeights
     breaches: tuple[Breach, ...] = ()
-    metrics: FrozenMap[str, float] = Field(default_factory=dict, validate_default=True)
+    metrics: NameMap[float] = Field(default_factory=dict, validate_default=True)
 
     @model_validator(mode="after")
     def _approve_has_no_breach(self) -> Self:

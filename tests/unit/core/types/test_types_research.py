@@ -170,3 +170,40 @@ def test_thesis_rejects_wrong_id_prefix() -> None:
 
 def test_direction_sign() -> None:
     assert (Direction.LONG.sign, Direction.SHORT.sign, Direction.FLAT.sign) == (1, -1, 0)
+
+
+# --- Phase 0 checkpoint, Tier 2: text items and map keys ------------------------------------
+
+_EMPTY_ITEM_CASES: dict[str, Any] = {
+    "signal.evidence_ids": lambda: _signal(evidence_ids=("e:1", "")),
+    "report.risks": lambda: _report(risks=("  ",)),
+    "macro.risks": lambda: _macro(risks=("",)),
+    "macro.evidence": lambda: _macro(evidence=("",)),
+    "claim.evidence_ids": lambda: _claim(evidence_ids=("",)),
+    "turn.concessions": lambda: DebateTurn(speaker=DebateRole.BULL, claims=(), concessions=("",)),
+    "turn.questions": lambda: DebateTurn(
+        speaker=DebateRole.BEAR, claims=(), questions_for_other_side=(" ",)
+    ),
+    "thesis.kill_criteria": lambda: _thesis(kill_criteria=("",)),
+    "thesis.evidence": lambda: _thesis(evidence=("",)),
+}
+
+
+@pytest.mark.parametrize("case", sorted(_EMPTY_ITEM_CASES))
+def test_empty_text_items_rejected(case: str) -> None:
+    with pytest.raises(ValidationError, match="at least 1 character"):
+        _EMPTY_ITEM_CASES[case]()
+
+
+def test_text_items_are_stripped() -> None:
+    assert _thesis(evidence=(" news:1 ",)).evidence == ("news:1",)
+    assert _report(risks=("China demand\n",)).risks == ("China demand",)
+
+
+def test_sector_tilt_keys_non_empty_and_unique() -> None:
+    assert _macro(sector_tilts={" Energy ": 0.5}).sector_tilts == {"Energy": 0.5}
+    with pytest.raises(ValidationError, match="at least 1 character"):
+        _macro(sector_tilts={" ": 0.1})
+    for bad in ({"Energy": 0.1, "energy": -0.1}, {"Energy": 0.1, "Energy ": 0.2}):
+        with pytest.raises(ValidationError, match="same entry"):
+            _macro(sector_tilts=bad)

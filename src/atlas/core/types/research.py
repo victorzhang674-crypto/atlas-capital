@@ -12,7 +12,7 @@ from pydantic import BeforeValidator, Field, model_validator
 
 from atlas.core.types.base import (
     AtlasModel,
-    FrozenMap,
+    NameMap,
     NonEmptyStr,
     Real,
     UnitInterval,
@@ -46,7 +46,7 @@ class Signal(AtlasModel):
     name: NonEmptyStr
     direction: Direction
     strength: UnitInterval
-    evidence_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[NonEmptyStr, ...] = ()
 
 
 class Evidence(AtlasModel):
@@ -68,7 +68,7 @@ class AnalystReport(AtlasModel):
     analyst: NonEmptyStr
     summary: NonEmptyStr
     signals: tuple[Signal, ...]
-    risks: tuple[str, ...]
+    risks: tuple[NonEmptyStr, ...]
     confidence: UnitInterval
 
 
@@ -86,7 +86,8 @@ class MacroOutlook(AtlasModel):
     """The macro briefing for trading day `as_of` (fields per Stage 33's brief).
 
     `growth`, `inflation`, `policy` and `credit` are short narrative assessments;
-    `sector_tilts` maps a sector to a tilt in [-1, 1]; `risk_appetite` is in [0, 1];
+    `sector_tilts` maps a sector (unique ignoring case) to a tilt in [-1, 1];
+    `risk_appetite` is in [0, 1];
     `evidence` cites `Evidence.id`s.
     """
 
@@ -96,11 +97,11 @@ class MacroOutlook(AtlasModel):
     inflation: NonEmptyStr
     policy: NonEmptyStr
     credit: NonEmptyStr
-    risks: tuple[str, ...]
+    risks: tuple[NonEmptyStr, ...]
     asset_views: tuple[AssetView, ...]
-    sector_tilts: FrozenMap[str, Annotated[Real, Field(ge=-1, le=1)]]
+    sector_tilts: NameMap[Annotated[Real, Field(ge=-1, le=1)]]
     risk_appetite: UnitInterval
-    evidence: tuple[str, ...]
+    evidence: tuple[NonEmptyStr, ...]
 
 
 class DebateRole(StrEnum):
@@ -115,7 +116,7 @@ class Claim(AtlasModel):
     """One argued point in a debate turn, citing evidence; `strength` in [0, 1]."""
 
     text: NonEmptyStr
-    evidence_ids: tuple[str, ...]
+    evidence_ids: tuple[NonEmptyStr, ...]
     strength: UnitInterval
 
 
@@ -124,8 +125,8 @@ class DebateTurn(AtlasModel):
 
     speaker: DebateRole
     claims: tuple[Claim, ...]
-    concessions: tuple[str, ...] = ()
-    questions_for_other_side: tuple[str, ...] = ()
+    concessions: tuple[NonEmptyStr, ...] = ()
+    questions_for_other_side: tuple[NonEmptyStr, ...] = ()
 
 
 class ReturnDistribution(AtlasModel):
@@ -177,6 +178,6 @@ class InvestmentThesis(AtlasModel):
     horizon_days: HorizonDays
     conviction: UnitInterval
     catalysts: tuple[Catalyst, ...] = ()
-    kill_criteria: tuple[str, ...]
-    evidence: tuple[str, ...]
+    kill_criteria: tuple[NonEmptyStr, ...]
+    evidence: tuple[NonEmptyStr, ...]
     status: ThesisStatus = ThesisStatus.ACTIVE

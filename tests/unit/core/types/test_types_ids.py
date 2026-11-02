@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from atlas.core.types.base import AtlasModel
 from atlas.core.types.ids import IdPrefix, ThesisId, new_id
 
-ULID_RE = "[0-9A-HJKMNP-TV-Z]{26}"
+ULID_RE = "[0-7][0-9A-HJKMNP-TV-Z]{25}"
 
 
 class _HasThesisId(AtlasModel):
@@ -49,3 +49,12 @@ def test_prefixed_id_rejects_wrong_prefix() -> None:
     for bad in (new_id(IdPrefix.ORDER), "th_123", good.lower(), good + "X", f" {good}"):
         with pytest.raises(ValidationError):
             _HasThesisId(id=bad)
+
+
+def test_prefixed_id_rejects_impossible_ulid() -> None:  # Phase 0 checkpoint, Tier 2
+    # The first ULID character holds the top 3 bits of the 48-bit timestamp: only 0-7 exist.
+    highest = "th_7" + "Z" * 25
+    assert _HasThesisId(id=highest).id == highest
+    for first in "89ABZ":
+        with pytest.raises(ValidationError):
+            _HasThesisId(id=f"th_{first}" + "0" * 25)

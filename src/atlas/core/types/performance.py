@@ -11,7 +11,7 @@ from typing import Annotated, Self
 
 from pydantic import Field, model_validator
 
-from atlas.core.types.base import AtlasModel, NonEmptyStr, UnitInterval, UtcDatetime
+from atlas.core.types.base import AtlasModel, NonEmptyStr, Real, UnitInterval, UtcDatetime
 from atlas.core.types.ids import LedgerId, LessonId, PredictionId
 from atlas.core.types.instruments import Symbol
 from atlas.core.types.research import Direction, HorizonDays, ReturnDistribution
@@ -32,7 +32,7 @@ class Prediction(AtlasModel):
     """A scored forecast about `target` over `horizon_days` trading days (spec §7, §10).
 
     It is open until settled: `settled_at` (UTC, after `made_at`) and `outcome` (the realised
-    simple return over the horizon) are set together, and `score` only once settled.
+    simple return over the horizon, >= -1) are set together, and `score` only once settled.
     """
 
     id: PredictionId
@@ -42,7 +42,7 @@ class Prediction(AtlasModel):
     horizon_days: HorizonDays
     forecast: Forecast
     settled_at: UtcDatetime | None = None
-    outcome: float | None = None
+    outcome: Annotated[Real, Field(ge=-1)] | None = None
     score: float | None = None
 
     @model_validator(mode="after")
@@ -70,8 +70,8 @@ class Lesson(AtlasModel):
     agent: NonEmptyStr
     created_at: UtcDatetime
     text: NonEmptyStr
-    tags: tuple[str, ...] = ()
-    source_episode_ids: tuple[str, ...] = ()
+    tags: tuple[NonEmptyStr, ...] = ()
+    source_episode_ids: tuple[NonEmptyStr, ...] = ()
     quality_score: UnitInterval | None = None
 
 
