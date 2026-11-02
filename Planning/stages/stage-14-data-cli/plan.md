@@ -100,6 +100,7 @@ Commands below are run as `UV_CACHE_DIR=$TMPDIR/uv-cache-s14 UV_NO_SYNC=1 uv run
 - [x] Copy the root `.env` (done at set-up) and the LM lexicon (`data/reference/lm_lexicon.csv`) into the worktree
 - [x] Smoke run: `uv run atlas data sync --from 2024-01-01 --symbols AAPL,MSFT,SPY` on a scratch lake (`ATLAS__DATA__LAKE_PATH`) → every step ok; fix what breaks (test first)
 - [x] Full backfill in the background: `uv run atlas data sync --from 2015-01-01` (lake `data/`), log to `artifacts/backfill-sync.log`; monitor to completion; resume after any interruption with the same command
+  - As run: two background runs on the same lake — `--datasets universe,prices,fundamentals,macro,events,sentiment,quality` (`artifacts/backfill-sync.log`), then `--datasets news,sentiment,quality` with `ATLAS__DATA__SYNC__WORKERS__ALPACA=3` (`artifacts/backfill-news.log`), so the acceptance data was ready before the multi-hour news step; the brief's Verify then ran the full command over the result
 - [x] `uv run atlas data status` → `artifacts/status.txt`; record timings per step in the worklog and handoff note
 - [x] Check the acceptance numbers: prices ≥ 8 years for ≥ 95% of current members, fundamentals ≥ 90%, all macro series
 
