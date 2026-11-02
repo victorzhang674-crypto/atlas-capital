@@ -1,0 +1,173 @@
+# Phase 1 checkpoint Tier 1: fast-forward + verification on merged main · 2026-11-02 14:59 EST · 14:59  up 23 days,  6:01, 2 users, load averages: 6.81 6.70 6.73
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/phase-one-checkpoint-stages-80625b
+Updating 8056137..7ae6924
+Fast-forward
+ Planning/PROGRESS.md                               |  20 ++--
+ .../artifacts/build_alpaca_fixtures.py             |   3 +-
+ ...se1-checkpoint-2026-11-02-alpaca-shape-check.py | 126 +++++++++++++++++++++
+ ...e1-checkpoint-2026-11-02-alpaca-shape-check.txt |   9 ++
+ .../phase1-checkpoint-2026-11-02-avb-real-data.txt |  37 ++++++
+ ...checkpoint-2026-11-02-live-actions-mutation.txt |   3 +
+ ...phase1-checkpoint-2026-11-02-red-before-fix.txt |  13 +++
+ .../phase1-checkpoint-2026-11-02-verify.txt        |  69 +++++++++++
+ .../stages/stage-07-price-data/verification.md     |  12 ++
+ Planning/stages/stage-07-price-data/worklog.md     |  10 ++
+ ...se1-checkpoint-2026-11-02-alpaca-shape-check.py | 126 +++++++++++++++++++++
+ ...e1-checkpoint-2026-11-02-alpaca-shape-check.txt |   8 ++
+ .../phase1-checkpoint-2026-11-02-verify.txt        |   9 ++
+ Planning/stages/stage-11-news/verification.md      |   9 ++
+ Planning/stages/stage-11-news/worklog.md           |   6 +
+ .../phase1-checkpoint-2026-11-02-live.txt          |  21 ++++
+ .../phase1-checkpoint-2026-11-02-pytest.txt        |  55 +++++++++
+ .../phase1-checkpoint-2026-11-02-report.md         |  86 ++++++++++++++
+ .../phase1-checkpoint-2026-11-02-status.txt        |  31 +++++
+ Planning/stages/stage-14-data-cli/verification.md  |   9 ++
+ Planning/stages/stage-14-data-cli/worklog.md       |   5 +
+ src/atlas/data/prices.py                           |  40 +++++--
+ src/atlas/data/providers/base.py                   |   2 +-
+ .../fixtures/prices/alpaca_corporate_actions.json  |   3 +-
+ tests/unit/data/test_price_ingest.py               |  28 ++++-
+ tests/unit/data/test_price_live.py                 |  26 ++++-
+ 26 files changed, 746 insertions(+), 20 deletions(-)
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-alpaca-shape-check.py
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-alpaca-shape-check.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-avb-real-data.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-live-actions-mutation.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-verify.txt
+ create mode 100644 Planning/stages/stage-11-news/artifacts/phase1-checkpoint-2026-11-02-alpaca-shape-check.py
+ create mode 100644 Planning/stages/stage-11-news/artifacts/phase1-checkpoint-2026-11-02-alpaca-shape-check.txt
+ create mode 100644 Planning/stages/stage-11-news/artifacts/phase1-checkpoint-2026-11-02-verify.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-02-live.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-02-pytest.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-02-report.md
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-02-status.txt
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD 7ae6924
+
+$ uv sync --group dev
+Resolved 80 packages in 17ms
+Checked 79 packages in 28ms
+exit=0
+
+$ uv lock --check
+Resolved 80 packages in 4ms
+exit=0
+
+$ uv run pytest -q
+...............................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.90 s (limit 20 s)
+2120 passed, 14 deselected in 59.25s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest -m integration -q
+1 passed, 2133 deselected in 1.83s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+206 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 88 source files
+exit=0
+
+$ uv run pytest tests/unit/data -q
+936 passed, 13 deselected in 33.02s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest tests/unit/data/news -q
+129 passed, 2 deselected in 1.91s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+206 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+...............................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 4.10 s (limit 20 s)
+2120 passed, 14 deselected in 55.35s
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+7ae6924 phase-1 checkpoint: report and Tier 1 follow-ups (stages 07, 11, 14)
+8056137 phase-0 checkpoint: CI and remote records
+f514eb2 stage-14 follow-up: CLI tests pass under GitHub Actions
+exit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ COLUMNS=160 uv run atlas data sync --from 2015-01-01 --datasets prices --symbols AVB
+2026-11-02T20:02:50.938162Z [error    ] $AVB: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-10-31) [yfinance] mode=dev run_id=01M6EXPV0Y1T7856YQ7744MYM2 stage=data.sync
+2026-11-02T20:02:50.939210Z [error    ] 
+1 Failed download:            [yfinance] mode=dev run_id=01M6EXPV0Y1T7856YQ7744MYM2 stage=data.sync
+2026-11-02T20:02:50.939403Z [error    ] ['AVB']: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-10-31) [yfinance] mode=dev run_id=01M6EXPV0Y1T7856YQ7744MYM2 stage=data.sync
+Run 01M6EXPV0Y1T7856YQ7744MYM2: log and audit trail in data/runs/01M6EXPV0Y1T7856YQ7744MYM2
+                   Sync summary (sync 2015-01-01 .. 2026-11-02)                    
+┃ step   ┃ keys ┃ skipped ┃ ok ┃ empty ┃ failed ┃  rows ┃ chunks ┃ seconds ┃ note ┃
+│ prices │    1 │       0 │  1 │     0 │      0 │ 1,560 │      1 │    11.4 │      │
+└────────┴──────┴─────────┴────┴───────┴────────┴───────┴────────┴─────────┴──────┘
+exit=0
+
+$ COLUMNS=160 uv run atlas data status
+                                         Lake tables on 2026-11-02                                          
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
+┃ table               ┃ dataset      ┃      rows ┃   keys ┃ first      ┃ last       ┃ last sync            ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩
+│ index_membership    │ universe     │       879 │    860 │ 1957-03-04 │ 2026-10-06 │ 2026-11-01 18:52 UTC │
+│ instruments         │ universe     │       890 │    890 │ 2015-01-02 │ 2026-10-05 │ 2026-11-01 18:52 UTC │
+│ prices_daily        │ prices       │ 1,857,576 │    714 │ 2015-01-02 │ 2026-10-30 │ 2026-11-02 20:02 UTC │
+│ corporate_actions   │ prices       │    23,219 │    593 │ 2015-01-02 │ 2026-10-30 │ 2026-11-02 20:02 UTC │
+│ fundamentals_facts  │ fundamentals │ 1,990,925 │    685 │ 2005-12-31 │ 2027-07-17 │ 2026-11-01 20:04 UTC │
+│ macro_series        │ macro        │        22 │     22 │ -          │ -          │ 2026-11-01 20:05 UTC │
+│ macro_observations  │ macro        │   523,749 │     22 │ 2000-01-01 │ 2026-10-30 │ 2026-11-01 20:05 UTC │
+│ news                │ news         │   845,313 │ 21,810 │ 2015-01-01 │ 2026-11-01 │ 2026-11-01 22:48 UTC │
+│ events              │ events       │    32,933 │    686 │ 2015-01-06 │ 2027-01-29 │ 2026-11-01 20:30 UTC │
+│ macro_events        │ events       │       392 │      0 │ 2015-01-09 │ 2027-12-08 │ 2026-11-01 20:30 UTC │
+│ earnings_reactions  │ events       │    29,911 │    648 │ 2015-01-07 │ 2026-10-28 │ 2026-11-01 20:30 UTC │
+│ news_sentiment      │ sentiment    │   845,313 │      0 │ 2015-01-01 │ 2026-11-01 │ 2026-11-01 22:48 UTC │
+│ social_posts        │ sentiment    │         0 │      0 │ -          │ -          │ 2026-11-01 22:48 UTC │
+│ data_quality_issues │ quality      │        88 │     85 │ 2026-11-02 │ 2026-11-02 │ 2026-11-01 20:30 UTC │
+└─────────────────────┴──────────────┴───────────┴────────┴────────────┴────────────┴──────────────────────┘
+                                                 Coverage (503 current members)                                                  
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ dataset      ┃ rule                             ┃ covered ┃    pct ┃ missing (first 10)                                       ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ prices       │ >= 8 years of daily prices       │ 475/503 │  94.4% │ ABNB, APP, CARR, CEG, COIN, CRWD, DASH, DDOG, DOW, EXE … │
+│ fundamentals │ at least one stored XBRL fact    │ 502/503 │  99.8% │ VYLR                                                     │
+│ macro        │ catalog series with observations │   22/22 │ 100.0% │                                                          │
+│ news         │ at least one tagged article      │ 503/503 │ 100.0% │                                                          │
+│ events       │ at least one earnings event      │ 503/503 │ 100.0% │                                                          │
+└──────────────┴──────────────────────────────────┴─────────┴────────┴──────────────────────────────────────────────────────────┘
+Quality report 2026-11-02: critical 2, warning 86; blocked: WBD
+Last run: sync 2015-01-01 .. 2026-11-02 finished 2026-11-02T20:02:56.918715+00:00 (ok)
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0

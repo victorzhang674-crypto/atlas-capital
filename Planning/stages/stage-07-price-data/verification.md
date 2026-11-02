@@ -60,3 +60,4 @@ Owner request (Phase 1 checkpoint; see worklog, 2026-11-02). Run in this chat on
 - Acceptance criteria still evidenced: split-adjusted fixtures (`test_aapl_split_adjusted_series_is_continuous` and the others above), idempotence (`test_reingest_is_idempotent`), a failed symbol never aborts the batch (`test_failed_symbol_never_aborts_batch`, `test_symbol_with_only_incomplete_bars_fails_alone`, `test_bar_on_non_session_fails_symbol`): all PASSED in the brief's Verify.
 
 **Result:** ALL CRITERIA VERIFIED
+- On merged `main` (`7ae6924`, fast-forward from `8056137`; owner's Terminal panel): `uv run pytest -q` → 2120 passed; integration 1 passed; ruff, format, mypy clean; brief's Verify → 936 passed; `make check` → exit 0; branch merged; checkout clean; AVB re-synced into the main lake (714 price keys) · raw: [artifacts/phase1-checkpoint-2026-11-02-merged-main-check.txt](artifacts/phase1-checkpoint-2026-11-02-merged-main-check.txt)

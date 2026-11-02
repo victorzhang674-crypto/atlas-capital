@@ -576,7 +576,7 @@ Full block and raw output: [verification.md](stages/stage-07-price-data/verifica
   - [x] Re-running is idempotent — evidence: `test_reingest_is_idempotent`, `test_reingest_replaces_changed_values`; real-data runs 1 and 2 identical
   - [x] A failed symbol never aborts the batch — evidence: `test_failed_symbol_never_aborts_batch`, `test_batch_error_retries_symbol_by_symbol`, `test_invalid_rows_fail_only_that_symbol`, `test_bar_on_non_session_fails_symbol`, `test_actions_error_fails_symbol`, `test_delisted_symbol_is_absent_not_an_error`
 - Waivers: none
-- Phase 1 checkpoint follow-up (Tier 1) — 2026-11-02: [stage-07 verification](stages/stage-07-price-data/verification.md): an incomplete vendor bar is dropped alone (`IngestReport.bars_dropped`), not the symbol; live corporate-action tests for both vendors; `test_alpaca_live_smoke` passes (skipped at DONE); built Alpaca fixtures match real responses (0 problems after the CUSIP fix); full suite 2120 passed, 0 failed; ruff, format (206 files), mypy (88 files) clean; `make check` exit 0; brief's Verify 936 passed; `-m live` 13 passed
+- Phase 1 checkpoint follow-up (Tier 1) — 2026-11-02: [stage-07 verification](stages/stage-07-price-data/verification.md): an incomplete vendor bar is dropped alone (`IngestReport.bars_dropped`), not the symbol; live corporate-action tests for both vendors; `test_alpaca_live_smoke` passes (skipped at DONE); built Alpaca fixtures match real responses (0 problems after the CUSIP fix); full suite 2120 passed, 0 failed; ruff, format (206 files), mypy (88 files) clean; `make check` exit 0; brief's Verify 936 passed; `-m live` 13 passed; merged into `main` as `7ae6924` (fast-forward), same results there; AVB re-synced into the main lake (2020-07-27 → 2026-08-14)
 
 ### Stage 08 — Universe & historical index membership — DONE 2026-10-27
 - Folder: [stages/stage-08-universe/](stages/stage-08-universe/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -700,7 +700,7 @@ Full block and raw output: [verification.md](stages/stage-11-news/verification.m
   - [x] PIT tests pass — evidence: `test_acceptance_article_after_cutoff_invisible` (08:30 article invisible at 08:00), `test_guard_raises_if_filter_bypassed`, `test_future_rows_change_nothing`, `test_window_independent`
   - [x] Dedup tests pass — evidence: `test_same_story_two_sources_is_one`, `test_acceptance_same_story_two_sources_one_evidence`, `test_fuzzy_threshold_boundary`, `test_outside_48h_not_duplicate`
 - Waivers: none
-- Phase 1 checkpoint follow-up (Tier 1) — 2026-11-02: [stage-11 verification](stages/stage-11-news/verification.md): `test_live_alpaca_news` passes (skipped at DONE); built Alpaca news pages match real responses (0 problems); no code change; brief's Verify 129 passed; full suite 2120 passed, `make check` exit 0
+- Phase 1 checkpoint follow-up (Tier 1) — 2026-11-02: [stage-11 verification](stages/stage-11-news/verification.md): `test_live_alpaca_news` passes (skipped at DONE); built Alpaca news pages match real responses (0 problems); no code change; brief's Verify 129 passed; full suite 2120 passed, `make check` exit 0; merged into `main` as `7ae6924`, same results there
 
 ### Stage 12 — Events calendar & sentiment sources — DONE 2026-10-29
 - Folder: [stages/stage-12-events-sentiment/](stages/stage-12-events-sentiment/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
