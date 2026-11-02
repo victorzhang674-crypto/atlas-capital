@@ -1,0 +1,38 @@
+# Phase 0 checkpoint Tier 4 (Stage 06): the `nanobind: leaked ...` lines at the end of a test run
+# Investigated 2026-11-02 on duckdb 2.0.0, pyarrow 26.0.0, hypothesis 6.170.11, pytest in this repo.
+
+## What is printed (baseline full run, HEAD 81ada1e; exit code 0, 2108 passed)
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!   (_duckdb._sqltypes.DuckDBPyType, _duckdb.DuckDBPyConnection, ExplainType, ...)
+nanobind: leaked 84 functions!
+The lines come from duckdb's nanobind extension at interpreter shutdown: some duckdb objects
+(27 instances, the module's type constants) were still alive when the extension was torn down.
+Results and the exit code are unaffected.
+
+## Smallest reproduction
+$ uv run pytest -q tests/unit/core/storage/test_storage_db.py                           -> 34 passed, no lines
+$ uv run pytest -q tests/unit/core/storage/test_storage_db.py tests/unit/core/types/test_types_portfolio.py
+                                                                                         -> 62 passed, "leaked 27 instances"
+One test of test_storage_db.py (17 of its 34 tests, each alone) followed by any hypothesis
+`@given` test (even a trivial one in a scratch file) is enough; the order matters (the
+`@given` test first prints nothing).
+
+## Ruled out (each run as a variant of the reproduction; all still printed the lines, or the trigger never fired)
+- Our connections: every `Database` in these tests is closed (fixture teardown); a plain
+  `duckdb.connect(...)` + close, a file database, `con.register(<arrow table>)`, `.df()` and
+  `import pandas` before a `@given` test print nothing.
+- Outside pytest: a script that opens/closes a connection and then runs a `@given` function prints nothing.
+- hypothesis's constant scan: clearing `hypothesis.internal.constants_ast.constants_from_module`'s
+  cache in `pytest_sessionfinish` still prints the lines (full suite too).
+- Garbage: `gc.collect()` in `pytest_sessionfinish` still prints the lines.
+- The hypothesis pytest plugin: `-p no:hypothesispytest` still prints the lines.
+- A copy of the leaking test reduced to its fixtures and `Database(lake)` in the same folder
+  prints nothing; the unreduced header + first test prints the lines with any single import or
+  assertion removed. No single line of our code triggers it.
+
+## Conclusion
+Most likely a shutdown-order interaction between duckdb's nanobind module, pytest and
+hypothesis. No Atlas object was found keeping a duckdb object alive, but the root cause was not
+pinned down: whether the lines appear depends on unrelated details of the test module. nanobind's leak report can only be turned off from C++
+(`nb::set_leak_warnings`), which duckdb does not expose. Not fixed; kept in the Backlog to
+re-check after a duckdb or hypothesis upgrade, with the reproduction above.

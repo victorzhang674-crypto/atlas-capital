@@ -23,3 +23,12 @@ Fill this in **only** with output from commands actually run in this stage's fin
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 4) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): pre-commit hooks run the locked tools offline (still optional, not installed); a first `integration` test and `make test-integration`; no CI while there is no remote. Re-run in this chat on the final working tree (base commit `81ada1e`):
+- New toolchain test failed on `81ada1e`'s config and PASSES now; old hooks could not start offline; `-m integration` collected nothing on `81ada1e` (exit 5) · raw: [artifacts/checkpoint-2026-11-02-tier4-red-before-fix.txt](artifacts/checkpoint-2026-11-02-tier4-red-before-fix.txt)
+- `uv run pre-commit run --all-files` → ruff, ruff format, end-of-file, trailing whitespace all Passed, exit 0, no file changed · raw: [artifacts/checkpoint-2026-11-02-tier4-pre-commit.txt](artifacts/checkpoint-2026-11-02-tier4-pre-commit.txt)
+- `uv run pytest -m integration -q` → 1 passed, 2127 deselected · `uv lock --check`, `uv sync --group dev` → exit 0 · `uv run pytest -q` → 2116 passed, 0 failed, 12 deselected, exit 0; `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 206 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files; `make check` → exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier4-verify.txt](artifacts/checkpoint-2026-11-02-tier4-verify.txt)
+- The stage's acceptance criteria still hold: `make check` green; `CLAUDE.md` and `Project.md` untouched by this change (`test_claude_md_imports_project_rules_first`, `test_precommit_excludes_governing_docs` pass).
+
+**Result:** ALL CRITERIA VERIFIED

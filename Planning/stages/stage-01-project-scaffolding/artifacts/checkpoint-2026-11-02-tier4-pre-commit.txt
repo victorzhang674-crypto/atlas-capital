@@ -1,0 +1,7 @@
+# Phase 0 checkpoint Tier 4 (Stage 01): local hooks over every tracked file, offline · 2026-11-02 10:54 EST
+$ PRE_COMMIT_HOME=$TMPDIR/pre-commit uv run pre-commit run --all-files
+ruff.....................................................................Passed
+ruff format..............................................................Passed
+fix end of files.........................................................Passed
+trim trailing whitespace.................................................Passed
+exit=0

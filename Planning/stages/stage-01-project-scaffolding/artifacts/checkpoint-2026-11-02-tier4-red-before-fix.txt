@@ -1,0 +1,20 @@
+# Phase 0 checkpoint Tier 4 (Stage 01): before the fix · 2026-11-02 10:53 EST
+## new test against the unfixed .pre-commit-config.yaml (HEAD 81ada1e)
+$ uv run pytest tests/unit/test_toolchain.py -q
+E       AssertionError: assert ['https://git...commit-hooks'] == ['local']
+E         
+E         At index 0 diff: 'https://github.com/astral-sh/ruff-pre-commit' != 'local'
+E         Left contains one more item: 'https://github.com/pre-commit/pre-commit-hooks'
+E         Use -v to get more diff
+FAILED tests/unit/test_toolchain.py::test_pre_commit_hooks_run_the_locked_tools_offline
+1 failed, 2 passed in 0.39s
+
+## the old hooks need GitHub, which is unreachable here
+$ PRE_COMMIT_HOME=$TMPDIR/pre-commit uv run pre-commit run --all-files   (old config)
+fatal: unable to access 'https://github.com/astral-sh/ruff-pre-commit/': Proxy CONNECT aborted  (exit 3; full run earlier in this chat, same message)
+
+## integration marker on the code at 81ada1e (git archive copy, no tests/integration)
+$ uv run pytest -m integration -q
+
+2119 deselected in 1.85s
+exit=5

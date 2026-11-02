@@ -63,3 +63,14 @@ Owner-requested follow-up (see worklog, 2026-11-02): DuckDB file access confined
 - On merged `main` (`d846205`, fast-forward from `e458f2f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout; this run also covers a docstring-only wording fix to `audit.py` made after the working-tree runs): `uv run pytest -q` → 2108 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 205 files already formatted; `mypy src/atlas` → Success (88 files); the three briefs' Verify commands → 788 passed (03), 275 passed + mypy core Success (04), 136 passed (06); 1M-row upsert → 1.12 s PASSED; `make check` → exit 0 (2108 passed); `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 14 commands exit 0 · raw: [stage-03 artifacts/checkpoint-2026-11-02-tier3-merged-main-check.txt](../stage-03-logging-audit/artifacts/checkpoint-2026-11-02-tier3-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 4) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): duckdb/pyarrow floors raised to the lowest versions the suite passes on; nanobind shutdown lines investigated (not fixed). Re-run in this chat on the final working tree (base commit `81ada1e`):
+- Brief's Verify `uv run pytest tests/unit/core/storage -q` → 136 passed, exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier4-verify.txt](artifacts/checkpoint-2026-11-02-tier4-verify.txt)
+- Old floors fail (hang at 1.1.0 + 17.0.0; 17 failed at 1.2.0 + 17.0.0; per-version search) and the new floor test failed on `81ada1e` · raw: [artifacts/checkpoint-2026-11-02-tier4-red-before-fix.txt](artifacts/checkpoint-2026-11-02-tier4-red-before-fix.txt)
+- New floors duckdb 2.0.0 + pyarrow 19.0.0: full suite 2116 passed, 0 failed, exit 0; integration 1 passed · raw: [artifacts/checkpoint-2026-11-02-tier4-floors.txt](artifacts/checkpoint-2026-11-02-tier4-floors.txt)
+- nanobind investigation (reproduction, what was ruled out, not fixed) · raw: [artifacts/checkpoint-2026-11-02-tier4-nanobind.txt](artifacts/checkpoint-2026-11-02-tier4-nanobind.txt)
+- `uv lock --check` → exit 0; `uv run pytest -q` → 2116 passed, 0 failed, 12 deselected, exit 0; `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 206 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files; `make check` → exit 0 · raw: [artifacts/checkpoint-2026-11-02-tier4-verify.txt](artifacts/checkpoint-2026-11-02-tier4-verify.txt)
+- The stage's acceptance criteria still hold: all storage tests green on the locked versions and on the new floors.
+
+**Result:** ALL CRITERIA VERIFIED

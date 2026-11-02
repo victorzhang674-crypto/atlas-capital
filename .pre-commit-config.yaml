@@ -1,15 +1,31 @@
 # Optional local hooks: `uv run pre-commit install`. Not run in CI (there is none in v1).
+# Every hook runs a tool from uv.lock through `uv run`, so the hooks use the same versions as
+# `make check` and need no network (remote hook repos pin their own versions and fetch them
+# from GitHub at install time). Recorded fixtures under tests/fixtures/ stay byte-exact.
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.2
+  - repo: local
     hooks:
       - id: ruff
-        args: [--fix]
+        name: ruff
+        entry: uv run --no-sync ruff check --fix --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
       - id: ruff-format
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
-    hooks:
+        name: ruff format
+        entry: uv run --no-sync ruff format --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
       - id: end-of-file-fixer
-        exclude: ^(Project\.md|Planning/)
+        name: fix end of files
+        entry: uv run --no-sync end-of-file-fixer
+        language: system
+        types: [text]
+        exclude: ^(Project\.md|Planning/)|^tests/fixtures/
       - id: trailing-whitespace
-        exclude: ^(Project\.md|Planning/)
+        name: trim trailing whitespace
+        entry: uv run --no-sync trailing-whitespace-fixer
+        language: system
+        types: [text]
+        exclude: ^(Project\.md|Planning/)|^tests/fixtures/

@@ -1,0 +1,55 @@
+# Phase 0 checkpoint Tier 4 (Stage 06): new floor test against the unfixed pyproject.toml (HEAD 81ada1e) · 2026-11-02 10:53 EST
+$ uv run pytest tests/unit/test_dependency_floors.py -q
+E       AssertionError: assert (1, 1) >= (2, 0)
+E        +  where (1, 1) = _floor(['duckdb>=1.1', 'exchange-calendars>=4.5', 'httpx>=0.27', 'lxml>=5.0', 'pandas>=3.0', 'pyarrow>=17', ...], 'duckdb')
+FAILED tests/unit/test_dependency_floors.py::test_duckdb_and_pyarrow_floors_are_tested_versions
+1 failed, 1 passed in 0.36s
+
+## the declared floors themselves (uv run --with overlays the version on the locked env; full suite)
+$ uv run --with duckdb==1.1.0 --with pyarrow==17.0.0 pytest -v   -> hangs in tests/unit/cli/test_data_cmd.py::test_sync_runs_and_prints_summary (stopped after 10 min)
+
+tests/unit/cli/test_data_cmd.py::test_help_lists_commands PASSED         [  0%]
+tests/unit/cli/test_data_cmd.py::test_sync_runs_and_prints_summary 
+$ uv run --with duckdb==1.2.0 --with pyarrow==17.0.0 --with pytest-timeout pytest -q -o timeout=60
+FAILED tests/unit/cli/test_data_cmd.py::test_sync_mirrors_audit_log_into_duckdb
+FAILED tests/unit/cli/test_data_cmd.py::test_sync_interrupt_records_crash - d...
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_over_lake_view
+FAILED tests/unit/core/storage/test_storage_db.py::test_named_params - duckdb...
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_params_are_not_sql
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_rejects_writes[pragma version]
+FAILED tests/unit/core/storage/test_storage_db.py::test_views_see_new_writes
+FAILED tests/unit/core/storage/test_storage_db.py::test_refresh_sees_writes_from_another_lake_object
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_timestamps_are_utc
+FAILED tests/unit/core/storage/test_storage_db.py::test_views_are_not_persisted
+FAILED tests/unit/core/storage/test_storage_db.py::test_read_only_database - ...
+FAILED tests/unit/core/storage/test_storage_db.py::test_unpartitioned_and_year_partitioned_views
+FAILED tests/unit/core/storage/test_storage_db.py::test_views_follow_registry_changes
+FAILED tests/unit/core/storage/test_storage_db.py::test_query_still_reads_lake_files
+FAILED tests/unit/core/storage/test_storage_lake.py::test_roundtrip_dtypes - ...
+FAILED tests/unit/core/storage/test_storage_string_list.py::test_string_list_database_view
+FAILED tests/unit/data/test_universe.py::test_refresh_keeps_other_indices - A...
+17 failed, 2097 passed, 11 deselected, 1295 warnings in 33.74s
+
+## search: one library moved at a time over tests/unit/core/storage tests/unit/cli tests/unit/data/test_universe.py
+duckdb==1.2.2 pyarrow=locked(26.0.0): 15 failed, 204 passed, 1 deselected in 6.73s
+duckdb==1.3.0 pyarrow=locked(26.0.0): 15 failed, 204 passed, 1 deselected in 7.29s
+duckdb==1.3.2 pyarrow=locked(26.0.0): 15 failed, 204 passed, 1 deselected in 6.28s
+duckdb==1.4.0 pyarrow=locked(26.0.0): 1 failed, 218 passed, 1 deselected in 6.38s
+duckdb==1.4.1 pyarrow=locked(26.0.0): 1 failed, 218 passed, 1 deselected in 6.42s
+duckdb==1.4.2 pyarrow=locked(26.0.0): 1 failed, 218 passed, 1 deselected in 7.14s
+duckdb==1.4.3 pyarrow=locked(26.0.0): 1 failed, 218 passed, 1 deselected in 6.29s
+duckdb==1.5.0 pyarrow=locked(26.0.0): 1 failed, 218 passed, 1 deselected in 6.41s
+duckdb==1.5.6 pyarrow=locked(26.0.0): 1 failed, 218 passed, 1 deselected in 6.18s
+duckdb=locked(2.0.0) pyarrow==17.0.0: 2 failed, 217 passed, 1 deselected, 362 warnings in 7.20s
+duckdb=locked(2.0.0) pyarrow==18.0.0: 2 failed, 217 passed, 1 deselected, 362 warnings in 6.95s
+duckdb=locked(2.0.0) pyarrow==19.0.0: 219 passed, 1 deselected, 362 warnings in 6.69s
+duckdb=locked(2.0.0) pyarrow==20.0.0: 219 passed, 1 deselected, 362 warnings in 6.47s
+duckdb=locked(2.0.0) pyarrow==21.0.0: 219 passed, 1 deselected, 362 warnings in 6.53s
+duckdb=locked(2.0.0) pyarrow==22.0.0: 219 passed, 1 deselected, 362 warnings in 6.56s
+duckdb=locked(2.0.0) pyarrow==23.0.0: 219 passed, 1 deselected, 362 warnings in 6.73s
+duckdb=locked(2.0.0) pyarrow==24.0.0: 219 passed, 1 deselected, 362 warnings in 6.68s
+duckdb=locked(2.0.0) pyarrow==25.0.0: 219 passed, 1 deselected, 362 warnings in 6.54s
+
+## duckdb 1.1.0 lacks the setting Database._confine_to_lake needs
+$ uv run --with duckdb==1.1.0 python -c "duckdb.connect().execute(\"SET allowed_directories = [...]\")"
+CatalogException Catalog Error: unrecognized configuration parameter "allowed_directories"

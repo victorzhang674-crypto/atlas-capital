@@ -1,0 +1,28 @@
+# Phase 0 checkpoint Tier 4 (Stage 02): new tests against the unfixed code (HEAD 81ada1e) · 2026-11-02 10:25 EST
+$ uv run pytest tests/unit/core/test_config.py -q -k "frozen_dict or merge"
+E       AssertionError: assert <class 'atlas.core.config._FrozenDict'> is FrozenDict
+E        +  where <class 'atlas.core.config._FrozenDict'> = type(_FrozenDict({'fundamental_ls': PodConfig(name='Fundamental L/S', enabled=True, risk_budget=0.3, rebalance='weekly', un...), 'event_driven': PodConfig(name='Event-Driven', enabled=True, risk_budget=0.1, rebalance='event', universe='sp500')}))
+E        +    where _FrozenDict({'fundamental_ls': PodConfig(name='Fundamental L/S', enabled=True, risk_budget=0.3, rebalance='weekly', un...), 'event_driven': PodConfig(name='Event-Driven', enabled=True, risk_budget=0.1, rebalance='event', universe='sp500')}) = AtlasConfig(profile='dev', fund=FundConfig(name='Atlas Capital', base_currency='USD', initial_capital=Decimal('1000000...ts(anthropic_api_key=None, alpaca_api_key_id=None, alpaca_api_secret_key=None, fred_api_key=None, sec_user_agent=None)).pods
+E               yaml.constructor.ConstructorError: duplicate key 'b'
+E                 in "<unicode string>", line 4, column 3:
+E                     b: 3
+E                     ^
+E           atlas.core.errors.ConfigError: /private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-785/test_yaml_merge_key_explicit_k0/x.yaml: invalid YAML at line 4: duplicate key 'b'
+E               yaml.constructor.ConstructorError: duplicate key 'a'
+E                 in "<unicode string>", line 1, column 8:
+E                   x: &x {a: 1}
+E                          ^
+E           atlas.core.errors.ConfigError: /private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-785/test_yaml_merge_key_list_earli0/x.yaml: invalid YAML at line 1: duplicate key 'a'
+E       Failed: DID NOT RAISE ConfigError
+E               yaml.constructor.ConstructorError: duplicate key 'description'
+E                 in "<unicode string>", line 7, column 3:
+E                     description: S&P 500
+E                     ^
+E           atlas.core.errors.ConfigError: /private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-785/test_yaml_merge_key_in_a_confi0/config/universe.yaml: invalid YAML at line 7: duplicate key 'description'
+FAILED tests/unit/core/test_config.py::test_config_mappings_are_the_shared_frozen_dict
+FAILED tests/unit/core/test_config.py::test_yaml_merge_key_explicit_keys_override
+FAILED tests/unit/core/test_config.py::test_yaml_merge_key_list_earlier_source_wins
+FAILED tests/unit/core/test_config.py::test_yaml_merge_keeps_duplicate_check[merge-key-twice]
+FAILED tests/unit/core/test_config.py::test_yaml_merge_key_in_a_config_file
+5 failed, 2 passed, 200 deselected in 0.60s
+exit=1

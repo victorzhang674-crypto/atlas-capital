@@ -16,6 +16,7 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel, SecretStr, ValidationError
 
+import atlas.core.config
 from atlas.core.config import (
     AtlasConfig,
     BacktestConfig,
@@ -45,8 +46,10 @@ from atlas.core.config import (
     _yaml_layers,
     config_fingerprint,
     load_config,
+    read_config_file,
 )
 from atlas.core.errors import AtlasError, ConfigError
+from atlas.core.types import FrozenDict
 
 SECRET_VARS = (
     "ANTHROPIC_API_KEY",
@@ -1178,3 +1181,57 @@ def test_quant_features_validation(model: type, field: str, value: object) -> No
 def test_quant_snapshot_min_history_within_history() -> None:
     with pytest.raises(ValidationError, match="min_history"):
         SnapshotConfig(history_sessions=50, min_history=51)
+
+
+# --- Phase 0 checkpoint (Tier 4): one FrozenDict, YAML merge keys ------------------------------
+
+
+def test_config_mappings_are_the_shared_frozen_dict() -> None:
+    cfg = AtlasConfig()
+    assert type(cfg.pods) is FrozenDict
+    assert type(cfg.data.universes) is FrozenDict
+    assert hash(cfg.pods) == hash(AtlasConfig().pods)
+    assert not hasattr(atlas.core.config, "_FrozenDict")
+
+
+def test_yaml_merge_key_explicit_keys_override(tmp_path: Path) -> None:
+    path = tmp_path / "x.yaml"
+    path.write_text("base: &b {a: 1, b: 2}\nchild:\n  <<: *b\n  b: 3\n")
+    assert read_config_file(path) == {"base": {"a": 1, "b": 2}, "child": {"a": 1, "b": 3}}
+
+
+def test_yaml_merge_key_list_earlier_source_wins(tmp_path: Path) -> None:
+    path = tmp_path / "x.yaml"
+    path.write_text("x: &x {a: 1}\ny: &y {a: 2, c: 3}\nz:\n  <<: [*x, *y]\n  d: 4\n")
+    assert read_config_file(path)["z"] == {"a": 1, "c": 3, "d": 4}
+
+
+@pytest.mark.parametrize(
+    ("text", "key"),
+    [
+        ("base: &b {a: 1}\nchild:\n  <<: *b\n  a: 2\n  a: 3\n", "a"),
+        ("x: &x {a: 1}\ny: &y {c: 3}\nz:\n  <<: *x\n  <<: *y\n", "<<"),
+    ],
+    ids=["explicit-key-twice", "merge-key-twice"],
+)
+def test_yaml_merge_keeps_duplicate_check(tmp_path: Path, text: str, key: str) -> None:
+    path = tmp_path / "x.yaml"
+    path.write_text(text)
+    with pytest.raises(ConfigError, match=rf"x\.yaml.*duplicate key '{re.escape(key)}'"):
+        read_config_file(path)
+
+
+def test_yaml_merge_key_in_a_config_file(tmp_path: Path) -> None:
+    d = write_config(
+        tmp_path,
+        {
+            "universe.yaml": (
+                "etfs: &etfs\n  description: ETFs\n  index: null\n  tickers: [SPY, QQQ]\n"
+                "sp500:\n  <<: *etfs\n  description: S&P 500\n  index: SP500\n  tickers: []\n"
+            ),
+            "pods/macro.yaml": "name: Macro\nrisk_budget: 1.0\nrebalance: daily\nuniverse: etfs\n",
+        },
+    )
+    universes = load_config(config_dir=d).data.universes
+    assert (universes["etfs"].index, universes["etfs"].tickers) == (None, ("SPY", "QQQ"))
+    assert (universes["sp500"].description, universes["sp500"].index) == ("S&P 500", "SP500")

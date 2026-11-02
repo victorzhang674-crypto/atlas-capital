@@ -1,11 +1,14 @@
 .DEFAULT_GOAL := check
-.PHONY: install test lint fmt fmt-check type check
+.PHONY: install test test-integration lint fmt fmt-check type check
 
 install:
 	uv sync --group dev
 
 test:
 	uv run pytest -q
+
+test-integration:
+	uv run pytest -m integration -q
 
 lint:
 	uv run ruff check .

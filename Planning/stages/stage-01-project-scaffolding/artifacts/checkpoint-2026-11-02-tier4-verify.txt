@@ -1,0 +1,49 @@
+# Phase 0 checkpoint Tier 4: verification on the working tree (branch claude/phase-one-checkpoint-28fcd7, base 81ada1e) · 2026-11-02 10:58 EST · 10:58  2 users, load averages: 8.92 4.83 4.07
+
+$ uv lock --check
+Resolved 80 packages in 14ms
+exit=0
+
+$ uv sync --group dev
+Resolved 80 packages in 1ms
+Checked 79 packages in 11ms
+exit=0
+
+$ uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.91 s (limit 20 s)
+2116 passed, 12 deselected in 47.68s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest -m integration -q
+1 passed, 2127 deselected in 3.25s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+206 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 88 source files
+exit=0
+
+$ uv run pytest tests/unit/core/test_config.py -q
+207 passed in 0.99s
+exit=0
+
+$ uv run pytest tests/unit/core/storage -q
+136 passed in 3.98s
+exit=0
+
+$ make check
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.55 s (limit 20 s)
+2116 passed, 12 deselected in 59.54s
+ - ... skipped remainder
+exit=0

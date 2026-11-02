@@ -10,7 +10,7 @@ import json
 import math
 import os
 import re
-from collections.abc import Iterator, Mapping
+from collections.abc import Mapping
 from datetime import date, time
 from decimal import Decimal
 from itertools import pairwise
@@ -20,14 +20,11 @@ from typing import Annotated, Any, Literal, Self
 import yaml
 from dotenv import dotenv_values
 from pydantic import (
-    AfterValidator,
     BaseModel,
     ConfigDict,
     Field,
     SecretStr,
-    SerializerFunctionWrapHandler,
     ValidationError,
-    WrapSerializer,
     field_validator,
     model_validator,
 )
@@ -42,6 +39,7 @@ from pydantic_settings import (
 from pydantic_settings.exceptions import SettingsError
 
 from atlas.core.errors import ConfigError
+from atlas.core.types.base import FrozenDict, FrozenMap
 from atlas.core.types.instruments import normalize_symbol
 
 Profile = Literal["dev", "backtest", "paper"]
@@ -59,38 +57,6 @@ class _Frozen(BaseModel):
     tuples for the same reason."""
 
     model_config = ConfigDict(frozen=True, extra="forbid", allow_inf_nan=False)
-
-
-class _FrozenDict[K, V](Mapping[K, V]):
-    """Read-only mapping (unlike `MappingProxyType` it pickles and deep-copies)."""
-
-    __slots__ = ("_data",)
-
-    def __init__(self, data: Mapping[K, V]) -> None:
-        self._data = dict(data)
-
-    def __getitem__(self, key: K) -> V:
-        return self._data[key]
-
-    def __iter__(self) -> Iterator[K]:
-        return iter(self._data)
-
-    def __len__(self) -> int:
-        return len(self._data)
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({self._data!r})"
-
-    def __reduce__(self) -> tuple[Any, ...]:
-        return (type(self), (self._data,))
-
-
-def _freeze[V](value: Mapping[str, V]) -> _FrozenDict[str, V]:
-    return _FrozenDict(value)
-
-
-def _thaw(value: Mapping[str, Any], handler: SerializerFunctionWrapHandler) -> Any:
-    return handler(dict(value))
 
 
 class FundConfig(_Frozen):
@@ -200,17 +166,17 @@ class PodConfig(_Frozen):
     universe: str
 
 
-# Read-only `Mapping` fields: validated into a `_FrozenDict`, dumped as a plain dict.
-_PodMap = Annotated[Mapping[str, PodConfig], AfterValidator(_freeze), WrapSerializer(_thaw)]
+# Read-only `Mapping` fields: validated into a `FrozenDict`, dumped as a plain dict.
+_PodMap = FrozenMap[str, PodConfig]
 
 
-def _default_pods() -> _FrozenDict[str, PodConfig]:
+def _default_pods() -> FrozenDict[str, PodConfig]:
     def pod(name: str, budget: float, rebalance: str, universe: str) -> PodConfig:
         return PodConfig.model_validate(
             {"name": name, "risk_budget": budget, "rebalance": rebalance, "universe": universe}
         )
 
-    return _FrozenDict(
+    return FrozenDict(
         {
             "fundamental_ls": pod("Fundamental L/S", 0.30, "weekly", "sp500"),
             "systematic": pod("Systematic Factor", 0.25, "weekly", "sp500"),
@@ -273,13 +239,11 @@ _MACRO_ETFS = (
 )
 
 
-_UniverseMap = Annotated[
-    Mapping[str, UniverseConfig], AfterValidator(_freeze), WrapSerializer(_thaw)
-]
+_UniverseMap = FrozenMap[str, UniverseConfig]
 
 
-def _default_universes() -> _FrozenDict[str, UniverseConfig]:
-    return _FrozenDict(
+def _default_universes() -> FrozenDict[str, UniverseConfig]:
+    return FrozenDict(
         {
             "sp500": UniverseConfig(
                 description="S&P 500 constituents (point-in-time membership from Stage 08)",
@@ -962,7 +926,15 @@ class AtlasConfig(BaseSettings):
 
 
 class _UniqueKeyLoader(yaml.SafeLoader):
-    """`yaml.SafeLoader` that rejects a key repeated within one mapping."""
+    """`yaml.SafeLoader` that rejects a key repeated within one mapping.
+
+    YAML merge keys work as in YAML 1.1: `<<: *anchor` (or a list of anchors, earlier ones
+    winning) supplies keys that the mapping's own keys override. Only keys written in the
+    mapping itself, `<<` included, count as repeats.
+    """
+
+
+_MERGE_TAG = "tag:yaml.org,2002:merge"
 
 
 def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.Node) -> dict[Any, Any]:
@@ -970,10 +942,9 @@ def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.Node) -> dict
         raise yaml.constructor.ConstructorError(
             None, None, f"expected a mapping, got {type(node).__name__}", node.start_mark
         )
-    loader.flatten_mapping(node)
     seen: set[Any] = set()
     for key_node, _ in node.value:
-        key = loader.construct_object(key_node)
+        key = "<<" if key_node.tag == _MERGE_TAG else loader.construct_object(key_node)
         try:
             hash(key)
         except TypeError:
@@ -985,6 +956,7 @@ def _construct_unique_mapping(loader: _UniqueKeyLoader, node: yaml.Node) -> dict
                 None, None, f"duplicate key {key!r}", key_node.start_mark
             )
         seen.add(key)
+    loader.flatten_mapping(node)
     return loader.construct_mapping(node)
 
 
@@ -1019,9 +991,10 @@ def _read_yaml(path: Path) -> dict[str, Any]:
 
 
 def read_config_file(path: Path) -> dict[str, Any]:
-    """Parse one YAML file under `config/` with the loader's rules: UTF-8, no repeated keys,
-    a mapping at the top. A missing or empty file is `{}`; errors raise `ConfigError` naming
-    the file. For reference files that `load_config` does not read (Stage 08 ticker renames).
+    """Parse one YAML file under `config/` with the loader's rules: UTF-8, no repeated keys
+    (YAML merge keys allowed), a mapping at the top. A missing or empty file is `{}`; errors
+    raise `ConfigError` naming the file. For reference files that `load_config` does not read
+    (Stage 08 ticker renames).
     """
     return _read_yaml(path)
 

@@ -1,0 +1,9 @@
+# Phase 0 checkpoint Tier 4 (Stage 06): full suite at the new floors · 2026-11-02 10:57 EST
+# duckdb 2.0.0 is the locked version; pyarrow 19.0.0 overlaid on the locked env with uv run --with
+$ uv run --with pyarrow==19.0.0 python -c "import duckdb, pyarrow; print(...)"
+2.0.0 19.0.0
+$ uv run --with pyarrow==19.0.0 --with pytest-timeout python -m pytest -q -o timeout=120
+2116 passed, 12 deselected, 1297 warnings in 52.59s
+exit=0   (the run ends with the usual nanobind shutdown lines; see checkpoint-2026-11-02-tier4-nanobind.txt)
+$ uv run --with pyarrow==19.0.0 python -m pytest -q -m integration
+1 passed, 2127 deselected in 3.02s

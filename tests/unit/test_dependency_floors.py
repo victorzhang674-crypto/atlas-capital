@@ -29,3 +29,14 @@ def test_pandas_floor_is_pandas_3(pyproject: dict[str, object]) -> None:
     assert isinstance(project, dict) and isinstance(groups, dict)
     assert _floor(project["dependencies"], "pandas") >= (3, 0)
     assert _floor(groups["dev"], "pandas-stubs") >= (3, 0)
+
+
+def test_duckdb_and_pyarrow_floors_are_tested_versions(pyproject: dict[str, object]) -> None:
+    # The suite passes on duckdb 2.0.0 with pyarrow 19.0.0 and fails below either: duckdb 1.1
+    # has no `allowed_directories`, 1.2-1.3 refuse the lake's own Parquet globs once external
+    # access is off, and 1.4-1.5 read `PRAGMA version` as a SELECT; pyarrow 17-18 load string
+    # columns as `object` instead of pandas 3's `str` (Stage 06 storage tests).
+    project = pyproject["project"]
+    assert isinstance(project, dict)
+    assert _floor(project["dependencies"], "duckdb") >= (2, 0)
+    assert _floor(project["dependencies"], "pyarrow") >= (19, 0)

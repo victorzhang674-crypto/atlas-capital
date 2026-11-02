@@ -1,0 +1,13 @@
+# config_fingerprint before (81ada1e, code from git archive) and after (Tier 4 working tree)
+## before (81ada1e)
+# code: $TMPDIR//t4/base/src/atlas/core/config.py has _FrozenDict: True
+default 801637033751
+dev 784ecfadb9a1
+backtest e23b11829a2f
+paper 7ef796f61636
+## after (working tree)
+# code: src/atlas/core/config.py has _FrozenDict: False
+default 801637033751
+dev 784ecfadb9a1
+backtest e23b11829a2f
+paper 7ef796f61636
