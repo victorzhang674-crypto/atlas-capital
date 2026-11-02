@@ -108,4 +108,4 @@ Commands below are run as `UV_CACHE_DIR=$TMPDIR/uv-cache-s14 UV_NO_SYNC=1 uv run
 - [x] Brief's Verify: `uv run atlas data sync --from 2015-01-01 && uv run atlas data status` (resumes on the backfilled lake) → `artifacts/verify.txt`
 - [x] Docstrings with units on new public API; no network in unit tests (`-p no:cacheprovider` with the network blocked by the sandbox); new config keys documented
 - [x] `verification.md` (ALL CRITERIA VERIFIED only if every criterion has evidence), `PROGRESS.md` (status, Decisions log, Backlog, handoff note), tick the box
-- [ ] Review the staged diff, commit `stage-14: Data sync CLI & bootstrap backfill`, ff-merge into `main`, re-run `uv run pytest -q` and `make check` on merged `main`, record hashes
+- [x] Review the staged diff, commit `stage-14: Data sync CLI & bootstrap backfill`, ff-merge into `main`, re-run `uv run pytest -q` and `make check` on merged `main`, record hashes

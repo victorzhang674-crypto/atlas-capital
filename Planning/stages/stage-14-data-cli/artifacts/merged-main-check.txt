@@ -1,0 +1,115 @@
+1154d89 stage-14: Data sync CLI & bootstrap backfill
+Resolved 78 packages in 17ms
+   Building atlas-capital @ file:///Users/zzjsmacbookair/Projects/atlas-capital
+      Built atlas-capital @ file:///Users/zzjsmacbookair/Projects/atlas-capital
+Prepared 1 package in 4.34s
+Uninstalled 1 package in 2ms
+Installed 7 packages in 18ms
+ + annotated-doc==0.0.5
+ ~ atlas-capital==0.1.0 (from file:///Users/zzjsmacbookair/Projects/atlas-capital)
+ + markdown-it-py==4.2.0
+ + mdurl==0.1.2
+ + rich==15.0.0
+ + shellingham==1.5.4
+ + typer==0.27.3
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.................                                                        [100%]
+1673 passed, 11 deselected in 27.87s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "__exit__"
+ - leaked function "__getattr__"
+ - leaked function "executemany"
+ - leaked function ""
+ - leaked function "unregister"
+ - leaked function "row_type"
+ - leaked function "fetch_df_chunk"
+ - leaked function "query_appender"
+ - leaked function "register_filesystem"
+ - leaked function "complete"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlpytest exit 0
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+190 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 84 source files
+uv run pytest -q
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.................                                                        [100%]
+1673 passed, 11 deselected in 26.45s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "list_type"
+ - leaked function "__exit__"
+ - leaked function "query_appender"
+ - leaked function "fetch_df_chunk"
+ - leaked function "abort"
+ - leaked function "fetchdf"
+ - leaked function "query_progress"
+ - leaked function "install_extension"
+ - leaked function "__getitem__"
+ - leaked function "array_type"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlmake check exit 0
