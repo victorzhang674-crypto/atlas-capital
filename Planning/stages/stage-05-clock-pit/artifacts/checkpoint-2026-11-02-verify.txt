@@ -1,0 +1,35 @@
+$ uv run pytest tests/unit/core -q && uv run ruff check .
+........................................................................ [ 10%]
+........................................................................ [ 20%]
+........................................................................ [ 30%]
+........................................................................ [ 40%]
+........................................................................ [ 51%]
+........................................................................ [ 61%]
+........................................................................ [ 71%]
+........................................................................ [ 81%]
+........................................................................ [ 92%]
+........................................................                 [100%]
+704 passed in 6.02s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "execute"
+ - leaked function "abort"
+ - leaked function "_table_kind"
+ - leaked function "struct_type"
+ - leaked function "__repr__"
+ - leaked function "list_filesystems"
+ - leaked function "create_function"
+ - leaked function "torch"
+ - leaked function "_check_text"
+ - leaked function "load_extension"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlAll checks passed!
+exit=0

@@ -1,0 +1,75 @@
+........................................................................ [  4%]
+.......................................................................F [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.................                                                        [100%]
+=================================== FAILURES ===================================
+_______________ test_upsert_one_million_rows_under_five_seconds ________________
+
+lake = <atlas.core.storage.lake.Lake object at 0x11f6dee10>
+
+    def test_upsert_one_million_rows_under_five_seconds(lake: Lake) -> None:
+        lake.write_table("prices_daily", _synthetic(500, 0, 2_000, close=1.0))  # seed, not timed
+        batch = _synthetic(500, 1_000, 2_000, close=2.0)  # days 1000-2999: half overlap, half new
+        assert len(batch) == 1_000_000
+    
+        start = time.perf_counter()
+        result = lake.write_table("prices_daily", batch, mode="upsert")
+        elapsed = time.perf_counter() - start
+        print(f"\n1M-row upsert into a 1M-row table (500 partitions): {elapsed:.2f} s")
+    
+        assert result.rows == 1_000_000
+>       assert elapsed < 5.0
+E       assert 11.34068554197438 < 5.0
+
+tests/unit/core/storage/test_storage_upsert.py:119: AssertionError
+----------------------------- Captured stdout call -----------------------------
+
+1M-row upsert into a 1M-row table (500 partitions): 11.34 s
+------------------------------ Captured log call -------------------------------
+INFO     atlas.core.storage.lake:lake.py:200 {'table': 'prices_daily', 'write_mode': 'append', 'rows': 1000000, 'partitions': 500, 'event': 'lake.write', 'level': 'info', 'logger': 'atlas.core.storage.lake', 'timestamp': '2026-11-02T06:10:31.050593Z'}
+INFO     atlas.core.storage.lake:lake.py:200 {'table': 'prices_daily', 'write_mode': 'upsert', 'rows': 1000000, 'partitions': 500, 'event': 'lake.write', 'level': 'info', 'logger': 'atlas.core.storage.lake', 'timestamp': '2026-11-02T06:10:42.924476Z'}
+=========================== short test summary info ============================
+FAILED tests/unit/core/storage/test_storage_upsert.py::test_upsert_one_million_rows_under_five_seconds
+1 failed, 1672 passed, 11 deselected in 269.54s (0:04:29)
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "commit"
+ - leaked function "__repr__"
+ - leaked function "execute"
+ - leaked function "fetchmany"
+ - leaked function "append"
+ - leaked function "list_filesystems"
+ - leaked function "type"
+ - leaked function "_own_sources"
+ - leaked function "_catalog_version"
+ - leaked function "unregister"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.html

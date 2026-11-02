@@ -88,3 +88,14 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - `git status --short` was empty before and after.
   - The full-suite runs end with the known `nanobind: leaked …` shutdown lines (Backlog); exit codes were 0.
 - Did: records-only commit `stage-06: merged-main check records` (this entry, the verification.md and PROGRESS.md evidence lines, a Decisions log row), then fast-forward `main` to it.
+
+## 2026-11-02 — Phase 0 checkpoint: 1M-row upsert target missed under load; best-of-3 timing
+- The Phase 0 checkpoint re-ran every Stage 01–06 criterion. `test_upsert_one_million_rows_under_five_seconds` FAILED in the full suite (11.34 s, `artifacts/checkpoint-2026-11-02-loaded-run-before-fix.txt`), then in isolated runs at 12.30 / 6.18 / 5.66 s (alongside a `make check`) and 5.74 / 9.16 / 12.41 s (alone). Recorded at DONE: 0.60 s.
+- Diagnosis: the machine, not the code. The load average was 14–16 (later 23–37) and the disk was 93% full; one timed run took 8.23 s wall time against 4.93 s of CPU, and timings grew from run to run. `git diff b640a80 HEAD` touches only the string-list read/filter path in `lake.py` (not upsert), and duckdb 2.0.0, pyarrow 26.0.0, pandas 3.1.0 and numpy 2.5.4 are the versions locked at Stage 06. The test also passed in Stage 14's run on 2026-11-01.
+- Owner's words, after the Phase 0 checkpoint report: "Start with Tier 1". (Tier 1 item 1: "make it less sensitive to load by taking the best of 3 runs while keeping the 5 s limit".)
+- Change (test only; the 5 s limit, the 1 000 000-row batch, the 1 000 000-row seed and the data assertions are unchanged): up to 3 attempts, each on a fresh lake (`tmp_path/lake<n>`, registry with only the test schema), stopping at the first under 5 s; it asserts `min(timings) < 5.0` and prints every timing. Under the same load it still failed (8.83 / 6.99 / 5.55 s), so it does not hide a slowdown that lasts.
+- On an idle machine (load ≈ 5): first attempt 0.89 s, PASSED (`artifacts/checkpoint-2026-11-02-speed-idle.txt`, `-v -s -W error`).
+- Brief's Verify `uv run pytest tests/unit/core/storage -q` → 126 passed (`artifacts/checkpoint-2026-11-02-verify.txt`).
+- Final runs (raw: `artifacts/checkpoint-2026-11-02-*.txt`): `uv run pytest -q` → 1678 passed, 0 failed, 11 deselected; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); `make check` → exit 0. The full-suite runs end with the known `nanobind: leaked …` lines (Backlog); exit codes 0.
+- Base commit `473629f`, branch `claude/phase-one-checkpoint-28fcd7`; one commit for all five Tier 1 items (Stages 02, 03, 05, 06, 14), each recorded in its own stage folder.
+- Tests changed: `tests/unit/core/storage/test_storage_upsert.py`. No code change.

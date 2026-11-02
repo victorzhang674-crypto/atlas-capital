@@ -81,3 +81,13 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 ## 2026-10-26 — Follow-up: audit items recorded
 - Did: a post-DONE audit against the planning files (fresh run on `b2cbc3c`: 117 passed, ruff/format/mypy clean, `make check` exit 0) found three Stage 02 items missing from the Decisions log: (1) two `stage-02:` commits against the DoD's one-commit rule; (2) `LLMConfig.provider` (singular) where the brief says "providers"; (3) the DoD's "every config key with a default" met at the collection level, while fields inside one pod, tier or universe are required. The owner approved all three as they are; each is now a row in PROGRESS.md › Decisions log quoting the owner's words.
 - Files: `Planning/PROGRESS.md`, `worklog.md`. No code or test changes.
+
+## 2026-11-02 — Phase 0 checkpoint follow-up (Tier 1): Decimal-normalised fingerprint
+- Owner's words, after the Phase 0 checkpoint report: "Start with Tier 1". Backlog item "(Stage 02 review, minor) Equal Decimals written differently … give different `config_fingerprint`s".
+- Red: `test_fingerprint_same_for_equal_decimals_written_differently` (four spellings each of `fund.initial_capital` 10 000 000 and `backtest.costs.commission_per_share` 0, including `1.0e7`, `10000000.00`, `-0`, `0E-4`) FAILED: `assert 4 == 1` (four tags).
+- Green: `config_fingerprint` now dumps in Python mode, rewrites every `Decimal` as a plain fixed-point string without trailing zeros (zero is `"0"`, so `-0` matches) through `_canonical_decimals`, then JSON-encodes with `pydantic_core.to_jsonable_python`. The test passes; a different amount still gives a different tag.
+- Existing tags unchanged: the fingerprints of `AtlasConfig()` and of `load_config("dev"|"backtest"|"paper")` are identical before and after (`30ee2a853010`, `20ce37a546d1`, `68ca37d2a3a5`, `9851073d6694`; `artifacts/checkpoint-2026-11-02-fingerprints.txt`), because Decimals already written canonically dump to the same text as before.
+- Brief's Verify `uv run pytest tests/unit/core/test_config.py -q` → 184 passed (`artifacts/checkpoint-2026-11-02-verify.txt`).
+- Final runs (raw: `artifacts/checkpoint-2026-11-02-*.txt`): `uv run pytest -q` → 1678 passed, 0 failed, 11 deselected; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); `make check` → exit 0. The full-suite runs end with the known `nanobind: leaked …` lines (Backlog); exit codes 0.
+- Base commit `473629f`, branch `claude/phase-one-checkpoint-28fcd7`; one commit for all five Tier 1 items (Stages 02, 03, 05, 06, 14), each recorded in its own stage folder.
+- Code files changed: `src/atlas/core/config.py`; tests: `tests/unit/core/test_config.py`.

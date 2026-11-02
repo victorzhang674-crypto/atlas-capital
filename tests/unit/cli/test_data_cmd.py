@@ -28,8 +28,8 @@ from atlas.cli import data_cmd
 from atlas.cli.app import app
 from atlas.core.audit import AuditLog
 from atlas.core.clock import SimClock
-from atlas.core.errors import ConfigError
-from atlas.core.storage import Lake
+from atlas.core.errors import ConfigError, DataError
+from atlas.core.storage import Database, Lake
 from atlas.data.sync import SyncState
 
 ENV = {"COLUMNS": "200", "NO_COLOR": "1"}
@@ -122,6 +122,39 @@ def test_sync_writes_audit_events(world: World, tmp_path: Path) -> None:
     assert AuditLog.verify_chain(path)
 
 
+def mirrored(root: Path, run_id: str) -> list[tuple[str, str]]:
+    """`(event_id, hash)` of `run_id`'s rows in the lake's DuckDB `audit_events`, in order."""
+    with Database(Lake(root / "data"), read_only=True) as db:
+        rows = db.query(
+            "SELECT event_id, hash FROM audit_events WHERE run_id = ? ORDER BY seq", [run_id]
+        )
+    return list(zip(rows["event_id"], rows["hash"], strict=True))
+
+
+def logged(path: Path) -> list[tuple[str, str]]:
+    return [(e["event_id"], e["hash"]) for e in map(json.loads, path.read_text().splitlines())]
+
+
+def test_sync_mirrors_audit_log_into_duckdb(world: World, tmp_path: Path) -> None:
+    # Phase 0 checkpoint: the DuckDB copy anchors the JSONL hash chain (Stage 03 backlog).
+    result = invoke("data", "sync", "--from", START.isoformat(), "--datasets", "universe")
+    assert result.exit_code == 0  # type: ignore[attr-defined]
+    (run,) = run_dirs(tmp_path)
+    assert mirrored(tmp_path, run.name) == logged(run / "audit.jsonl")
+    lines = [json.loads(line) for line in (run / "sync.log").read_text().splitlines()]
+    assert [line["inserted"] for line in lines if line["event"] == "audit.mirror"] == [3]
+
+
+def test_audit_mirror_failure_exit_1(world: World, monkeypatch: pytest.MonkeyPatch) -> None:
+    def broken(self: Database, path: Path) -> int:
+        raise DataError(f"audit log {path} fails hash chain verification; not mirrored")
+
+    monkeypatch.setattr(Database, "mirror_audit_log", broken)
+    result = invoke("data", "sync", "--from", START.isoformat(), "--datasets", "universe")
+    assert result.exit_code == 1  # type: ignore[attr-defined]
+    assert "not mirrored" in result.output  # type: ignore[attr-defined]
+
+
 @pytest.mark.parametrize(
     "args",
     [
@@ -158,6 +191,7 @@ def test_sync_interrupt_records_crash(world: World, tmp_path: Path) -> None:
     assert events[-1]["event_type"] == "RUN_FINISHED"
     assert events[-1]["payload"]["ok"] is False
     assert "KeyboardInterrupt" in events[-1]["payload"]["crashed"]
+    assert mirrored(tmp_path, run.name) == logged(run / "audit.jsonl")  # crashes too
 
 
 def test_update_incremental(world: World, monkeypatch: pytest.MonkeyPatch) -> None:

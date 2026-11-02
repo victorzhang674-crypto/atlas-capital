@@ -50,6 +50,28 @@ def test_every_file_line_is_json_with_run_id(tmp_path: Path) -> None:
     assert lines[2]["logger"] == "thirdparty"
 
 
+def test_run_keys_win_and_caller_values_are_kept(tmp_path: Path) -> None:
+    # Phase 0 checkpoint (Stage 03 backlog): a caller's `mode=`/`run_id=`/`as_of=`/`stage=`
+    # used to be overwritten silently (Stage 06 lost `lake.write`'s write mode that way).
+    log_file = tmp_path / "atlas.log"
+    configure_logging(log_file=log_file, console=io.StringIO())
+    log = get_logger("atlas.test")
+    with run_context(mode="backtest", as_of=date(2024, 1, 2), stage="risk") as ctx:
+        log.info("clash", mode="upsert", run_id="other", as_of="2024-01-02", stage="risk")
+    log.info("outside", mode="upsert")
+
+    clash, outside = _json_lines(log_file)
+    assert (clash["run_id"], clash["mode"], clash["as_of"], clash["stage"]) == (
+        ctx.run_id,
+        "backtest",
+        "2024-01-02",
+        "risk",
+    )
+    assert clash["shadowed"] == {"mode": "upsert", "run_id": "other"}  # equal values not kept
+    assert outside["mode"] == "upsert"
+    assert "shadowed" not in outside
+
+
 def test_console_is_pretty_text() -> None:
     console = io.StringIO()
     configure_logging(console=console)

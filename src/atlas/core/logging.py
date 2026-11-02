@@ -21,16 +21,27 @@ _installed: list[logging.Handler] = []
 
 def add_run_context(logger: WrappedLogger, method_name: str, event_dict: EventDict) -> EventDict:
     """structlog processor: copy the current run's `run_id` and `mode` into the record, plus
-    `as_of` (ISO date) and `stage` when set. Does nothing outside a run."""
+    `as_of` (ISO date) and `stage` when set. Does nothing outside a run.
+
+    The run's values win, so every line is tagged with its run. A caller's own value under one
+    of these keys that differs is kept in `shadowed` (`{"mode": "upsert"}`), not dropped.
+    """
     ctx = current_run_context()
     if ctx is None:
         return event_dict
-    event_dict["run_id"] = ctx.run_id
-    event_dict["mode"] = ctx.mode
+    run_values = {"run_id": ctx.run_id, "mode": ctx.mode}
     if ctx.as_of is not None:
-        event_dict["as_of"] = ctx.as_of.isoformat()
+        run_values["as_of"] = ctx.as_of.isoformat()
     if ctx.stage is not None:
-        event_dict["stage"] = ctx.stage
+        run_values["stage"] = ctx.stage
+    shadowed = {
+        key: event_dict[key]
+        for key, value in run_values.items()
+        if key in event_dict and event_dict[key] != value
+    }
+    event_dict.update(run_values)
+    if shadowed:
+        event_dict["shadowed"] = shadowed
     return event_dict
 
 

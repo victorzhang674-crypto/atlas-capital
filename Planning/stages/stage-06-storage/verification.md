@@ -37,3 +37,15 @@ Owner-requested follow-up (see worklog, "Post-DONE audit"): log-line tests added
 - On merged `main` (`b640a80`, fast-forward from `edb554d`; run in the owner's Terminal panel): `uv run pytest -q` → 627 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 74 files already formatted; `mypy src/atlas` → Success (40 files); `uv run pytest tests/unit/core/storage -q` → 115 passed; `make check` → exit=0; checkout clean before and after · raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt) (script: [artifacts/merged-main-check.sh](artifacts/merged-main-check.sh))
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up — 2026-11-02
+The checkpoint found the 1M-row upsert over 5 s on a heavily loaded machine (11.34 s in the full suite; 5.66–12.41 s alone; load average 14–16) with no change to the upsert code or its libraries since this stage (see worklog, 2026-11-02). Owner-approved change: best of up to 3 timings, each on a fresh lake, with the 5 s limit unchanged. Re-run in this chat on the final working tree (base commit `473629f`):
+- `uv run pytest -v -s -W error tests/unit/core/storage/test_storage_upsert.py::test_upsert_one_million_rows_under_five_seconds` → PASSED; `1M-row upsert into a 1M-row table (500 partitions): 0.89 s (0.89 s)` (first attempt) · raw: [artifacts/checkpoint-2026-11-02-speed-idle.txt](artifacts/checkpoint-2026-11-02-speed-idle.txt); the failing run before the change: [artifacts/checkpoint-2026-11-02-loaded-run-before-fix.txt](artifacts/checkpoint-2026-11-02-loaded-run-before-fix.txt)
+- Brief's Verify `uv run pytest tests/unit/core/storage -q` → 126 passed, exit 0 · raw: [artifacts/checkpoint-2026-11-02-verify.txt](artifacts/checkpoint-2026-11-02-verify.txt)
+- `uv run pytest -q` → 1678 passed, 0 failed, 11 deselected (live/llm/integration), exit 0 · raw: [artifacts/checkpoint-2026-11-02-pytest.txt](artifacts/checkpoint-2026-11-02-pytest.txt)
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 191 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 84 source files · raw: [artifacts/checkpoint-2026-11-02-lint-type.txt](artifacts/checkpoint-2026-11-02-lint-type.txt)
+- `make check` → lint, format check, mypy clean; 1678 passed; exit 0 · raw: [artifacts/checkpoint-2026-11-02-make-check.txt](artifacts/checkpoint-2026-11-02-make-check.txt)
+- Machine load during these runs: 5.07 → 5.33 (`uptime`) · raw: [artifacts/checkpoint-2026-11-02-load.txt](artifacts/checkpoint-2026-11-02-load.txt)
+- Both acceptance criteria hold again: the 1M-row upsert takes 0.89 s (< 5 s) on an idle machine; all tests green (1678 passed, `make check` exit 0).
+
+**Result:** ALL CRITERIA VERIFIED

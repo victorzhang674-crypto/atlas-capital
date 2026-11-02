@@ -1,0 +1,2 @@
+ 4:00  2 users, load averages: 5.07 17.21 20.78
+ 4:02  2 users, load averages: 5.33 13.51 18.88

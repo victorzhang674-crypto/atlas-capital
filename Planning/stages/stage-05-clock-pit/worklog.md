@@ -79,3 +79,12 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - `test_simclock_rejects_bad_input` (plan Task 3) → split into `test_simclock_rejects_bad_start` (non-session start date, naive start datetime) and `test_simclock_rejects_bad_moves` (`advance(0)`, `set` backwards, `set` naive, clock unchanged afterwards) in `tests/unit/core/test_clock.py`; same cases, not logged in the Task 3 entry.
   - `test_bar_available_at_early_close` (plan Review focus 2) → `test_bar_available_at_regular_and_early_close` in `tests/unit/core/test_pit.py` (the name plan Task 4 itself uses; asserts 2024-11-29 → 18:15 UTC); the plan used two names for one test.
 - Changes: this entry only; no code, test or other record changed.
+
+## 2026-11-02 — Phase 0 checkpoint follow-up (Tier 1): pandas floor raised to 3.0
+- Owner's words, after the Phase 0 checkpoint report: "Start with Tier 1". Backlog item "(Stage 05 review, minor) `pyproject.toml` declares `pandas>=2.2`, but `atlas.core.calendar` imports `pandas.errors.Pandas4Warning` (pandas 3 only)".
+- Red: new `tests/unit/test_dependency_floors.py::test_pandas_floor_is_pandas_3` FAILED: `assert (2, 2) >= (3, 0)`.
+- Green: `pyproject.toml` now says `pandas>=3.0` and (dev group) `pandas-stubs>=3.0`; `uv lock` changed only those two specifiers in `uv.lock` (pandas 3.1.0 and pandas-stubs 3.0.5.260914 stay locked; no package version moved). The test passes.
+- Brief's Verify `uv run pytest tests/unit/core -q && uv run ruff check .` → 704 passed; All checks passed! (`artifacts/checkpoint-2026-11-02-verify.txt`).
+- Final runs (raw: `artifacts/checkpoint-2026-11-02-*.txt`): `uv run pytest -q` → 1678 passed, 0 failed, 11 deselected; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); `make check` → exit 0. The full-suite runs end with the known `nanobind: leaked …` lines (Backlog); exit codes 0.
+- Base commit `473629f`, branch `claude/phase-one-checkpoint-28fcd7`; one commit for all five Tier 1 items (Stages 02, 03, 05, 06, 14), each recorded in its own stage folder.
+- Files changed: `pyproject.toml`, `uv.lock`; tests: `tests/unit/test_dependency_floors.py` (new).

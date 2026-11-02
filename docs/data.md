@@ -136,6 +136,8 @@ matter most for a backfill:
 
 Every writing run gets an id: its JSON log is `data/runs/<run_id>/sync.log` (`update.log`,
 `quality.log`) and its audit trail `data/runs/<run_id>/audit.jsonl` (`RUN_STARTED`, one
-`DATA_SYNC` event per step with keys, rows, failures and timing, `RUN_FINISHED`). Concurrency
+`DATA_SYNC` event per step with keys, rows, failures and timing, `RUN_FINISHED`). When the run
+ends its audit trail is verified and copied into the `audit_events` table of
+`data/atlas.duckdb`; if that fails the command says so and exits 1. Concurrency
 is one thread pool per provider (`data.sync.workers`); keep `yahoo: 1` (yfinance is not
 thread-safe). Chunk sizes are `data.sync.chunk_size`.

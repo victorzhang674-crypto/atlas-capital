@@ -1,0 +1,34 @@
+$ uv run pytest tests/unit/cli tests/unit/test_dependency_floors.py -v
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-28fcd7
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 21 items
+
+tests/unit/cli/test_data_cmd.py::test_help_lists_commands PASSED         [  4%]
+tests/unit/cli/test_data_cmd.py::test_sync_runs_and_prints_summary PASSED [  9%]
+tests/unit/cli/test_data_cmd.py::test_sync_writes_audit_events PASSED    [ 14%]
+tests/unit/cli/test_data_cmd.py::test_sync_mirrors_audit_log_into_duckdb PASSED [ 19%]
+tests/unit/cli/test_data_cmd.py::test_audit_mirror_failure_exit_1 PASSED [ 23%]
+tests/unit/cli/test_data_cmd.py::test_sync_bad_arguments_exit_2[args0] PASSED [ 28%]
+tests/unit/cli/test_data_cmd.py::test_sync_bad_arguments_exit_2[args1] PASSED [ 33%]
+tests/unit/cli/test_data_cmd.py::test_sync_bad_arguments_exit_2[args2] PASSED [ 38%]
+tests/unit/cli/test_data_cmd.py::test_sync_bad_arguments_exit_2[args3] PASSED [ 42%]
+tests/unit/cli/test_data_cmd.py::test_sync_step_error_exit_1 PASSED      [ 47%]
+tests/unit/cli/test_data_cmd.py::test_sync_interrupt_records_crash PASSED [ 52%]
+tests/unit/cli/test_data_cmd.py::test_update_incremental PASSED          [ 57%]
+tests/unit/cli/test_data_cmd.py::test_update_without_state_exit_1 PASSED [ 61%]
+tests/unit/cli/test_data_cmd.py::test_status_prints_tables_and_coverage PASSED [ 66%]
+tests/unit/cli/test_data_cmd.py::test_status_on_empty_lake PASSED        [ 71%]
+tests/unit/cli/test_data_cmd.py::test_quality_as_of_prints_issues PASSED [ 76%]
+tests/unit/cli/test_data_cmd.py::test_quality_persist PASSED             [ 80%]
+tests/unit/cli/test_data_cmd.py::test_bad_config_exit_1 PASSED           [ 85%]
+tests/unit/cli/test_data_cmd.py::test_entry_point_declared PASSED        [ 90%]
+tests/unit/cli/test_data_cmd.py::test_summary_not_truncated_without_terminal PASSED [ 95%]
+tests/unit/test_dependency_floors.py::test_pandas_floor_is_pandas_3 PASSED [100%]
+
+============================== 21 passed in 4.30s ==============================
+exit=0
