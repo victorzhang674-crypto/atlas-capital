@@ -36,3 +36,15 @@ Every command below was run by the AI in this stage's chat (Project.md Rule 1, R
 - Waivers: none (the price criterion is counted under the owner-approved reading above, recorded in the Decisions log)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (Tier 1) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): every writing `atlas data` run now verifies its audit log and mirrors it into the lake's DuckDB `audit_events`; a failed mirror exits 1. Re-run in this chat on the final working tree (base commit `473629f`):
+- `uv run pytest tests/unit/cli tests/unit/test_dependency_floors.py -v` → 21 passed, exit 0, including `test_sync_mirrors_audit_log_into_duckdb`, `test_audit_mirror_failure_exit_1` and `test_sync_interrupt_records_crash` (all three FAILED before the change) · raw: [artifacts/checkpoint-2026-11-02-verify.txt](artifacts/checkpoint-2026-11-02-verify.txt)
+- `uv run pytest -q` → 1678 passed, 0 failed, 11 deselected (live/llm/integration), exit 0 · raw: [artifacts/checkpoint-2026-11-02-pytest.txt](artifacts/checkpoint-2026-11-02-pytest.txt)
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 191 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 84 source files · raw: [artifacts/checkpoint-2026-11-02-lint-type.txt](artifacts/checkpoint-2026-11-02-lint-type.txt)
+- `make check` → lint, format check, mypy clean; 1678 passed; exit 0 · raw: [artifacts/checkpoint-2026-11-02-make-check.txt](artifacts/checkpoint-2026-11-02-make-check.txt)
+- Machine load during these runs: 5.07 → 5.33 (`uptime`) · raw: [artifacts/checkpoint-2026-11-02-load.txt](artifacts/checkpoint-2026-11-02-load.txt)
+- The stage's acceptance criteria are unaffected (no data was re-synced); the CLI tests for `sync`, `update`, `status` and `quality` all pass.
+- On merged `main` (`d9cffb6`, fast-forward from `473629f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv run pytest -q` → 1678 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); 1M-row upsert → 0.73 s PASSED; `make check` → exit 0; `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 11 commands exit 0 · raw: [stage-06 artifacts/checkpoint-2026-11-02-merged-main-check.txt](../stage-06-storage/artifacts/checkpoint-2026-11-02-merged-main-check.txt) (script: same name, `.sh`)
+
+**Result:** ALL CRITERIA VERIFIED

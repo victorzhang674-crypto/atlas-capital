@@ -1,0 +1,9 @@
+== merged with main 4edc709 (before the merge commit) ==
+$ uv run pytest tests/unit/quant/features -q
+339 passed in 7.47s
+$ make check
+All checks passed!
+205 files already formatted
+Success: no issues found in 88 source files
+2032 passed, 11 deselected in 39.59s
+make exit 0 (re-run to capture the exit status)

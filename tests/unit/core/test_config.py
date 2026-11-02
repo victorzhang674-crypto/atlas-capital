@@ -17,7 +17,9 @@ from pydantic import SecretStr, ValidationError
 
 from atlas.core.config import (
     AtlasConfig,
+    BacktestConfig,
     CalendarConfig,
+    CostConfig,
     EventsConfig,
     FeaturesConfig,
     FundamentalsConfig,
@@ -513,6 +515,30 @@ def test_fingerprint_same_across_processes() -> None:
     )
     out = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
     assert out.stdout.strip() == config_fingerprint(AtlasConfig())
+
+
+def _with_money(capital: str, commission: str) -> AtlasConfig:
+    return AtlasConfig(
+        fund=FundConfig(initial_capital=Decimal(capital)),
+        backtest=BacktestConfig(costs=CostConfig(commission_per_share=Decimal(commission))),
+    )
+
+
+def test_fingerprint_same_for_equal_decimals_written_differently() -> None:
+    # Phase 0 checkpoint (Stage 02 backlog): YAML may write the same amount as 1.0e7 or
+    # 10000000; equal values must give the same tag, different values a different one.
+    tags = {
+        config_fingerprint(_with_money(capital, commission))
+        for capital, commission in [
+            ("10000000", "0"),
+            ("1.0e7", "0.000"),
+            ("10000000.00", "-0"),
+            ("1E+7", "0E-4"),
+        ]
+    }
+    assert len(tags) == 1
+    assert tags != {config_fingerprint(_with_money("11000000", "0"))}
+    assert tags != {config_fingerprint(_with_money("10000000", "0.005"))}
 
 
 # --- Task 6: repository YAML files and .env.example ------------------------------------

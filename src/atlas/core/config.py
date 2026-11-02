@@ -31,6 +31,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from pydantic_core import to_jsonable_python
 from pydantic_settings import (
     BaseSettings,
     DotEnvSettingsSource,
@@ -1193,13 +1194,24 @@ def load_config(
         raise ConfigError(_format_errors(exc, profile)) from None
 
 
+def _canonical_decimals(value: Any) -> Any:
+    """`value` with every `Decimal` as a plain fixed-point string without trailing zeros, so
+    equal amounts written differently (`1.0e7`, `10000000.00`) dump alike; zero is `"0"`."""
+    if isinstance(value, Decimal):
+        return "0" if value.is_zero() else format(value.normalize(), "f")
+    if isinstance(value, Mapping):
+        return {key: _canonical_decimals(item) for key, item in value.items()}
+    if isinstance(value, list | tuple):
+        return [_canonical_decimals(item) for item in value]
+    return value
+
+
 def config_fingerprint(cfg: AtlasConfig) -> str:
     """Stable 12-hex-char tag of every non-secret setting, for labelling runs.
 
-    SHA-256 of the canonical JSON dump (sorted keys) with `secrets` excluded, so the same
-    settings give the same tag on any machine and in any process.
+    SHA-256 of the canonical JSON dump (sorted keys, Decimals by value) with `secrets`
+    excluded, so the same settings give the same tag on any machine and in any process.
     """
-    payload = json.dumps(
-        cfg.model_dump(mode="json", exclude={"secrets"}), sort_keys=True, separators=(",", ":")
-    )
+    dump = _canonical_decimals(cfg.model_dump(exclude={"secrets"}))
+    payload = json.dumps(to_jsonable_python(dump), sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode()).hexdigest()[:12]

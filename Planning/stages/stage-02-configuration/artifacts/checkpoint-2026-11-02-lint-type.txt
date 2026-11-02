@@ -1,0 +1,6 @@
+All checks passed!
+exit=0
+191 files already formatted
+exit=0
+Success: no issues found in 84 source files
+exit=0

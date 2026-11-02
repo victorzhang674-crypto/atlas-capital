@@ -1,0 +1,245 @@
+# Phase 0 checkpoint: fast-forward + verification on merged main · 2026-11-02 04:05 EST ·  4:05  up 22 days, 19:07, 2 users, load averages: 4.91 8.84 15.57
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/phase-one-checkpoint-28fcd7
+Updating 473629f..d9cffb6
+Fast-forward
+ Planning/PROGRESS.md                               | 20 ++++--
+ .../checkpoint-2026-11-02-fingerprints.txt         | 10 +++
+ .../artifacts/checkpoint-2026-11-02-lint-type.txt  |  6 ++
+ .../artifacts/checkpoint-2026-11-02-load.txt       |  2 +
+ .../artifacts/checkpoint-2026-11-02-make-check.txt | 54 ++++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-pytest.txt     | 47 ++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-verify.txt     |  6 ++
+ .../stages/stage-02-configuration/verification.md  | 12 ++++
+ Planning/stages/stage-02-configuration/worklog.md  | 10 +++
+ .../artifacts/checkpoint-2026-11-02-lint-type.txt  |  6 ++
+ .../artifacts/checkpoint-2026-11-02-load.txt       |  2 +
+ .../artifacts/checkpoint-2026-11-02-make-check.txt | 54 ++++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-pytest.txt     | 47 ++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-verify.txt     | 34 ++++++++++
+ .../stages/stage-03-logging-audit/verification.md  | 12 ++++
+ Planning/stages/stage-03-logging-audit/worklog.md  | 10 +++
+ .../artifacts/checkpoint-2026-11-02-lint-type.txt  |  6 ++
+ .../artifacts/checkpoint-2026-11-02-load.txt       |  2 +
+ .../artifacts/checkpoint-2026-11-02-make-check.txt | 54 ++++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-pytest.txt     | 47 ++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-verify.txt     | 35 ++++++++++
+ Planning/stages/stage-05-clock-pit/verification.md | 12 ++++
+ Planning/stages/stage-05-clock-pit/worklog.md      |  9 +++
+ .../artifacts/checkpoint-2026-11-02-lint-type.txt  |  6 ++
+ .../artifacts/checkpoint-2026-11-02-load.txt       |  2 +
+ ...checkpoint-2026-11-02-loaded-run-before-fix.txt | 75 ++++++++++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-make-check.txt | 54 ++++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-pytest.txt     | 47 ++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-speed-idle.txt | 15 +++++
+ .../artifacts/checkpoint-2026-11-02-verify.txt     |  5 ++
+ Planning/stages/stage-06-storage/verification.md   | 12 ++++
+ Planning/stages/stage-06-storage/worklog.md        | 11 ++++
+ .../artifacts/checkpoint-2026-11-02-lint-type.txt  |  6 ++
+ .../artifacts/checkpoint-2026-11-02-load.txt       |  2 +
+ .../artifacts/checkpoint-2026-11-02-make-check.txt | 54 ++++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-pytest.txt     | 47 ++++++++++++++
+ .../artifacts/checkpoint-2026-11-02-verify.txt     | 34 ++++++++++
+ Planning/stages/stage-14-data-cli/verification.md  | 11 ++++
+ Planning/stages/stage-14-data-cli/worklog.md       | 11 ++++
+ docs/data.md                                       |  4 +-
+ pyproject.toml                                     |  4 +-
+ src/atlas/cli/data_cmd.py                          | 36 +++++++++--
+ src/atlas/core/config.py                           | 22 +++++--
+ src/atlas/core/logging.py                          | 21 ++++--
+ tests/unit/cli/test_data_cmd.py                    | 38 ++++++++++-
+ tests/unit/core/storage/test_storage_upsert.py     | 36 +++++++----
+ tests/unit/core/test_config.py                     | 26 ++++++++
+ tests/unit/core/test_logging.py                    | 22 +++++++
+ tests/unit/test_dependency_floors.py               | 31 +++++++++
+ uv.lock                                            |  4 +-
+ 50 files changed, 1095 insertions(+), 38 deletions(-)
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-fingerprints.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-lint-type.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-load.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-make-check.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-pytest.txt
+ create mode 100644 Planning/stages/stage-02-configuration/artifacts/checkpoint-2026-11-02-verify.txt
+ create mode 100644 Planning/stages/stage-03-logging-audit/artifacts/checkpoint-2026-11-02-lint-type.txt
+ create mode 100644 Planning/stages/stage-03-logging-audit/artifacts/checkpoint-2026-11-02-load.txt
+ create mode 100644 Planning/stages/stage-03-logging-audit/artifacts/checkpoint-2026-11-02-make-check.txt
+ create mode 100644 Planning/stages/stage-03-logging-audit/artifacts/checkpoint-2026-11-02-pytest.txt
+ create mode 100644 Planning/stages/stage-03-logging-audit/artifacts/checkpoint-2026-11-02-verify.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-lint-type.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-load.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-make-check.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-pytest.txt
+ create mode 100644 Planning/stages/stage-05-clock-pit/artifacts/checkpoint-2026-11-02-verify.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-lint-type.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-load.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-loaded-run-before-fix.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-make-check.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-pytest.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-speed-idle.txt
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/checkpoint-2026-11-02-verify.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/checkpoint-2026-11-02-lint-type.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/checkpoint-2026-11-02-load.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/checkpoint-2026-11-02-make-check.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/checkpoint-2026-11-02-pytest.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/checkpoint-2026-11-02-verify.txt
+ create mode 100644 tests/unit/test_dependency_floors.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD d9cffb6
+
+$ uv sync --group dev
+Uninstalled 1 package in 2ms
+Installed 1 package in 2ms
+ ~ atlas-capital==0.1.0 (from file:///Users/zzjsmacbookair/Projects/atlas-capital)
+exit=0
+
+$ uv run pytest -q
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+......................                                                   [100%]
+1678 passed, 11 deselected in 26.87s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "fetchone"
+ - leaked function "df"
+ - leaked function "checkpoint"
+ - leaked function "__getattr__"
+ - leaked function "unregister"
+ - leaked function "fetch_df"
+ - leaked function "array_type"
+ - leaked function "remove_function"
+ - leaked function "_register_map"
+ - leaked function "__init__"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+191 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 84 source files
+exit=0
+
+$ uv run pytest -v -s tests/unit/core/storage/test_storage_upsert.py::test_upsert_one_million_rows_under_five_seconds
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 1 item
+
+tests/unit/core/storage/test_storage_upsert.py::test_upsert_one_million_rows_under_five_seconds 
+1M-row upsert into a 1M-row table (500 partitions): 0.73 s (0.73 s)
+PASSED
+
+============================== 1 passed in 1.94s ===============================
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+191 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 84 source files
+uv run pytest -q
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+......................                                                   [100%]
+1678 passed, 11 deselected in 27.14s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "close"
+ - leaked function "_result_as_arrow"
+ - leaked function "_table_kind"
+ - leaked function "load_extension"
+ - leaked function "_prepare_script"
+ - leaked function "string_type"
+ - leaked function "fetchall"
+ - leaked function "remove_function"
+ - leaked function "fetchnumpy"
+ - leaked function "row_type"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0

@@ -3,7 +3,8 @@
 `sync` backfills (resumable), `update` fetches what is new since the last sync, `status`
 summarises the lake and `quality` runs the Stage 13 quality report. `sync`, `update` and
 `quality --persist` open a run: a JSON log at `<lake>/runs/<run_id>/<command>.log` and the
-run's audit log (`RUN_STARTED`, one `DATA_SYNC` per step, `RUN_FINISHED`). `status` and
+run's audit log (`RUN_STARTED`, one `DATA_SYNC` per step, `RUN_FINISHED`), verified and copied
+into the lake's DuckDB `audit_events` when the run ends. `status` and
 `quality` without `--persist` only read. Exit codes: 0 ok, 1 a step or the command failed,
 2 bad arguments.
 """
@@ -16,6 +17,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Annotated, Any
 
+import duckdb
 import pandas as pd
 import typer
 from rich.console import Console
@@ -32,10 +34,10 @@ from rich.table import Table
 from atlas.core.audit import AuditLog, EventType, audit_path
 from atlas.core.clock import Clock, LiveClock, get_clock, use_clock
 from atlas.core.config import AtlasConfig, load_config
-from atlas.core.errors import ConfigError, DataError
-from atlas.core.logging import configure_logging, reset_logging
+from atlas.core.errors import AtlasError, ConfigError, DataError
+from atlas.core.logging import configure_logging, get_logger, reset_logging
 from atlas.core.run_context import run_context, run_dir
-from atlas.core.storage import Lake
+from atlas.core.storage import Lake, get_database
 from atlas.data.providers.base import check_request
 from atlas.data.quality import blocked_symbols, quality_report
 from atlas.data.sync import (
@@ -58,6 +60,8 @@ data_app = typer.Typer(
 )
 
 AUDIT_ACTOR = "cli"
+
+_log = get_logger(__name__)
 """`actor` of the `RUN_STARTED` / `RUN_FINISHED` events."""
 
 build_sources: Callable[[AtlasConfig, Lake], SyncSources] = SyncSources.live
@@ -150,7 +154,9 @@ def _run(
     config: AtlasConfig, command: str, args: dict[str, Any], console: Console
 ) -> Iterator[_RunHandle]:
     """A top-level run for a writing command: clock, run context, JSON log file (console:
-    warnings only), audit log with `RUN_STARTED` / `RUN_FINISHED` (also when it crashes)."""
+    warnings only), audit log with `RUN_STARTED` / `RUN_FINISHED` (also when it crashes),
+    then verified and mirrored into DuckDB. A failed mirror exits 1 unless the run already
+    failed."""
     lake = Lake(config.data.lake_path)
     with use_clock(make_clock()), run_context(config=config, stage=f"data.{command}") as ctx:
         folder = run_dir(config.data.lake_path, ctx.run_id)
@@ -171,8 +177,28 @@ def _run(
             raise
         finally:
             audit.record(EventType.RUN_FINISHED, AUDIT_ACTOR, finished)
+            mirror_error = _mirror_audit(lake, audit.path)
             reset_logging()
             console.print(f"Run {ctx.run_id}: log and audit trail in {folder}")
+            if mirror_error is not None:
+                console.print(f"[red]Audit trail not mirrored:[/red] {mirror_error}")
+                if finished["ok"]:
+                    raise typer.Exit(1)
+
+
+def _mirror_audit(lake: Lake, path: Path) -> str | None:
+    """Verify the run's audit log and copy it into the lake's DuckDB `audit_events` (the copy
+    anchors the hash chain); return the error text, logged, if that failed."""
+    try:
+        database = get_database(lake)
+        try:
+            database.mirror_audit_log(path)
+        finally:
+            database.close()
+    except (AtlasError, duckdb.Error) as exc:
+        _log.error("audit.mirror_failed", path=str(path), error=str(exc))
+        return f"{type(exc).__name__}: {exc}"
+    return None
 
 
 class RichProgress:
