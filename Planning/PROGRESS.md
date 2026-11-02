@@ -399,7 +399,7 @@ Full block and raw output: [verification.md](stages/stage-02-configuration/verif
   - [x] Invalid YAML raises `ConfigError` naming the bad key — evidence: `test_invalid_value_names_dotted_key`, `test_unknown_key_names_dotted_key`, `test_malformed_yaml_names_file_and_line`, `test_duplicate_yaml_key_raises`, `test_invalid_config_raises[*]`
   - [x] Every limit in spec §9 exists as a typed field — evidence: `test_limits_cover_spec_section_9[*]`, `test_drawdown_tiers_and_pod_stops_defaults`
 - Waivers: none
-- Phase 0 checkpoint follow-up — 2026-11-02: [stage-02 verification](stages/stage-02-configuration/verification.md): `config_fingerprint` normalises Decimals (`test_fingerprint_same_for_equal_decimals_written_differently`); brief's Verify 184 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up — 2026-11-02: [stage-02 verification](stages/stage-02-configuration/verification.md): `config_fingerprint` normalises Decimals (`test_fingerprint_same_for_equal_decimals_written_differently`); brief's Verify 184 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
 
 ### Stage 03 — Logging, run context & audit trail — DONE 2026-10-26
 - Folder: [stages/stage-03-logging-audit/](stages/stage-03-logging-audit/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -427,7 +427,7 @@ Full block and raw output: [verification.md](stages/stage-03-logging-audit/verif
   - [x] Every audit event is chained and verifiable — evidence: `test_record_chains_events`, `test_reopen_continues_chain`, ten tamper/truncation tests, `test_concurrent_threads_keep_chain_valid`; artifacts/acceptance-demo.txt
   - [x] Logs carry the run_id — evidence: `test_every_file_line_is_json_with_run_id` (incl. third-party stdlib lines), `test_console_is_pretty_text`; artifacts/acceptance-demo.txt
 - Waivers: none
-- Phase 0 checkpoint follow-up — 2026-11-02: [stage-03 verification](stages/stage-03-logging-audit/verification.md): caller log values under run keys kept in `shadowed` (`test_run_keys_win_and_caller_values_are_kept`); brief's Verify 704 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up — 2026-11-02: [stage-03 verification](stages/stage-03-logging-audit/verification.md): caller log values under run keys kept in `shadowed` (`test_run_keys_win_and_caller_values_are_kept`); brief's Verify 704 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
 
 ### Stage 04 — Core domain model — DONE 2026-10-26
 - Folder: [stages/stage-04-domain-model/](stages/stage-04-domain-model/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -480,7 +480,7 @@ Full block and raw output: [verification.md](stages/stage-05-clock-pit/verificat
   - [x] No direct wall-clock calls outside `clock.py` — evidence: `ruff check .` clean with TID251 (16 banned APIs); `test_ruff_bans_wall_clock_outside_clock_module` 12/12; `test_ruff_allows_wall_clock_in_clock_module`; `test_no_string_clock_reads_outside_clock_module`; artifacts/wallclock-grep.txt
   - [x] PIT boundary tests pass — evidence: `test_bar_not_visible_same_morning`, `test_bar_visible_next_session_morning`, `test_knows_is_strict`, `test_pit_filter_keeps_only_known_rows`, `test_injected_future_bar_is_caught` (artifacts/stage-tests-verbose.txt)
 - Waivers: none
-- Phase 0 checkpoint follow-up — 2026-11-02: [stage-05 verification](stages/stage-05-clock-pit/verification.md): `pandas>=3.0` / `pandas-stubs>=3.0` (`test_pandas_floor_is_pandas_3`); brief's Verify 704 passed, ruff clean; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up — 2026-11-02: [stage-05 verification](stages/stage-05-clock-pit/verification.md): `pandas>=3.0` / `pandas-stubs>=3.0` (`test_pandas_floor_is_pandas_3`); brief's Verify 704 passed, ruff clean; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
 
 ### Stage 06 — Storage layer (DuckDB + Parquet lake) — DONE 2026-10-27
 - Folder: [stages/stage-06-storage/](stages/stage-06-storage/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -510,7 +510,7 @@ Full block and raw output: [verification.md](stages/stage-06-storage/verificatio
   - [x] 1M-row synthetic upsert completes in under 5 s locally — evidence: `test_upsert_one_million_rows_under_five_seconds` PASSED (asserts `< 5.0` s; measured 0.60 s; earlier 0.59/0.61/0.58 s)
   - [x] All tests green — evidence: `uv run pytest -q` 626 passed, `make check` exit 0, brief's Verify 114 passed
 - Waivers: none
-- Phase 0 checkpoint follow-up — 2026-11-02: [stage-06 verification](stages/stage-06-storage/verification.md): the 1M-row upsert missed 5 s under heavy machine load (5.66–12.41 s) with no code change; test now takes the best of up to 3 timings, 5 s limit unchanged; idle run 0.89 s PASSED; brief's Verify 126 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up — 2026-11-02: [stage-06 verification](stages/stage-06-storage/verification.md): the 1M-row upsert missed 5 s under heavy machine load (5.66–12.41 s) with no code change; test now takes the best of up to 3 timings, 5 s limit unchanged; idle run 0.89 s PASSED; brief's Verify 126 passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
 
 ### Stage 07 — Price data providers (yfinance, Alpaca) — DONE 2026-10-27
 - Folder: [stages/stage-07-price-data/](stages/stage-07-price-data/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)
@@ -748,4 +748,4 @@ Full block and raw output: [verification.md](stages/stage-14-data-cli/verificati
   - [x] fundamentals for ≥ 90% — evidence: `atlas data status` 502/503 = 99.8%
   - [x] all macro series — evidence: `atlas data status` 22/22
 - Waivers: none (owner-approved reading of the price criterion, Decisions log 2026-11-01)
-- Phase 0 checkpoint follow-up — 2026-11-02: [stage-14 verification](stages/stage-14-data-cli/verification.md): every writing `atlas data` run verifies its audit log and mirrors it into DuckDB `audit_events` (a failed mirror exits 1); 21 CLI tests passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0
+- Phase 0 checkpoint follow-up — 2026-11-02: [stage-14 verification](stages/stage-14-data-cli/verification.md): every writing `atlas data` run verifies its audit log and mirrors it into DuckDB `audit_events` (a failed mirror exits 1); 21 CLI tests passed; full suite 1678 passed, 0 failed; ruff, format (191 files), mypy (84 files) clean; `make check` exit 0; merged into `main` as `d9cffb6` (fast-forward), same results there
