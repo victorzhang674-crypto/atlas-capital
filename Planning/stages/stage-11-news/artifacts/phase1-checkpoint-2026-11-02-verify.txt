@@ -1,0 +1,9 @@
+######## v-verify11 (uv run pytest tests/unit/data/news -q)
+........................................................................ [ 55%]
+.........................................................                [100%]
+129 passed, 2 deselected in 3.00s
+exit 0
+######## live (uv run pytest tests/unit/data -m live -v -rs)
+tests/unit/data/news/test_news_live.py::test_live_alpaca_news PASSED     [ 46%]
+tests/unit/data/news/test_news_live.py::test_live_yahoo_news PASSED      [ 53%]
+================ 13 passed, 936 deselected in 80.05s (0:01:20) =================

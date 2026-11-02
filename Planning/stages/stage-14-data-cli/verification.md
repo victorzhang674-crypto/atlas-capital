@@ -62,3 +62,12 @@ Owner-requested follow-up (see worklog, 2026-11-02): the 3 runs logged before th
 - CI run 3 `41505703051` on `f514eb2`: success · raw: [stage-01 artifacts/checkpoint-2026-11-02-ci-run-3-passed.txt](../stage-01-project-scaffolding/artifacts/checkpoint-2026-11-02-ci-run-3-passed.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint (Stages 07–14, M1) — 2026-11-02
+Owner request (see worklog, 2026-11-02). Re-run in this chat on `8056137`, before any change:
+- `uv run pytest -q` → 2118 passed, 0 failed, 12 deselected, exit 0 · raw: [artifacts/phase1-checkpoint-2026-11-02-pytest.txt](artifacts/phase1-checkpoint-2026-11-02-pytest.txt)
+- `uv run pytest tests/unit/data -m live -v -rs` → 11 passed, 0 skipped · raw: [artifacts/phase1-checkpoint-2026-11-02-live.txt](artifacts/phase1-checkpoint-2026-11-02-live.txt)
+- `atlas data status` on the main lake (read-only) → exit 0; prices 475/503 raw = 475/475 members listed ≥ 8 years (owner-approved reading), fundamentals 502/503 = 99.8%, macro 22/22 · raw: [artifacts/phase1-checkpoint-2026-11-02-status.txt](artifacts/phase1-checkpoint-2026-11-02-status.txt)
+- Acceptance criteria still met (the live backfill was not re-run: nothing it covers changed). Report: [artifacts/phase1-checkpoint-2026-11-02-report.md](artifacts/phase1-checkpoint-2026-11-02-report.md)
+
+**Result:** ALL CRITERIA VERIFIED

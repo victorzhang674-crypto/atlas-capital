@@ -103,7 +103,7 @@ def normalize_daily(df: pd.DataFrame) -> pd.DataFrame:
     """`df` in the daily contract: exactly `DAILY_COLUMNS` (extra columns dropped), dtypes
     set, sorted by symbol then date, fresh index.
 
-    Values are not judged here (NaN prices stay NaN, so validation can reject the symbol);
+    Values are not judged here (NaN prices stay NaN; `ingest_prices` drops such a bar);
     `volume` becomes nullable `Int64` if it holds missing values. A missing column, a
     non-numeric price/volume column, a non-integral volume or a bad date raises `DataError`.
     """

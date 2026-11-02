@@ -48,3 +48,15 @@ Owner-approved follow-up (audit items 1, 4, 8, 9 fixed; records for items 2, 5, 
 - `pytest tests/unit/data -m live` → yfinance PASSED, Alpaca SKIPPED (no keys)
 - `git status --short` empty before and after
 - raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt)
+
+#### Phase 1 checkpoint follow-up (Tier 1) — 2026-11-02
+Owner request (Phase 1 checkpoint; see worklog, 2026-11-02). Run in this chat on the working tree (base `8056137`):
+- Red before the fix: 3 new ingest tests failed · raw: [artifacts/phase1-checkpoint-2026-11-02-red-before-fix.txt](artifacts/phase1-checkpoint-2026-11-02-red-before-fix.txt)
+- `uv run pytest -q` → 2120 passed, 0 failed, 14 deselected, exit 0; `ruff check .` → All checks passed!; `ruff format --check .` → 206 files already formatted; `mypy src/atlas` → Success (88 files); `make check` → exit 0 · raw: [artifacts/phase1-checkpoint-2026-11-02-verify.txt](artifacts/phase1-checkpoint-2026-11-02-verify.txt)
+- `uv run pytest tests/unit/data -q` (brief's Verify) → 936 passed, 13 deselected, exit 0 (same file)
+- `uv run pytest tests/unit/data -m live -v -rs` → 13 passed, 0 skipped: `test_alpaca_live_smoke` PASSED (SKIPPED at DONE), new `test_yfinance_live_actions` / `test_alpaca_live_actions` PASSED; mutant check failed both · raw: same file, [artifacts/phase1-checkpoint-2026-11-02-live-actions-mutation.txt](artifacts/phase1-checkpoint-2026-11-02-live-actions-mutation.txt)
+- Built Alpaca fixtures vs real responses → 0 problems after the reverse-split field fix · raw: [artifacts/phase1-checkpoint-2026-11-02-alpaca-shape-check.txt](artifacts/phase1-checkpoint-2026-11-02-alpaca-shape-check.txt)
+- Real data: AVB via the sync's Alpaca fallback → 1 518 bars 2020-07-27 → 2026-08-14, 0 mismatches · raw: [artifacts/phase1-checkpoint-2026-11-02-avb-real-data.txt](artifacts/phase1-checkpoint-2026-11-02-avb-real-data.txt)
+- Acceptance criteria still evidenced: split-adjusted fixtures (`test_aapl_split_adjusted_series_is_continuous` and the others above), idempotence (`test_reingest_is_idempotent`), a failed symbol never aborts the batch (`test_failed_symbol_never_aborts_batch`, `test_symbol_with_only_incomplete_bars_fails_alone`, `test_bar_on_non_session_fails_symbol`): all PASSED in the brief's Verify.
+
+**Result:** ALL CRITERIA VERIFIED

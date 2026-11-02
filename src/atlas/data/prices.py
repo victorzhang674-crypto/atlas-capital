@@ -96,6 +96,9 @@ CORPORATE_ACTIONS = DEFAULT_REGISTRY.register(
 
 _log = get_logger(__name__)
 
+_BAR_VALUES = ["open", "high", "low", "close", "adj_close", "volume"]
+"""Bar fields a stored bar must have; a bar missing any of them is dropped on ingest."""
+
 
 @dataclass(frozen=True)
 class AdjustmentMismatch:
@@ -115,8 +118,10 @@ class IngestReport:
     """Outcome of `ingest_prices`.
 
     `rows` / `action_rows` were upserted; `symbols_ok` and `symbols_failed` keep request
-    order; `failure_reasons` says why each failed symbol was skipped; `mismatches` lists
-    adjustment cross-check differences above `adj_mismatch_tolerance` (recorded, not fatal).
+    order; `failure_reasons` says why each failed symbol was skipped; `bars_dropped` lists, per
+    symbol, the sessions whose vendor bar lacked a price or volume value and was left out;
+    `mismatches` lists adjustment cross-check differences above `adj_mismatch_tolerance`
+    (recorded, not fatal).
     """
 
     rows: int
@@ -124,6 +129,7 @@ class IngestReport:
     symbols_ok: tuple[str, ...]
     symbols_failed: tuple[str, ...]
     failure_reasons: FrozenDict[str, str] = field(default_factory=lambda: FrozenDict({}))
+    bars_dropped: FrozenDict[str, tuple[date, ...]] = field(default_factory=lambda: FrozenDict({}))
     mismatches: tuple[AdjustmentMismatch, ...] = ()
 
 
@@ -140,11 +146,13 @@ def ingest_prices(
     """Fetch `symbols` for `[start, end]` from `provider` and upsert them into the lake.
 
     A symbol is skipped, with a reason, if its prices or actions cannot be fetched (a failed
-    batch is retried one symbol at a time), it has no rows, a bar falls on a non-session or
-    its rows fail table validation; other symbols are still written. Re-running is
-    idempotent (upsert on the primary keys; the newest fetch wins). Pass the run's
-    `TradingCalendar(config=cfg.calendar)` and `cfg.data.prices`; the defaults are the
-    built-in ones.
+    batch is retried one symbol at a time), it has no complete bar, a bar falls on a
+    non-session or its rows fail table validation; other symbols are still written. A bar
+    missing any price or the volume is left out alone (`bars_dropped`, and a
+    `prices.bars_dropped` warning); the Stage 13 `missing_sessions` check then flags the
+    gap. Re-running is idempotent (upsert on the primary keys; the newest fetch wins). Pass
+    the run's `TradingCalendar(config=cfg.calendar)` and `cfg.data.prices`; the defaults are
+    the built-in ones.
     """
     cal = calendar if calendar is not None else TradingCalendar()
     tolerance = (config if config is not None else PriceDataConfig()).adj_mismatch_tolerance
@@ -154,9 +162,17 @@ def ingest_prices(
     daily = _fetch_each(provider.fetch_daily, "prices", wanted, start, end, failures)
     daily = daily[daily["symbol"].isin(wanted)]
     bars = {str(s): g.reset_index(drop=True) for s, g in daily.groupby("symbol", sort=False)}
+    dropped: dict[str, tuple[date, ...]] = {}
     for symbol in wanted:
         if symbol not in failures and symbol not in bars:
             failures[symbol] = "no price data returned"
+        elif symbol in bars:
+            complete = bars[symbol][_BAR_VALUES].notna().all(axis=1)
+            if not complete.any():
+                failures[symbol] = "no complete price bars returned"
+            elif not complete.all():
+                dropped[symbol] = tuple(bars[symbol].loc[~complete, "date"])
+                bars[symbol] = bars[symbol][complete].reset_index(drop=True)
     have = [s for s in wanted if s not in failures]
 
     actions = _fetch_each(provider.fetch_actions, "actions", have, start, end, failures)
@@ -194,12 +210,21 @@ def ingest_prices(
     failed = tuple(s for s in wanted if s in failures)
     for symbol in failed:
         _log.warning("prices.symbol_failed", symbol=symbol, reason=failures[symbol])
+    kept = {s: dropped[s] for s in ok if s in dropped}
+    for symbol, days in kept.items():
+        _log.warning(
+            "prices.bars_dropped",
+            symbol=symbol,
+            sessions=len(days),
+            dates=[d.isoformat() for d in days[:10]],
+        )
     report = IngestReport(
         rows=rows,
         action_rows=action_count,
         symbols_ok=tuple(ok),
         symbols_failed=failed,
         failure_reasons=FrozenDict({s: failures[s] for s in failed}),
+        bars_dropped=FrozenDict(kept),
         mismatches=tuple(mismatches),
     )
     _log.info(
@@ -211,6 +236,7 @@ def ingest_prices(
         action_rows=report.action_rows,
         symbols_ok=len(report.symbols_ok),
         symbols_failed=len(report.symbols_failed),
+        bars_dropped=sum(len(d) for d in report.bars_dropped.values()),
         mismatches=len(report.mismatches),
     )
     return report

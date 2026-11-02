@@ -17,7 +17,8 @@
       {
         "id": "rs-1",
         "symbol": "XYZ",
-        "cusip": "000000000",
+        "old_cusip": "000000000",
+        "new_cusip": "000000001",
         "new_rate": 1,
         "old_rate": 10,
         "process_date": "2020-09-01",

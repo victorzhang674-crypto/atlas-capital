@@ -1,0 +1,9 @@
+GE 2021 actions: [('split', '2021-08-02', 0.125)]
+adapter output: 10 bars, 1 actions (['split'])
+== /v2/stocks/bars
+  paths: built 13, real 13, problems 0
+== /v1/corporate-actions
+  REAL ONLY    $.corporate_actions.forward_splits[].due_bill_redemption_date ['str'] (unused by the adapter)
+  paths: built 38, real 39, problems 0
+RESULT: 0 problem(s)
+exit 0

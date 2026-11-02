@@ -1,0 +1,8 @@
+adapter output: 10 articles
+== /v1beta1/news
+  REAL ONLY    $.news[].images[] ['dict'] (unused by the adapter)
+  REAL ONLY    $.news[].images[].size ['str'] (unused by the adapter)
+  REAL ONLY    $.news[].images[].url ['str'] (unused by the adapter)
+  paths: built 16, real 19, problems 0
+RESULT: 0 problem(s)
+exit 0

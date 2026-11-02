@@ -57,7 +57,8 @@ dump(
                  "record_date": "2020-08-24", "payable_date": "2020-08-28"}
             ],
             "reverse_splits": [
-                {"id": "rs-1", "symbol": "XYZ", "cusip": "000000000", "new_rate": 1,
+                {"id": "rs-1", "symbol": "XYZ", "old_cusip": "000000000",
+                 "new_cusip": "000000001", "new_rate": 1,
                  "old_rate": 10, "process_date": "2020-09-01", "ex_date": "2020-09-01",
                  "record_date": "2020-09-01", "payable_date": "2020-09-01"}
             ],

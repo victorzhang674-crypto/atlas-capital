@@ -1,0 +1,13 @@
+E       AssertionError: assert ('AAPL',) == ('AAPL', 'SPY')
+E         
+E         Right contains one more item: 'SPY'
+E         Use -v to get more diff
+WARNING  atlas.data.prices:prices.py:196 {'symbol': 'SPY', 'reason': 'prices_daily.open: 1 null value(s) in a non-nullable column', 'event': 'prices.symbol_failed', 'level': 'warning', 'logger': 'atlas.data.prices', 'timestamp': '2026-11-02T19:45:59.044701Z'}
+E       AttributeError: 'IngestReport' object has no attribute 'bars_dropped'
+        assert report.symbols_failed == ("SPY",)
+E       AssertionError: assert 'no complete price bars' in 'prices_daily.close: 42 null value(s) in a non-nullable column'
+WARNING  atlas.data.prices:prices.py:196 {'symbol': 'SPY', 'reason': 'prices_daily.close: 42 null value(s) in a non-nullable column', 'event': 'prices.symbol_failed', 'level': 'warning', 'logger': 'atlas.data.prices', 'timestamp': '2026-11-02T19:45:59.223466Z'}
+FAILED tests/unit/data/test_price_ingest.py::test_incomplete_bar_is_dropped_not_the_symbol
+FAILED tests/unit/data/test_price_ingest.py::test_complete_bars_report_nothing_dropped
+FAILED tests/unit/data/test_price_ingest.py::test_symbol_with_only_incomplete_bars_fails_alone
+3 failed, 17 passed in 2.60s

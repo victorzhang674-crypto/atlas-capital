@@ -28,3 +28,12 @@ Fill this in **only** with output from commands actually run in this stage's fin
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 1) — 2026-11-02
+Owner request (Phase 1 checkpoint; see worklog, 2026-11-02). No Stage 11 code changed.
+- `uv run pytest tests/unit/data/news -q` (brief's Verify) → 129 passed, 2 deselected, exit 0; `-m live` → `test_live_alpaca_news` PASSED (skipped at DONE), `test_live_yahoo_news` PASSED · raw: [artifacts/phase1-checkpoint-2026-11-02-verify.txt](artifacts/phase1-checkpoint-2026-11-02-verify.txt)
+- Built Alpaca news fixtures vs real responses → 0 problems · raw: [artifacts/phase1-checkpoint-2026-11-02-alpaca-shape-check.txt](artifacts/phase1-checkpoint-2026-11-02-alpaca-shape-check.txt)
+- Full suite 2120 passed and `make check` exit 0 on the same tree · raw: [stage-07 artifacts/phase1-checkpoint-2026-11-02-verify.txt](../stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-verify.txt)
+- Acceptance criteria unchanged and still evidenced (the brief's Verify ran every test named at DONE).
+
+**Result:** ALL CRITERIA VERIFIED

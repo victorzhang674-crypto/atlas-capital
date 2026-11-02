@@ -1,0 +1,69 @@
+######## v-pytest
+compute_features: 40 features x 500 symbols x 2000 sessions in 4.41 s (limit 20 s)
+2120 passed, 14 deselected in 62.61s (0:01:02)
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit 0
+######## v-ruff
+All checks passed!
+exit 0
+######## v-fmt
+unformatted: File would be reformatted
+   --> src/atlas/data/prices.py:132:61
+    |
+131 |     failure_reasons: FrozenDict[str, str] = field(default_factory=lambda: FrozenDict({}))
+    -     bars_dropped: FrozenDict[str, tuple[date, ...]] = field(
+    -         default_factory=lambda: FrozenDict({})
+    -     )
+132 +     bars_dropped: FrozenDict[str, tuple[date, ...]] = field(default_factory=lambda: FrozenDict({}))
+133 |     mismatches: tuple[AdjustmentMismatch, ...] = ()
+    |
+
+1 file would be reformatted, 205 files already formatted
+exit 1
+######## v-mypy
+Success: no issues found in 88 source files
+exit 0
+######## v-make-check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+206 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.77 s (limit 20 s)
+2120 passed, 14 deselected in 59.51s
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit 0
+######## v-verify07
+936 passed, 13 deselected in 39.56s
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit 0
+######## v-live
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 949 items / 936 deselected / 13 selected
+
+tests/unit/data/events/test_events_live.py::test_live_aapl_earnings_events PASSED [  7%]
+tests/unit/data/events/test_events_live.py::test_live_fred_release_dates PASSED [ 15%]
+tests/unit/data/events/test_events_live.py::test_live_yahoo_calendar PASSED [ 23%]
+tests/unit/data/fundamentals/test_fundamentals_live.py::test_live_edgar_aapl PASSED [ 30%]
+tests/unit/data/macro/test_macro_live.py::test_live_fred_cpi PASSED      [ 38%]
+tests/unit/data/news/test_news_live.py::test_live_alpaca_news PASSED     [ 46%]
+tests/unit/data/news/test_news_live.py::test_live_yahoo_news PASSED      [ 53%]
+tests/unit/data/sentiment/test_sentiment_live.py::test_live_download_lm_lexicon PASSED [ 61%]
+tests/unit/data/test_price_live.py::test_yfinance_live_smoke PASSED      [ 69%]
+tests/unit/data/test_price_live.py::test_alpaca_live_smoke PASSED        [ 76%]
+tests/unit/data/test_price_live.py::test_yfinance_live_actions PASSED    [ 84%]
+tests/unit/data/test_price_live.py::test_alpaca_live_actions PASSED      [ 92%]
+tests/unit/data/test_universe.py::test_live_wikipedia_pages_parse PASSED [100%]
+
+================ 13 passed, 936 deselected in 80.05s (0:01:20) =================
+exit 0

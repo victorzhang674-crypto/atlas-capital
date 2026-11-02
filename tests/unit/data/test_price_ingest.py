@@ -138,13 +138,37 @@ def test_batch_error_retries_symbol_by_symbol(tmp_lake: Lake) -> None:
     assert daily_calls == [("AAPL", "BAD"), ("AAPL",), ("BAD",)]
 
 
-def test_invalid_rows_fail_only_that_symbol(tmp_lake: Lake) -> None:  # Review focus 2
+def test_incomplete_bar_is_dropped_not_the_symbol(tmp_lake: Lake) -> None:
+    # Phase 1 checkpoint: one vendor bar with a missing field cost AVB its whole history.
     spy = load_yf_symbol("SPY")
     spy.loc["2020-08-04", "Volume"] = float("nan")
+    spy.loc["2020-08-05", "Open"] = float("nan")
+    fake = FakeYFinance(frames={"AAPL": load_yf_symbol("AAPL"), "SPY": spy})
+    report = _ingest(tmp_lake, _yahoo(fake), ["AAPL", "SPY"])
+    assert report.symbols_ok == ("AAPL", "SPY")
+    assert report.symbols_failed == ()
+    assert report.bars_dropped == {"SPY": (date(2020, 8, 4), date(2020, 8, 5))}
+    prices = tmp_lake.read_table("prices_daily")
+    spy_days = set(prices.loc[prices["symbol"] == "SPY", "date"])
+    assert len(spy_days) == 40
+    assert not {date(2020, 8, 4), date(2020, 8, 5)} & spy_days
+    assert set(tmp_lake.read_table("corporate_actions")["symbol"]) == {"AAPL", "SPY"}
+
+
+def test_complete_bars_report_nothing_dropped(tmp_lake: Lake) -> None:
+    report = _ingest(tmp_lake, _yahoo(), ["AAPL", "SPY"])
+    assert report.bars_dropped == {}
+
+
+def test_symbol_with_only_incomplete_bars_fails_alone(tmp_lake: Lake) -> None:
+    spy = load_yf_symbol("SPY")
+    spy["Close"] = float("nan")
     fake = FakeYFinance(frames={"AAPL": load_yf_symbol("AAPL"), "SPY": spy})
     report = _ingest(tmp_lake, _yahoo(fake), ["AAPL", "SPY"])
     assert report.symbols_ok == ("AAPL",)
-    assert "volume" in report.failure_reasons["SPY"]
+    assert report.symbols_failed == ("SPY",)
+    assert "no complete price bars" in report.failure_reasons["SPY"]
+    assert "SPY" not in report.bars_dropped
     assert set(tmp_lake.read_table("prices_daily")["symbol"]) == {"AAPL"}
     assert set(tmp_lake.read_table("corporate_actions")["symbol"]) == {"AAPL"}
 

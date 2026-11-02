@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 945 items / 934 deselected / 11 selected
+
+tests/unit/data/events/test_events_live.py::test_live_aapl_earnings_events PASSED [  9%]
+tests/unit/data/events/test_events_live.py::test_live_fred_release_dates PASSED [ 18%]
+tests/unit/data/events/test_events_live.py::test_live_yahoo_calendar PASSED [ 27%]
+tests/unit/data/fundamentals/test_fundamentals_live.py::test_live_edgar_aapl PASSED [ 36%]
+tests/unit/data/macro/test_macro_live.py::test_live_fred_cpi PASSED      [ 45%]
+tests/unit/data/news/test_news_live.py::test_live_alpaca_news PASSED     [ 54%]
+tests/unit/data/news/test_news_live.py::test_live_yahoo_news PASSED      [ 63%]
+tests/unit/data/sentiment/test_sentiment_live.py::test_live_download_lm_lexicon PASSED [ 72%]
+tests/unit/data/test_price_live.py::test_yfinance_live_smoke PASSED      [ 81%]
+tests/unit/data/test_price_live.py::test_alpaca_live_smoke PASSED        [ 90%]
+tests/unit/data/test_universe.py::test_live_wikipedia_pages_parse PASSED [100%]
+
+================ 11 passed, 934 deselected in 82.63s (0:01:22) =================

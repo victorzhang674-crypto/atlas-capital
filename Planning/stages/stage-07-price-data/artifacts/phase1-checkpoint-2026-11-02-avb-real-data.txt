@@ -1,0 +1,37 @@
+# scratch lake, Alpaca keys loaded: ATLAS__DATA__LAKE_PATH=$TMPDIR/p1/avb-lake uv run atlas data sync --from 2015-01-01 --datasets prices --symbols AVB
+prices           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1 0:00:12
+Run 01M6EX9ZY19YVEKZJB6T1P9H99: log and audit trail in /tmp/claude-501/p1/avb-lake/runs/01M6EX9ZY19YVEKZJB6T1P9H99
+                   Sync summary (sync 2015-01-01 .. 2026-11-02)                    
+┏━━━━━━━━┳━━━━━━┳━━━━━━━━━┳━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━┳━━━━━━┓
+┃ step   ┃ keys ┃ skipped ┃ ok ┃ empty ┃ failed ┃  rows ┃ chunks ┃ seconds ┃ note ┃
+┡━━━━━━━━╇━━━━━━╇━━━━━━━━━╇━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━┩
+│ prices │    1 │       0 │  1 │     0 │      0 │ 1,560 │      1 │    12.3 │      │
+└────────┴──────┴─────────┴────┴───────┴────────┴───────┴────────┴─────────┴──────┘
+exit 0
+{"event": "prices.fallback_used", "level": "info", "logger": "atlas.data.providers.fallback", "mode": "dev", "run_id": "01M6EX9ZY19YVEKZJB6T1P9H99", "stage": "data.sync", "symbols": ["AVB"], "timestamp": "2026-11-02T19:55:55.884065Z", "vendor": "alpaca"}
+{"action_rows": 42, "bars_dropped": 0, "end": "2026-10-30", "event": "prices.ingest", "level": "info", "logger": "atlas.data.prices", "mismatches": 0, "mode": "dev", "rows": 1518, "run_id": "01M6EX9ZY19YVEKZJB6T1P9H99", "stage": "data.sync", "start": "2015-01-01", "symbols_failed": 0, "symbols_ok": 1, "timestamp": "2026-11-02T19:55:56.990792Z", "vendor": "fallback"}
+# first try without the keys (Yahoo only):
+yfinance: $AVB: possibly delisted; no price data found  (1d 2015-01-01 -> 2026-10-31); prices.symbol_failed reason='no price data returned'
+# direct yf.download(['AVB'], 2015-01-01 and 2024-01-01 -> 2026-11-01): (0, 6) both
+# scratch lake vs the main lake's membership (read-only)
+┌────────────┬────────────┬──────────────┬───────────────────┐
+│ min(date)  │ max(date)  │ count_star() │ any_value(vendor) │
+│    date    │    date    │    int64     │      varchar      │
+├────────────┼────────────┼──────────────┼───────────────────┤
+│ 2020-07-27 │ 2026-08-14 │         1518 │ alpaca            │
+└────────────┴────────────┴──────────────┴───────────────────┘
+
+┌──────────┬─────────┬────────────┬────────────┐
+│ index_id │ symbol  │ start_date │  end_date  │
+│ varchar  │ varchar │    date    │    date    │
+├──────────┼─────────┼────────────┼────────────┤
+│ SP500    │ AVB     │ 2007-01-10 │ 2026-08-18 │
+└──────────┴─────────┴────────────┴────────────┘
+
+┌─────────┬───────────────────────┬──────────────────┬─────────────────┐
+│ symbol  │         name          │ first_trade_date │ last_trade_date │
+│ varchar │        varchar        │       date       │      date       │
+├─────────┼───────────────────────┼──────────────────┼─────────────────┤
+│ AVB     │ AvalonBay Communities │ NULL             │ NULL            │
+└─────────┴───────────────────────┴──────────────────┴─────────────────┘
+
