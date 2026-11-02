@@ -1,5 +1,6 @@
 """The default pytest run never reaches live services, real LLMs or slow integration tests."""
 
+import re
 import tomllib
 from pathlib import Path
 from typing import Any
@@ -45,7 +46,12 @@ def test_ci_runs_the_full_check_offline(repo_root: Path) -> None:
     # tests, from the lock file, and needs no secrets: live/llm tests stay deselected.
     text = (repo_root / ".github" / "workflows" / "ci.yml").read_text()
     workflow = yaml.safe_load(text)
-    runs = [step.get("run", "") for job in workflow["jobs"].values() for step in job["steps"]]
+    steps = [step for job in workflow["jobs"].values() for step in job["steps"]]
+    runs = [step.get("run", "") for step in steps]
     assert "uv sync --locked --group dev" in runs
     assert runs.index("make check") < runs.index("make test-integration")
     assert "secrets." not in text
+    # Full release tags: some actions (astral-sh/setup-uv) publish no moving major tag, and the
+    # first CI run failed on `@v10` (Phase 0 checkpoint).
+    for ref in [step["uses"] for step in steps if "uses" in step]:
+        assert re.fullmatch(r"[\w.-]+/[\w.-]+@v\d+\.\d+\.\d+", ref), ref

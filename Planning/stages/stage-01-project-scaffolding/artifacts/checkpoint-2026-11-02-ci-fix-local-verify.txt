@@ -1,0 +1,24 @@
+# CI fix: full action tags (Stage 01) · 2026-11-02 13:46 EST
+## first CI run 41502934312 on 1c841d4: failure in 'Set up job' — Unable to resolve action `astral-sh/setup-uv@v10`, unable to find version `v10` (log: checkpoint-2026-11-02-ci-run-1-failed.txt)
+## stricter test against the unpinned workflow
+        # first CI run failed on `@v10` (Phase 0 checkpoint).
+E           AssertionError: actions/checkout@v7
+E           assert None
+E            +  where None = <function fullmatch at 0x105b08180>('[\\w.-]+/[\\w.-]+@v\\d+\\.\\d+\\.\\d+', 'actions/checkout@v7')
+E            +    where <function fullmatch at 0x105b08180> = re.fullmatch
+FAILED tests/unit/test_toolchain.py::test_ci_runs_the_full_check_offline - As...
+1 failed, 3 passed in 0.36s
+
+$ uv sync --locked --group dev
+Resolved 80 packages in 16ms
+Checked 79 packages in 16ms
+exit=0
+$ make check
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.76 s (limit 20 s)
+2118 passed, 12 deselected in 35.83s
+ - ... skipped remainder
+exit=0
+$ make test-integration
+uv run pytest -m integration -q
+1 passed, 2129 deselected in 2.72s
+exit=0

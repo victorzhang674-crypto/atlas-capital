@@ -1,0 +1,49 @@
+check	Set up job	﻿2026-11-02T18:41:24.1518410Z Current runner version: '2.338.2'
+check	Set up job	2026-11-02T18:41:24.1552407Z ##[group]Runner Image Provisioner
+check	Set up job	2026-11-02T18:41:24.1553523Z Hosted Compute Agent
+check	Set up job	2026-11-02T18:41:24.1554458Z Version: 20261021.618
+check	Set up job	2026-11-02T18:41:24.1555309Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+check	Set up job	2026-11-02T18:41:24.1556514Z Build Date: 2026-10-21T00:45:21Z
+check	Set up job	2026-11-02T18:41:24.1557624Z Worker ID: {a603f630-e374-4fac-9ddf-d3f8a75d2c51}
+check	Set up job	2026-11-02T18:41:24.1558600Z Region: centralus
+check	Set up job	2026-11-02T18:41:24.1559455Z Cloud: Azure
+check	Set up job	2026-11-02T18:41:24.1560194Z ##[endgroup]
+check	Set up job	2026-11-02T18:41:24.1562419Z ##[group]Operating System
+check	Set up job	2026-11-02T18:41:24.1563404Z Ubuntu
+check	Set up job	2026-11-02T18:41:24.1564123Z 24.04.5
+check	Set up job	2026-11-02T18:41:24.1564909Z LTS
+check	Set up job	2026-11-02T18:41:24.1565649Z ##[endgroup]
+check	Set up job	2026-11-02T18:41:24.1566698Z ##[group]Runner Image
+check	Set up job	2026-11-02T18:41:24.1567661Z Image: ubuntu-24.04
+check	Set up job	2026-11-02T18:41:24.1568450Z Version: 20261025.353.1
+check	Set up job	2026-11-02T18:41:24.1570088Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+check	Set up job	2026-11-02T18:41:24.1572627Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+check	Set up job	2026-11-02T18:41:24.1574248Z ##[endgroup]
+check	Set up job	2026-11-02T18:41:24.1575759Z ##[group]GITHUB_TOKEN Permissions
+check	Set up job	2026-11-02T18:41:24.1578724Z Contents: read
+check	Set up job	2026-11-02T18:41:24.1579583Z Metadata: read
+check	Set up job	2026-11-02T18:41:24.1580567Z ##[endgroup]
+check	Set up job	2026-11-02T18:41:24.1583306Z Secret source: Actions
+check	Set up job	2026-11-02T18:41:24.1584772Z Cache mode: write
+check	Set up job	2026-11-02T18:41:24.1585782Z Prepare workflow directory
+check	Set up job	2026-11-02T18:41:24.2035506Z Prepare all required actions
+check	Set up job	2026-11-02T18:41:24.2095150Z Getting action download info
+check	Set up job	2026-11-02T18:41:24.5506777Z ##[error]Unable to resolve action `astral-sh/setup-uv@v10`, unable to find version `v10`
+
+X main CI · 41502934312
+Triggered via push about 4 minutes ago
+
+JOBS
+X check in 2s (ID 125474784572)
+  X Set up job
+
+ANNOTATIONS
+X Unable to resolve action `astral-sh/setup-uv@v10`, unable to find version `v10`
+check: .github#31
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+To see what failed, try: gh run view 41502934312 --log-failed
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41502934312
