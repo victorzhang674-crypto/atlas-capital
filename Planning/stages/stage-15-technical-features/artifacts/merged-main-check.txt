@@ -1,0 +1,234 @@
+# Stage 15: fast-forward + verification on merged main · 2026-11-02 04:11 EST
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/stage-15-plan-implement-faa041
+Updating 4edc709..7dea6a4
+Fast-forward
+ Planning/PROGRESS.md                               |  46 +-
+ .../artifacts/coverage.txt                         |  12 +
+ .../artifacts/docstrings.txt                       |   2 +
+ .../artifacts/gate-check-pytest.txt                |  47 +
+ .../artifacts/make-check.txt                       |  61 ++
+ .../artifacts/merge-main-into-branch-check.txt     |   9 +
+ .../artifacts/mutate.py                            |  43 +
+ .../artifacts/mutation-checks.txt                  |  17 +
+ .../stage-15-technical-features/artifacts/mypy.txt |   1 +
+ .../artifacts/performance.txt                      |   4 +
+ .../artifacts/pytest.txt                           |  54 ++
+ .../artifacts/ruff-check.txt                       |   1 +
+ .../artifacts/ruff-format.txt                      |   1 +
+ .../artifacts/stage-tests-W-error.txt              |   2 +
+ .../artifacts/verify-features.txt                  |   8 +
+ .../stages/stage-15-technical-features/plan.md     | 123 +++
+ .../stage-15-technical-features/verification.md    |  30 +
+ .../stages/stage-15-technical-features/worklog.md  |  59 ++
+ config/fund.yaml                                   |  13 +
+ src/atlas/core/config.py                           |  47 +-
+ src/atlas/data/view.py                             |  21 +-
+ src/atlas/quant/features/__init__.py               |  41 +
+ src/atlas/quant/features/registry.py               | 374 ++++++++
+ src/atlas/quant/features/snapshot.py               | 169 ++++
+ src/atlas/quant/features/technical.py              | 382 ++++++++
+ tests/conftest.py                                  |   8 +
+ tests/fixtures/features/expected.csv               | 121 +++
+ tests/fixtures/features/ohlcv.csv                  | 990 +++++++++++++++++++++
+ tests/tiny_universe.py                             | 179 ++++
+ tests/unit/core/test_config.py                     |  36 +
+ tests/unit/data/test_view_pit.py                   |  26 +-
+ tests/unit/quant/features/feature_reference.py     | 406 +++++++++
+ tests/unit/quant/features/test_feature_compute.py  | 291 ++++++
+ .../unit/quant/features/test_feature_lookahead.py  | 153 ++++
+ .../quant/features/test_feature_performance.py     |  75 ++
+ .../unit/quant/features/test_feature_reference.py  |  70 ++
+ tests/unit/quant/features/test_feature_registry.py |  94 ++
+ tests/unit/quant/features/test_feature_snapshot.py | 196 ++++
+ .../unit/quant/features/test_technical_features.py | 277 ++++++
+ tests/unit/quant/features/test_tiny_universe.py    |  48 +
+ 40 files changed, 4527 insertions(+), 10 deletions(-)
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/coverage.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/docstrings.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/gate-check-pytest.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/merge-main-into-branch-check.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/mutate.py
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/mutation-checks.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/mypy.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/performance.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/pytest.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/ruff-check.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/ruff-format.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/stage-tests-W-error.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/artifacts/verify-features.txt
+ create mode 100644 Planning/stages/stage-15-technical-features/plan.md
+ create mode 100644 Planning/stages/stage-15-technical-features/verification.md
+ create mode 100644 Planning/stages/stage-15-technical-features/worklog.md
+ create mode 100644 src/atlas/quant/features/__init__.py
+ create mode 100644 src/atlas/quant/features/registry.py
+ create mode 100644 src/atlas/quant/features/snapshot.py
+ create mode 100644 src/atlas/quant/features/technical.py
+ create mode 100644 tests/fixtures/features/expected.csv
+ create mode 100644 tests/fixtures/features/ohlcv.csv
+ create mode 100644 tests/tiny_universe.py
+ create mode 100644 tests/unit/quant/features/feature_reference.py
+ create mode 100644 tests/unit/quant/features/test_feature_compute.py
+ create mode 100644 tests/unit/quant/features/test_feature_lookahead.py
+ create mode 100644 tests/unit/quant/features/test_feature_performance.py
+ create mode 100644 tests/unit/quant/features/test_feature_reference.py
+ create mode 100644 tests/unit/quant/features/test_feature_registry.py
+ create mode 100644 tests/unit/quant/features/test_feature_snapshot.py
+ create mode 100644 tests/unit/quant/features/test_technical_features.py
+ create mode 100644 tests/unit/quant/features/test_tiny_universe.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD 7dea6a4
+
+$ uv sync --group dev
+Resolved 78 packages in 3ms
+Checked 77 packages in 9ms
+exit=0
+
+$ uv run pytest -q
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+..................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.62 s (limit 20 s)
+...................... [ 95%]
+........................................................................ [ 99%]
+................                                                         [100%]
+2032 passed, 11 deselected in 32.46s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "row_type"
+ - leaked function "_name_scope"
+ - leaked function "__repr__"
+ - leaked function "get_profiling_information"
+ - leaked function "_register_map"
+ - leaked function "_register_values"
+ - leaked function "__init__"
+ - leaked function "duplicate"
+ - leaked function "_own_sources"
+ - leaked function "filesystem_is_registered"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ uv run pytest tests/unit/quant/features -q
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 63%]
+........................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.49 s (limit 20 s)
+................................ [ 84%]
+...................................................                      [100%]
+339 passed in 6.86s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+205 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 53%]
+........................................................................ [ 56%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+..................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.78 s (limit 20 s)
+...................... [ 95%]
+........................................................................ [ 99%]
+................                                                         [100%]
+2032 passed, 11 deselected in 33.72s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "append"
+ - leaked function "__hash__"
+ - leaked function "union_type"
+ - leaked function "_name_scope"
+ - leaked function "torch"
+ - leaked function "__getattr__"
+ - leaked function "register_filesystem"
+ - leaked function "_table_kind"
+ - leaked function "_bind"
+ - leaked function "array_type"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
