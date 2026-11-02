@@ -278,7 +278,9 @@ def test_default_maps_are_frozen() -> None:
     assert isinstance(decision.metrics, FrozenDict)
 
 
-@pytest.mark.parametrize("cls", [InvestmentThesis, Order, Fill, Prediction, Lesson, LedgerEntry])
+@pytest.mark.parametrize(
+    "cls", [InvestmentThesis, PodProposal, Order, Fill, Prediction, Lesson, LedgerEntry]
+)
 def test_roundtrip_missing_id_fails(cls: type[AtlasModel]) -> None:
     sample = next(s for s in SAMPLES if type(s) is cls)
     dumped = sample.model_dump(mode="json")

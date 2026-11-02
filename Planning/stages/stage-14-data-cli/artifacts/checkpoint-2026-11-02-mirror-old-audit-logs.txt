@@ -1,0 +1,25 @@
+# main checkout HEAD ccf61cb; 2026-11-02 13:28 EST
+$ uv run python checkpoint-2026-11-02-mirror-old-audit-logs.py
+lake /Users/zzjsmacbookair/Projects/atlas-capital/data: 3 audit logs
+01M6C79AK6WV1VM3YDQDMN7D57: chain valid True, inserted 12
+01M6CD1707R4H5J9DV2JWZA8ER: chain valid True, inserted 5
+01M6CVMG90746ST05HSHZTQ1PH: chain valid True, inserted 13
+                    run_id  events                      first_ts  last_seq
+01M6C79AK6WV1VM3YDQDMN7D57      12 2026-11-01 18:52:25.063+00:00        11
+01M6CD1707R4H5J9DV2JWZA8ER       5 2026-11-01 20:32:50.696+00:00         4
+01M6CVMG90746ST05HSHZTQ1PH      13 2026-11-02 00:48:02.849+00:00        12
+total events 30
+exit=0
+$ (again: idempotent)
+lake /Users/zzjsmacbookair/Projects/atlas-capital/data: 3 audit logs
+01M6C79AK6WV1VM3YDQDMN7D57: chain valid True, inserted 0
+01M6CD1707R4H5J9DV2JWZA8ER: chain valid True, inserted 0
+01M6CVMG90746ST05HSHZTQ1PH: chain valid True, inserted 0
+                    run_id  events                      first_ts  last_seq
+01M6C79AK6WV1VM3YDQDMN7D57      12 2026-11-01 18:52:25.063+00:00        11
+01M6CD1707R4H5J9DV2JWZA8ER       5 2026-11-01 20:32:50.696+00:00         4
+01M6CVMG90746ST05HSHZTQ1PH      13 2026-11-02 00:48:02.849+00:00        12
+total events 30
+exit=0
+$ git status --short
+exit=0

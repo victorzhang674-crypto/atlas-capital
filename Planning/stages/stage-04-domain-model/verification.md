@@ -53,3 +53,11 @@ Owner-requested follow-up (see worklog, 2026-11-02): reproducible ids through `u
 - On merged `main` (`d846205`, fast-forward from `e458f2f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout; this run also covers a docstring-only wording fix to `audit.py` made after the working-tree runs): `uv run pytest -q` → 2108 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 205 files already formatted; `mypy src/atlas` → Success (88 files); the three briefs' Verify commands → 788 passed (03), 275 passed + mypy core Success (04), 136 passed (06); 1M-row upsert → 1.12 s PASSED; `make check` → exit 0 (2108 passed); `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 14 commands exit 0 · raw: [stage-03 artifacts/checkpoint-2026-11-02-tier3-merged-main-check.txt](../stage-03-logging-audit/artifacts/checkpoint-2026-11-02-tier3-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (test gaps) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): `PodProposal` added to the missing-id round trip; NaN/inf Decimal test checks the `finite_number` error. Re-run in this chat on the final working tree (base commit `ccf61cb`):
+- Brief's Verify `uv run pytest tests/unit/core/types -q && uv run mypy src/atlas/core` → 276 passed; Success: no issues found in 23 source files · raw: [artifacts/checkpoint-2026-11-02-followup-verify.txt](artifacts/checkpoint-2026-11-02-followup-verify.txt)
+- The old tests miss both mutants that the new tests catch · raw: [artifacts/checkpoint-2026-11-02-followup-red-before-fix.txt](artifacts/checkpoint-2026-11-02-followup-red-before-fix.txt)
+- `uv run pytest -q` → 2117 passed, 0 failed, 12 deselected, exit 0; `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 206 files already formatted; `uv run mypy src/atlas` → Success: no issues found in 88 source files; `make check` → exit 0 · raw: [artifacts/checkpoint-2026-11-02-followup-verify.txt](artifacts/checkpoint-2026-11-02-followup-verify.txt)
+
+**Result:** ALL CRITERIA VERIFIED

@@ -157,12 +157,17 @@ def test_quantities_are_decimal_exact() -> None:
 
 @pytest.mark.parametrize("bad", ["NaN", "Infinity", "-Infinity", "sNaN"])
 def test_decimal_fields_reject_nan(bad: str) -> None:
-    with pytest.raises(ValidationError):
-        _order(quantity=Decimal(bad))
-    with pytest.raises(ValidationError):
-        _fill(price=Decimal(bad))
-    with pytest.raises(ValidationError):
-        Position(symbol="AAPL", quantity=Decimal(bad), avg_cost=Decimal("1"))
+    # Check the error type: on `Order.quantity` and `Fill.price` (`gt=0`) a NaN would also
+    # fail the bound, which would hide a lost `allow_inf_nan=False`.
+    builds = [
+        lambda: _order(quantity=Decimal(bad)),
+        lambda: _fill(price=Decimal(bad)),
+        lambda: Position(symbol="AAPL", quantity=Decimal(bad), avg_cost=Decimal("1")),
+    ]
+    for build in builds:
+        with pytest.raises(ValidationError) as excinfo:
+            build()
+        assert {error["type"] for error in excinfo.value.errors()} == {"finite_number"}
 
 
 def test_fill_notional() -> None:

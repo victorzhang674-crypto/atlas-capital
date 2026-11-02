@@ -1,0 +1,22 @@
+# Phase 0 checkpoint follow-up (Stage 04 test gaps): old vs new tests against two broken copies of HEAD ccf61cb's src · 2026-11-02 13:27 EST
+# mutant 1: Order.quantity and Fill.quantity declared `Annotated[Decimal, Field(gt=0, allow_inf_nan=True)]` (NaN/inf allowed there; only `gt=0` left)
+# mutant 2: PodProposal.id gets a default_factory (a reload without an id would mint a new one)
+
+## m1, old tests (as at HEAD)
+$ uv run pytest test_types_trading_old.py::test_decimal_fields_reject_nan test_types_roundtrip_old.py::test_roundtrip_missing_id_fails -q
+FAILED ::test_decimal_fields_reject_nan[Infinity] - Failed: DID NOT RAISE Val...
+1 failed, 9 passed in 0.43s
+## m1, new tests
+$ uv run pytest tests/unit/core/types/test_types_trading.py::test_decimal_fields_reject_nan tests/unit/core/types/test_types_roundtrip.py::test_roundtrip_missing_id_fails -q
+FAILED tests/unit/core/types/test_types_trading.py::test_decimal_fields_reject_nan[NaN]
+FAILED tests/unit/core/types/test_types_trading.py::test_decimal_fields_reject_nan[Infinity]
+FAILED tests/unit/core/types/test_types_trading.py::test_decimal_fields_reject_nan[-Infinity]
+FAILED tests/unit/core/types/test_types_trading.py::test_decimal_fields_reject_nan[sNaN]
+4 failed, 7 passed in 0.40s
+## m2, old tests (as at HEAD)
+$ uv run pytest test_types_trading_old.py::test_decimal_fields_reject_nan test_types_roundtrip_old.py::test_roundtrip_missing_id_fails -q
+10 passed in 0.39s
+## m2, new tests
+$ uv run pytest tests/unit/core/types/test_types_trading.py::test_decimal_fields_reject_nan tests/unit/core/types/test_types_roundtrip.py::test_roundtrip_missing_id_fails -q
+FAILED tests/unit/core/types/test_types_roundtrip.py::test_roundtrip_missing_id_fails[PodProposal]
+1 failed, 10 passed in 0.39s

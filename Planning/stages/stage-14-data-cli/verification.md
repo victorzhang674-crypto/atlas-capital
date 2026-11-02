@@ -48,3 +48,10 @@ Owner-requested follow-up (see worklog, 2026-11-02): every writing `atlas data` 
 - On merged `main` (`d9cffb6`, fast-forward from `473629f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv run pytest -q` → 1678 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 191 files already formatted; `mypy src/atlas` → Success (84 files); 1M-row upsert → 0.73 s PASSED; `make check` → exit 0; `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 11 commands exit 0 · raw: [stage-06 artifacts/checkpoint-2026-11-02-merged-main-check.txt](../stage-06-storage/artifacts/checkpoint-2026-11-02-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (audit backfill) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): the 3 runs logged before the Tier 1 mirror existed are now in DuckDB `audit_events`. No code changed, so the live Verify was not re-run.
+- One-time mirror in the main checkout: 3 chains valid; 30 events inserted (12, 5, 13); a second run inserted 0; checkout clean · raw: [artifacts/checkpoint-2026-11-02-mirror-old-audit-logs.txt](artifacts/checkpoint-2026-11-02-mirror-old-audit-logs.txt) (script: same name, `.py`)
+- `uv run pytest -q` → 2117 passed, 0 failed, 12 deselected, exit 0; `make check` → exit 0 · raw: [artifacts/checkpoint-2026-11-02-followup-verify.txt](artifacts/checkpoint-2026-11-02-followup-verify.txt)
+
+**Result:** ALL CRITERIA VERIFIED
