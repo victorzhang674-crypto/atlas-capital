@@ -56,3 +56,9 @@ Owner-requested follow-up (see worklog, 2026-11-02): the 3 runs logged before th
 - On merged `main` (`26eb29e`, fast-forward from `ccf61cb`; run in the owner's Terminal panel): `uv run pytest -q` → 2117 passed; Stage 04's Verify → 276 passed, mypy core Success (23 files); `make check` → exit 0; `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after · raw: [stage-04 artifacts/checkpoint-2026-11-02-followup-merged-main-check.txt](../stage-04-domain-model/artifacts/checkpoint-2026-11-02-followup-merged-main-check.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (CI help test) — 2026-11-02
+- `test_help_lists_commands` failed under `GITHUB_ACTIONS=true` before the fix (CI run 2 and locally) and passes now; full suite 2118 passed under `GITHUB_ACTIONS=true` and `FORCE_COLOR=1`; `make check` exit 0 · raw: [artifacts/checkpoint-2026-11-02-ci-help-test.txt](artifacts/checkpoint-2026-11-02-ci-help-test.txt)
+- CI run 3 `41505703051` on `f514eb2`: success · raw: [stage-01 artifacts/checkpoint-2026-11-02-ci-run-3-passed.txt](../stage-01-project-scaffolding/artifacts/checkpoint-2026-11-02-ci-run-3-passed.txt)
+
+**Result:** ALL CRITERIA VERIFIED

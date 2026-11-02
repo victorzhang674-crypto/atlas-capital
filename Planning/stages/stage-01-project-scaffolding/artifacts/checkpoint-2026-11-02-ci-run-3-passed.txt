@@ -1,0 +1,35 @@
+
+✓ main CI · 41505703051
+Triggered via push about 1 minute ago
+
+JOBS
+✓ check in 1m29s (ID 125484356205)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=125484356205
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41505703051
+--- job log (ubuntu-24.04 runner), result lines only
+Run uv sync --locked --group dev: Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+Run uv sync --locked --group dev: Resolved 80 packages in 0.71ms
+Run uv sync --locked --group dev: Installed 79 packages in 83ms
+Run uv sync --locked --group dev:  + duckdb==2.0.0
+Run uv sync --locked --group dev:  + hypothesis==6.170.11
+Run uv sync --locked --group dev:  + mypy==2.4.0
+Run uv sync --locked --group dev:  + pyarrow==26.0.0
+Run uv sync --locked --group dev:  + pytest==9.1.1
+Run uv sync --locked --group dev:  + ruff==0.17.2
+Run make check: uv run ruff check .
+Run make check: All checks passed!
+Run make check: uv run ruff format --check .
+Run make check: 206 files already formatted
+Run make check: uv run mypy src/atlas
+Run make check: Success: no issues found in 88 source files
+Run make check: uv run pytest -q
+Run make check: 2118 passed, 12 deselected in 55.28s
+Run make check: nanobind: leaked 27 instances!
+Run make test-integration: uv run pytest -m integration -q
+Run make test-integration: 1 passed, 2129 deselected in 0.81s

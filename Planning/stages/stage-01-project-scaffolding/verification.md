@@ -34,3 +34,13 @@ Owner-requested follow-up (see worklog, 2026-11-02): pre-commit hooks run the lo
 - On merged `main` (`be247fb`, fast-forward from `81ada1e`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv lock --check` exit 0; `uv run pytest -q` → 2116 passed; `uv run pytest -m integration -q` → 1 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 206 files already formatted; `mypy src/atlas` → Success (88 files); the briefs' Verify commands → 207 passed (02), 136 passed (06); `uv run pre-commit run --all-files` → all four hooks Passed; `make check` → exit 0 (2116 passed); `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all commands exit 0 · raw: [stage-01 artifacts/checkpoint-2026-11-02-tier4-merged-main-check.txt](artifacts/checkpoint-2026-11-02-tier4-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 0 checkpoint follow-up (CI) — 2026-11-02
+Owner-requested follow-up (see worklog, 2026-11-02): private GitHub remote `victorzhang674-crypto/atlas-capital`; GitHub Actions CI runs `make check` and `make test-integration`.
+- History scanned before the first push: no secrets, no `.env`, no data (worklog)
+- New CI test failed without the workflow, then failed on `@v7`/`@v10` tags, and passes now; local run of the CI steps green · raw: [artifacts/checkpoint-2026-11-02-ci-local-verify.txt](artifacts/checkpoint-2026-11-02-ci-local-verify.txt), [artifacts/checkpoint-2026-11-02-ci-fix-local-verify.txt](artifacts/checkpoint-2026-11-02-ci-fix-local-verify.txt)
+- CI runs 1 and 2 failed (action tag; one help-text test) and were fixed · raw: [artifacts/checkpoint-2026-11-02-ci-run-1-failed.txt](artifacts/checkpoint-2026-11-02-ci-run-1-failed.txt), [artifacts/checkpoint-2026-11-02-ci-run-2-failed.txt](artifacts/checkpoint-2026-11-02-ci-run-2-failed.txt)
+- CI run 3 `41505703051` on `f514eb2` (= `main`): success — ruff clean, 206 files formatted, mypy Success (88 files), 2118 passed, 12 deselected; integration 1 passed · raw: [artifacts/checkpoint-2026-11-02-ci-run-3-passed.txt](artifacts/checkpoint-2026-11-02-ci-run-3-passed.txt)
+- Local: `make check` → exit 0 (2118 passed) under plain, `GITHUB_ACTIONS=true` and `FORCE_COLOR=1` environments · raw: [stage-14 artifacts/checkpoint-2026-11-02-ci-help-test.txt](../stage-14-data-cli/artifacts/checkpoint-2026-11-02-ci-help-test.txt)
+
+**Result:** ALL CRITERIA VERIFIED
