@@ -1,0 +1,53 @@
+# purge of reused tickers · 2026-11-03 01:04 EST · lake /Users/zzjsmacbookair/Projects/atlas-capital/data
+
+$ uv run python /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-03-purge-reused-tickers.py 
+AA: right CIK 4281, wrong 1675149: facts 1912, sec events 44 of 102, reactions 44, yahoo events 2
+ADT: right CIK 1546640, wrong 1703056: facts 1617, sec events 40 of 46, reactions 40, yahoo events 2
+NE: right CIK 1458891, wrong 1895262: facts 700, sec events 18 of 52, reactions 18, yahoo events 2
+POM: right CIK 1135971, wrong 1877971: facts 65, sec events 0 of 53, reactions 0, yahoo events 0
+SE: right CIK 1373835, wrong 1703399: facts 492, sec events 0 of 10, reactions 0, yahoo events 2
+TE: right CIK 350563, wrong 1992243: facts 567, sec events 14 of 23, reactions 14, yahoo events 2
+total rows: 5595
+dry run: nothing deleted (pass --apply)
+exit=0
+
+$ uv run python /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-03-purge-reused-tickers.py --apply
+AA: right CIK 4281, wrong 1675149: facts 1912, sec events 44 of 102, reactions 44, yahoo events 2
+ADT: right CIK 1546640, wrong 1703056: facts 1617, sec events 40 of 46, reactions 40, yahoo events 2
+NE: right CIK 1458891, wrong 1895262: facts 700, sec events 18 of 52, reactions 18, yahoo events 2
+POM: right CIK 1135971, wrong 1877971: facts 65, sec events 0 of 53, reactions 0, yahoo events 0
+SE: right CIK 1373835, wrong 1703399: facts 492, sec events 0 of 10, reactions 0, yahoo events 2
+TE: right CIK 350563, wrong 1992243: facts 567, sec events 14 of 23, reactions 14, yahoo events 2
+total rows: 5595
+backup: /Users/zzjsmacbookair/Projects/atlas-capital/data/cache/backup-phase1-purge-2026-11-03
+ok AA fundamentals_facts: deleted 1912 (expected 1912)
+ok AA events: deleted 44 (expected 44)
+ok AA earnings_reactions: deleted 44 (expected 44)
+ok AA events: deleted 2 (expected 2)
+ok ADT fundamentals_facts: deleted 1617 (expected 1617)
+ok ADT events: deleted 40 (expected 40)
+ok ADT earnings_reactions: deleted 40 (expected 40)
+ok ADT events: deleted 2 (expected 2)
+ok NE fundamentals_facts: deleted 700 (expected 700)
+ok NE events: deleted 18 (expected 18)
+ok NE earnings_reactions: deleted 18 (expected 18)
+ok NE events: deleted 2 (expected 2)
+ok POM fundamentals_facts: deleted 65 (expected 65)
+ok SE fundamentals_facts: deleted 492 (expected 492)
+ok SE events: deleted 2 (expected 2)
+ok TE fundamentals_facts: deleted 567 (expected 567)
+ok TE events: deleted 14 (expected 14)
+ok TE earnings_reactions: deleted 14 (expected 14)
+ok TE events: deleted 2 (expected 2)
+exit=0
+
+$ uv run python /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-03-purge-reused-tickers.py 
+AA: right CIK 4281, wrong 1675149: facts 0, sec events 0 of 58, reactions 0, yahoo events 0
+ADT: right CIK 1546640, wrong 1703056: facts 0, sec events 0 of 6, reactions 0, yahoo events 0
+NE: right CIK 1458891, wrong 1895262: facts 0, sec events 0 of 34, reactions 0, yahoo events 0
+POM: right CIK 1135971, wrong 1877971: facts 0, sec events 0 of 53, reactions 0, yahoo events 0
+SE: right CIK 1373835, wrong 1703399: facts 0, sec events 0 of 10, reactions 0, yahoo events 0
+TE: right CIK 350563, wrong 1992243: facts 0, sec events 0 of 9, reactions 0, yahoo events 0
+total rows: 0
+dry run: nothing deleted (pass --apply)
+exit=0

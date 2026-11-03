@@ -48,3 +48,9 @@ Filled in only with output from commands actually run in this stage's chat (Proj
 - `uv run pytest tests/unit/data/fundamentals -q` (brief's Verify) → 142 passed, 1 deselected; `make check` → exit 0 · raw: [stage-13 artifacts/phase1-checkpoint-2026-11-02-panel-cache-verify.txt](../stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-panel-cache-verify.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (purge of reused tickers) — 2026-11-03
+- Owner-approved purge on the main lake: 5 595 rows deleted (5 353 facts, 116 SEC events, 116 reactions, 10 Yahoo rows), each count as planned; backup in `data/cache/backup-phase1-purge-2026-11-03/` · raw: [artifacts/phase1-checkpoint-2026-11-03-purge-reused-tickers.txt](artifacts/phase1-checkpoint-2026-11-03-purge-reused-tickers.txt)
+- `atlas data status` after: facts 2 086 094 (= 2 091 447 − 5 353), events 34 066, reactions 29 936; coverage unchanged · raw: [artifacts/phase1-checkpoint-2026-11-03-purge-status.txt](artifacts/phase1-checkpoint-2026-11-03-purge-status.txt)
+
+**Result:** ALL CRITERIA VERIFIED
