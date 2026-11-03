@@ -54,3 +54,4 @@ Filled in only with output from commands actually run in this stage's chat (Proj
 - `atlas data status` after: facts 2 086 094 (= 2 091 447 − 5 353), events 34 066, reactions 29 936; coverage unchanged · raw: [artifacts/phase1-checkpoint-2026-11-03-purge-status.txt](artifacts/phase1-checkpoint-2026-11-03-purge-status.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+- BBBY's 2 Yahoo scheduled rows (Beyond Inc's date) deleted with the owner's approval; `events` 34 064 after · raw: [artifacts/phase1-checkpoint-2026-11-03-purge-bbby-yahoo.txt](artifacts/phase1-checkpoint-2026-11-03-purge-bbby-yahoo.txt)

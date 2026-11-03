@@ -1,0 +1,23 @@
+# BBBY Yahoo rows purge 2026-11-03 01:11 EST
+$ uv run python Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-03-purge-bbby-yahoo.py 
+  symbol event_type  event_date               event_id                     available_at
+0   BBBY   earnings  2026-11-05  yahoo-BBBY-2026-11-05 2026-11-01 20:09:10.303214+00:00
+1   BBBY   earnings  2026-11-05  yahoo-BBBY-2026-11-05 2026-11-03 02:16:08.640794+00:00
+rows: 2
+dry run: nothing deleted (pass --apply)
+exit=0
+$ uv run python Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-03-purge-bbby-yahoo.py --apply
+  symbol event_type  event_date               event_id                     available_at
+0   BBBY   earnings  2026-11-05  yahoo-BBBY-2026-11-05 2026-11-01 20:09:10.303214+00:00
+1   BBBY   earnings  2026-11-05  yahoo-BBBY-2026-11-05 2026-11-03 02:16:08.640794+00:00
+rows: 2
+backup: /Users/zzjsmacbookair/Projects/atlas-capital/data/cache/backup-phase1-purge-bbby-2026-11-03
+ok: deleted 2 (expected 2)
+exit=0
+$ uv run python Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-03-purge-bbby-yahoo.py 
+Empty DataFrame
+Columns: [symbol, event_type, event_date, event_id, available_at]
+Index: []
+rows: 0
+dry run: nothing deleted (pass --apply)
+exit=0
