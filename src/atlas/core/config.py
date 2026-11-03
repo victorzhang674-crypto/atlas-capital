@@ -669,9 +669,11 @@ class QualityConfig(_Frozen):
 
 class ViewConfig(_Frozen):
     """`DataView` settings (Stage 13): `cache_size` is the number of results kept in the LRU
-    cache shared by a view and the views `advance` creates from it."""
+    cache shared by a view and the views `advance` creates from it. `fundamentals_cache_size`
+    is the number of (symbol, known facts) concept-value sets kept across as-of days."""
 
     cache_size: Annotated[int, Field(ge=1)] = 256
+    fundamentals_cache_size: Annotated[int, Field(ge=1)] = 5000
 
 
 class SyncWorkers(_Frozen):

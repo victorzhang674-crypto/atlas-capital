@@ -11,6 +11,12 @@ A view is read-only and immutable: `advance(new_as_of)` returns a new view. Ever
 - caches its result in an LRU shared with the views `advance` creates, keyed on the cutoff,
   the lake's write generation, the method and its arguments (hits return copies).
 
+Fundamentals also keep a second LRU across as-of days (`data.view.fundamentals_cache_size`):
+a symbol's concept values (`concept_values`, the costly part) are reused while the facts it
+knows are the same (keyed on the symbol, the lake's write generation and `known_fact_count`);
+the staleness rule and the ratios are applied for each day (`assemble_detail`). Like the main
+cache, it sees writes made through this view's `Lake` object only.
+
 Units: prices in USD (raw, plus `adj_close`, our total-return adjustment with the actions known
 at `as_of`, relative to each symbol's last bar in the window); returns are simple daily total
 returns; ADV in USD and in split-adjusted shares; `prices` / `returns` / `adv` lookbacks are
@@ -38,7 +44,10 @@ from atlas.data.fundamentals import (
     FUNDAMENTALS_FACTS,
     ConceptMap,
     Fundamentals,
-    fundamentals_pit_detail,
+    assemble_detail,
+    concept_values,
+    known_fact_count,
+    known_facts,
 )
 from atlas.data.macro import Macro, MacroCatalog
 from atlas.data.news import News
@@ -172,6 +181,7 @@ class _Shared:
         self.catalog = catalog
         self.lexicon = lexicon
         self.cache = _LRU(config.data.view.cache_size)
+        self.fundamentals_cache = _LRU(config.data.view.fundamentals_cache_size)
         self.readers: dict[str, Any] = {}
 
 
@@ -488,7 +498,7 @@ class DataView:
         sym = self._one(symbol)
 
         def compute() -> pd.Series:
-            detail = guard_frame(self._fundamentals.pit_detail(sym, self._as_of), self._as_of)
+            detail = self._fundamentals_detail(sym, self._fundamentals.facts(sym))
             return pd.Series(
                 detail["value"].to_numpy(dtype="float64"), index=list(detail["metric"]), name=sym
             )
@@ -502,21 +512,17 @@ class DataView:
         wanted = self._allowed(symbols)
 
         def compute() -> pd.DataFrame:
-            lake, reader = self._shared.lake, self._fundamentals
+            lake = self._shared.lake
             if not lake.has_table(FUNDAMENTALS_FACTS.name):
                 raise DataError("fundamentals_facts is empty: run ingest_fundamentals first")
             facts = lake.read_table(
                 FUNDAMENTALS_FACTS.name, filters=[("symbol", "in", list(wanted))]
             )
+            own = dict(tuple(facts.groupby("symbol", sort=False)))
+            empty = facts.iloc[0:0]
             rows = {}
             for sym in wanted:
-                detail = fundamentals_pit_detail(
-                    facts[facts["symbol"] == sym],
-                    self._as_of,
-                    reader.concept_map,
-                    self._shared.config.data.fundamentals,
-                )
-                guard_frame(detail, self._as_of)
+                detail = self._fundamentals_detail(sym, own.get(sym, empty))
                 rows[sym] = pd.Series(
                     detail["value"].to_numpy(dtype="float64"), index=list(detail["metric"])
                 )
@@ -527,6 +533,18 @@ class DataView:
             return panel
 
         return self._cached("fundamentals_panel", (wanted,), compute)
+
+    def _fundamentals_detail(self, symbol: str, facts: pd.DataFrame) -> pd.DataFrame:
+        """`fundamentals_pit_detail` of one symbol's stored `facts` at this view's as-of, with
+        the concept values taken from the cross-day cache when the known facts are the same."""
+        shared, point = self._shared, self._as_of
+        settings = shared.config.data.fundamentals
+        concepts = self._fundamentals.concept_map
+        key = (symbol, shared.lake.generation, known_fact_count(facts, point))
+        values = shared.fundamentals_cache.get(
+            key, lambda: concept_values(known_facts(facts, point), concepts, settings)
+        )
+        return guard_frame(assemble_detail(values, point, settings), point)
 
     # --- macro ----------------------------------------------------------------------------------
 

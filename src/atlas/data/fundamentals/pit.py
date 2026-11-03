@@ -266,10 +266,21 @@ def known_facts(facts: pd.DataFrame, as_of: AsOf) -> pd.DataFrame:
     `fundamentals_period_after_filing` check reports it). The result is checked with
     `assert_no_lookahead` (`LookAheadError` if a later fact slipped through).
     """
-    possible = facts[facts["period_end"] <= facts["filed"]]
-    known = latest_filings(pit_filter(possible, as_of))
+    known = latest_filings(pit_filter(_possible(facts), as_of))
     assert_no_lookahead(known, as_of)
     return known
+
+
+def known_fact_count(facts: pd.DataFrame, as_of: AsOf) -> int:
+    """How many of `facts` `known_facts` may use at `as_of` (before keeping the latest filing
+    per period). Knowledge only grows with the cutoff, so two as-of moments with the same
+    count see the same facts: a cache key for `concept_values`."""
+    return len(pit_filter(_possible(facts), as_of))
+
+
+def _possible(facts: pd.DataFrame) -> pd.DataFrame:
+    """`facts` without the filer errors whose period ends after their own filing."""
+    return facts[(facts["period_end"] <= facts["filed"]).to_numpy(dtype=bool)]
 
 
 # --- the wide point-in-time view ---------------------------------------------------------------
@@ -348,6 +359,21 @@ def _row(metric: str, value: MetricValue | None, source: str | None = None) -> d
     }
 
 
+def concept_values(
+    known: pd.DataFrame, concept_map: ConceptMap, config: FundamentalsConfig
+) -> dict[str, MetricValue | None]:
+    """Each concept's value from `known` (one company's `known_facts`), by metric name in
+    concept-map order: a flow's TTM (`ttm`), a stock's latest balance (`latest_balance`),
+    `None` where there is none. It does not depend on the as-of day (staleness and ratios are
+    `assemble_detail`'s), so it can be reused for as long as the known facts are the same."""
+    values: dict[str, MetricValue | None] = {}
+    for concept in concept_map.values():
+        periods = resolve_concept(known, concept)
+        found = ttm(periods, config) if concept.kind == "flow" else latest_balance(periods)
+        values[_metric_name(concept)] = found
+    return values
+
+
 def fundamentals_pit_detail(
     facts: pd.DataFrame, as_of: AsOf, concept_map: ConceptMap, config: FundamentalsConfig
 ) -> pd.DataFrame:
@@ -358,14 +384,19 @@ def fundamentals_pit_detail(
     than `config.max_staleness_days` before `as_of.day` is NaN with `source="stale"`; one with
     no data is NaN with no source. A ratio row cites its latest input (`source="ratio"`).
     """
-    known = known_facts(facts, as_of)
+    values = concept_values(known_facts(facts, as_of), concept_map, config)
+    return assemble_detail(values, as_of, config)
+
+
+def assemble_detail(
+    values: Mapping[str, MetricValue | None], as_of: AsOf, config: FundamentalsConfig
+) -> pd.DataFrame:
+    """`fundamentals_pit_detail` from `concept_values`: the staleness rule at `as_of.day`, then
+    the ratios of the values that are not stale."""
     floor = as_of.day - timedelta(days=config.max_staleness_days)
     used: dict[str, MetricValue] = {}
     rows = []
-    for concept in concept_map.values():
-        periods = resolve_concept(known, concept)
-        found = ttm(periods, config) if concept.kind == "flow" else latest_balance(periods)
-        name = _metric_name(concept)
+    for name, found in values.items():
         if found is not None and found.period_end < floor:
             rows.append(_row(name, found, source="stale"))
             continue

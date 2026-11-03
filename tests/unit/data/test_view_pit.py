@@ -500,21 +500,21 @@ def _leak_universe(mp: pytest.MonkeyPatch) -> None:
     mp.setattr(universe_module, "pit_filter", _identity)
 
 
-def _leak_panel(mp: pytest.MonkeyPatch) -> None:
+def _leak_fundamentals(mp: pytest.MonkeyPatch) -> None:
+    # Both fundamentals methods build their detail with `assemble_detail` (Phase 1 checkpoint:
+    # cross-day cache of the concept values); before, with `Fundamentals.pit_detail` and
+    # `fundamentals_pit_detail`.
     import atlas.data.view as view_module
 
-    original = view_module.fundamentals_pit_detail
-    mp.setattr(
-        view_module, "fundamentals_pit_detail", lambda *a, **k: _late_frame(original(*a, **k))
-    )
+    _wrap(mp, view_module, "assemble_detail", _late_frame)
 
 
 LEAKS: dict[str, Callable[[pytest.MonkeyPatch], None]] = {
     "prices": _leak_bars,
     "returns": _leak_bars,
     "adv": _leak_bars,
-    "fundamentals": lambda mp: _wrap(mp, Fundamentals, "pit_detail", _late_frame),
-    "fundamentals_panel": _leak_panel,
+    "fundamentals": _leak_fundamentals,
+    "fundamentals_panel": _leak_fundamentals,
     "macro": lambda mp: _wrap(mp, Macro, "pit_detail", _late_frame),
     "news": lambda mp: _wrap(mp, News, "pit", _late_evidence),
     "market_news": lambda mp: _wrap(mp, News, "market", _late_evidence),

@@ -1,0 +1,7 @@
+______________ test_guard_raises_if_filter_bypassed[fundamentals] ______________
+    def test_guard_raises_if_filter_bypassed(
+___________ test_guard_raises_if_filter_bypassed[fundamentals_panel] ___________
+    def test_guard_raises_if_filter_bypassed(
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[fundamentals]
+FAILED tests/unit/data/test_view_pit.py::test_guard_raises_if_filter_bypassed[fundamentals_panel]
+2 failed, 117 deselected in 0.98s

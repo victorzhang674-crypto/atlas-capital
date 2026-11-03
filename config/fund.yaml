@@ -168,6 +168,7 @@ data:
   # DataView (Stage 13): the single point-in-time door to the data.
   view:
     cache_size: 256  # results kept in the LRU cache shared by a view and the views advance() creates
+    fundamentals_cache_size: 5000  # per-symbol fundamentals kept across as-of days until a new filing is known
   # Liquidity filters of Universe.tradable (Stage 08); only bars known before the cutoff count.
   tradable:
     min_price: 5.0  # last raw close, USD

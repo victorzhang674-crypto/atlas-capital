@@ -41,3 +41,11 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Acceptance criteria still evidenced (leak suite, blocked symbols, reader-matching tests passed in the brief's Verify).
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (fundamentals cache) — 2026-11-02
+- Red first; guard mutant caught · raw: [artifacts/phase1-checkpoint-2026-11-02-panel-cache-red.txt](artifacts/phase1-checkpoint-2026-11-02-panel-cache-red.txt), [artifacts/phase1-checkpoint-2026-11-02-panel-cache-guard-mutant.txt](artifacts/phase1-checkpoint-2026-11-02-panel-cache-guard-mutant.txt)
+- Real lake: 24 monthly panels in 685.7 s (28.6 s per day, was ~92–118 s); cached = uncached for every member on three days · raw: [artifacts/phase1-checkpoint-2026-11-02-panel-cache-real-lake.txt](artifacts/phase1-checkpoint-2026-11-02-panel-cache-real-lake.txt)
+- `make check` → exit 0 (2146 passed); `uv run pytest tests/unit/data -q` (brief's Verify) → 952 passed, 13 deselected · raw: [artifacts/phase1-checkpoint-2026-11-02-panel-cache-verify.txt](artifacts/phase1-checkpoint-2026-11-02-panel-cache-verify.txt)
+- Acceptance criteria still evidenced: the leak suite (incl. the moved fundamentals entries) and the blocked-symbol tests passed.
+
+**Result:** ALL CRITERIA VERIFIED

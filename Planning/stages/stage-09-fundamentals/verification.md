@@ -43,3 +43,8 @@ Filled in only with output from commands actually run in this stage's chat (Proj
 
 **Result:** ALL CRITERIA VERIFIED
 - On merged `main` (`fb9288e`, fast-forward from `867dd04`; owner's Terminal panel): full suite 2143 passed; integration 1 passed; ruff, format, mypy clean; Verify runs passed; `make check` exit 0; checkout clean. Lake re-sync of the 78 names: fundamentals 78/78 ok (149 728 rows), earnings 78/78 ok · raw: [artifacts/phase1-checkpoint-2026-11-02-tier3-merged-main-check.txt](artifacts/phase1-checkpoint-2026-11-02-tier3-merged-main-check.txt), [artifacts/phase1-checkpoint-2026-11-02-tier3-after-resync.txt](artifacts/phase1-checkpoint-2026-11-02-tier3-after-resync.txt)
+
+#### Phase 1 checkpoint follow-up (PIT split for the cache) — 2026-11-02
+- `uv run pytest tests/unit/data/fundamentals -q` (brief's Verify) → 142 passed, 1 deselected; `make check` → exit 0 · raw: [stage-13 artifacts/phase1-checkpoint-2026-11-02-panel-cache-verify.txt](../stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-panel-cache-verify.txt)
+
+**Result:** ALL CRITERIA VERIFIED

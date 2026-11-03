@@ -1,0 +1,7 @@
+E       AttributeError: <module 'atlas.data.view' from '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/src/atlas/data/view.py'> has no attribute 'concept_values'
+tests/unit/data/test_view_fundamentals_cache.py:55: AttributeError
+E       AttributeError: <module 'atlas.data.view' from '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/src/atlas/data/view.py'> has no attribute 'concept_values'
+tests/unit/data/test_view_fundamentals_cache.py:55: AttributeError
+E       AttributeError: <module 'atlas.data.view' from '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/src/atlas/data/view.py'> has no attribute 'concept_values'
+tests/unit/data/test_view_fundamentals_cache.py:55: AttributeError
+3 errors in 0.69s

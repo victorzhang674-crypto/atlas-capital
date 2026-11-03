@@ -1,0 +1,26 @@
+2023-01-03: 502 symbols,   70.9 s (cached), cache CacheInfo(hits=0, misses=502, size=502, maxsize=5000); vs uncached: 502/502 identical []
+2023-02-01: 502 symbols,    7.2 s (cached), cache CacheInfo(hits=460, misses=544, size=544, maxsize=5000)
+2023-03-01: 502 symbols,   65.8 s (cached), cache CacheInfo(hits=543, misses=963, size=963, maxsize=5000)
+2023-04-03: 502 symbols,    8.6 s (cached), cache CacheInfo(hits=995, misses=1013, size=1013, maxsize=5000)
+2023-05-01: 502 symbols,   28.3 s (cached), cache CacheInfo(hits=1315, misses=1195, size=1195, maxsize=5000)
+2023-06-01: 501 symbols,   46.5 s (cached), cache CacheInfo(hits=1526, misses=1485, size=1485, maxsize=5000)
+2023-07-03: 502 symbols,    6.2 s (cached), cache CacheInfo(hits=1994, misses=1519, size=1519, maxsize=5000)
+2023-08-01: 502 symbols,   26.7 s (cached), cache CacheInfo(hits=2312, misses=1703, size=1703, maxsize=5000)
+2023-09-01: 502 symbols,   41.8 s (cached), cache CacheInfo(hits=2528, misses=1989, size=1989, maxsize=5000)
+2023-10-02: 503 symbols,    5.1 s (cached), cache CacheInfo(hits=3003, misses=2017, size=2017, maxsize=5000)
+2023-11-01: 502 symbols,   31.7 s (cached), cache CacheInfo(hits=3299, misses=2223, size=2223, maxsize=5000)
+2023-12-01: 502 symbols,   37.7 s (cached), cache CacheInfo(hits=3538, misses=2486, size=2486, maxsize=5000); vs uncached: 502/502 identical []
+2024-01-02: 502 symbols,    6.1 s (cached), cache CacheInfo(hits=4006, misses=2520, size=2520, maxsize=5000)
+2024-02-01: 502 symbols,    8.3 s (cached), cache CacheInfo(hits=4458, misses=2570, size=2570, maxsize=5000)
+2024-03-01: 502 symbols,   62.9 s (cached), cache CacheInfo(hits=4541, misses=2989, size=2989, maxsize=5000)
+2024-04-01: 503 symbols,    7.1 s (cached), cache CacheInfo(hits=5006, misses=3027, size=3027, maxsize=5000)
+2024-05-01: 502 symbols,   29.3 s (cached), cache CacheInfo(hits=5309, misses=3226, size=3226, maxsize=5000)
+2024-06-03: 502 symbols,   40.0 s (cached), cache CacheInfo(hits=5533, misses=3504, size=3504, maxsize=5000)
+2024-07-01: 502 symbols,    5.5 s (cached), cache CacheInfo(hits=6004, misses=3535, size=3535, maxsize=5000)
+2024-08-01: 502 symbols,   31.4 s (cached), cache CacheInfo(hits=6290, misses=3751, size=3751, maxsize=5000)
+2024-09-03: 502 symbols,   40.0 s (cached), cache CacheInfo(hits=6536, misses=4007, size=4007, maxsize=5000)
+2024-10-01: 503 symbols,    5.4 s (cached), cache CacheInfo(hits=7011, misses=4035, size=4035, maxsize=5000)
+2024-11-01: 503 symbols,   40.4 s (cached), cache CacheInfo(hits=7257, misses=4292, size=4292, maxsize=5000)
+2024-12-02: 503 symbols,   32.8 s (cached), cache CacheInfo(hits=7550, misses=4502, size=4502, maxsize=5000); vs uncached: 503/503 identical []
+total 685.7 s over 24 rebalance days
+exit 0

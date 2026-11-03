@@ -1,0 +1,15 @@
+######## make check
+uv run ruff format --check .
+208 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.20 s (limit 20 s)
+2146 passed, 14 deselected in 34.74s
+ - ... skipped remainder
+exit=0
+######## Verify commands
+$ uv run pytest tests/unit/data/fundamentals -q
+142 passed, 1 deselected in 4.05s
+$ uv run pytest tests/unit/data -q
+952 passed, 13 deselected in 21.59s
