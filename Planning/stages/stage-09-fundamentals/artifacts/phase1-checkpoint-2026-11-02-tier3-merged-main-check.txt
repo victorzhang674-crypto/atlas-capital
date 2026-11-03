@@ -1,0 +1,210 @@
+# Phase 1 checkpoint Tier 3: fast-forward + verification on merged main + re-sync · 2026-11-02 21:11 EST · 21:11  up 23 days, 12:12, 2 users, load averages: 4.54 5.59 6.56
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/phase-one-checkpoint-stages-80625b
+Updating 867dd04..fb9288e
+Fast-forward
+ Planning/PROGRESS.md                               |  19 +-
+ ...checkpoint-2026-11-02-tier3-red-delete-rows.txt |   3 +
+ Planning/stages/stage-06-storage/verification.md   |   6 +
+ Planning/stages/stage-06-storage/worklog.md        |   6 +
+ ...phase1-checkpoint-2026-11-02-tier3-red-memo.txt |   4 +
+ .../stages/stage-07-price-data/verification.md     |   6 +
+ Planning/stages/stage-07-price-data/worklog.md     |   6 +
+ ...eckpoint-2026-11-02-build-cik-overrides-2015.py | 133 +++++++
+ ...ckpoint-2026-11-02-build-cik-overrides-2015.txt | 392 +++++++++++++++++++++
+ ...ase1-checkpoint-2026-11-02-tier3-forget-keys.py |  35 ++
+ ...heckpoint-2026-11-02-tier3-merged-main-check.sh |  25 ++
+ ...kpoint-2026-11-02-tier3-period-after-filing.txt |  10 +
+ ...heckpoint-2026-11-02-tier3-red-cik-coverage.txt |   4 +
+ ...-2026-11-02-write-cik-overrides-2015-output.txt |   1 +
+ ...eckpoint-2026-11-02-write-cik-overrides-2015.py | 100 ++++++
+ .../stages/stage-09-fundamentals/verification.md   |   8 +
+ Planning/stages/stage-09-fundamentals/worklog.md   |   8 +
+ ...ckpoint-2026-11-02-tier3-panel-measurements.txt |  10 +
+ ...-checkpoint-2026-11-02-tier3-panel-prototype.py |  31 ++
+ .../phase1-checkpoint-2026-11-02-tier3-red.txt     |  11 +
+ .../phase1-checkpoint-2026-11-02-tier3-verify.txt  |  34 ++
+ .../stage-13-data-quality-dataview/verification.md |   7 +
+ .../stage-13-data-quality-dataview/worklog.md      |   8 +
+ .../phase1-checkpoint-2026-11-02-report.md         |   3 +-
+ config/cik_overrides.yaml                          |  94 ++++-
+ config/fund.yaml                                   |   2 +
+ docs/data-limitations.md                           |  17 +-
+ docs/data.md                                       |   4 +-
+ src/atlas/core/config.py                           |   5 +-
+ src/atlas/core/storage/lake.py                     |  33 ++
+ src/atlas/data/fundamentals/pit.py                 |   9 +-
+ src/atlas/data/providers/yfinance_provider.py      |  33 +-
+ src/atlas/data/quality.py                          |  46 ++-
+ tests/unit/core/storage/test_storage_delete.py     |  87 +++++
+ tests/unit/core/test_config.py                     |   1 +
+ .../data/fundamentals/test_fundamentals_client.py  |  13 +-
+ .../data/fundamentals/test_fundamentals_pit.py     |  13 +
+ tests/unit/data/test_price_yfinance.py             |  15 +
+ tests/unit/data/test_quality.py                    |  61 ++++
+ 39 files changed, 1260 insertions(+), 43 deletions(-)
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/phase1-checkpoint-2026-11-02-tier3-red-delete-rows.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-tier3-red-memo.txt
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-build-cik-overrides-2015.py
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-build-cik-overrides-2015.txt
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-tier3-forget-keys.py
+ create mode 100755 Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-tier3-merged-main-check.sh
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-tier3-period-after-filing.txt
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-tier3-red-cik-coverage.txt
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-write-cik-overrides-2015-output.txt
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-write-cik-overrides-2015.py
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-tier3-panel-measurements.txt
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-tier3-panel-prototype.py
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-tier3-red.txt
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt
+ create mode 100644 tests/unit/core/storage/test_storage_delete.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD fb9288e
+
+$ uv sync --group dev
+Resolved 80 packages in 18ms
+Checked 79 packages in 28ms
+exit=0
+
+$ uv lock --check
+Resolved 80 packages in 5ms
+exit=0
+
+$ uv run pytest -q
+..............
+compute_features: 40 features x 500 symbols x 2000 sessions in 8.17 s (limit 20 s)
+2143 passed, 14 deselected in 82.84s (0:01:22)
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest -m integration -q
+1 passed, 2156 deselected in 0.93s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+207 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 88 source files
+exit=0
+
+$ uv run pytest tests/unit/core/storage -q
+146 passed in 6.60s
+exit=0
+
+$ uv run pytest tests/unit/data/fundamentals -q
+142 passed, 1 deselected in 5.96s
+exit=0
+
+$ uv run pytest tests/unit/data -q
+949 passed, 13 deselected in 19.07s
+ - ... skipped remainder
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+207 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+..............
+compute_features: 40 features x 500 symbols x 2000 sessions in 9.13 s (limit 20 s)
+2143 passed, 14 deselected in 53.18s
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+fb9288e phase-1 checkpoint: Tier 3 re-sync helper and merged-main check script
+b773fac phase-1 checkpoint: Tier 3 follow-ups (stages 06, 07, 09, 13)
+867dd04 phase-1 checkpoint: Tier 2 merged-main check records
+exit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ uv run python Planning/stages/stage-09-fundamentals/artifacts/phase1-checkpoint-2026-11-02-tier3-forget-keys.py data/cache/sync_state.json
+backup: data/cache/sync_state.json.bak-phase1-tier3
+removed entries: {'fundamentals': 78, 'earnings': 78, 'reactions': 0}
+symbols: AA,ACE,ADT,ALTR,AN,ARG,ATI,AVP,BBBY,BHI,BRCM,BXLT,CAM,CCE,CFN,CMCSK,CNX,COV,CPGX,CSC,CVC,DNB,DNR,DO,DTV,EMC,ENDP,ESV,FDO,FOSL,FTR,GAS,GMCR,GME,GNW,HAR,HCBK,HOT,HSP,JOY,KRFT,LLTC,LM,LO,LVLT,MJN,MNK,MUR,NBR,NE,OI,PBI,PCL,PCP,PETM,PLL,POM,QEP,R,RAI,RIG,SE,SIAL,SPLS,STJ,SWN,SWY,TDC,TE,TEG,TGNA,THC,TWC,TYC,URBN,WFM,WIN,YHOO
+exit=0
+
+$ COLUMNS=160 uv run atlas data sync --from 2015-01-01 --datasets fundamentals,events --symbols <the 78>
+2026-11-03T02:17:48.321987Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"No fundamentals data found for symbol: SPLS"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:17:50.415460Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: STJ"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:17:52.510425Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: SWN"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:17:53.957646Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: SWY"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:17:57.556740Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TEG"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:17:59.459254Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TGNA"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:18:02.044818Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TWC"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:18:03.659457Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: TYC"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:18:05.939753Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: WFM"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:18:07.525517Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: WIN"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+2026-11-03T02:18:08.928274Z [error    ] HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: YHOO"}}} [yfinance] mode=dev run_id=01M6FJZXP1GV2Z9QJYKH07D7NG stage=data.sync
+Run 01M6FJZXP1GV2Z9QJYKH07D7NG: log and audit trail in data/runs/01M6FJZXP1GV2Z9QJYKH07D7NG
+                        Sync summary (sync 2015-01-01 .. 2026-11-02)                         
+┃ step           ┃ keys ┃ skipped ┃ ok ┃ empty ┃ failed ┃    rows ┃ chunks ┃ seconds ┃ note ┃
+│ fundamentals   │   78 │       0 │ 78 │     0 │      0 │ 149,728 │      4 │    67.4 │      │
+│ earnings       │   78 │       0 │ 78 │     0 │      0 │   2,027 │      4 │    17.8 │      │
+│ upcoming       │   78 │       0 │ 78 │     0 │      0 │      17 │      2 │   120.3 │      │
+│ macro_calendar │    1 │       0 │  1 │     0 │      0 │     392 │      1 │     6.8 │      │
+│ reactions      │    1 │       0 │  1 │     0 │      0 │   1,037 │      1 │     4.0 │      │
+└────────────────┴──────┴─────────┴────┴───────┴────────┴─────────┴────────┴─────────┴──────┘
+exit=0
+
+$ COLUMNS=160 uv run atlas data status
+                                         Lake tables on 2026-11-02                                          
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
+┃ table               ┃ dataset      ┃      rows ┃   keys ┃ first      ┃ last       ┃ last sync            ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩
+│ index_membership    │ universe     │       879 │    860 │ 1957-03-04 │ 2026-10-06 │ 2026-11-01 18:52 UTC │
+│ instruments         │ universe     │       890 │    890 │ 2015-01-02 │ 2026-10-05 │ 2026-11-01 18:52 UTC │
+│ prices_daily        │ prices       │ 1,857,576 │    714 │ 2015-01-02 │ 2026-10-30 │ 2026-11-02 20:02 UTC │
+│ corporate_actions   │ prices       │    23,219 │    593 │ 2015-01-02 │ 2026-10-30 │ 2026-11-02 20:02 UTC │
+│ fundamentals_facts  │ fundamentals │ 2,091,447 │    742 │ 2005-12-31 │ 2027-07-17 │ 2026-11-03 02:15 UTC │
+│ macro_series        │ macro        │        22 │     22 │ -          │ -          │ 2026-11-01 20:05 UTC │
+│ macro_observations  │ macro        │   523,749 │     22 │ 2000-01-01 │ 2026-10-30 │ 2026-11-01 20:05 UTC │
+│ news                │ news         │   845,313 │ 21,810 │ 2015-01-01 │ 2026-11-01 │ 2026-11-01 22:48 UTC │
+│ events              │ events       │    34,192 │    743 │ 2015-01-06 │ 2027-01-29 │ 2026-11-03 02:18 UTC │
+│ macro_events        │ events       │       392 │      0 │ 2015-01-09 │ 2027-12-08 │ 2026-11-03 02:18 UTC │
+│ earnings_reactions  │ events       │    30,052 │    655 │ 2015-01-07 │ 2026-10-28 │ 2026-11-03 02:18 UTC │
+│ news_sentiment      │ sentiment    │   845,313 │      0 │ 2015-01-01 │ 2026-11-01 │ 2026-11-01 22:48 UTC │
+│ social_posts        │ sentiment    │         0 │      0 │ -          │ -          │ 2026-11-01 22:48 UTC │
+│ data_quality_issues │ quality      │        88 │     85 │ 2026-11-02 │ 2026-11-02 │ 2026-11-01 20:30 UTC │
+└─────────────────────┴──────────────┴───────────┴────────┴────────────┴────────────┴──────────────────────┘
+                                                              Coverage (503 current members)                                                               
+┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ dataset               ┃ rule                                              ┃ covered ┃    pct ┃ missing (first 10)                                       ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ prices                │ >= 8 years of daily prices                        │ 475/503 │  94.4% │ ABNB, APP, CARR, CEG, COIN, CRWD, DASH, DDOG, DOW, EXE … │
+│ prices (listed >= 8y) │ >= 8 years, members with that much vendor history │ 475/475 │ 100.0% │                                                          │
+│ fundamentals          │ at least one stored XBRL fact                     │ 502/503 │  99.8% │ VYLR                                                     │
+│ macro                 │ catalog series with observations                  │   22/22 │ 100.0% │                                                          │
+│ news                  │ at least one tagged article                       │ 503/503 │ 100.0% │                                                          │
+│ events                │ at least one earnings event                       │ 503/503 │ 100.0% │                                                          │
+└───────────────────────┴───────────────────────────────────────────────────┴─────────┴────────┴──────────────────────────────────────────────────────────┘
+Quality report 2026-11-02: critical 2, warning 86; blocked: WBD
+Last run: sync 2015-01-01 .. 2026-11-02 finished 2026-11-03T02:18:19.738533+00:00 (ok)
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
