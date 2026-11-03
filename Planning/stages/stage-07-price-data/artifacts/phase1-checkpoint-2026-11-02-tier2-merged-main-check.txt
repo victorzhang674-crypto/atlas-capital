@@ -1,0 +1,184 @@
+# Phase 1 checkpoint Tier 2: fast-forward + verification on merged main · 2026-11-02 20:02 EST · 20:02  up 23 days, 11:04, 2 users, load averages: 8.08 9.12 8.53
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/phase-one-checkpoint-stages-80625b
+Updating 0b0ab15..cfc99a8
+Fast-forward
+ Planning/PROGRESS.md                               |  19 ++-
+ ...-checkpoint-2026-11-02-tier2-red-before-fix.txt |   5 +
+ Planning/stages/stage-06-storage/verification.md   |   7 +
+ Planning/stages/stage-06-storage/worklog.md        |   6 +
+ ...1-checkpoint-2026-11-02-tier2-record-alpaca.txt |   6 +
+ ...-checkpoint-2026-11-02-tier2-red-before-fix.txt |   8 +
+ .../phase1-checkpoint-2026-11-02-tier2-verify.txt  |  57 +++++++
+ .../artifacts/record_alpaca_fixtures.py            |  86 ++++++++++
+ .../stages/stage-07-price-data/verification.md     |  10 ++
+ Planning/stages/stage-07-price-data/worklog.md     |   8 +
+ ...-checkpoint-2026-11-02-tier2-red-and-record.txt |  11 ++
+ .../stage-11-news/artifacts/record_alpaca_news.py  |  62 +++++++
+ Planning/stages/stage-11-news/verification.md      |   7 +
+ Planning/stages/stage-11-news/worklog.md           |   7 +
+ .../stages/stage-12-events-sentiment/worklog.md    |   4 +
+ .../phase1-checkpoint-2026-11-02-report.md         |   5 +
+ .../phase1-checkpoint-2026-11-02-tier2-status.txt  |  42 +++++
+ Planning/stages/stage-14-data-cli/verification.md  |   7 +
+ Planning/stages/stage-14-data-cli/worklog.md       |   8 +
+ docs/data.md                                       |   7 +-
+ src/atlas/core/storage/schema.py                   |   7 +-
+ src/atlas/data/events/earnings.py                  |   5 +-
+ src/atlas/data/news/yahoo_news.py                  |  23 ++-
+ src/atlas/data/providers/alpaca_provider.py        |  21 ++-
+ src/atlas/data/providers/base.py                   |   5 +
+ src/atlas/data/sync.py                             |  23 ++-
+ tests/fixtures/news/README.md                      |   5 +-
+ tests/fixtures/news/alpaca_news_aapl_recorded.json | 190 +++++++++++++++++++++
+ tests/fixtures/prices/README.md                    |   5 +-
+ tests/fixtures/prices/alpaca_bars_all.json         | 140 +++++++--------
+ tests/fixtures/prices/alpaca_bars_raw_p1.json      |  72 ++++----
+ tests/fixtures/prices/alpaca_bars_raw_p2.json      |  70 ++++----
+ .../fixtures/prices/alpaca_corporate_actions.json  |  77 +++++----
+ .../prices/alpaca_corporate_actions_ge.json        |  57 +++++++
+ .../unit/core/storage/test_storage_string_list.py  |  10 ++
+ tests/unit/data/news/test_news_alpaca.py           |  18 ++
+ tests/unit/data/news/test_news_yahoo.py            |  17 ++
+ tests/unit/data/test_price_alpaca.py               |  89 ++++++++--
+ tests/unit/data/test_sync_status.py                |  29 ++++
+ 39 files changed, 1014 insertions(+), 221 deletions(-)
+ create mode 100644 Planning/stages/stage-06-storage/artifacts/phase1-checkpoint-2026-11-02-tier2-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-tier2-record-alpaca.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-tier2-red-before-fix.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/record_alpaca_fixtures.py
+ create mode 100644 Planning/stages/stage-11-news/artifacts/phase1-checkpoint-2026-11-02-tier2-red-and-record.txt
+ create mode 100644 Planning/stages/stage-11-news/artifacts/record_alpaca_news.py
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-02-tier2-status.txt
+ create mode 100644 tests/fixtures/news/alpaca_news_aapl_recorded.json
+ create mode 100644 tests/fixtures/prices/alpaca_corporate_actions_ge.json
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD cfc99a8
+
+$ uv sync --group dev
+Resolved 80 packages in 18ms
+Checked 79 packages in 42ms
+exit=0
+
+$ uv lock --check
+Resolved 80 packages in 9ms
+exit=0
+
+$ uv run pytest -q
+..
+compute_features: 40 features x 500 symbols x 2000 sessions in 4.69 s (limit 20 s)
+2131 passed, 14 deselected in 126.76s (0:02:06)
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest -m integration -q
+1 passed, 2144 deselected in 1.72s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+206 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 88 source files
+exit=0
+
+$ uv run pytest tests/unit/data -q
+944 passed, 13 deselected in 33.00s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest tests/unit/data/news -q
+131 passed, 2 deselected in 1.38s
+exit=0
+
+$ uv run pytest tests/unit/core/storage -q
+139 passed in 4.22s
+exit=0
+
+$ uv run pytest tests/unit/data/events tests/unit/data/sentiment -q
+183 passed, 4 deselected in 3.67s
+exit=0
+
+$ uv run pytest tests/unit/cli -q
+20 passed in 2.25s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+206 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+..
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.51 s (limit 20 s)
+2131 passed, 14 deselected in 50.80s
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+cfc99a8 phase-1 checkpoint: Tier 2 follow-ups (stages 06, 07, 11, 12, 14)
+0b0ab15 phase-1 checkpoint: merged-main check records
+7ae6924 phase-1 checkpoint: report and Tier 1 follow-ups (stages 07, 11, 14)
+exit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ COLUMNS=160 uv run atlas data status
+                                         Lake tables on 2026-11-02                                          
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
+┃ table               ┃ dataset      ┃      rows ┃   keys ┃ first      ┃ last       ┃ last sync            ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩
+│ index_membership    │ universe     │       879 │    860 │ 1957-03-04 │ 2026-10-06 │ 2026-11-01 18:52 UTC │
+│ instruments         │ universe     │       890 │    890 │ 2015-01-02 │ 2026-10-05 │ 2026-11-01 18:52 UTC │
+│ prices_daily        │ prices       │ 1,857,576 │    714 │ 2015-01-02 │ 2026-10-30 │ 2026-11-02 20:02 UTC │
+│ corporate_actions   │ prices       │    23,219 │    593 │ 2015-01-02 │ 2026-10-30 │ 2026-11-02 20:02 UTC │
+│ fundamentals_facts  │ fundamentals │ 1,990,925 │    685 │ 2005-12-31 │ 2027-07-17 │ 2026-11-01 20:04 UTC │
+│ macro_series        │ macro        │        22 │     22 │ -          │ -          │ 2026-11-01 20:05 UTC │
+│ macro_observations  │ macro        │   523,749 │     22 │ 2000-01-01 │ 2026-10-30 │ 2026-11-01 20:05 UTC │
+│ news                │ news         │   845,313 │ 21,810 │ 2015-01-01 │ 2026-11-01 │ 2026-11-01 22:48 UTC │
+│ events              │ events       │    32,933 │    686 │ 2015-01-06 │ 2027-01-29 │ 2026-11-01 20:30 UTC │
+│ macro_events        │ events       │       392 │      0 │ 2015-01-09 │ 2027-12-08 │ 2026-11-01 20:30 UTC │
+│ earnings_reactions  │ events       │    29,911 │    648 │ 2015-01-07 │ 2026-10-28 │ 2026-11-01 20:30 UTC │
+│ news_sentiment      │ sentiment    │   845,313 │      0 │ 2015-01-01 │ 2026-11-01 │ 2026-11-01 22:48 UTC │
+│ social_posts        │ sentiment    │         0 │      0 │ -          │ -          │ 2026-11-01 22:48 UTC │
+│ data_quality_issues │ quality      │        88 │     85 │ 2026-11-02 │ 2026-11-02 │ 2026-11-01 20:30 UTC │
+└─────────────────────┴──────────────┴───────────┴────────┴────────────┴────────────┴──────────────────────┘
+                                                              Coverage (503 current members)                                                               
+┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ dataset               ┃ rule                                              ┃ covered ┃    pct ┃ missing (first 10)                                       ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ prices                │ >= 8 years of daily prices                        │ 475/503 │  94.4% │ ABNB, APP, CARR, CEG, COIN, CRWD, DASH, DDOG, DOW, EXE … │
+│ prices (listed >= 8y) │ >= 8 years, members with that much vendor history │ 475/475 │ 100.0% │                                                          │
+│ fundamentals          │ at least one stored XBRL fact                     │ 502/503 │  99.8% │ VYLR                                                     │
+│ macro                 │ catalog series with observations                  │   22/22 │ 100.0% │                                                          │
+│ news                  │ at least one tagged article                       │ 503/503 │ 100.0% │                                                          │
+│ events                │ at least one earnings event                       │ 503/503 │ 100.0% │                                                          │
+└───────────────────────┴───────────────────────────────────────────────────┴─────────┴────────┴──────────────────────────────────────────────────────────┘
+Quality report 2026-11-02: critical 2, warning 86; blocked: WBD
+Last run: sync 2015-01-01 .. 2026-11-02 finished 2026-11-02T20:02:56.918715+00:00 (ok)
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0

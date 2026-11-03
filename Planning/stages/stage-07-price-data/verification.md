@@ -71,3 +71,4 @@ Owner request ("Start Tier 2"; see worklog, 2026-11-02). Run in this chat on the
 - Acceptance criteria still evidenced: every test named at DONE passed in the brief's Verify.
 
 **Result:** ALL CRITERIA VERIFIED
+- On merged `main` (`cfc99a8`, fast-forward from `0b0ab15`; owner's Terminal panel): full suite 2131 passed; integration 1 passed; ruff, format, mypy clean; every touched stage's Verify passed; `make check` exit 0; checkout clean · raw: [artifacts/phase1-checkpoint-2026-11-02-tier2-merged-main-check.txt](artifacts/phase1-checkpoint-2026-11-02-tier2-merged-main-check.txt)
