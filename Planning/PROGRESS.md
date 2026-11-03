@@ -769,7 +769,7 @@ Full block and raw output: [verification.md](stages/stage-13-data-quality-datavi
   - [x] Strategy and agent code needs nothing else — evidence: one DataView method per Stage 07–12 PIT query, each checked against its reader (`test_*_matches_reader`, `test_universe_and_tradable`, `test_instrument`, `test_quality_issues_and_blocked`), `test_view_is_read_only`
 - Waivers: none
 - Phase 1 checkpoint follow-up (Tier 3) — 2026-11-02: [stage-13 verification](stages/stage-13-data-quality-dataview/verification.md): per-day quality persistence; `fundamentals_period_after_filing` warning; `fundamentals_panel` measured (~92–118 s per day on the real lake, change left to the owner); brief's Verify 949 passed; full suite 2143 passed, `make check` exit 0
-- Phase 1 checkpoint follow-up (fundamentals cache) — 2026-11-02: [stage-13 verification](stages/stage-13-data-quality-dataview/verification.md): cross-day per-symbol cache; real lake 28.6 s per monthly panel (was ~92–118 s), identical values on three days; brief's Verify 952 passed; full suite 2146 passed, `make check` exit 0
+- Phase 1 checkpoint follow-up (fundamentals cache) — 2026-11-02: [stage-13 verification](stages/stage-13-data-quality-dataview/verification.md): cross-day per-symbol cache; real lake 28.6 s per monthly panel (was ~92–118 s), identical values on three days; brief's Verify 952 passed; full suite 2146 passed, `make check` exit 0; merged into `main` as `daf3645` (fast-forward), same results there
 
 ### Stage 14 — Data sync CLI & bootstrap backfill — DONE 2026-11-01
 - Folder: [stages/stage-14-data-cli/](stages/stage-14-data-cli/) (`plan.md`, `worklog.md`, `verification.md`, `artifacts/`)

@@ -49,3 +49,4 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Acceptance criteria still evidenced: the leak suite (incl. the moved fundamentals entries) and the blocked-symbol tests passed.
 
 **Result:** ALL CRITERIA VERIFIED
+- On merged `main` (`daf3645`, fast-forward from `7e18998`; owner's Terminal panel): full suite 2146 passed; integration 1 passed; ruff, format, mypy clean; Verify runs passed; `make check` exit 0; checkout clean · raw: [artifacts/phase1-checkpoint-2026-11-02-panel-cache-merged-main-check.txt](artifacts/phase1-checkpoint-2026-11-02-panel-cache-merged-main-check.txt)

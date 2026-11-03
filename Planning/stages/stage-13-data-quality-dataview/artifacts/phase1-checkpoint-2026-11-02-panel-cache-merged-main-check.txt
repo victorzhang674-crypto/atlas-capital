@@ -1,0 +1,112 @@
+# Phase 1 checkpoint fundamentals cache: fast-forward + verification on merged main · 2026-11-02 22:03 EST · 22:03  up 23 days, 13:04, 2 users, load averages: 5.69 5.62 5.90
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/phase-one-checkpoint-stages-80625b
+Updating 7e18998..daf3645
+Fast-forward
+ Planning/PROGRESS.md                               |   5 +-
+ .../stages/stage-09-fundamentals/verification.md   |   5 ++
+ Planning/stages/stage-09-fundamentals/worklog.md   |   4 +
+ ...ckpoint-2026-11-02-panel-cache-guard-mutant.txt |   7 ++
+ ...-checkpoint-2026-11-02-panel-cache-real-lake.py |  42 +++++++++
+ ...checkpoint-2026-11-02-panel-cache-real-lake.txt |  26 ++++++
+ ...hase1-checkpoint-2026-11-02-panel-cache-red.txt |   7 ++
+ ...e1-checkpoint-2026-11-02-panel-cache-verify.txt |  15 ++++
+ .../stage-13-data-quality-dataview/verification.md |   8 ++
+ .../stage-13-data-quality-dataview/worklog.md      |   8 ++
+ .../phase1-checkpoint-2026-11-02-report.md         |   1 +
+ config/fund.yaml                                   |   1 +
+ src/atlas/core/config.py                           |   4 +-
+ src/atlas/data/fundamentals/__init__.py            |   6 ++
+ src/atlas/data/fundamentals/pit.py                 |  45 ++++++++--
+ src/atlas/data/view.py                             |  38 +++++---
+ tests/unit/data/test_view_fundamentals_cache.py    | 100 +++++++++++++++++++++
+ tests/unit/data/test_view_pit.py                   |  14 +--
+ 18 files changed, 310 insertions(+), 26 deletions(-)
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-panel-cache-guard-mutant.txt
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-panel-cache-real-lake.py
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-panel-cache-real-lake.txt
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-panel-cache-red.txt
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-panel-cache-verify.txt
+ create mode 100644 tests/unit/data/test_view_fundamentals_cache.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD daf3645
+
+$ uv sync --group dev
+Resolved 80 packages in 15ms
+Checked 79 packages in 19ms
+exit=0
+
+$ uv lock --check
+Resolved 80 packages in 3ms
+exit=0
+
+$ uv run pytest -q
+.................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.47 s (limit 20 s)
+2146 passed, 14 deselected in 33.33s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest -m integration -q
+1 passed, 2159 deselected in 0.93s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+208 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 88 source files
+exit=0
+
+$ uv run pytest tests/unit/data -q
+952 passed, 13 deselected in 20.94s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest tests/unit/data/fundamentals -q
+142 passed, 1 deselected in 3.82s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+208 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+.................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.44 s (limit 20 s)
+2146 passed, 14 deselected in 32.23s
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+daf3645 phase-1 checkpoint: cross-day fundamentals cache (stages 09, 13)
+7e18998 phase-1 checkpoint: Tier 3 merged-main check and re-sync records
+fb9288e phase-1 checkpoint: Tier 3 re-sync helper and merged-main check script
+exit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
