@@ -37,3 +37,10 @@ Owner request (Phase 1 checkpoint; see worklog, 2026-11-02). No Stage 11 code ch
 - Acceptance criteria unchanged and still evidenced (the brief's Verify ran every test named at DONE).
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 2) — 2026-11-02
+- Red before the fix, the recording and the mutant check · raw: [artifacts/phase1-checkpoint-2026-11-02-tier2-red-and-record.txt](artifacts/phase1-checkpoint-2026-11-02-tier2-red-and-record.txt)
+- `uv run pytest tests/unit/data/news -q` (brief's Verify) → 131 passed, 2 deselected; full suite 2131 passed; `make check` exit 0; `-m live` 13 passed · raw: [stage-07 artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt](../stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt)
+- Acceptance criteria unchanged and still evidenced.
+
+**Result:** ALL CRITERIA VERIFIED

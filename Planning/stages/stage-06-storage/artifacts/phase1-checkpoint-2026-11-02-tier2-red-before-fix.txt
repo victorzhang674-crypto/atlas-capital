@@ -1,0 +1,5 @@
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'null'
+E         Actual message: 'tagged.tags: expected a list of strings, got NAType'
+FAILED tests/unit/core/storage/test_storage_string_list.py::test_string_list_missing_markers_are_null[pd.NA]
+1 failed, 13 passed in 0.82s

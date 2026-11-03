@@ -1,0 +1,57 @@
+{
+  "corporate_actions": {
+    "cash_dividends": [
+      {
+        "cusip": "369604301",
+        "ex_date": "2021-06-25",
+        "foreign": false,
+        "id": "7c01dc24-13ea-4091-a9d0-cd9b472ca76c",
+        "payable_date": "2021-07-26",
+        "process_date": "2021-07-26",
+        "rate": 0.01,
+        "record_date": "2021-06-28",
+        "special": false,
+        "symbol": "GE"
+      },
+      {
+        "cusip": "369604103",
+        "ex_date": "2021-06-25",
+        "foreign": false,
+        "id": "aa385e97-f373-40b6-b286-ce499d61b977",
+        "payable_date": "2021-07-26",
+        "process_date": "2021-07-26",
+        "rate": 0.01,
+        "record_date": "2021-06-28",
+        "special": false,
+        "symbol": "GE"
+      },
+      {
+        "cusip": "369604301",
+        "ex_date": "2021-09-24",
+        "foreign": false,
+        "id": "15358611-6852-4ece-b4f0-4be7b2dcd5c5",
+        "payable_date": "2021-10-25",
+        "process_date": "2021-10-25",
+        "rate": 0.08,
+        "record_date": "2021-09-27",
+        "special": false,
+        "symbol": "GE"
+      }
+    ],
+    "reverse_splits": [
+      {
+        "ex_date": "2021-08-02",
+        "id": "74199d56-24db-4226-9678-6363edc1531d",
+        "new_cusip": "369604301",
+        "new_rate": 1,
+        "old_cusip": "369604103",
+        "old_rate": 8,
+        "payable_date": "2021-08-02",
+        "process_date": "2021-08-02",
+        "record_date": "2021-08-02",
+        "symbol": "GE"
+      }
+    ]
+  },
+  "next_page_token": null
+}

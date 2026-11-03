@@ -147,3 +147,7 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Commit: `a84d67d stage-12: close remaining gaps` (from `5d54c0d`); `git status --short` → clean. Merge: `main` fast-forwarded to `a84d67d`; `git branch --merged main` lists `stage-12-events-sentiment`.
 - On merged `main`: `uv run pytest -q` → 1396 passed, 11 deselected; `make check` → exit 0; brief's Verify → 183 passed · raw: `artifacts/merged-main-check-gaps.txt`.
 - Records-only commit `stage-12: gap follow-up merge records` (this entry, the evidence lines, the plan's A6 box), fast-forwarded into `main`, as for the stage commit.
+
+## 2026-11-02 — Phase 1 checkpoint follow-up (Tier 2): `PROGRAMMING_ERRORS` moved
+- Owner's words: "Start Tier 2". Report: [stage-14 artifacts/phase1-checkpoint-2026-11-02-report.md](../stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-02-report.md). No behaviour change here: `PROGRAMMING_ERRORS` moved from `atlas.data.events.earnings` to `atlas.data.providers.base` so Stage 11's Yahoo news adapter can share it; `earnings.py` imports it. Brief's Verify `tests/unit/data/events tests/unit/data/sentiment` → 183 passed, 4 deselected (incl. `test_yahoo_programming_error_not_retried`); full suite 2131 passed · raw: [stage-07 artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt](../stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt)
+- Code files changed: `src/atlas/data/events/earnings.py`.

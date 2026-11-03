@@ -1,0 +1,190 @@
+{
+  "news": [
+    {
+      "author": "Neer Varshney",
+      "content": "",
+      "created_at": "2020-03-02T10:14:12Z",
+      "headline": "Amazon Confirms Two Cases Of Coronavirus Among Employees",
+      "id": 15452001,
+      "images": [],
+      "source": "",
+      "summary": "",
+      "symbols": [
+        "AAPL",
+        "HYMTF",
+        "MSFT"
+      ],
+      "updated_at": "2020-03-02T10:14:12Z",
+      "url": "https://www.benzinga.com/node/15452001"
+    },
+    {
+      "author": "Charles Gross",
+      "content": "",
+      "created_at": "2020-03-02T10:33:12Z",
+      "headline": "Chinese Government Said to Consider Offering Subsidies for 5G Phone Sales",
+      "id": 15452338,
+      "images": [],
+      "source": "",
+      "summary": "",
+      "symbols": [
+        "AAPL",
+        "QCOM",
+        "SSNLF"
+      ],
+      "updated_at": "2020-03-02T10:33:12Z",
+      "url": "https://www.benzinga.com/node/15452338"
+    },
+    {
+      "author": "Vick Meyer",
+      "content": "",
+      "created_at": "2020-03-02T11:19:42Z",
+      "headline": "Oppenheimer Upgrades Apple to Outperform, Announces $320 Price Target",
+      "id": 15452602,
+      "images": [],
+      "source": "",
+      "summary": "",
+      "symbols": [
+        "AAPL"
+      ],
+      "updated_at": "2020-03-02T11:19:43Z",
+      "url": "https://www.benzinga.com/node/15452602"
+    },
+    {
+      "author": "Lisa Levin",
+      "content": "",
+      "created_at": "2020-03-02T11:45:40Z",
+      "headline": "A Peek Into The Markets: US Stock Futures Down Ahead Of Manufacturing Reports",
+      "id": 15452708,
+      "images": [],
+      "source": "",
+      "summary": "",
+      "symbols": [
+        "AAPL",
+        "ATV",
+        "MINI",
+        "MRK",
+        "WSC",
+        "XRAY"
+      ],
+      "updated_at": "2020-03-02T11:45:40Z",
+      "url": "https://www.benzinga.com/node/15452708"
+    },
+    {
+      "author": "Lisa Levin",
+      "content": "",
+      "created_at": "2020-03-02T14:40:22Z",
+      "headline": "Benzinga's Top Upgrades, Downgrades For March 2, 2020",
+      "id": 15455607,
+      "images": [],
+      "source": "",
+      "summary": "",
+      "symbols": [
+        "AAPL",
+        "AAXN",
+        "AKRO",
+        "BEAM",
+        "BIDU",
+        "CF",
+        "CHDN",
+        "CHGG",
+        "CRL",
+        "CSPR",
+        "CTLT",
+        "CVGW",
+        "EQT",
+        "FHN",
+        "FITB",
+        "FLMN",
+        "GDEN",
+        "GE",
+        "HFC",
+        "HXL",
+        "ICLR",
+        "IQV",
+        "JPM",
+        "LADR",
+        "LDOS",
+        "MASI",
+        "MTBC",
+        "MTZ",
+        "MU",
+        "NCMI",
+        "NXTC",
+        "OKE",
+        "PAAS",
+        "PPD",
+        "RF",
+        "SDC",
+        "SDGR",
+        "VZ",
+        "WDC"
+      ],
+      "updated_at": "2020-03-02T14:40:22Z",
+      "url": "https://www.benzinga.com/node/15455607"
+    },
+    {
+      "author": "Vick Meyer",
+      "content": "",
+      "created_at": "2020-03-02T16:04:05Z",
+      "headline": "Cascend Reiterates Buy on Apple, Lowers Price Target to $350",
+      "id": 15456666,
+      "images": [],
+      "source": "",
+      "summary": "",
+      "symbols": [
+        "AAPL"
+      ],
+      "updated_at": "2020-03-02T16:04:05Z",
+      "url": "https://www.benzinga.com/node/15456666"
+    },
+    {
+      "author": "Wayne Duggan",
+      "content": "",
+      "created_at": "2020-03-02T21:05:25Z",
+      "headline": "Here's How Large Option Traders Are Playing Apple Following Coronavirus Sell-Off",
+      "id": 15459278,
+      "images": [],
+      "source": "",
+      "summary": "",
+      "symbols": [
+        "AAPL"
+      ],
+      "updated_at": "2020-03-02T21:05:25Z",
+      "url": "https://www.benzinga.com/node/15459278"
+    },
+    {
+      "author": "Tanzeel Akhtar",
+      "content": "",
+      "created_at": "2020-03-02T21:21:18Z",
+      "headline": "The Coronavirus Outbreak's Impact On Global Stocks, Commodities, ETFs",
+      "id": 15456940,
+      "images": [],
+      "source": "",
+      "summary": "",
+      "symbols": [
+        "AAPL",
+        "AMZN",
+        "APT",
+        "CCL",
+        "CODX",
+        "FB",
+        "GOOG",
+        "GOOGL",
+        "IWM",
+        "KO",
+        "LULU",
+        "MGM",
+        "MLCO",
+        "MSFT",
+        "NCLH",
+        "QQQ",
+        "RCL",
+        "SPY",
+        "WYNN"
+      ],
+      "updated_at": "2020-03-02T21:21:18Z",
+      "url": "https://www.benzinga.com/node/15456940"
+    }
+  ],
+  "next_page_token": null
+}

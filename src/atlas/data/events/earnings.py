@@ -35,7 +35,7 @@ from atlas.core.types.base import FrozenDict
 from atlas.core.types.instruments import normalize_symbol, vendor_symbol
 from atlas.data.events.base import EVENTS, classify_time_of_day, empty_events, normalize_events
 from atlas.data.fundamentals.edgar_client import CikMap, EdgarClient
-from atlas.data.providers.base import RetryPolicy, Throttle, call_with_retry
+from atlas.data.providers.base import PROGRAMMING_ERRORS, RetryPolicy, Throttle, call_with_retry
 
 _log = get_logger(__name__)
 
@@ -266,9 +266,6 @@ CalendarFn = Callable[[str], Mapping[str, Any]]
 
 SCHEDULED_COLUMNS: Final = ("symbol", "event_type", "event_date")
 """Columns of `EarningsCalendarProvider.fetch_upcoming`."""
-
-PROGRAMMING_ERRORS: Final = (TypeError, AttributeError, NameError, AssertionError)
-"""Errors that mean a bug, not an outage: raised at once, never retried."""
 
 
 class _VendorError(Exception):

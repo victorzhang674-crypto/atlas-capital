@@ -7,8 +7,9 @@ answered HTTP 404 when this adapter was written (2026-10-29). Each item carries 
 `publisher`, `link`, `providerPublishTime` (epoch seconds) and `relatedTickers`; there is no
 summary. Items missing `uuid`, `title` or `providerPublishTime` are skipped. A symbol request
 keeps the articles tagged with one of the requested symbols; a market-wide request asks for
-`market_symbols` and keeps everything. Any exception raised inside the fetch function is
-retried and, when retries run out, raised as `DataError` (as in the yfinance price adapter).
+`market_symbols` and keeps everything. An exception raised inside the fetch function is
+retried and, when retries run out, raised as `DataError`; a programming error
+(`PROGRAMMING_ERRORS`: a bug, not an outage) propagates at once, as in Stage 12's calendar.
 """
 
 import time
@@ -24,7 +25,7 @@ from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.core.types.instruments import vendor_symbol
 from atlas.data.news.base import RAW_COLUMNS, check_news_window, empty_news, normalize_news
-from atlas.data.providers.base import RetryPolicy, Throttle, call_with_retry
+from atlas.data.providers.base import PROGRAMMING_ERRORS, RetryPolicy, Throttle, call_with_retry
 
 NewsFn = Callable[[str], list[dict[str, Any]]]
 """`vendor symbol -> Yahoo news items` (see the module docstring for the item fields)."""
@@ -83,16 +84,28 @@ class YahooNewsProvider:
         self._throttle.wait()
         ticker = vendor_symbol(symbol)
         items = call_with_retry(
-            lambda: self._news_fn(ticker),
+            lambda: self._call(ticker),
             self._policy,
             self._sleep,
             f"yahoo news {ticker}",
-            (Exception,),
+            (_VendorError,),
             event="news.request_failed",
         )
         if not isinstance(items, list):
             raise DataError(f"yahoo news {ticker}: expected a list of items")
         return items
+
+    def _call(self, ticker: str) -> list[Any]:
+        try:
+            return self._news_fn(ticker)
+        except PROGRAMMING_ERRORS:
+            raise
+        except Exception as exc:
+            raise _VendorError(f"{type(exc).__name__}: {exc}") from exc
+
+
+class _VendorError(Exception):
+    """Any other failure inside the news function: retried."""
 
 
 def _row(item: Any) -> dict[str, Any] | None:

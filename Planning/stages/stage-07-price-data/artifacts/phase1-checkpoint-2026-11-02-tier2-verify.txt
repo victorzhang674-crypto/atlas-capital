@@ -1,0 +1,57 @@
+######## uv run ruff check . / ruff format --check . / mypy src/atlas
+All checks passed!
+206 files already formatted
+Success: no issues found in 88 source files
+######## uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 4.59 s (limit 20 s)
+2131 passed, 14 deselected in 105.39s (0:01:45)
+ - ... skipped remainder
+######## Verify commands
+$ uv run pytest tests/unit/core/storage -q
+1 failed, 138 passed in 30.93s
+exit=1
+$ uv run pytest tests/unit/data -q
+944 passed, 13 deselected in 57.27s
+exit=0
+$ uv run pytest tests/unit/data/news -q
+131 passed, 2 deselected in 6.99s
+exit=0
+$ uv run pytest tests/unit/data/events tests/unit/data/sentiment -q (loop quoting error, exit 4; re-run below)
+exit=4
+$ uv run pytest tests/unit/cli -q
+20 passed in 6.73s
+exit=0
+$ uv run pytest tests/unit/data/events tests/unit/data/sentiment -q   (re-run)
+183 passed, 4 deselected in 7.42s
+exit=0
+$ uv run pytest tests/unit/core/storage -q -rf  (x3 re-runs, after one earlier failure under load)
+139 passed x3
+$ 1M-row upsert alone (-s): 5.63 s best of 5.63/6.99/6.66 (load ~8)
+
+######## make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+206 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 4.73 s (limit 20 s)
+2131 passed, 14 deselected in 118.74s (0:01:58)
+ - ... skipped remainder
+exit=0
+######## uv run pytest tests/unit/data -m live -v -rs
+tests/unit/data/events/test_events_live.py::test_live_aapl_earnings_events PASSED
+tests/unit/data/events/test_events_live.py::test_live_fred_release_dates PASSED
+tests/unit/data/events/test_events_live.py::test_live_yahoo_calendar PASSED
+tests/unit/data/fundamentals/test_fundamentals_live.py::test_live_edgar_aapl PASSED
+tests/unit/data/macro/test_macro_live.py::test_live_fred_cpi PASSED
+tests/unit/data/news/test_news_live.py::test_live_alpaca_news PASSED
+tests/unit/data/news/test_news_live.py::test_live_yahoo_news PASSED
+tests/unit/data/sentiment/test_sentiment_live.py::test_live_download_lm_lexicon PASSED
+tests/unit/data/test_price_live.py::test_yfinance_live_smoke PASSED
+tests/unit/data/test_price_live.py::test_alpaca_live_smoke PASSED
+tests/unit/data/test_price_live.py::test_yfinance_live_actions PASSED
+tests/unit/data/test_price_live.py::test_alpaca_live_actions PASSED
+tests/unit/data/test_universe.py::test_live_wikipedia_pages_parse PASSED
+================ 13 passed, 944 deselected in 193.81s (0:03:13) ================

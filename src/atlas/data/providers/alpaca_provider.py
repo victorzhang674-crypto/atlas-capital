@@ -4,7 +4,10 @@ no trading endpoint is touched here.
 Daily bars come from `GET /v2/stocks/bars` twice per batch: `adjustment=raw` gives the
 contract's raw OHLCV and `adjustment=all` gives `adj_close` (its close). Corporate actions come
 from `GET /v1/corporate-actions` (forward and reverse splits, cash dividends; other kinds such
-as stock dividends and spin-offs are not mapped). Both endpoints are paged with
+as stock dividends and spin-offs are not mapped). Alpaca lists an action once per CUSIP, so a
+CUSIP change repeats it: identical actions are kept once, and different cash dividends with
+one ex-date (regular plus special) become one row with their total, as Yahoo reports them
+(the `corporate_actions` key is symbol, ex-date and type). Both endpoints are paged with
 `next_page_token`. Transport errors, HTTP 429 and 5xx are retried (see `PriceDataConfig`);
 any other HTTP error raises `DataError` at once. The API keys are sent only as request
 headers and never appear in logs, errors or `repr`.
@@ -136,7 +139,7 @@ class AlpacaPriceProvider:
             return empty_actions()
         out = normalize_actions(pd.DataFrame(rows))
         keep = (out["ex_date"] >= start) & (out["ex_date"] <= end)
-        return out[keep].reset_index(drop=True)
+        return _merge_repeats(out[keep])
 
     # --- HTTP ---------------------------------------------------------------------------------
 
@@ -226,6 +229,20 @@ def _instant(day: date, at: dtime) -> str:
 
 def _parse_ts(text: str) -> datetime:
     return datetime.fromisoformat(text.replace("Z", "+00:00"))
+
+
+def _merge_repeats(actions: pd.DataFrame) -> pd.DataFrame:
+    """`actions` with identical rows kept once and the cash dividends of one symbol and
+    ex-date summed into one row."""
+    unique = actions.drop_duplicates(["symbol", "ex_date", "type", "ratio", "amount"])
+    dividends = unique[unique["type"] == "dividend"]
+    summed = dividends.groupby(["symbol", "ex_date"], as_index=False, sort=False).agg(
+        type=("type", "first"),
+        ratio=("ratio", "first"),
+        amount=("amount", "sum"),
+        vendor=("vendor", "first"),
+    )
+    return normalize_actions(pd.concat([unique[unique["type"] != "dividend"], summed]))
 
 
 def _action_rows(actions: dict[str, Any], batch: set[str]) -> list[dict[str, object]]:

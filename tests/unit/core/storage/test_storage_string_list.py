@@ -72,6 +72,16 @@ def test_string_list_null_cell_only_if_nullable(tmp_path: Path) -> None:
     assert list(lake.read_table("tagged")["tags"]) == [("AAPL",), None]
 
 
+@pytest.mark.parametrize("missing", [pd.NA, np.nan, None], ids=["pd.NA", "nan", "None"])
+def test_string_list_missing_markers_are_null(tmp_path: Path, missing: object) -> None:
+    # Phase 1 checkpoint, Tier 2 (Stage 11 Backlog): pd.NA was rejected as "not a list".
+    with pytest.raises(DataError, match="null"):
+        validate_frame(_schema(), _frame([["AAPL"], missing]))
+    lake = _lake(tmp_path, _schema(nullable=True))
+    lake.write_table("tagged", _frame([["AAPL"], missing]), mode="upsert")
+    assert list(lake.read_table("tagged")["tags"]) == [("AAPL",), None]
+
+
 def test_string_list_not_in_key_or_partition() -> None:
     columns = (
         Column(name="id", dtype=ColumnType.STRING),

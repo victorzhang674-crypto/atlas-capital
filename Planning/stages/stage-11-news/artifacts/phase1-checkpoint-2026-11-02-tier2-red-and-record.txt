@@ -1,0 +1,11 @@
+E       TypeError: bug in the news function
+event = 'news.request_failed'
+        event: str = "prices.request_failed",
+        named `event`. When every attempt failed, raises `DataError` naming `what`, chained to the
+>                   raise DataError(f"{what} failed after {attempts} attempt(s): {exc}") from exc
+E                   atlas.core.errors.DataError: yahoo news AAPL failed after 4 attempt(s): bug in the news function
+######## recorded news answer
+wrote alpaca_news_aapl_recorded.json: 8 items; adapter kept 8 articles; next_page_token=None
+######## mutant (no empty-source fallback) vs test_parses_recorded_answer
+FAILED tests/unit/data/news/test_news_alpaca.py::test_parses_recorded_answer
+1 failed, 20 deselected in 0.37s

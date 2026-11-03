@@ -71,3 +71,10 @@ Owner request (see worklog, 2026-11-02). Re-run in this chat on `8056137`, befor
 - Acceptance criteria still met (the live backfill was not re-run: nothing it covers changed). Report: [artifacts/phase1-checkpoint-2026-11-02-report.md](artifacts/phase1-checkpoint-2026-11-02-report.md)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 2) — 2026-11-02
+- Red before the fix and `atlas data status` on the main lake (read-only): `prices (listed >= 8y)` 475/475 · raw: [artifacts/phase1-checkpoint-2026-11-02-tier2-status.txt](artifacts/phase1-checkpoint-2026-11-02-tier2-status.txt)
+- `uv run pytest tests/unit/cli -q` → 20 passed; full suite 2131 passed; `make check` exit 0 · raw: [stage-07 artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt](../stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt)
+- Acceptance criteria (M1 coverage) still met and now shown directly by the brief's Verify command.
+
+**Result:** ALL CRITERIA VERIFIED

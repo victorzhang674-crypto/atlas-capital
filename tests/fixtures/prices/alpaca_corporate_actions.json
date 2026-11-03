@@ -1,56 +1,55 @@
 {
   "corporate_actions": {
-    "forward_splits": [
-      {
-        "id": "fs-1",
-        "symbol": "AAPL",
-        "cusip": "037833100",
-        "new_rate": 4,
-        "old_rate": 1,
-        "process_date": "2020-08-31",
-        "ex_date": "2020-08-31",
-        "record_date": "2020-08-24",
-        "payable_date": "2020-08-28"
-      }
-    ],
-    "reverse_splits": [
-      {
-        "id": "rs-1",
-        "symbol": "XYZ",
-        "old_cusip": "000000000",
-        "new_cusip": "000000001",
-        "new_rate": 1,
-        "old_rate": 10,
-        "process_date": "2020-09-01",
-        "ex_date": "2020-09-01",
-        "record_date": "2020-09-01",
-        "payable_date": "2020-09-01"
-      }
-    ],
     "cash_dividends": [
       {
-        "id": "cd-1",
-        "symbol": "AAPL",
         "cusip": "037833100",
-        "rate": 0.82,
-        "special": false,
-        "foreign": false,
-        "process_date": "2020-08-13",
         "ex_date": "2020-08-07",
+        "foreign": false,
+        "id": "d09386ae-0c2b-4280-8aa0-295e545354b1",
+        "payable_date": "2020-08-13",
+        "process_date": "2020-08-13",
+        "rate": 0.82,
         "record_date": "2020-08-10",
-        "payable_date": "2020-08-13"
+        "special": false,
+        "symbol": "AAPL"
       },
       {
-        "id": "cd-2",
-        "symbol": "SPY",
-        "cusip": "78462F103",
-        "rate": 1.339,
-        "special": false,
+        "cusip": "037833100",
+        "ex_date": "2020-11-06",
         "foreign": false,
-        "process_date": "2020-10-30",
+        "id": "43032b74-6743-4fef-9a10-de51c464a480",
+        "payable_date": "2020-11-12",
+        "process_date": "2020-11-12",
+        "rate": 0.205,
+        "record_date": "2020-11-09",
+        "special": false,
+        "symbol": "AAPL"
+      },
+      {
+        "cusip": "78462F103",
         "ex_date": "2020-09-18",
+        "foreign": false,
+        "id": "ffb8940e-53fe-4b3e-a475-e15e39561d3d",
+        "payable_date": "2020-10-30",
+        "process_date": "2020-10-30",
+        "rate": 1.339224,
         "record_date": "2020-09-21",
-        "payable_date": "2020-10-30"
+        "special": false,
+        "symbol": "SPY"
+      }
+    ],
+    "forward_splits": [
+      {
+        "cusip": "037833100",
+        "due_bill_redemption_date": "2020-09-01",
+        "ex_date": "2020-08-31",
+        "id": "d209b6c2-9231-474c-a80e-1a79dacadbb2",
+        "new_rate": 4,
+        "old_rate": 1,
+        "payable_date": "2020-08-28",
+        "process_date": "2020-08-31",
+        "record_date": "2020-08-24",
+        "symbol": "AAPL"
       }
     ]
   },

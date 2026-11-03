@@ -118,6 +118,23 @@ def test_errors_retried_then_data_error() -> None:
     assert len(recovered) == 20
 
 
+def test_programming_error_not_retried() -> None:
+    # Phase 1 checkpoint, Tier 2: a bug in the fetch function is not a vendor outage
+    # (as Stage 12's calendar adapter).
+    calls: list[str] = []
+
+    def broken(symbol: str) -> list[dict[str, Any]]:
+        calls.append(symbol)
+        raise TypeError("bug in the news function")
+
+    sleeps: list[float] = []
+    provider = YahooNewsProvider(NewsConfig(), news_fn=broken, sleep=sleeps.append)
+    with pytest.raises(TypeError, match="bug"):
+        provider.fetch_news(["AAPL"], START, END)
+    assert calls == ["AAPL"]
+    assert sleeps == []
+
+
 def test_non_list_answer_is_data_error() -> None:
     feed = _Feed({})
     feed.answers = {"AAPL": {"news": []}}  # type: ignore[dict-item]

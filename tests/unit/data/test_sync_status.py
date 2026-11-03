@@ -155,6 +155,35 @@ def test_price_coverage_counts_eight_years(status: LakeStatus) -> None:
     assert status.members == 4
 
 
+@pytest.mark.parametrize(
+    ("ccc_from", "total", "missing"),
+    [
+        (date(2015, 1, 1), 3, ("DDD",)),  # vendor asked from 2015: CCC's history is short
+        (date(2016, 12, 1), 4, ("CCC", "DDD")),  # never asked 8 years back: a real gap
+    ],
+)
+def test_price_coverage_of_members_listed_eight_years(
+    tmp_lake: Lake, cfg: AtlasConfig, ccc_from: date, total: int, missing: tuple[str, ...]
+) -> None:
+    # Phase 1 checkpoint, Tier 2: the owner-approved M1 reading (Decisions log 2026-11-01)
+    # counts members whose vendor history is at least 8 years long. A member is left out of
+    # it only when the sync asked the vendor for more than 8 years and the first bar came
+    # later; no bars at all, or a window never asked for, stays missing.
+    build(tmp_lake, cfg)
+    state = SyncState.load(state_path(tmp_lake, cfg))
+    state.record(
+        "prices", ["CCC"], ccc_from, date(2024, 10, 31), synced_at=datetime(2024, 11, 1, tzinfo=UTC)
+    )
+    state.save()
+    with use_clock(SimClock(start=TODAY)):
+        result = lake_status(tmp_lake, cfg)
+    raw, listed = result.coverage[0], result.coverage[1]
+    assert (raw.dataset, raw.covered, raw.total) == ("prices", 2, 4)
+    assert listed.dataset == "prices (listed >= 8y)"
+    assert (listed.covered, listed.total, listed.missing) == (2, total, missing)
+    assert [c.dataset for c in result.coverage[2:]] == ["fundamentals", "macro", "news", "events"]
+
+
 def test_fundamentals_and_macro_coverage(status: LakeStatus, cfg: AtlasConfig) -> None:
     fundamentals = line(status, "fundamentals")
     assert (fundamentals.covered, fundamentals.total) == (2, 4)

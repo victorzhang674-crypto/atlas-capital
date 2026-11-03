@@ -61,3 +61,13 @@ Owner request (Phase 1 checkpoint; see worklog, 2026-11-02). Run in this chat on
 
 **Result:** ALL CRITERIA VERIFIED
 - On merged `main` (`7ae6924`, fast-forward from `8056137`; owner's Terminal panel): `uv run pytest -q` → 2120 passed; integration 1 passed; ruff, format, mypy clean; brief's Verify → 936 passed; `make check` → exit 0; branch merged; checkout clean; AVB re-synced into the main lake (714 price keys) · raw: [artifacts/phase1-checkpoint-2026-11-02-merged-main-check.txt](artifacts/phase1-checkpoint-2026-11-02-merged-main-check.txt)
+
+#### Phase 1 checkpoint follow-up (Tier 2) — 2026-11-02
+Owner request ("Start Tier 2"; see worklog, 2026-11-02). Run in this chat on the working tree (base `0b0ab15`); covers the Tier 2 changes in Stages 06, 07, 11, 12 and 14:
+- Red before the fix: 2 new Alpaca action tests failed · raw: [artifacts/phase1-checkpoint-2026-11-02-tier2-red-before-fix.txt](artifacts/phase1-checkpoint-2026-11-02-tier2-red-before-fix.txt)
+- Fixtures recorded from real Alpaca responses · raw: [artifacts/phase1-checkpoint-2026-11-02-tier2-record-alpaca.txt](artifacts/phase1-checkpoint-2026-11-02-tier2-record-alpaca.txt)
+- `ruff check .` → All checks passed!; `ruff format --check .` → 206 files already formatted; `mypy src/atlas` → Success (88 files); `uv run pytest -q` → 2131 passed, 0 failed, 14 deselected; `make check` → exit 0 · raw: [artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt](artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt)
+- `uv run pytest tests/unit/data -q` (brief's Verify) → 944 passed, 13 deselected; `-m live` → 13 passed, 0 skipped (same file)
+- Acceptance criteria still evidenced: every test named at DONE passed in the brief's Verify.
+
+**Result:** ALL CRITERIA VERIFIED

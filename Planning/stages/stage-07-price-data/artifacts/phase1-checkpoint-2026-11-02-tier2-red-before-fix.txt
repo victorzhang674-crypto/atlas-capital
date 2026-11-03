@@ -1,0 +1,8 @@
+E       AssertionError: assert [(datetime.da...idend', 0.01)] == [(datetime.da...01 ± 1.0e-08)]
+E         
+E         Left contains one more item: (datetime.date(2021, 6, 25), 'dividend', 0.01)
+E         Use -v to get more diff
+E       assert 4 == 2
+E        +  where 4 = len(  symbol     ex_date      type  ratio  amount  vendor\n0    XYZ  2020-09-01  dividend    NaN     0.5  alpaca\n1    XYZ  ...1.0  alpaca\n2    XYZ  2020-09-01     split    2.0     NaN  alpaca\n3    XYZ  2020-09-01     split    2.0     NaN  alpaca)
+FAILED tests/unit/data/test_price_alpaca.py::test_action_listed_once_per_cusip_is_counted_once
+FAILED tests/unit/data/test_price_alpaca.py::test_dividends_on_one_ex_date_are_summed

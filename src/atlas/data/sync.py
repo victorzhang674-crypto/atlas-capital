@@ -1596,8 +1596,12 @@ def lake_status(lake: Lake, config: AtlasConfig, *, as_of: date | None = None) -
 
     Coverage (the M1 acceptance numbers), over the current members of `data.sync.universe`:
     `prices` — first and last stored bar at least `data.sync.status_min_price_years` years
-    (of 365.25 days) apart; `fundamentals` — at least one stored fact; `news` — at least one
-    tagged article; `events` — at least one earnings event. `macro` — catalog series
+    (of 365.25 days) apart; `prices (listed >= Ny)` — the same, over the members whose vendor
+    history is that long (the owner-approved M1 reading, Decisions log 2026-11-01): a member
+    is left out only when the checkpoint shows its prices were asked for from before the
+    N-year mark and its first stored bar is after it (a younger listing); `fundamentals` — at
+    least one stored fact; `news` — at least one tagged article; `events` — at least one
+    earnings event. `macro` — catalog series
     (`data.macro.series_file`) with at least one observation.
     """
     day = as_of if as_of is not None else get_clock().today()
@@ -1620,10 +1624,17 @@ def lake_status(lake: Lake, config: AtlasConfig, *, as_of: date | None = None) -
             "SELECT symbol, min(date) AS first, max(date) AS last FROM {src} GROUP BY symbol",
         )
         years = settings.status_min_price_years
+        mark = day - timedelta(days=years * 365.25)
         enough: set[str] = set()
+        short: set[str] = set()
         if not spans.empty:
             days = (pd.to_datetime(spans["last"]) - pd.to_datetime(spans["first"])).dt.days
             enough = set(spans.loc[days.to_numpy() >= years * 365.25, "symbol"])
+            firsts = pd.to_datetime(spans["first"]).dt.date
+            for symbol, first in zip(spans["symbol"], firsts, strict=True):
+                asked = state.coverage("prices", str(symbol))
+                if symbol not in enough and asked is not None and asked.start <= mark < first:
+                    short.add(str(symbol))
         facts = _per_key(con, lake, "fundamentals_facts", "SELECT DISTINCT symbol FROM {src}")
         tagged = _per_key(con, lake, "news", "SELECT DISTINCT unnest(symbols) AS symbol FROM {src}")
         earnings = _per_key(
@@ -1645,8 +1656,16 @@ def lake_status(lake: Lake, config: AtlasConfig, *, as_of: date | None = None) -
 
     catalog = load_macro_series(config.data.macro.series_file).ids
     have_series = column(observed, "series_id")
+    listed = tuple(m for m in members if m not in short)
     coverage = (
         of_members("prices", f">= {years:g} years of daily prices", enough),
+        CoverageLine(
+            f"prices (listed >= {years:g}y)",
+            f">= {years:g} years, members with that much vendor history",
+            sum(1 for m in listed if m in enough),
+            len(listed),
+            tuple(m for m in listed if m not in enough),
+        ),
         of_members("fundamentals", "at least one stored XBRL fact", column(facts, "symbol")),
         CoverageLine(
             "macro",

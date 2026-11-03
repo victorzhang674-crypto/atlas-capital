@@ -94,7 +94,9 @@ matter most for a backfill:
   `config/cik_overrides.yaml` adds former members since 2018. Members that left in 2015–2017
   get "no CIK" (fundamentals and earnings `empty`).
 - **Short histories.** Companies listed after the window start (spin-offs, IPOs) have fewer
-  years of prices; `atlas data status` counts them against the 8-year rule.
+  years of prices; `atlas data status` counts them against the 8-year rule in its `prices` line
+  and leaves them out of its `prices (listed >= 8y)` line (members whose prices were asked for
+  from before the 8-year mark but start after it).
 - **Mixed vendors.** A symbol served by the Alpaca fallback has IEX-only volume; the quality
   report warns (`vendor_mix`).
 - **News depth.** Without Alpaca keys news is Yahoo's recent headlines only. Untagged
@@ -128,7 +130,8 @@ matter most for a backfill:
    15 minutes).
 5. **Check**: `uv run atlas data status` (read-only, safe while a sync runs) shows rows, keys
    and date ranges per table, the last sync per dataset, coverage of the current members
-   (≥ 8 years of prices, fundamentals, every macro series, news, earnings) and the latest
+   (≥ 8 years of prices, raw and over members listed that long, fundamentals, every macro
+   series, news, earnings) and the latest
    persisted quality report. `uv run atlas data quality --as-of D [--persist]` runs the quality
    checks for one decision day.
 6. **Start over** for one dataset by deleting its entries from the state file, or delete the

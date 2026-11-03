@@ -157,6 +157,11 @@ def check_request(symbols: Sequence[str], start: date, end: date) -> tuple[str, 
     return tuple(dict.fromkeys(normalize_symbol(s) for s in symbols))
 
 
+PROGRAMMING_ERRORS: Final = (TypeError, AttributeError, NameError, AssertionError)
+"""Errors that mean a bug, not an outage: an adapter that wraps a vendor function raises them
+at once and never retries them."""
+
+
 @dataclass(frozen=True)
 class RetryPolicy:
     """Retry and rate-limit settings for vendor requests (seconds)."""

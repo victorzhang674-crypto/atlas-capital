@@ -17,8 +17,9 @@ Column types and how they are stored (Arrow) and read back (pandas):
 | `timestamp` | `timestamp[us, tz=UTC]` | `datetime64[us, UTC]` |
 | `string_list` | `list<string>` | `object` holding `tuple[str, ...]` (Stage 11 `news.symbols`) |
 
-A `string_list` cell is a list, tuple or numpy array of strings (no null items); it may not be
-part of the primary key or the partitioning, and the lake does not filter on it.
+A `string_list` cell is a list, tuple or numpy array of strings (no null items), or a missing
+value (`None`, `NaN`, `pd.NA`: null); it may not be part of the primary key or the
+partitioning, and the lake does not filter on it.
 """
 
 import hashlib
@@ -354,7 +355,7 @@ def _date_array(where: str, series: pd.Series) -> pa.Array:
 def _string_list_array(where: str, series: pd.Series) -> pa.Array:
     cells: list[list[str] | None] = []
     for value in series:
-        if value is None or (isinstance(value, float) and np.isnan(value)):
+        if value is None or value is pd.NA or (isinstance(value, float) and np.isnan(value)):
             cells.append(None)
             continue
         if not isinstance(value, list | tuple | np.ndarray):

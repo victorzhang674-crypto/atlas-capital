@@ -75,3 +75,10 @@ Owner-requested follow-up (see worklog, 2026-11-02): duckdb/pyarrow floors raise
 - On merged `main` (`be247fb`, fast-forward from `81ada1e`; run in the owner's Terminal panel, the sandbox cannot write the main checkout): `uv lock --check` exit 0; `uv run pytest -q` → 2116 passed; `uv run pytest -m integration -q` → 1 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 206 files already formatted; `mypy src/atlas` → Success (88 files); the briefs' Verify commands → 207 passed (02), 136 passed (06); `uv run pre-commit run --all-files` → all four hooks Passed; `make check` → exit 0 (2116 passed); `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all commands exit 0 · raw: [stage-01 artifacts/checkpoint-2026-11-02-tier4-merged-main-check.txt](../stage-01-project-scaffolding/artifacts/checkpoint-2026-11-02-tier4-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 2) — 2026-11-02
+- Red before the fix · raw: [artifacts/phase1-checkpoint-2026-11-02-tier2-red-before-fix.txt](artifacts/phase1-checkpoint-2026-11-02-tier2-red-before-fix.txt)
+- `uv run pytest tests/unit/core/storage -q` (brief's Verify) → 139 passed (three runs; one earlier run had the load-sensitive 1M-row upsert timing fail, see worklog); full suite 2131 passed; `make check` exit 0 · raw: [stage-07 artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt](../stage-07-price-data/artifacts/phase1-checkpoint-2026-11-02-tier2-verify.txt)
+- Acceptance criteria unchanged and still evidenced.
+
+**Result:** ALL CRITERIA VERIFIED

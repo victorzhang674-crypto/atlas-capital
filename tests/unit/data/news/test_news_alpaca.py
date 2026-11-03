@@ -196,3 +196,21 @@ def test_from_config_without_keys_is_none() -> None:
     provider = AlpacaNewsProvider.from_config(cfg)
     assert isinstance(provider, AlpacaNewsProvider)
     provider.close()
+
+
+def test_parses_recorded_answer() -> None:
+    # Phase 1 checkpoint, Tier 2: a real answer (recorded 2026-11-02; summaries and images
+    # removed). Real 2020 items have an empty `source`, empty `summary` and `content`, and
+    # roundups tagged with up to 39 tickers.
+    page = _page("alpaca_news_aapl_recorded.json")
+    with respx.mock() as router:
+        router.get(URL).mock(return_value=httpx.Response(200, json=page))
+        out = _provider().fetch_news(["AAPL"], START, END)
+    assert tuple(out.columns) == ARTICLE_COLUMNS
+    assert len(out) == len(page["news"]) == 8
+    assert list(out["article_id"]) == [f"alpaca-{n['id']}" for n in page["news"]]
+    assert out["published_at"].min() >= START and out["published_at"].max() < END
+    assert set(out["source"]) == {"alpaca"}  # the empty vendor source falls back
+    assert all("AAPL" in tags for tags in out["symbols"])
+    assert max(len(tags) for tags in out["symbols"]) == 39
+    assert out["headline"].str.len().gt(0).all()

@@ -84,3 +84,8 @@ Credit-spread proxy before 2023 (21); `declared_at` for actions (39/40); point-i
 (16/19); free prices for delisted names and permanent security ids (no free source);
 news text edited after publication (32); untagged market-wide news; the `atlas.duckdb` lock
 exit (61/64); nanobind shutdown lines (upstream).
+
+## 4. Status (2026-11-02)
+- Tier 1: done (commit `7ae6924`, merged into `main`).
+- Tier 2: done. Item 4 found one more bug, also fixed: Alpaca repeats a corporate action once per CUSIP (GE's 2021-06-25 dividend came back twice). The news part of item 4 was done as an added real recording; the built pages stay for their designed edge cases.
+- Tiers 3–4: not started.
