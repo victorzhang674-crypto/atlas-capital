@@ -91,8 +91,8 @@ matter most for a backfill:
   bankrupt, so former members can lack prices (they are `empty` in the sync summary, not
   errors). Survivorship-free membership does not mean survivorship-free prices.
 - **Former members' fundamentals.** EDGAR's ticker map lists current registrants only;
-  `config/cik_overrides.yaml` adds former members since 2018. Members that left in 2015–2017
-  get "no CIK" (fundamentals and earnings `empty`).
+  `config/cik_overrides.yaml` adds every former member since 2015 (the default backfill start).
+  Members that left before 2015 get "no CIK" (fundamentals and earnings `empty`).
 - **Short histories.** Companies listed after the window start (spin-offs, IPOs) have fewer
   years of prices; `atlas data status` counts them against the 8-year rule in its `prices` line
   and leaves them out of its `prices (listed >= 8y)` line (members whose prices were asked for

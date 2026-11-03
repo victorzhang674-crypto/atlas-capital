@@ -1073,6 +1073,7 @@ def test_quality_defaults() -> None:  # Stage 13 D1
         "fundamentals_jump": "warning",
         "macro_gap": "warning",
         "vendor_mix": "warning",
+        "fundamentals_period_after_filing": "warning",
     }
 
 

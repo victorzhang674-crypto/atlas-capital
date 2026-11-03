@@ -186,6 +186,21 @@ def test_actions_reuse_the_daily_download() -> None:
     assert fake.split_calls == ["AAPL", "SPY"]
 
 
+def test_download_memo_is_bounded() -> None:
+    # Phase 1 checkpoint, Tier 3: the memo kept every downloaded window for the provider's life.
+    frames = {s: load_yf_symbol(s) for s in ("AAPL", "SPY")}
+    frames["QQQ"] = frames["SPY"]
+    fake = FakeYFinance(frames=frames, splits={})
+    provider = _provider(fake, memo_size=2)
+    out = provider.fetch_daily(["AAPL", "SPY", "QQQ"], START, END)  # more than the bound
+    assert sorted(set(out["symbol"])) == ["AAPL", "QQQ", "SPY"]
+    assert len(fake.download_calls) == 1
+    provider.fetch_daily(["SPY", "QQQ"], START, END)  # the two most recent: still memoised
+    assert len(fake.download_calls) == 1
+    provider.fetch_daily(["AAPL"], START, END)  # evicted: fetched again
+    assert [call[0] for call in fake.download_calls[1:]] == [["AAPL"]]
+
+
 def test_tz_aware_index_uses_new_york_date() -> None:
     frame = load_yf_symbol("SPY")
     frame.index = frame.index.tz_localize("America/New_York")

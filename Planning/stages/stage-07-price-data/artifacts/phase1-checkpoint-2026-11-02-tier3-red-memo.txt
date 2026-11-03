@@ -1,0 +1,4 @@
+E       pydantic_core._pydantic_core.ValidationError: 1 validation error for PriceDataConfig
+E       memo_size
+E         Extra inputs are not permitted [type=extra_forbidden, input_value=2, input_type=int]
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden

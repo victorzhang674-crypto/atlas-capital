@@ -2,57 +2,80 @@
 # atlas.data.fundamentals.load_cik_overrides; not part of load_config. company_tickers.json
 # lists current registrants only, so a former member either has no CIK there or resolves by
 # a ticker that may since belong to another company (APC is now ARKO Petroleum, STI is now
-# Solidion). Covers every symbol in the S&P 500 on or after 2018-01-01 (backtest window, spec
-# A7) that is not in today's constituents table. An entry replaces the company_tickers.json
+# Solidion). Covers every symbol in the S&P 500 on or after 2015-01-01 (the backfill's default
+# start) that is not in today's constituents table. An entry replaces the company_tickers.json
 # mapping of its symbol; cik: null means no verified SEC CIK (the symbol gets no fundamentals).
-# Built 2026-10-28 by Planning/stages/stage-09-fundamentals/artifacts/build_cik_overrides.py
-# (candidates: current ticker + EDGAR full-text search of the change-log name; accepted when the
-# SEC name or a former name matches and the CIK filed a 10-K/10-Q during the membership window),
-# then reviewed by hand (write_cik_overrides.py lists the hand-made picks and why).
+# Built 2026-10-28 (leavers since 2018) by Planning/stages/stage-09-fundamentals/artifacts/
+# build_cik_overrides.py and extended 2026-11-02 (leavers 2015-2017, Phase 1 checkpoint) by
+# phase1-checkpoint-2026-11-02-build-cik-overrides-2015.py (candidates: current ticker + EDGAR
+# full-text search of the change-log name; accepted when the SEC name or a former name matches
+# and the CIK filed a 10-K/10-Q during the membership window), then reviewed by hand (the
+# write_ scripts beside them list the hand-made picks and why).
 
-# The list, by symbol (164 entries).
+# The list, by symbol (242 entries).
 overrides:
+  - {symbol: AA, cik: 4281, name: "Alcoa", evidence: "Howmet Aerospace Inc.; 9 10-K/10-Q filed 2014-07-01..2016-11-01; found via full-text search"}
   - {symbol: AAL, cik: 6201, name: "American Airlines Group", evidence: "parent American Airlines Group Inc. (not subsidiary American Airlines, Inc. 4515)"}
   - {symbol: AAP, cik: 1158449, name: "Advance Auto Parts", evidence: "ADVANCE AUTO PARTS INC; 25 10-K/10-Q filed 2017-07-01..2023-08-25; found via current ticker"}
   - {symbol: ABMD, cik: 815094, name: "Abiomed", evidence: "ABIOMED INC; 18 10-K/10-Q filed 2018-05-31..2022-12-22; found via full-text search"}
+  - {symbol: ACE, cik: 20171, name: "Chubb", evidence: "CHUBB CORP: the change log removes 'ACE / Chubb' on 2016-01-19 when ACE Ltd acquired Chubb Corp and took its CB ticker; the removed company is Chubb Corp (ACE Ltd continues as today's CB, 896159)"}
   - {symbol: ADS, cik: 1101215, name: "Alliance Data Systems", evidence: "BREAD FINANCIAL HOLDINGS, INC.; 12 10-K/10-Q filed 2017-07-01..2020-06-22; found via full-text search"}
+  - {symbol: ADT, cik: 1546640, name: "ADT", evidence: "ADT Corp (2012 Tyco spin-off, taken private 2016); not Tyco/Johnson Controls 833444 or today's ADT Inc. 1703056"}
   - {symbol: AET, cik: 1122304, name: "Aetna", evidence: "AETNA INC /PA/; 6 10-K/10-Q filed 2017-07-01..2018-12-03; found via full-text search"}
   - {symbol: AGN, cik: 1578845, name: "Allergan", evidence: "Allergan plc; 14 10-K/10-Q filed 2017-07-01..2020-05-12; found via full-text search"}
   - {symbol: AIV, cik: 922864, name: "Aimco", evidence: "Apartment Investment & Management Co, the REIT that issued AIV (not its operating partnership 926660); change-log name 'Aimco'"}
   - {symbol: ALK, cik: 766421, name: "Alaska Air Group", evidence: "ALASKA AIR GROUP, INC.; 27 10-K/10-Q filed 2017-07-01..2023-12-18; found via current ticker"}
+  - {symbol: ALTR, cik: 768251, name: "Altera", evidence: "ALTERA CORP; 6 10-K/10-Q filed 2014-07-01..2015-12-29; found via full-text search"}
   - {symbol: ALXN, cik: 899866, name: "Alexion Pharmaceuticals", evidence: "ALEXION PHARMACEUTICALS, INC.; 17 10-K/10-Q filed 2017-07-01..2021-07-21; found via full-text search"}
   - {symbol: AMG, cik: 1004434, name: "Affiliated Managers Group", evidence: "AFFILIATED MANAGERS GROUP, INC.; 12 10-K/10-Q filed 2017-07-01..2019-12-23; found via current ticker"}
   - {symbol: AMTM, cik: 2011286, name: "Amentum", evidence: "Amentum Holdings, Inc.; 1 10-K/10-Q filed 2024-09-30..2024-12-23; found via current ticker"}
+  - {symbol: AN, cik: 350698, name: "AutoNation", evidence: "AUTONATION, INC.; 13 10-K/10-Q filed 2014-07-01..2017-08-08; found via current ticker"}
   - {symbol: ANDV, cik: 50104, name: "Andeavor", evidence: "Andeavor (formerly Tesoro Corp), not Andeavor Logistics LP 1507615"}
   - {symbol: ANSS, cik: 1013462, name: "Ansys", evidence: "ANSYS INC; 32 10-K/10-Q filed 2017-07-01..2025-07-18; found via full-text search"}
   - {symbol: APC, cik: 773910, name: "Anadarko Petroleum", evidence: "ANADARKO PETROLEUM CORP; 9 10-K/10-Q filed 2017-07-01..2019-08-09; found via full-text search"}
+  - {symbol: ARG, cik: 804212, name: "Airgas", evidence: "AIRGAS INC; 8 10-K/10-Q filed 2014-07-01..2016-05-23; found via full-text search"}
   - {symbol: ARNC, cik: 4281, name: "Arconic", evidence: "Arconic Inc. (formerly Alcoa Inc., now Howmet Aerospace) was the member until the 2020-04-01 split; not the spun-off Arconic Corp 1790982"}
+  - {symbol: ATI, cik: 1018963, name: "Allegheny Technologies", evidence: "ATI INC; 4 10-K/10-Q filed 2014-07-01..2015-07-02; found via current ticker"}
   - {symbol: ATVI, cik: 718877, name: "Activision Blizzard", evidence: "Activision Blizzard, Inc.; 25 10-K/10-Q filed 2017-07-01..2023-10-18; found via full-text search"}
   - {symbol: AVB, cik: 915912, name: "AvalonBay Communities", evidence: "AVALONBAY COMMUNITIES INC; 38 10-K/10-Q filed 2017-07-01..2026-08-18; found via full-text search"}
+  - {symbol: AVP, cik: 8868, name: "Avon Products", evidence: "AVON PRODUCTS INC; 3 10-K/10-Q filed 2014-07-01..2015-03-23; found via full-text search"}
   - {symbol: AYI, cik: 1144215, name: "Acuity Brands", evidence: "ACUITY INC. (DE); 3 10-K/10-Q filed 2017-07-01..2018-06-18; found via current ticker"}
+  - {symbol: BBBY, cik: 886158, name: "Bed Bath & Beyond", evidence: "20230930-DK-Butterfly-1, Inc.; 12 10-K/10-Q filed 2014-07-01..2017-07-26; found via full-text search"}
   - {symbol: BBWI, cik: 701985, name: "Bath & Body Works, Inc.", evidence: "Bath & Body Works, Inc.; 29 10-K/10-Q filed 2017-07-01..2024-10-01; found via current ticker"}
   - {symbol: BCR, cik: 9892, name: "CR Bard", evidence: "BARD C R INC /NJ/; 2 10-K/10-Q filed 2017-07-01..2018-01-03 (manual check, artifacts/verify-cik-manual.txt)"}
   - {symbol: BHF, cik: 1685040, name: "Brighthouse Financial", evidence: "Brighthouse Financial, Inc.; 7 10-K/10-Q filed 2017-08-08..2019-04-02; found via current ticker"}
+  - {symbol: BHI, cik: 808362, name: "Baker Hughes", evidence: "Baker Hughes Holdings LLC; 13 10-K/10-Q filed 2014-07-01..2017-07-07; found via full-text search"}
   - {symbol: BIO, cik: 12208, name: "Bio-Rad Laboratories", evidence: "BIO-RAD LABORATORIES, INC.; 17 10-K/10-Q filed 2020-06-22..2024-09-23; found via current ticker"}
   - {symbol: BLDR, cik: 1316835, name: "Builders FirstSource", evidence: "Builders FirstSource, Inc.; 11 10-K/10-Q filed 2023-12-18..2026-09-21; found via current ticker"}
   - {symbol: BMS, cik: 11199, name: "Bemis", evidence: "Amcor Flexibles North America, Inc.; 10 10-K/10-Q filed 2017-07-01..2019-06-11; found via full-text search"}
+  - {symbol: BRCM, cik: 1054374, name: "Broadcom Corporation", evidence: "BROADCOM CORP; 6 10-K/10-Q filed 2014-07-01..2016-02-01; found via full-text search"}
   - {symbol: BWA, cik: 908255, name: "BorgWarner", evidence: "BORGWARNER INC; 32 10-K/10-Q filed 2017-07-01..2025-03-24; found via current ticker"}
+  - {symbol: BXLT, cik: 1620546, name: "Baxalta", evidence: "Baxalta Inc; 4 10-K/10-Q filed 2015-07-01..2016-06-03; found via full-text search"}
   - {symbol: CA, cik: 356028, name: "CA Technologies", evidence: "CA, INC. (formerly Computer Associates International); 5 10-K/10-Q in window (name score 0.50: 'Technologies' only in the change-log name)"}
   - {symbol: CAG, cik: 23217, name: "Conagra Brands", evidence: "CONAGRA BRANDS INC.; 36 10-K/10-Q filed 2017-07-01..2026-06-30; found via current ticker"}
+  - {symbol: CAM, cik: 941548, name: "Cameron International", evidence: "CAMERON INTERNATIONAL CORP; not Jewett-Cameron Trading 885307"}
+  - {symbol: CCE, cik: 1491675, name: "Coca-Cola Enterprises", evidence: "Coca-Cola Enterprises, Inc. (the 2010 entity, now Coca-Cola European Partners US); not The Coca-Cola Co 21344"}
   - {symbol: CE, cik: 1306830, name: "Celanese", evidence: "Celanese Corp; 25 10-K/10-Q filed 2018-12-24..2025-03-24; found via current ticker"}
   - {symbol: CELG, cik: 816284, name: "Celgene", evidence: "CELGENE CORP /DE/; 11 10-K/10-Q filed 2017-07-01..2019-11-21; found via full-text search"}
   - {symbol: CERN, cik: 804753, name: "Cerner", evidence: "CERNER Corp; 20 10-K/10-Q filed 2017-07-01..2022-06-08; found via full-text search"}
+  - {symbol: CFN, cik: 1457543, name: "Carefusion", evidence: "CAREFUSION Corp; 3 10-K/10-Q filed 2014-07-01..2015-03-18; found via full-text search"}
   - {symbol: CHK, cik: 895126, name: "Chesapeake Energy", evidence: "EXPAND ENERGY Corp; 3 10-K/10-Q filed 2017-07-01..2018-03-19; found via full-text search"}
   - {symbol: CMA, cik: 28412, name: "Comerica", evidence: "COMERICA INC; 28 10-K/10-Q filed 2017-07-01..2024-06-24; found via full-text search"}
+  - {symbol: CMCSK, cik: 1166691, name: "Comcast Series K", evidence: "COMCAST CORP: CMCSK was Comcast's special class A share, the same issuer as CMCSA (in the index 2015-09-18..2015-12-15; the name search found no filer)"}
+  - {symbol: CNX, cik: 1070412, name: "Consol Energy", evidence: "CNX Resources Corp; 7 10-K/10-Q filed 2014-07-01..2016-03-04; found via current ticker"}
   - {symbol: COL, cik: 1137411, name: "Rockwell Collins", evidence: "ROCKWELL COLLINS INC; 7 10-K/10-Q filed 2017-07-01..2018-12-03; found via full-text search"}
   - {symbol: COTY, cik: 1024305, name: "Coty", evidence: "COTY INC.; 13 10-K/10-Q filed 2017-07-01..2020-09-21; found via current ticker"}
+  - {symbol: COV, cik: 1385187, name: "Covidien", evidence: "Covidien plc; 4 10-K/10-Q filed 2014-07-01..2015-01-27; found via full-text search"}
   - {symbol: CPB, cik: 16732, name: "Campbell's", evidence: "CAMPBELL'S Co; 36 10-K/10-Q filed 2017-07-01..2026-06-22; found via current ticker"}
+  - {symbol: CPGX, cik: 1629995, name: "Columbia Pipeline Group", evidence: "Columbia Pipeline Group, Inc.; not Columbia Pipeline Partners LP 1420783"}
   - {symbol: CPRI, cik: 1530721, name: "Capri Holdings", evidence: "Capri Holdings Ltd; 11 10-K/10-Q filed 2017-07-01..2020-05-12; found via current ticker"}
+  - {symbol: CSC, cik: 23082, name: "Computer Sciences Corporation", evidence: "COMPUTER SCIENCES CORP; 7 10-K/10-Q filed 2014-07-01..2015-12-01; found via full-text search"}
   - {symbol: CSRA, cik: 1646383, name: "CSRA", evidence: "CSRA Inc.; 3 10-K/10-Q filed 2017-07-01..2018-04-04; found via full-text search"}
   - {symbol: CTLT, cik: 1596783, name: "Catalent", evidence: "Catalent, Inc.; 19 10-K/10-Q filed 2020-09-21..2024-12-23; found via full-text search"}
   - {symbol: CTRA, cik: 858470, name: "Coterra Energy", evidence: "Coterra Energy Inc.; 38 10-K/10-Q filed 2017-07-01..2026-05-07; found via full-text search"}
   - {symbol: CTVA, cik: 1755672, name: "Corteva", evidence: "Corteva, Inc.; 29 10-K/10-Q filed 2019-06-03..2026-10-06; found via current ticker"}
   - {symbol: CTXS, cik: 877890, name: "Citrix Systems", evidence: "CITRIX SYSTEMS INC; 22 10-K/10-Q filed 2017-07-01..2022-10-03; found via full-text search"}
+  - {symbol: CVC, cik: 1053112, name: "Cablevision Systems", evidence: "CABLEVISION SYSTEMS CORP /NY; not its subsidiary CSC Holdings 784681"}
   - {symbol: CXO, cik: 1358071, name: "Concho Resources", evidence: "CONCHO RESOURCES INC; 14 10-K/10-Q filed 2017-07-01..2021-01-21; found via full-text search"}
   - {symbol: CZR, cik: 1590895, name: "Caesars Entertainment", evidence: "Caesars Entertainment, Inc.; 18 10-K/10-Q filed 2021-03-22..2025-09-22; found via current ticker"}
   - {symbol: DAY, cik: 1725057, name: "Dayforce", evidence: "Dayforce, Inc.; 20 10-K/10-Q filed 2021-09-20..2026-02-09; found via full-text search"}
@@ -60,105 +83,159 @@ overrides:
   - {symbol: DISCA, cik: 1437107, name: "Discovery, Inc.", evidence: "Discovery, Inc. (now Warner Bros. Discovery); not Discovery Oil & Gas 1435387"}
   - {symbol: DISCK, cik: 1437107, name: "Discovery, Inc.", evidence: "Discovery, Inc. class C (now Warner Bros. Discovery); not Discovery Oil & Gas 1435387"}
   - {symbol: DISH, cik: 1001082, name: "Dish Network", evidence: "DISH Network CORP; 24 10-K/10-Q filed 2017-07-01..2023-06-20; found via full-text search"}
+  - {symbol: DNB, cik: 1115222, name: "Dun & Bradstreet", evidence: "DUN & BRADSTREET CORP/NW (the 2000 entity); not Moody's 1059556 (the pre-2000 D&B)"}
+  - {symbol: DNR, cik: 945764, name: "Denbury Resources", evidence: "DENBURY INC; 3 10-K/10-Q filed 2014-07-01..2015-03-23; found via full-text search"}
+  - {symbol: DO, cik: 949039, name: "Diamond Offshore Drilling", evidence: "DIAMOND OFFSHORE DRILLING, INC.; 9 10-K/10-Q filed 2014-07-01..2016-09-30; found via full-text search"}
   - {symbol: DPS, cik: 1418135, name: "Dr Pepper Snapple Group", evidence: "Keurig Dr Pepper Inc.; 5 10-K/10-Q filed 2017-07-01..2018-07-02; found via full-text search"}
   - {symbol: DRE, cik: 783280, name: "Duke Realty", evidence: "DUKE REALTY CORP, not its operating partnership 1003410"}
+  - {symbol: DTV, cik: 1465112, name: "DirecTV", evidence: "DIRECTV; 6 10-K/10-Q filed 2014-07-01..2015-07-29; found via full-text search"}
   - {symbol: DXC, cik: 1688568, name: "DXC Technology", evidence: "DXC Technology Co; 25 10-K/10-Q filed 2017-07-01..2023-10-03; found via current ticker"}
   - {symbol: EA, cik: 712515, name: "Electronic Arts", evidence: "ELECTRONIC ARTS INC.; 38 10-K/10-Q filed 2017-07-01..2026-08-05; found via full-text search"}
+  - {symbol: EMC, cik: 790070, name: "EMC Corporation", evidence: "EMC CORP; not EMC Insurance Group 356130 or Scandium International (EMC Metals) 1408146"}
   - {symbol: EMN, cik: 915389, name: "Eastman Chemical Co.", evidence: "EASTMAN CHEMICAL CO; 34 10-K/10-Q filed 2017-07-01..2025-11-04; found via current ticker"}
+  - {symbol: ENDP, cik: 1593034, name: "Endo International", evidence: "Endo International plc; 10 10-K/10-Q filed 2015-01-27..2017-03-02; found via full-text search"}
   - {symbol: ENPH, cik: 1463101, name: "Enphase Energy", evidence: "Enphase Energy, Inc.; 19 10-K/10-Q filed 2021-01-07..2025-09-22; found via current ticker"}
   - {symbol: EPAM, cik: 1352010, name: "EPAM Systems", evidence: "EPAM Systems, Inc.; 18 10-K/10-Q filed 2021-12-14..2026-06-02; found via current ticker"}
   - {symbol: ESRX, cik: 1532063, name: "Express Scripts", evidence: "Express Scripts Holding Co.; 6 10-K/10-Q filed 2017-07-01..2018-12-24; found via full-text search"}
+  - {symbol: ESV, cik: 314808, name: "Ensco", evidence: "Valaris Ltd; 7 10-K/10-Q filed 2014-07-01..2016-03-30; found via full-text search"}
   - {symbol: ETFC, cik: 1015780, name: "E-Trade", evidence: "E TRADE FINANCIAL CORP; 14 10-K/10-Q filed 2017-07-01..2020-10-07; found via full-text search"}
   - {symbol: ETSY, cik: 1370637, name: "Etsy", evidence: "ETSY INC; 16 10-K/10-Q filed 2020-09-21..2024-09-23; found via current ticker"}
   - {symbol: EVHC, cik: 1678531, name: "Envision Healthcare", evidence: "Envision Healthcare Corp; 6 10-K/10-Q filed 2017-07-01..2018-10-11; found via full-text search"}
   - {symbol: FBHS, cik: 1519751, name: "Fortune Brands Home & Security", evidence: "Fortune Brands Innovations, Inc.; 22 10-K/10-Q filed 2017-07-01..2022-12-19; found via full-text search"}
+  - {symbol: FDO, cik: 34408, name: "Family Dollar", evidence: "FAMILY DOLLAR STORES INC; 6 10-K/10-Q filed 2014-07-01..2015-07-08; found via full-text search"}
   - {symbol: FL, cik: 850209, name: "Foot Locker", evidence: "FOOT LOCKER, INC.; 8 10-K/10-Q filed 2017-07-01..2019-08-09; found via full-text search"}
   - {symbol: FLIR, cik: 354908, name: "FLIR Systems", evidence: "Teledyne FLIR, LLC; 16 10-K/10-Q filed 2017-07-01..2021-05-14; found via full-text search"}
   - {symbol: FLR, cik: 1124198, name: "Fluor Corporation", evidence: "FLUOR CORP; 8 10-K/10-Q filed 2017-07-01..2019-06-03; found via current ticker"}
   - {symbol: FLS, cik: 30625, name: "Flowserve", evidence: "FLOWSERVE CORP; 18 10-K/10-Q filed 2017-07-01..2021-03-22; found via current ticker"}
   - {symbol: FMC, cik: 37785, name: "FMC Corporation", evidence: "FMC CORP, not the Livent spin-off 1742924"}
+  - {symbol: FOSL, cik: 883569, name: "Fossil Group", evidence: "Fossil Group, Inc.; 6 10-K/10-Q filed 2014-07-01..2016-01-05; found via current ticker"}
   - {symbol: FRC, cik: null, name: "First Republic Bank", evidence: "First Republic Bank filed its reports with the FDIC, not the SEC: no SEC fundamentals"}
   - {symbol: FTI, cik: 1681459, name: "TechnipFMC", evidence: "TechnipFMC plc; 15 10-K/10-Q filed 2017-07-01..2021-02-12; found via current ticker"}
+  - {symbol: FTR, cik: 20520, name: "Frontier Communications", evidence: "Frontier Communications Parent, Inc.; 11 10-K/10-Q filed 2014-07-01..2017-03-20; found via full-text search"}
+  - {symbol: GAS, cik: 1004155, name: "AGL Resources", evidence: "SOUTHERN CO GAS; 12 10-K/10-Q filed 2014-07-01..2016-07-01; found via full-text search"}
   - {symbol: GGP, cik: 1496048, name: "GGP Inc.", evidence: "Brookfield Property REIT Inc.; 5 10-K/10-Q filed 2017-07-01..2018-08-28; found via full-text search"}
+  - {symbol: GMCR, cik: 909954, name: "Keurig Green Mountain", evidence: "KEURIG GREEN MOUNTAIN, INC.; 9 10-K/10-Q filed 2014-07-01..2016-03-07; found via full-text search"}
+  - {symbol: GME, cik: 1326380, name: "GameStop", evidence: "GameStop Corp.; 8 10-K/10-Q filed 2014-07-01..2016-04-25; found via current ticker"}
+  - {symbol: GNW, cik: 1276520, name: "Genworth Financial", evidence: "GENWORTH FINANCIAL INC; 6 10-K/10-Q filed 2014-07-01..2015-11-18; found via current ticker"}
   - {symbol: GPS, cik: 39911, name: "Gap", evidence: "GAP INC; 19 10-K/10-Q filed 2017-07-01..2022-02-03; found via full-text search"}
   - {symbol: GT, cik: 42582, name: "The Goodyear Tire & Rubber Company", evidence: "GOODYEAR TIRE & RUBBER CO /OH/, not Cooper Tire 24491"}
+  - {symbol: HAR, cik: 800459, name: "Harman International", evidence: "HARMAN INTERNATIONAL INDUSTRIES INC /DE/; not Handy & Harman 106618"}
   - {symbol: HBI, cik: 1359841, name: "Hanesbrands", evidence: "Hanesbrands Inc.; 18 10-K/10-Q filed 2017-07-01..2021-12-20; found via full-text search"}
+  - {symbol: HCBK, cik: 921847, name: "Hudson City Bancorp", evidence: "HUDSON CITY BANCORP INC; 6 10-K/10-Q filed 2014-07-01..2015-11-02; found via full-text search"}
   - {symbol: HES, cik: 4447, name: "Hess Corporation", evidence: "HESS CORP, not Hess Midstream 1789832/1619739"}
   - {symbol: HFC, cik: 48039, name: "HollyFrontier", evidence: "HollyFrontier Corp; 12 10-K/10-Q filed 2018-06-18..2021-06-04; found via full-text search"}
   - {symbol: HOG, cik: 793952, name: "Harley-Davidson", evidence: "HARLEY-DAVIDSON, INC., not its motorcycle trusts"}
   - {symbol: HOLX, cik: 859737, name: "Hologic", evidence: "HOLOGIC INC; 36 10-K/10-Q filed 2017-07-01..2026-04-09; found via full-text search"}
+  - {symbol: HOT, cik: 316206, name: "Starwood Hotels and Resorts", evidence: "STARWOOD HOTELS & RESORTS WORLDWIDE, LLC; 10 10-K/10-Q filed 2014-07-01..2016-09-22; found via full-text search"}
   - {symbol: HP, cik: 46765, name: "Helmerich & Payne", evidence: "Helmerich & Payne, Inc., not Cimarex (formerly H&P Exploration) 1168054"}
   - {symbol: HRB, cik: 12659, name: "H&R Block", evidence: "H&R BLOCK INC; 13 10-K/10-Q filed 2017-07-01..2020-09-21; found via current ticker"}
+  - {symbol: HSP, cik: 1274057, name: "Hospira", evidence: "HOSPIRA INC; 5 10-K/10-Q filed 2014-07-01..2015-09-02; found via full-text search"}
   - {symbol: INFO, cik: 1598014, name: "IHS Markit", evidence: "IHS Markit Ltd.; 18 10-K/10-Q filed 2017-07-01..2022-03-02; found via full-text search"}
   - {symbol: IPG, cik: 51644, name: "Interpublic Group", evidence: "INTERPUBLIC GROUP OF COMPANIES, INC.; 34 10-K/10-Q filed 2017-07-01..2025-11-28; found via full-text search"}
   - {symbol: IPGP, cik: 1111928, name: "IPG Photonics", evidence: "IPG PHOTONICS CORP; 17 10-K/10-Q filed 2018-03-07..2022-06-21; found via current ticker"}
   - {symbol: JEF, cik: 96223, name: "Jefferies Financial Group", evidence: "Jefferies Financial Group Inc.; 9 10-K/10-Q filed 2017-07-01..2019-09-26; found via current ticker"}
   - {symbol: JNPR, cik: 1043604, name: "Juniper Networks", evidence: "JUNIPER NETWORKS INC; 32 10-K/10-Q filed 2017-07-01..2025-07-09; found via full-text search"}
+  - {symbol: JOY, cik: 801898, name: "Joy Global", evidence: "JOY GLOBAL INC; 5 10-K/10-Q filed 2014-07-01..2015-10-07; found via full-text search"}
   - {symbol: JWN, cik: 72333, name: "Nordstrom", evidence: "NORDSTROM INC; 12 10-K/10-Q filed 2017-07-01..2020-06-22; found via full-text search"}
   - {symbol: K, cik: 55067, name: "Kellanova", evidence: "KELLANOVA; 35 10-K/10-Q filed 2017-07-01..2025-12-11; found via full-text search"}
   - {symbol: KMX, cik: 1170010, name: "CarMax", evidence: "CARMAX INC, not its auto owner trusts"}
+  - {symbol: KRFT, cik: 1545158, name: "Kraft Foods", evidence: "Kraft Foods Group, Inc. (the 2012 spin-off); not Mondelez 1103982 (the former Kraft Foods Inc)"}
   - {symbol: KSS, cik: 885639, name: "Kohl's", evidence: "KOHLS Corp; 13 10-K/10-Q in window (name score 0: 'Kohl's' vs 'KOHLS' tokenised differently)"}
   - {symbol: KSU, cik: 54480, name: "Kansas City Southern", evidence: "KANSAS CITY SOUTHERN; 18 10-K/10-Q filed 2017-07-01..2021-12-14 (manual check; name search failed with an SEC-side connection error)"}
   - {symbol: LEG, cik: 58492, name: "Leggett & Platt", evidence: "LEGGETT & PLATT INC; 18 10-K/10-Q filed 2017-07-01..2021-12-20; found via full-text search"}
   - {symbol: LKQ, cik: 1065696, name: "LKQ Corporation", evidence: "LKQ CORP; 34 10-K/10-Q filed 2017-07-01..2025-12-22; found via current ticker"}
   - {symbol: LLL, cik: 1039101, name: "L3 Technologies", evidence: "L3 TECHNOLOGIES, INC.; 9 10-K/10-Q filed 2017-07-01..2019-07-01; found via full-text search"}
+  - {symbol: LLTC, cik: 791907, name: "Linear Technology", evidence: "LINEAR TECHNOLOGY CORP /CA/; 11 10-K/10-Q filed 2014-07-01..2017-03-13; found via full-text search"}
+  - {symbol: LM, cik: 704051, name: "Legg Mason", evidence: "LEGG MASON, INC.; 10 10-K/10-Q filed 2014-07-01..2016-12-02; found via full-text search"}
   - {symbol: LNC, cik: 59558, name: "Lincoln National Corporation", evidence: "LINCOLN NATIONAL CORP, not Lincoln National Life Insurance Co 726865"}
+  - {symbol: LO, cik: 1424847, name: "Lorillard Tobacco Company", evidence: "LORILLARD, INC. (now Lorillard, LLC); 6 10-K/10-Q in window (name score 0.50: 'Tobacco Company' only in the change-log name)"}
   - {symbol: LUMN, cik: 18926, name: "Lumen Technologies", evidence: "Lumen Technologies, Inc.; 23 10-K/10-Q filed 2017-07-01..2023-03-20; found via current ticker"}
+  - {symbol: LVLT, cik: 794323, name: "Level 3 Communications", evidence: "Level 3 Parent, LLC; 13 10-K/10-Q filed 2014-11-05..2017-10-13; found via full-text search"}
   - {symbol: LW, cik: 1679273, name: "Lamb Weston", evidence: "Lamb Weston Holdings, Inc.; 29 10-K/10-Q filed 2018-12-03..2026-03-23; found via current ticker"}
   - {symbol: M, cik: 794367, name: "Macy's", evidence: "Macy's, Inc.; 11 10-K/10-Q filed 2017-07-01..2020-04-06; found via current ticker"}
   - {symbol: MAC, cik: 912242, name: "Macerich", evidence: "MACERICH CO; 11 10-K/10-Q filed 2017-07-01..2019-12-23; found via current ticker"}
   - {symbol: MAT, cik: 63276, name: "Mattel", evidence: "MATTEL INC /DE/; 8 10-K/10-Q filed 2017-07-01..2019-06-07; found via current ticker"}
   - {symbol: MBC, cik: 1941365, name: "MasterBrand", evidence: "MasterBrand, Inc.; in the index 2022-12-15..2022-12-19 only, before its first 10-K/10-Q (none in window)"}
   - {symbol: MHK, cik: 851968, name: "Mohawk Industries", evidence: "MOHAWK INDUSTRIES INC; 34 10-K/10-Q filed 2017-07-01..2025-12-22; found via current ticker"}
+  - {symbol: MJN, cik: 1452575, name: "Mead Johnson", evidence: "Mead Johnson Nutrition Co; 13 10-K/10-Q filed 2014-07-01..2017-06-19; found via full-text search"}
   - {symbol: MKTX, cik: 1278021, name: "MarketAxess", evidence: "MARKETAXESS HOLDINGS INC; 25 10-K/10-Q filed 2019-07-01..2025-09-22; found via current ticker"}
+  - {symbol: MNK, cik: 1567892, name: "Mallinckrodt", evidence: "Keenova Therapeutics plc; 10 10-K/10-Q filed 2014-08-18..2017-07-26; found via full-text search"}
   - {symbol: MOH, cik: 1179929, name: "Molina Healthcare", evidence: "MOLINA HEALTHCARE, INC.; 16 10-K/10-Q filed 2022-03-02..2026-03-23; found via current ticker"}
   - {symbol: MON, cik: 1110783, name: "Monsanto", evidence: "MONSANTO CO /NEW/; 3 10-K/10-Q filed 2017-07-01..2018-06-07; found via full-text search"}
   - {symbol: MRO, cik: 101778, name: "Marathon Oil", evidence: "MARATHON OIL CORP; 34 10-K/10-Q filed 2017-07-01..2024-11-26; found via full-text search"}
   - {symbol: MTCH, cik: 891103, name: "Match Group", evidence: "Match Group, Inc.; 18 10-K/10-Q filed 2021-09-20..2026-03-23; found via current ticker"}
+  - {symbol: MUR, cik: 717423, name: "Murphy Oil", evidence: "MURPHY OIL CORP; 12 10-K/10-Q filed 2014-07-01..2017-07-26; found via current ticker"}
   - {symbol: MXIM, cik: 743316, name: "Maxim Integrated", evidence: "MAXIM INTEGRATED PRODUCTS INC; 18 10-K/10-Q filed 2017-07-01..2021-08-30; found via full-text search"}
   - {symbol: NAVI, cik: 1593538, name: "Navient", evidence: "NAVIENT CORP, not its student loan trusts"}
   - {symbol: NBL, cik: 72207, name: "Noble Energy", evidence: "NOBLE ENERGY INC; 13 10-K/10-Q filed 2017-07-01..2020-10-12; found via full-text search"}
+  - {symbol: NBR, cik: 1163739, name: "Nabors Industries", evidence: "NABORS INDUSTRIES LTD; 3 10-K/10-Q filed 2014-07-01..2015-03-23; found via current ticker"}
+  - {symbol: NE, cik: 1458891, name: "Noble Corporation", evidence: "Noble Corp plc (UK), the listed parent 2013-2020; not its subsidiary Noble Finance Co 1169055, today's Noble Corp plc 1895262, Noble Energy 72207 or Barnes & Noble 890491"}
   - {symbol: NFX, cik: 912750, name: "Newfield Exploration", evidence: "NEWFIELD EXPLORATION CO /DE/; 6 10-K/10-Q filed 2017-07-01..2019-02-15; found via full-text search"}
   - {symbol: NKTR, cik: 906709, name: "Nektar Therapeutics", evidence: "NEKTAR THERAPEUTICS; 6 10-K/10-Q filed 2018-03-19..2019-10-03; found via current ticker"}
   - {symbol: NLSN, cik: 1492633, name: "Nielsen Holdings", evidence: "Nielsen Holdings plc; 22 10-K/10-Q filed 2017-07-01..2022-10-12; found via full-text search"}
   - {symbol: NOV, cik: 1021860, name: "Nov", evidence: "NOV Inc.; 17 10-K/10-Q filed 2017-07-01..2021-09-20; found via current ticker"}
   - {symbol: NWL, cik: 814453, name: "Newell Brands", evidence: "NEWELL BRANDS INC.; 25 10-K/10-Q filed 2017-07-01..2023-09-18; found via current ticker"}
   - {symbol: OGN, cik: 1821825, name: "Organon & Co.", evidence: "Organon & Co.; 10 10-K/10-Q filed 2021-06-03..2023-10-18; found via current ticker"}
+  - {symbol: OI, cik: 812074, name: "Owens-Illinois", evidence: "OWENS ILLINOIS INC /DE/ (now O-I Glass); not its subsidiary Owens-Illinois Group 812233"}
   - {symbol: PAYC, cik: 1590955, name: "Paycom", evidence: "Paycom Software, Inc.; 25 10-K/10-Q filed 2020-01-28..2026-03-23; found via current ticker"}
   - {symbol: PBCT, cik: 1378946, name: "People's United Financial", evidence: "People's United Financial, Inc.; 21 10-K/10-Q filed 2017-07-01..2022-04-04; found via full-text search"}
+  - {symbol: PBI, cik: 78814, name: "Pitney Bowes", evidence: "PITNEY BOWES INC /DE/; 11 10-K/10-Q filed 2014-07-01..2017-03-01; found via current ticker"}
+  - {symbol: PCL, cik: 849213, name: "Plum Creek Timber", evidence: "PLUM CREEK TIMBER CO INC; 7 10-K/10-Q filed 2014-07-01..2016-02-22; found via full-text search"}
+  - {symbol: PCP, cik: 79958, name: "Precision Castparts Corporation", evidence: "PRECISION CASTPARTS CORP; 6 10-K/10-Q filed 2014-07-01..2016-02-01; found via full-text search"}
   - {symbol: PDCO, cik: 891024, name: "Patterson Companies", evidence: "PATTERSON COMPANIES, INC.; 3 10-K/10-Q filed 2017-07-01..2018-03-19; found via full-text search"}
   - {symbol: PENN, cik: 921738, name: "Penn Entertainment", evidence: "PENN Entertainment, Inc.; 6 10-K/10-Q filed 2021-03-22..2022-09-19; found via current ticker"}
+  - {symbol: PETM, cik: 863157, name: "PetSmart", evidence: "PETSMART INC; 2 10-K/10-Q filed 2014-07-01..2015-03-12; found via full-text search"}
+  - {symbol: PLL, cik: 75829, name: "Pall Corporation", evidence: "PALL CORP; 4 10-K/10-Q filed 2014-07-01..2015-08-28; found via full-text search"}
+  - {symbol: POM, cik: 1135971, name: "Pepco Holdings", evidence: "PEPCO HOLDINGS LLC; 8 10-K/10-Q filed 2014-07-01..2016-03-30; found via full-text search"}
   - {symbol: POOL, cik: 945841, name: "Pool Corporation", evidence: "POOL CORP; 23 10-K/10-Q filed 2020-10-07..2026-06-22; found via current ticker"}
   - {symbol: PRGO, cik: 1585364, name: "Perrigo", evidence: "PERRIGO Co plc; 17 10-K/10-Q filed 2017-07-01..2021-09-20; found via current ticker"}
   - {symbol: PVH, cik: 78239, name: "PVH", evidence: "PVH CORP. /DE/; 21 10-K/10-Q filed 2017-07-01..2022-09-19; found via current ticker"}
   - {symbol: PXD, cik: 1038357, name: "Pioneer Natural Resources", evidence: "PIONEER NATURAL RESOURCES CO; 29 10-K/10-Q filed 2017-07-01..2024-05-08; found via full-text search"}
+  - {symbol: QEP, cik: 1108827, name: "QEP Resources", evidence: "QEP RESOURCES, INC.; 5 10-K/10-Q filed 2014-07-01..2015-07-01; found via full-text search"}
   - {symbol: QRVO, cik: 1604778, name: "Qorvo", evidence: "Qorvo, Inc.; 30 10-K/10-Q filed 2017-07-01..2024-12-23; found via full-text search"}
+  - {symbol: R, cik: 85961, name: "Ryder System", evidence: "RYDER SYSTEM INC; 12 10-K/10-Q filed 2014-07-01..2017-06-19; found via current ticker"}
+  - {symbol: RAI, cik: 1275283, name: "Reynolds American", evidence: "REYNOLDS AMERICAN INC; 13 10-K/10-Q filed 2014-07-01..2017-07-26; found via full-text search"}
   - {symbol: RHI, cik: 315213, name: "Robert Half", evidence: "ROBERT HALF INC.; 29 10-K/10-Q filed 2017-07-01..2024-06-24; found via current ticker"}
   - {symbol: RHT, cik: 1087423, name: "Red Hat", evidence: "RED HAT INC; 9 10-K/10-Q filed 2017-07-01..2019-07-15; found via full-text search"}
+  - {symbol: RIG, cik: 1451505, name: "Transocean", evidence: "Transocean Ltd.; not Transocean Partners LLC 1607250"}
   - {symbol: RRC, cik: 315852, name: "Range Resources", evidence: "RANGE RESOURCES CORP; 4 10-K/10-Q filed 2017-07-01..2018-06-18; found via current ticker"}
   - {symbol: RTN, cik: 1047122, name: "Raytheon Company", evidence: "RAYTHEON CO/ until the 2020-04 merger, not RTX Corp (formerly United Technologies) 101829"}
   - {symbol: SBNY, cik: null, name: "Signature Bank", evidence: "Signature Bank filed its reports with the FDIC, not the SEC: no SEC fundamentals"}
   - {symbol: SCG, cik: 754737, name: "SCANA", evidence: "SCANA CORP; 7 10-K/10-Q filed 2017-07-01..2019-01-02; found via full-text search"}
+  - {symbol: SE, cik: 1373835, name: "Spectra Energy", evidence: "Spectra Energy Corp.; not Spectra Energy Partners LP 1394074 or Sea Ltd 1703399"}
   - {symbol: SEDG, cik: 1419612, name: "SolarEdge", evidence: "SOLAREDGE TECHNOLOGIES, INC.; 8 10-K/10-Q filed 2021-12-20..2023-12-18; found via current ticker"}
   - {symbol: SEE, cik: 1012100, name: "Sealed Air", evidence: "SEALED AIR CORP/DE; 27 10-K/10-Q filed 2017-07-01..2023-12-18; found via full-text search"}
+  - {symbol: SIAL, cik: 90185, name: "Sigma-Aldrich", evidence: "SIGMA ALDRICH CORP; 6 10-K/10-Q filed 2014-07-01..2015-11-19; found via full-text search"}
   - {symbol: SIG, cik: 832988, name: "Signet Jewelers", evidence: "SIGNET JEWELERS LTD; 2 10-K/10-Q filed 2017-07-01..2018-03-19; found via current ticker"}
   - {symbol: SIVB, cik: 719739, name: "SVB Financial Group", evidence: "SVB FINANCIAL GROUP; 20 10-K/10-Q filed 2018-03-19..2023-03-15; found via full-text search"}
   - {symbol: SLG, cik: 1040971, name: "SL Green Realty", evidence: "SL GREEN REALTY CORP, not its operating partnership 1492869"}
   - {symbol: SNI, cik: 1430602, name: "Scripps Networks Interactive", evidence: "Scripps Networks Interactive, Inc.; 4 10-K/10-Q filed 2017-07-01..2018-03-07; found via full-text search"}
   - {symbol: SOLS, cik: 2064953, name: "Solstice Advanced Materials", evidence: "Solstice Advanced Materials Inc.; 1 10-K/10-Q filed 2025-10-30..2025-12-22; found via current ticker"}
+  - {symbol: SPLS, cik: 791519, name: "Staples", evidence: "STAPLES INC; 13 10-K/10-Q filed 2014-07-01..2017-09-18; found via full-text search"}
   - {symbol: SRCL, cik: 861878, name: "Stericycle", evidence: "STERICYCLE INC; 6 10-K/10-Q filed 2017-07-01..2018-12-03; found via full-text search"}
   - {symbol: STI, cik: 750556, name: "SunTrust Banks", evidence: "SUNTRUST BANKS INC; 10 10-K/10-Q filed 2017-07-01..2019-12-09; found via full-text search"}
+  - {symbol: STJ, cik: 203077, name: "St Jude Medical", evidence: "ST JUDE MEDICAL, LLC; 10 10-K/10-Q filed 2014-07-01..2017-01-05; found via full-text search"}
+  - {symbol: SWN, cik: 7332, name: "Southwestern Energy", evidence: "SOUTHWESTERN ENERGY CO; 12 10-K/10-Q filed 2014-07-01..2017-04-04; found via full-text search"}
+  - {symbol: SWY, cik: 86144, name: "Safeway", evidence: "SAFEWAY INC; 2 10-K/10-Q filed 2014-07-01..2015-01-27; found via full-text search"}
   - {symbol: TAP, cik: 24545, name: "Molson Coors", evidence: "MOLSON COORS BEVERAGE CO; 37 10-K/10-Q filed 2017-07-01..2026-09-21; found via current ticker"}
+  - {symbol: TDC, cik: 816761, name: "Teradata", evidence: "TERADATA CORP /DE/; 12 10-K/10-Q filed 2014-07-01..2017-06-19; found via current ticker"}
+  - {symbol: TE, cik: 350563, name: "TECO Energy", evidence: "TECO ENERGY INC; 8 10-K/10-Q filed 2014-07-01..2016-07-01; found via full-text search"}
+  - {symbol: TEG, cik: 916863, name: "Integrys Energy Group", evidence: "INTEGRYS HOLDING, INC.; 4 10-K/10-Q filed 2014-07-01..2015-07-01; found via full-text search"}
   - {symbol: TFX, cik: 96943, name: "Teleflex", evidence: "TELEFLEX INC; 25 10-K/10-Q filed 2019-01-18..2025-03-24; found via current ticker"}
+  - {symbol: TGNA, cik: 39899, name: "Tegna", evidence: "TEGNA INC; 13 10-K/10-Q filed 2014-07-01..2017-06-02; found via full-text search"}
+  - {symbol: THC, cik: 70318, name: "Tenet Healthcare", evidence: "TENET HEALTHCARE CORP; 7 10-K/10-Q filed 2014-07-01..2016-04-18; found via current ticker"}
   - {symbol: TIF, cik: 98246, name: "Tiffany & Co", evidence: "TIFFANY & CO; 14 10-K/10-Q filed 2017-07-01..2021-01-07; found via full-text search"}
   - {symbol: TRIP, cik: 1526520, name: "TripAdvisor", evidence: "TripAdvisor, Inc., not Liberty TripAdvisor Holdings 1606745"}
   - {symbol: TSS, cik: 721683, name: "TSYS", evidence: "TOTAL SYSTEM SERVICES INC (TSYS); 11 10-K/10-Q in window (name score 0: change-log name is the abbreviation 'TSYS')"}
   - {symbol: TTD, cik: 1671933, name: "The Trade Desk", evidence: "Trade Desk, Inc.; 5 10-K/10-Q filed 2025-07-18..2026-09-21; found via current ticker"}
+  - {symbol: TWC, cik: 1377013, name: "Time Warner Cable", evidence: "SPECTRUM MANAGEMENT HOLDING COMPANY, LLC; 10 10-K/10-Q filed 2014-07-01..2016-05-18; found via full-text search"}
   - {symbol: TWTR, cik: 1418091, name: "Twitter", evidence: "TWITTER, INC.; 17 10-K/10-Q filed 2018-06-07..2022-11-01; found via full-text search"}
   - {symbol: TWX, cik: 1105705, name: "Time Warner", evidence: "WARNER MEDIA, LLC; 5 10-K/10-Q filed 2017-07-01..2018-06-20; found via full-text search"}
+  - {symbol: TYC, cik: 833444, name: "Tyco International", evidence: "TYCO INTERNATIONAL plc (continues as Johnson Controls International plc after the 2016-09 merger); not TE Connectivity (formerly Tyco Electronics) 1385157"}
   - {symbol: UA, cik: 1336917, name: "Under Armour (Class C)", evidence: "Under Armour, Inc.; 19 10-K/10-Q filed 2017-07-01..2022-06-21; found via current ticker"}
   - {symbol: UAA, cik: 1336917, name: "Under Armour (Class A)", evidence: "Under Armour, Inc.; 19 10-K/10-Q filed 2017-07-01..2022-06-21; found via current ticker"}
   - {symbol: UNM, cik: 5513, name: "Unum", evidence: "Unum Group, not Cogent Biosciences (formerly Unum Therapeutics) 1622229"}
+  - {symbol: URBN, cik: 912615, name: "Urban Outfitters", evidence: "URBAN OUTFITTERS INC; 10 10-K/10-Q filed 2014-07-01..2017-03-20; found via current ticker"}
   - {symbol: VAR, cik: 203527, name: "Varian Medical Systems", evidence: "VARIAN MEDICAL SYSTEMS INC; 16 10-K/10-Q filed 2017-07-01..2021-04-20; found via full-text search"}
   - {symbol: VFC, cik: 103379, name: "VF Corporation", evidence: "V F CORP; 26 10-K/10-Q in window (name score 0: 'VF' vs 'V F' tokenised differently)"}
   - {symbol: VIAB, cik: 1339947, name: "Viacom", evidence: "Viacom Inc. (2006-2019, 'New Viacom'), not Paramount Global (CBS/ViacomCBS) 813828"}
@@ -167,7 +244,9 @@ overrides:
   - {symbol: WBA, cik: 1618921, name: "Walgreens Boots Alliance", evidence: "Walgreens Boots Alliance, Inc.; 35 10-K/10-Q filed 2017-07-01..2025-08-28; found via full-text search"}
   - {symbol: WBD, cik: 1437107, name: "Warner Bros. Discovery", evidence: "Warner Bros. Discovery, Inc.; 18 10-K/10-Q filed 2022-04-11..2026-10-06; found via full-text search"}
   - {symbol: WCG, cik: 1279363, name: "WellCare", evidence: "WELLCARE HEALTH PLANS, INC.; 5 10-K/10-Q filed 2018-09-14..2020-01-28; found via full-text search"}
+  - {symbol: WFM, cik: 865436, name: "Whole Foods Market", evidence: "WHOLE FOODS MARKET INC; 14 10-K/10-Q filed 2014-07-01..2017-08-29; found via full-text search"}
   - {symbol: WHR, cik: 106640, name: "Whirlpool Corporation", evidence: "WHIRLPOOL CORP /DE/; 27 10-K/10-Q filed 2017-07-01..2024-03-18; found via current ticker"}
+  - {symbol: WIN, cik: 1282266, name: "Windstream Communications", evidence: "WINDSTREAM HOLDINGS, INC., the listed parent; not its subsidiary Windstream Services 1585644 (name score 0.50: 'Communications' only in the change-log name)"}
   - {symbol: WU, cik: 1365135, name: "Western Union", evidence: "Western Union CO; 18 10-K/10-Q filed 2017-07-01..2021-12-20; found via current ticker"}
   - {symbol: WYN, cik: 1361658, name: "Wyndham Worldwide", evidence: "Travel & Leisure Co.; 4 10-K/10-Q filed 2017-07-01..2018-05-31; found via full-text search"}
   - {symbol: XEC, cik: 1168054, name: "Cimarex Energy", evidence: "CIMAREX ENERGY CO; 11 10-K/10-Q filed 2017-07-01..2020-03-02; found via full-text search"}
@@ -175,4 +254,5 @@ overrides:
   - {symbol: XLNX, cik: 743988, name: "Xilinx", evidence: "XILINX INC; 19 10-K/10-Q filed 2017-07-01..2022-02-15; found via full-text search"}
   - {symbol: XRAY, cik: 818479, name: "Dentsply Sirona", evidence: "DENTSPLY SIRONA Inc.; 31 10-K/10-Q filed 2017-07-01..2024-04-03; found via current ticker"}
   - {symbol: XRX, cik: 108772, name: "Xerox", evidence: "XEROX CORP filed throughout the window; Xerox Holdings Corp 1770450 only from 2019"}
+  - {symbol: YHOO, cik: 1011006, name: "Yahoo!", evidence: "ALTABA INC.; 19 10-K/10-Q filed 2014-07-01..2017-06-19; found via full-text search"}
   - {symbol: ZION, cik: 109380, name: "Zions Bancorporation", evidence: "ZIONS BANCORPORATION, NATIONAL ASSOCIATION /UT/; 27 10-K/10-Q filed 2017-07-01..2024-03-18; found via current ticker"}

@@ -349,6 +349,39 @@ class Lake:
         shutil.rmtree(retired, ignore_errors=True)
         return written
 
+    def delete_rows(self, name: str, filters: Sequence[Filter]) -> int:
+        """Delete the rows of `name` matching every filter (same filters as `read_table`; at
+        least one, since emptying a table is `overwrite`'s job); returns how many were deleted.
+
+        Only the files holding a match are rewritten (each atomically; a file left without
+        rows is removed). A row whose filter result is null (a null value compared with
+        anything) is not a match, so it is kept. Unknown columns or operators raise
+        `ValueError` before anything changes.
+        """
+        if not filters:
+            raise ValueError(f"{name}: delete_rows needs at least one filter")
+        schema = self.table_schema(name)
+        self._check_meta(schema)
+        expression = _filter_expression(schema, filters)
+        deleted = 0
+        for path in self.table_files(name):
+            table = _read_file(schema, path)
+            hits = ds.dataset(table).to_table(columns={"hit": expression}).column("hit")
+            matched = pc.fill_null(hits, False)
+            count = pc.sum(matched).as_py() or 0
+            if count == 0:
+                continue
+            kept = table.filter(pc.invert(matched))
+            if kept.num_rows:
+                _write_file(path, kept)
+            else:
+                path.unlink()
+            deleted += count
+        if deleted:
+            self._generation += 1
+        _log.info("lake.delete", table=name, rows=deleted)
+        return deleted
+
     # --- reading ------------------------------------------------------------------------------
 
     def read_table(

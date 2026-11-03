@@ -1,0 +1,10 @@
+# fundamentals_panel cost on the main lake (read-only), Phase 1 checkpoint 2026-11-02
+# 1) cProfile of DataView(lake, 2024-06-03).fundamentals_panel(502 members):
+members 502
+panel (502, 21) in 202.65 s   (under cProfile)
+top cumulative: fundamentals_pit_detail 502 calls 199.9 s; ttm 4518 calls 121.2 s; resolve_concept 7530 calls 74.8 s; quarterly_values 3847 calls 69.7 s; DataFrame.__getitem__ 716771 calls 69.2 s; pandas merge 25138 calls 31.1 s
+# 2) prototype (phase1-checkpoint-2026-11-02-tier3-panel-prototype.py): per-symbol values from all facts vs facts with period_end >= as_of - (400 + 730) days; exact equality incl. NaN; no profiler
+2018-06-01: 500 symbols, full 91.6 s, windowed 101.0 s, differing 0 []
+2021-03-01: 503 symbols, full 114.5 s, windowed 106.9 s, differing 0 []
+2024-06-03: 502 symbols, full 118.4 s, windowed 93.1 s, differing 0 []
+# conclusion: values identical, no speed-up: the cost is per-call pandas overhead (~20 concepts x several filters/merges per symbol), not history length

@@ -82,3 +82,9 @@ Owner-requested follow-up (see worklog, 2026-11-02): duckdb/pyarrow floors raise
 - Acceptance criteria unchanged and still evidenced.
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 3) — 2026-11-02
+- `Lake.delete_rows` (7 tests, red first) · raw: [artifacts/phase1-checkpoint-2026-11-02-tier3-red-delete-rows.txt](artifacts/phase1-checkpoint-2026-11-02-tier3-red-delete-rows.txt)
+- `uv run pytest tests/unit/core/storage -q` → 146 passed; `make check` → exit 0 (ruff, format 207 files, mypy 88 files, 2143 passed, 14 deselected); `-m live` → 13 passed · raw: [stage-13 artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt](../stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt)
+
+**Result:** ALL CRITERIA VERIFIED

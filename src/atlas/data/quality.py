@@ -74,6 +74,7 @@ CHECKS: Final = (
     "fundamentals_jump",
     "macro_gap",
     "vendor_mix",
+    "fundamentals_period_after_filing",
 )
 """Names of the quality checks, as used in `QualityIssue.check` and `data.quality.severity`."""
 
@@ -617,6 +618,30 @@ def check_fundamentals_jumps(
     ]
 
 
+def check_fundamentals_period_after_filing(
+    facts: pd.DataFrame, as_of: AsOf, *, since: date, severity: Severity
+) -> list[QualityIssue]:
+    """Facts known at `as_of` whose period ends after their own filing date, a filer error
+    (`known_facts` leaves such facts out). Reported when their filing became known on or after
+    `since` (New York date of `available_at`); one issue per symbol and filing day, listing
+    each fact as `tag period_end`."""
+    new = _known_since(pit_filter(facts, as_of), since)
+    bad = new[(new["period_end"] > new["filed"]).to_numpy(dtype=bool)]
+    issues = []
+    for (symbol, filed), rows in bad.groupby(["symbol", "filed"], sort=True):
+        listed = sorted(
+            {f"{t} {e.isoformat()}" for t, e in zip(rows["tag"], rows["period_end"], strict=True)}
+        )
+        detail = f"period ends after the filing of {filed}: " + ", ".join(listed)
+        stamp = rows[AVAILABLE_AT].max()
+        issues.append(
+            _issue(
+                _FACTS, symbol, filed, "fundamentals_period_after_filing", severity, detail, stamp
+            )
+        )
+    return issues
+
+
 # --- macro gaps ----------------------------------------------------------------------------------
 
 _MACRO = "macro_observations"
@@ -808,6 +833,12 @@ def quality_report(
                 jump_ratio=q.fundamentals_jump_ratio,
                 severity=Severity(sev.fundamentals_jump),
             )
+            issues += check_fundamentals_period_after_filing(
+                recent,
+                point,
+                since=since,
+                severity=Severity(sev.fundamentals_period_after_filing),
+            )
 
     if lake.has_table(MACRO_OBSERVATIONS.name):
         observations = _known(lake, MACRO_OBSERVATIONS.name, point, [])
@@ -838,14 +869,15 @@ def quality_report(
 
 
 def _persist(lake: Lake, day: date, report: pd.DataFrame) -> None:
-    """Replace the `data_quality_issues` rows of `day` with `report`."""
+    """Replace the `data_quality_issues` rows of `day` with `report`: the day's stored rows are
+    deleted and the new ones upserted, so only the files of `day`'s year are rewritten."""
     frame = report.assign(report_day=day)[list(DATA_QUALITY_ISSUES.column_names)]
-    if lake.has_table(DATA_QUALITY_ISSUES.name):
-        stored = lake.read_table(DATA_QUALITY_ISSUES.name)
-        kept = stored[stored["report_day"] != day]
-        if not kept.empty:
-            frame = pd.concat([kept, frame], ignore_index=True) if not frame.empty else kept
-    lake.write_table(DATA_QUALITY_ISSUES.name, frame, mode="overwrite")
+    if not lake.has_table(DATA_QUALITY_ISSUES.name):
+        lake.write_table(DATA_QUALITY_ISSUES.name, frame, mode="overwrite")  # creates the table
+        return
+    lake.delete_rows(DATA_QUALITY_ISSUES.name, [("report_day", "=", day)])
+    if not frame.empty:
+        lake.write_table(DATA_QUALITY_ISSUES.name, frame, mode="upsert")
 
 
 def read_quality_issues(

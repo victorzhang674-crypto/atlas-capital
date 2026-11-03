@@ -11,6 +11,7 @@ from view_helpers import (
     macro_rows,
     make_actions,
     make_bars,
+    make_facts,
     month_starts,
     no_actions,
     quarterly_facts,
@@ -32,6 +33,7 @@ from atlas.data.quality import (
     Severity,
     blocked_symbols,
     check_fundamentals_jumps,
+    check_fundamentals_period_after_filing,
     check_macro_gaps,
     check_missing_sessions,
     check_nonpositive_prices,
@@ -68,6 +70,7 @@ def test_issue_table_registered() -> None:
         "fundamentals_jump",
         "macro_gap",
         "vendor_mix",
+        "fundamentals_period_after_filing",
     )
 
 
@@ -370,6 +373,45 @@ def test_fundamentals_jump_only_new_filings() -> None:
     assert _jumps(late) == []  # filed after the 08:00 cutoff: not known yet
 
 
+def test_period_after_filing_reported() -> None:
+    # Phase 1 checkpoint, Tier 3: a fact dated after its own filing (AAL's 2027-07-17 cover-page
+    # share count in a 2026-07-23 10-Q) is a filer error; `known_facts` leaves it out and the
+    # quality report says so, one issue per symbol and filing day.
+    filed = date(2024, 2, 12)
+    facts = pd.concat(
+        [
+            make_facts(
+                "AAA",
+                {"tag": "dei:EntityCommonStockSharesOutstanding", "value": 5e8,
+                 "end": date(2025, 2, 10), "filed": filed},
+                {"tag": "Assets", "value": 1e9, "end": date(2024, 6, 30), "filed": filed},
+                {"tag": "Assets", "value": 1e9, "end": date(2023, 12, 31), "filed": filed},
+            ),
+            make_facts(  # filed before the window: an old error, already reported then
+                "BBB",
+                {"tag": "Assets", "value": 1e9, "end": date(2025, 1, 1),
+                 "filed": date(2023, 5, 1)},
+            ),
+        ],
+        ignore_index=True,
+    )  # fmt: skip
+    issues = check_fundamentals_period_after_filing(facts, AS_OF, since=SINCE, severity=W)
+    assert [(i.table, i.symbol, i.date, i.check, i.severity) for i in issues] == [
+        ("fundamentals_facts", "AAA", date(2024, 2, 12), "fundamentals_period_after_filing", W)
+    ]
+    assert "2025-02-10" in issues[0].detail and "2024-06-30" in issues[0].detail
+    assert issues[0].available_at == utc(2024, 2, 12, 21)
+
+
+def test_period_after_filing_respects_the_cutoff() -> None:
+    late = make_facts(
+        "AAA",
+        {"tag": "Assets", "value": 1e9, "end": date(2025, 1, 1), "filed": date(2024, 3, 1),
+         "available_at": utc(2024, 3, 1, 14)},
+    )  # fmt: skip
+    assert check_fundamentals_period_after_filing(late, AS_OF, since=SINCE, severity=W) == []
+
+
 @pytest.mark.parametrize(
     ("stamp", "reported"),
     [
@@ -587,6 +629,25 @@ def test_persist_empty_report_clears_day(tmp_lake: Lake) -> None:
     assert _report(tmp_lake, persist=True).empty
     assert tmp_lake.has_table("data_quality_issues")
     assert read_quality_issues(tmp_lake, AS_OF).empty
+
+
+def test_persist_leaves_other_years_untouched(tmp_lake: Lake) -> None:
+    # Phase 1 checkpoint, Tier 3: persisting one day rewrote the whole table; now only the files
+    # holding that day's rows (and the year it is written to) change.
+    old = QualityIssue(
+        "prices_daily", "OLD", date(2023, 6, 1), "stale_price", W, "x", utc(2023, 6, 1)
+    )
+    tmp_lake.write_table(
+        "data_quality_issues",
+        issues_frame([old]).assign(report_day=date(2023, 6, 2)),
+        mode="upsert",
+    )
+    (old_file,) = tmp_lake.table_files("data_quality_issues")
+    stamp = old_file.stat().st_mtime_ns
+    _write(tmp_lake, "prices_daily", make_bars("AAA", walk(90), end=END))
+    _report(tmp_lake, persist=True)
+    assert old_file.stat().st_mtime_ns == stamp
+    assert set(read_quality_issues(tmp_lake, date(2023, 6, 2))["symbol"]) == {"OLD"}
 
 
 def test_read_issues_guard(tmp_lake: Lake) -> None:

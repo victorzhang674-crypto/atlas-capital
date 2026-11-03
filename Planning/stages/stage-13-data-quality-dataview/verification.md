@@ -34,3 +34,10 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 3) — 2026-11-02
+- Red before the fixes · raw: [artifacts/phase1-checkpoint-2026-11-02-tier3-red.txt](artifacts/phase1-checkpoint-2026-11-02-tier3-red.txt); panel measurements: [artifacts/phase1-checkpoint-2026-11-02-tier3-panel-measurements.txt](artifacts/phase1-checkpoint-2026-11-02-tier3-panel-measurements.txt)
+- `uv run pytest tests/unit/data -q` (brief's Verify) → 949 passed, 13 deselected; `make check` → exit 0 (ruff, format 207 files, mypy 88 files, 2143 passed, 14 deselected); `-m live` → 13 passed · raw: [artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt](artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt)
+- Acceptance criteria still evidenced (leak suite, blocked symbols, reader-matching tests passed in the brief's Verify).
+
+**Result:** ALL CRITERIA VERIFIED

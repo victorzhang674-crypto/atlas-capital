@@ -97,10 +97,13 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
 2. **Former members need a reviewed CIK.** EDGAR's `company_tickers.json` lists current
    registrants only, and an old ticker may now belong to another company (APC is now ARKO
    Petroleum, STI is now Solidion). `config/cik_overrides.yaml` pins a verified **CIK** for every
-   S&P 500 member since 2018-01-01 that has left the index (164 names, each checked against its
-   own 10-K/10-Q filings during its membership; `build_cik_map` applies them). Two have none:
-   First Republic Bank and Signature Bank filed with the FDIC, not the SEC, so they have no
-   fundamentals. Members that left before 2018 (before the backtest window) are not covered.
+   S&P 500 member since 2015-01-01 that has left the index (242 names: 164 leavers since 2018,
+   78 from 2015–2017 added 2026-11-02; each checked against its own 10-K/10-Q filings during its
+   membership; `build_cik_map` applies them). Two have none: First Republic Bank and Signature
+   Bank filed with the FDIC, not the SEC, so they have no fundamentals. Members that left before
+   2015 (before the default backfill start) are not covered. One change-log label is swapped:
+   the 2016-01-19 removal of "ACE / Chubb" is Chubb Corp (acquired by ACE Ltd, which took the CB
+   ticker), so `ACE` maps to Chubb Corp's CIK, while Yahoo's `ACE` ticker is another company.
 3. **Coverage depends on the tag list.** Standardised concepts are defined in
    `config/xbrl_map.yaml` as fallback lists of us-gaap/dei tags. A company that reports a line
    under a tag the map does not list gets **NaN** for it, never a guess; so does a business
@@ -124,6 +127,12 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
 6. **Ratios use simple definitions.** ROE and ROA divide TTM net income by the latest equity
    and assets (not averages); a ratio with a missing or non-positive denominator (negative
    equity) is NaN.
+7. **Facts dated after their own filing are left out.** A period cannot end after the report
+   that states it, so such a fact is a filer error (AAL's 10-Q of 2026-07-23 dates its cover
+   share count 2027-07-17; as the "latest" balance it would have hidden every later one).
+   `known_facts` drops it rather than guess the intended date, and the quality report lists it
+   (`fundamentals_period_after_filing`, a warning). On 2026-11-02 the lake held 75 such facts
+   in 35 symbols (added in the Phase 1 checkpoint).
 
 ## Macro (Stage 10)
 

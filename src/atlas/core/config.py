@@ -274,7 +274,8 @@ class PriceDataConfig(_Frozen):
     between vendor requests (rate limit); `request_timeout_seconds` bounds one HTTP request.
     `alpaca_feed` is the Alpaca data feed (`iex` on the free tier). `adj_mismatch_tolerance`
     is the fraction above which our recomputed adjusted close and the vendor's are recorded
-    as a mismatch (0.005 = 0.5%).
+    as a mismatch (0.005 = 0.5%). `memo_size` bounds the yfinance adapter's memo of downloaded
+    (symbol, window) bar sets; the least recently used is dropped first.
     """
 
     batch_size: Annotated[int, Field(gt=0)] = 50
@@ -285,6 +286,7 @@ class PriceDataConfig(_Frozen):
     alpaca_feed: Literal["iex", "sip"] = "iex"
     alpaca_data_url: str = "https://data.alpaca.markets"
     adj_mismatch_tolerance: _OpenFrac = 0.005
+    memo_size: Annotated[int, Field(gt=0)] = 1000
 
 
 class TradableConfig(_Frozen):
@@ -595,6 +597,7 @@ class QualitySeverities(_Frozen):
     fundamentals_jump: _SeverityName = "warning"
     macro_gap: _SeverityName = "warning"
     vendor_mix: _SeverityName = "warning"
+    fundamentals_period_after_filing: _SeverityName = "warning"
 
 
 class FrequencyDays(_Frozen):

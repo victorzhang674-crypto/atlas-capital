@@ -52,6 +52,19 @@ def test_known_facts_latest_filing_per_period() -> None:
     assert "future" not in set(known_facts(facts, at(date(2029, 12, 31)))["accn"])
 
 
+def test_fact_ending_after_its_filing_is_ignored() -> None:
+    # Phase 1 checkpoint, Tier 3: AAL's 10-Q of 2026-07-23 dates its cover-page share count
+    # 2027-07-17 (a filer typo). As the latest balance it froze the metric for a year; a period
+    # cannot end after the filing that reports it, so such a fact is left out (never guessed).
+    facts = make_facts(
+        {"tag": "S", "value": 100, "end": date(2026, 6, 30), "filed": date(2026, 7, 23)},
+        {"tag": "S", "value": 101, "end": date(2027, 7, 17), "filed": date(2026, 7, 23)},
+        {"tag": "S", "value": 102, "end": date(2026, 7, 23), "filed": date(2026, 7, 23)},
+    )
+    known = known_facts(facts, at(date(2026, 8, 3)))
+    assert sorted(known["value"]) == [100.0, 102.0]  # a period ending on the filing day is fine
+
+
 def test_known_facts_cutoff_is_strict() -> None:
     cutoff = at(date(2020, 5, 4)).cutoff
     facts = make_facts({**Q1, "value": 1, "filed": date(2020, 5, 4), "available_at": cutoff})

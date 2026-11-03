@@ -34,3 +34,11 @@ Filled in only with output from commands actually run in this stage's chat (Proj
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 3) — 2026-11-02
+- CIK overrides extended to 2015–2017 leavers (242 entries); red before: [artifacts/phase1-checkpoint-2026-11-02-tier3-red-cik-coverage.txt](artifacts/phase1-checkpoint-2026-11-02-tier3-red-cik-coverage.txt); builder and writer output: `artifacts/phase1-checkpoint-2026-11-02-*-cik-overrides-2015*`
+- Facts dated after their filing left out; red and real-data check: [artifacts/phase1-checkpoint-2026-11-02-tier3-period-after-filing.txt](artifacts/phase1-checkpoint-2026-11-02-tier3-period-after-filing.txt)
+- `uv run pytest tests/unit/data/fundamentals -q` (brief's Verify) → 142 passed, 1 deselected; `make check` → exit 0 (ruff, format 207 files, mypy 88 files, 2143 passed, 14 deselected); `-m live` → 13 passed · raw: [stage-13 artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt](../stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt)
+- Acceptance criteria still evidenced (`test_acceptance_fundamentals_pit_aapl_fy2023`, restatement and look-ahead tests passed in the brief's Verify).
+
+**Result:** ALL CRITERIA VERIFIED

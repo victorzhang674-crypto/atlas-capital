@@ -199,8 +199,10 @@ OVERRIDES_FILE = REPO_ROOT / "config" / "cik_overrides.yaml"
 
 def test_load_cik_overrides_repo_file() -> None:
     overrides = {o.symbol: o for o in load_cik_overrides(OVERRIDES_FILE)}
-    assert len(overrides) == 164
+    assert len(overrides) == 242  # 164 leavers since 2018 + 78 from 2015-2017 (Phase 1 checkpoint)
     assert overrides["APC"].cik == 773910  # the ticker APC now belongs to ARKO Petroleum
+    assert overrides["ACE"].cik == 20171  # Chubb Corp, removed under the label "ACE" in 2016
+    assert overrides["KRFT"].cik == 1545158  # Kraft Foods Group, not Mondelez
     assert overrides["STI"].cik == 750556  # the ticker STI now belongs to Solidion
     assert overrides["CELG"].cik == 816284
     assert overrides["ATVI"].cik == 718877
@@ -256,9 +258,10 @@ def test_build_cik_map_applies_repo_overrides(
     assert cik_map.cik("FRC") is None
 
 
-def test_cik_overrides_cover_former_members_since_2018() -> None:
-    """Every S&P 500 member on or after 2018-01-01 that is not in today's constituents table
-    (Stage 08 reconstruction from the recorded fixtures) has a reviewed override entry."""
+def test_cik_overrides_cover_former_members_since_2015() -> None:
+    """Every S&P 500 member on or after 2015-01-01 (the backfill's default start; 2018 until the
+    Phase 1 checkpoint) that is not in today's constituents table (Stage 08 reconstruction from
+    the recorded fixtures) has a reviewed override entry."""
     from atlas.data.reference import load_ticker_map, parse_changes, parse_constituents
     from atlas.data.universe import build_membership
 
@@ -267,6 +270,6 @@ def test_cik_overrides_cover_former_members_since_2018() -> None:
     changes = parse_changes((fixtures / "wikipedia_sp500_changes.html").read_text())
     ticker_map = load_ticker_map(REPO_ROOT / "config" / "ticker_changes.yaml")
     intervals = build_membership(constituents, changes, ticker_map=ticker_map).intervals
-    recent = intervals[intervals["end_date"].isna() | (intervals["end_date"] > date(2018, 1, 1))]
+    recent = intervals[intervals["end_date"].isna() | (intervals["end_date"] > date(2015, 1, 1))]
     former = set(recent["symbol"]) - set(constituents["symbol"])
     assert {o.symbol for o in load_cik_overrides(OVERRIDES_FILE)} == former

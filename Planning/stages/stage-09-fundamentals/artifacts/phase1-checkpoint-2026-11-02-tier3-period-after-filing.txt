@@ -1,0 +1,10 @@
+E       assert [100.0, 101.0, 102.0] == [100.0, 102.0]
+E         
+E         At index 1 diff: 101.0 != 102.0
+E         Left contains one more item: 102.0
+######## real data (main lake, read-only): AAL shares_outstanding at 2026-10-30; facts with period_end > filed; quality report 2026-07-24
+            metric       value period_end                          tag
+shares_outstanding 661936666.0 2026-06-30 CommonStockSharesOutstanding
+[(75, 35)]
+symbol       date                                                                                    detail
+   AAL 2026-07-23 period ends after the filing of 2026-07-23: EntityCommonStockSharesOutstanding 2027-07-17

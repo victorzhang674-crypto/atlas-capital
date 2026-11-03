@@ -1,0 +1,11 @@
+######## persist (red before fix)
+E       AssertionError: assert 1793670856088551584 == 1793670856064905035
+E        +  where 1793670856088551584 = os.stat_result(st_mode=33152, st_ino=235165484, st_dev=16777233, st_nlink=1, st_uid=501, st_gid=0, st_size=2232, st_atime=1793670856, st_mtime=1793670856, st_ctime=1793670856).st_mtime_ns
+E        +    where os.stat_result(st_mode=33152, st_ino=235165484, st_dev=16777233, st_nlink=1, st_uid=501, st_gid=0, st_size=2232, st_atime=1793670856, st_mtime=1793670856, st_ctime=1793670856) = stat()
+E        +      where stat = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-890/test_persist_leaves_other_year0/lake/curated/data_quality_issues/year=2023/data.parquet').stat
+1 failed, 2 passed, 46 deselected in 0.77s
+######## period-after-filing check (red before fix)
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/tests/unit/data/test_quality.py'.
+E   ImportError: cannot import name 'check_fundamentals_period_after_filing' from 'atlas.data.quality' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/src/atlas/data/quality.py)
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.73s

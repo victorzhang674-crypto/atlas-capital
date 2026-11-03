@@ -88,4 +88,5 @@ exit (61/64); nanobind shutdown lines (upstream).
 ## 4. Status (2026-11-02)
 - Tier 1: done (commit `7ae6924`, merged into `main`).
 - Tier 2: done. Item 4 found one more bug, also fixed: Alpaca repeats a corporate action once per CUSIP (GE's 2021-06-25 dividend came back twice). The news part of item 4 was done as an added real recording; the built pages stay for their designed edge cases.
-- Tiers 3–4: not started.
+- Tier 3: done, except item 2, which was measured rather than changed: `fundamentals_panel` takes ~92–118 s per as-of day for 502 members on the real lake. Windowing the facts gave identical values and no speed-up; a one-pass rewrite or a per-symbol cache is for the owner to choose (Stage 16 sets the access pattern). Found and fixed on the way: facts dated after their own filing are left out (AAL's share count). Found and left for the owner: 6 symbols hold a reused ticker's later company's facts (AA, ADT, NE, POM, SE, TE).
+- Tier 4: not started.

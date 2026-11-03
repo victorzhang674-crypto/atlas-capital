@@ -13,7 +13,9 @@ such rows are dropped, so the symbol is simply absent from the result. A symbol 
 no split history (`yf.Ticker(s).splits` is `None`) is also left out, with a
 `prices.no_split_history` warning: its raw prices cannot be rebuilt, and the rest of the batch
 is still served. Downloads and split histories are memoised per instance: `fetch_actions`
-after `fetch_daily` on the same window makes no new request.
+after `fetch_daily` on the same window makes no new request. The download memo keeps at most
+`memo_size` (symbol, window) bar sets, dropping the least recently used; split histories are
+small and kept for the instance's life.
 
 Error boundary: yfinance signals vendor trouble with many exception types (HTTP, rate-limit,
 JSON, its own errors), so *any* exception raised inside `yf.download` / `Ticker.splits` is
@@ -25,6 +27,7 @@ the chained cause. Errors in this module's own parsing are not caught.
 
 import time
 import warnings
+from collections import OrderedDict
 from collections.abc import Callable, Sequence
 from datetime import date, timedelta
 from functools import partial
@@ -114,7 +117,8 @@ class YFinanceProvider:
         self._splits_fn = splits if splits is not None else _yf_splits
         self._sleep = sleep
         self._throttle = Throttle(self._policy.min_interval_seconds, sleep)
-        self._bars: dict[tuple[str, date, date], pd.DataFrame] = {}
+        self._memo_size = cfg.memo_size
+        self._bars: OrderedDict[tuple[str, date, date], pd.DataFrame] = OrderedDict()
         self._splits: dict[str, tuple[tuple[date, float], ...] | None] = {}
 
     def fetch_daily(self, symbols: Sequence[str], start: date, end: date) -> pd.DataFrame:
@@ -165,19 +169,28 @@ class YFinanceProvider:
         """Yahoo's rows per canonical symbol (date index). Left out: a symbol with no bar, and
         one with bars but no split history (its raw prices cannot be rebuilt; logged once)."""
         wanted = check_request(symbols, start, end)
-        missing = [s for s in wanted if (s, start, end) not in self._bars]
+        got: dict[str, pd.DataFrame] = {}
+        for symbol in wanted:
+            key = (symbol, start, end)
+            if key in self._bars:
+                self._bars.move_to_end(key)
+                got[symbol] = self._bars[key]
+        missing = [s for s in wanted if s not in got]
         for i in range(0, len(missing), self._batch_size):
-            self._download_batch(missing[i : i + self._batch_size], start, end)
+            got.update(self._download_batch(missing[i : i + self._batch_size], start, end))
         out = {}
         for symbol in wanted:
-            bars = self._bars[(symbol, start, end)]
+            bars = got[symbol]
             if bars.dropna(how="all", subset=_BAR_FIELDS).empty:
                 _log.info("prices.no_data", vendor=self.name, symbol=symbol)
             elif self._split_history(symbol) is not None:
                 out[symbol] = bars
         return out
 
-    def _download_batch(self, symbols: list[str], start: date, end: date) -> None:
+    def _download_batch(
+        self, symbols: list[str], start: date, end: date
+    ) -> dict[str, pd.DataFrame]:
+        """Yahoo's rows for `symbols` (one vendor request), also kept in the bounded memo."""
         vendor = {vendor_symbol(s, "-"): s for s in symbols}
         self._throttle.wait()
         frame = call_with_retry(
@@ -187,8 +200,14 @@ class YFinanceProvider:
             f"yfinance download of {list(vendor)}",
             (Exception,),
         )
+        got = {}
         for vsym, symbol in vendor.items():
-            self._bars[(symbol, start, end)] = _bars_of(frame, vsym, len(vendor) == 1)
+            got[symbol] = _bars_of(frame, vsym, len(vendor) == 1)
+            self._bars[(symbol, start, end)] = got[symbol]
+            self._bars.move_to_end((symbol, start, end))
+            while len(self._bars) > self._memo_size:
+                self._bars.popitem(last=False)
+        return got
 
     def _split_history(self, symbol: str) -> tuple[tuple[date, float], ...] | None:
         """`(ex_date, ratio)` of every split in the symbol's whole history, in date order, or

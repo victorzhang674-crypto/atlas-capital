@@ -1,0 +1,34 @@
+######## make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+207 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 88 source files
+uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 4.58 s (limit 20 s)
+2143 passed, 14 deselected in 70.19s (0:01:10)
+ - ... skipped remainder
+exit=0
+######## Verify commands
+$ uv run pytest tests/unit/core/storage -q
+146 passed in 5.36s
+$ uv run pytest tests/unit/data/fundamentals -q
+142 passed, 1 deselected in 6.72s
+$ uv run pytest tests/unit/data -q   (Stage 07 and 13 Verify)
+949 passed, 13 deselected in 34.61s
+######## uv run pytest tests/unit/data -m live -v -rs
+tests/unit/data/events/test_events_live.py::test_live_aapl_earnings_events PASSED
+tests/unit/data/events/test_events_live.py::test_live_fred_release_dates PASSED
+tests/unit/data/events/test_events_live.py::test_live_yahoo_calendar PASSED
+tests/unit/data/fundamentals/test_fundamentals_live.py::test_live_edgar_aapl PASSED
+tests/unit/data/macro/test_macro_live.py::test_live_fred_cpi PASSED
+tests/unit/data/news/test_news_live.py::test_live_alpaca_news PASSED
+tests/unit/data/news/test_news_live.py::test_live_yahoo_news PASSED
+tests/unit/data/sentiment/test_sentiment_live.py::test_live_download_lm_lexicon PASSED
+tests/unit/data/test_price_live.py::test_yfinance_live_smoke PASSED
+tests/unit/data/test_price_live.py::test_alpaca_live_smoke PASSED
+tests/unit/data/test_price_live.py::test_yfinance_live_actions PASSED
+tests/unit/data/test_price_live.py::test_alpaca_live_actions PASSED
+tests/unit/data/test_universe.py::test_live_wikipedia_pages_parse PASSED
+================ 13 passed, 949 deselected in 130.66s (0:02:10) ================

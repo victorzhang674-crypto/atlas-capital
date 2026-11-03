@@ -1,0 +1,4 @@
+E       AssertionError: assert {'AAL', 'AAP'...', 'AGN', ...} == {'AA', 'AAL',...', 'ADS', ...}
+E         
+E         Extra items in the right set:
+E         'DNR'

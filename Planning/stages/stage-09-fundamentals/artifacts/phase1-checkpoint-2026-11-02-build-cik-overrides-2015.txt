@@ -1,0 +1,392 @@
+# run 1 (78 symbols) stopped at TWC on an EDGAR SSL EOF; TWC..YHOO from run 2 (resume with a symbol list)
+# 78 former members since 2015-01-01 without an override
+== AA | 'Alcoa' | window 2014-07-01..2016-11-01
+   -- cik=1675149 via=tickers score=1.00 periodic_in_window=0 tickers_now=AA sec_name='Alcoa Corp' former=['Alcoa Upstream Corp']
+   OK cik=4281 via=efts score=1.00 periodic_in_window=9 tickers_now=HWM sec_name='Howmet Aerospace Inc.' former=['Arconic Inc.', 'ALCOA INC.', 'ALCOA INC']
+   -- cik=949157 via=efts score=0.00 periodic_in_window=10 tickers_now=CENX sec_name='CENTURY ALUMINUM CO' former=[]
+   -- cik=1286043 via=efts score=0.00 periodic_in_window=10 tickers_now=KRG sec_name='KITE REALTY GROUP TRUST' former=[]
+   -- cik=6769 via=efts score=0.00 periodic_in_window=9 tickers_now=- sec_name='APACHE CORP' former=[]
+== ACE | 'Chubb' | window 2014-07-01..2016-01-19
+   OK cik=20171 via=efts score=1.00 periodic_in_window=6 tickers_now=- sec_name='CHUBB CORP' former=[]
+   -- cik=75288 via=efts score=0.00 periodic_in_window=6 tickers_now=OXM sec_name='OXFORD INDUSTRIES INC' former=[]
+   -- cik=40888 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='AEROJET ROCKETDYNE HOLDINGS, INC.' former=['GENCORP INC']
+   -- cik=869187 via=efts score=0.00 periodic_in_window=9 tickers_now=- sec_name='BALTIA AIR LINES INC' former=[]
+== ADT | 'ADT' | window 2014-07-01..2016-05-03
+   -- cik=1703056 via=tickers score=1.00 periodic_in_window=0 tickers_now=ADT sec_name='ADT Inc.' former=['ADT Inc.', 'ADT, Inc.', 'Prime Security Services Parent, Inc.']
+   OK cik=1546640 via=efts score=1.00 periodic_in_window=7 tickers_now=- sec_name='ADT Corp' former=[]
+   OK cik=833444 via=efts score=1.00 periodic_in_window=8 tickers_now=JCI sec_name='Johnson Controls International plc' former=['TYCO INTERNATIONAL plc', 'TYCO INTERNATIONAL LTD', 'TYCO INTERNATIONAL LTD /BER/']
+   -- cik=53669 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='JOHNSON CONTROLS INC' former=[]
+   -- cik=1260990 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='Oncternal Therapeutics, Inc.' former=['GTX INC /DE/', 'GTX INC/TN']
+== ALTR | 'Altera' | window 2014-07-01..2015-12-29
+   OK cik=768251 via=efts score=1.00 periodic_in_window=6 tickers_now=- sec_name='ALTERA CORP' former=[]
+   -- cik=1101239 via=efts score=0.00 periodic_in_window=6 tickers_now=EQIX sec_name='EQUINIX INC' former=[]
+   -- cik=743988 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='XILINX INC' former=['XILINX, INCORPORATED']
+   -- cik=310568 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='MICROSEMI CORP' former=[]
+== AN | 'AutoNation' | window 2014-07-01..2017-08-08
+   OK cik=350698 via=tickers score=1.00 periodic_in_window=13 tickers_now=AN sec_name='AUTONATION, INC.' former=['AUTONATION INC /FL', 'REPUBLIC INDUSTRIES INC', 'REPUBLIC WASTE INDUSTRIES INC']
+   -- cik=1023364 via=efts score=0.00 periodic_in_window=13 tickers_now=- sec_name='AutoWeb, Inc.' former=['AUTOBYTEL INC', 'AUTOBYTEL  INC', 'AUTOBYTEL COM INC']
+   -- cik=1000045 via=efts score=0.00 periodic_in_window=12 tickers_now=OMCC sec_name='OLD MARKET CAPITAL Corp' former=['NICHOLAS FINANCIAL INC']
+   -- cik=1596961 via=efts score=0.00 periodic_in_window=13 tickers_now=RDNW sec_name='RideNow Group, Inc.' former=['RumbleON, Inc.', 'RumbleOn, Inc.', 'Smart Server, Inc']
+== ARG | 'Airgas' | window 2014-07-01..2016-05-23
+   OK cik=804212 via=efts score=1.00 periodic_in_window=8 tickers_now=- sec_name='AIRGAS INC' former=[]
+   -- cik=929008 via=efts score=0.00 periodic_in_window=8 tickers_now=WCC sec_name='WESCO INTERNATIONAL INC' former=['CDW HOLDING CORP']
+   -- cik=884905 via=efts score=0.00 periodic_in_window=9 tickers_now=- sec_name='LINDE INC' former=['PRAXAIR INC']
+   -- cik=2969 via=efts score=0.00 periodic_in_window=8 tickers_now=APD sec_name='Air Products & Chemicals, Inc.' former=['AIR PRODUCTS & CHEMICALS INC /DE/']
+== ATI | 'Allegheny Technologies' | window 2014-07-01..2015-07-02
+   OK cik=1018963 via=tickers score=1.00 periodic_in_window=4 tickers_now=ATI sec_name='ATI INC' former=['ALLEGHENY TECHNOLOGIES INC', 'ALLEGHENY TELEDYNE INC']
+   -- cik=55242 via=efts score=0.00 periodic_in_window=4 tickers_now=KMT sec_name='KENNAMETAL INC' former=[]
+   -- cik=918160 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='Cleveland-Cliffs Steel Holding Corp' former=['AK STEEL HOLDING CORP']
+   -- cik=1068717 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='RTI INTERNATIONAL METALS INC' former=[]
+== AVP | 'Avon Products' | window 2014-07-01..2015-03-23
+   OK cik=8868 via=efts score=1.00 periodic_in_window=3 tickers_now=- sec_name='AVON PRODUCTS INC' former=[]
+   -- cik=1403085 via=efts score=0.00 periodic_in_window=9 tickers_now=- sec_name='JRjr33, Inc.' former=['CVSL INC.', 'Computer Vision Systems Laboratories Corp.', 'CARDIO VASCULAR MEDICAL DEVICE CORP']
+   -- cik=1180262 via=efts score=0.00 periodic_in_window=3 tickers_now=HLF sec_name='HERBALIFE LTD.' former=['HERBALIFE NUTRITION LTD.', 'WH HOLDINGS CAYMAN ISLANDS LTD']
+   -- cik=1085277 via=efts score=0.00 periodic_in_window=2 tickers_now=SKVI sec_name='SKINVISIBLE, INC.' former=['SKINVISIBLE INC']
+== BBBY | 'Bed Bath & Beyond' | window 2014-07-01..2017-07-26
+   OK cik=886158 via=efts score=1.00 periodic_in_window=12 tickers_now=- sec_name='20230930-DK-Butterfly-1, Inc.' former=['BED BATH & BEYOND INC']
+   -- cik=907254 via=efts score=0.00 periodic_in_window=12 tickers_now=BFS,BFS-PD,BFS-PE sec_name='SAUL CENTERS, INC.' former=['SAUL CENTERS INC']
+   -- cik=1063761 via=efts score=0.00 periodic_in_window=15 tickers_now=SPG,SPG-PJ sec_name='SIMON PROPERTY GROUP INC.' former=['SIMON PROPERTY GROUP INC /DE/', 'CORPORATE PROPERTY INVESTORS INC']
+   -- cik=879101 via=efts score=0.00 periodic_in_window=12 tickers_now=KIM,KIM-PL,KIM-PM,KIM-PN sec_name='KIMCO REALTY CORP' former=[]
+== BHI | 'Baker Hughes' | window 2014-07-01..2017-07-07
+   OK cik=808362 via=efts score=1.00 periodic_in_window=13 tickers_now=- sec_name='Baker Hughes Holdings LLC' former=['BAKER HUGHES a GE Co LLC', 'BAKER HUGHES INC']
+   -- cik=45012 via=efts score=0.00 periodic_in_window=12 tickers_now=HAL sec_name='HALLIBURTON CO' former=[]
+   -- cik=1600422 via=efts score=0.00 periodic_in_window=15 tickers_now=- sec_name='Superior Drilling Products, Inc.' former=['SD Co Inc']
+   -- cik=40545 via=efts score=0.00 periodic_in_window=14 tickers_now=GE sec_name='GENERAL ELECTRIC CO' former=[]
+== BRCM | 'Broadcom Corporation' | window 2014-07-01..2016-02-01
+   OK cik=1054374 via=efts score=1.00 periodic_in_window=6 tickers_now=- sec_name='BROADCOM CORP' former=[]
+   -- cik=918386 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='QLOGIC CORP' former=['Q LOGIC CORP']
+   -- cik=1173489 via=efts score=0.00 periodic_in_window=6 tickers_now=CEVA sec_name='CEVA INC' former=['CEVA  INC', 'PARTHUSCEVA INC']
+   -- cik=711065 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='APPLIED MICRO CIRCUITS CORP' former=[]
+== BXLT | 'Baxalta' | window 2015-07-01..2016-06-03
+   OK cik=1620546 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='Baxalta Inc' former=[]
+   -- cik=10456 via=efts score=0.00 periodic_in_window=4 tickers_now=BAX sec_name='BAXTER INTERNATIONAL INC' former=[]
+   -- cik=891293 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='CTI BIOPHARMA CORP' former=['CELL THERAPEUTICS INC']
+   -- cik=1159036 via=efts score=0.00 periodic_in_window=5 tickers_now=HALO sec_name='HALOZYME THERAPEUTICS, INC.' former=['HALOZYME THERAPEUTICS INC', 'GLOBAL YACHT SERVICES INC']
+== CAM | 'Cameron International' | window 2014-07-01..2016-04-04
+   OK cik=941548 via=efts score=1.00 periodic_in_window=8 tickers_now=- sec_name='CAMERON INTERNATIONAL CORP' former=['COOPER CAMERON CORP']
+   OK cik=885307 via=efts score=1.00 periodic_in_window=7 tickers_now=JCTC sec_name='JEWETT CAMERON TRADING CO LTD' former=[]
+   -- cik=1032208 via=efts score=0.00 periodic_in_window=7 tickers_now=SRE,SREA sec_name='SEMPRA' former=['SEMPRA ENERGY', 'MINERAL ENERGY CO']
+   -- cik=92108 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='SOUTHERN CALIFORNIA GAS CO' former=[]
+== CCE | 'Coca-Cola Enterprises' | window 2014-07-01..2016-05-31
+   OK cik=1491675 via=efts score=1.00 periodic_in_window=8 tickers_now=- sec_name='COCA-COLA EUROPEAN PARTNERS US, LLC' former=['COCA-COLA ENTERPRISES, INC.', 'International CCE Inc.']
+   OK cik=21344 via=efts score=0.67 periodic_in_window=8 tickers_now=KO sec_name='COCA COLA CO' former=[]
+   -- cik=865752 via=efts score=0.00 periodic_in_window=9 tickers_now=MNST sec_name='Monster Beverage Corp' former=['HANSEN NATURAL CORP']
+   -- cik=922237 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='ENOVA SYSTEMS INC' former=['US ELECTRICAR INC']
+== CFN | 'Carefusion' | window 2014-07-01..2015-03-18
+   OK cik=1457543 via=efts score=1.00 periodic_in_window=3 tickers_now=- sec_name='CAREFUSION Corp' former=[]
+   -- cik=721371 via=efts score=0.00 periodic_in_window=3 tickers_now=CAH sec_name='CARDINAL HEALTH INC' former=['CARDINAL HEALTH INC', 'CARDINAL DISTRIBUTION INC']
+   -- cik=1616101 via=efts score=0.00 periodic_in_window=2 tickers_now=- sec_name='Symmetry Surgical Inc.' former=[]
+   -- cik=878526 via=efts score=0.00 periodic_in_window=3 tickers_now=- sec_name='NATUS MEDICAL INC' former=[]
+== CMCSK | 'Comcast Series K' | window 2015-09-18..2015-12-15
+== CNX | 'Consol Energy' | window 2014-07-01..2016-03-04
+   OK cik=1070412 via=tickers score=1.00 periodic_in_window=7 tickers_now=CNX sec_name='CNX Resources Corp' former=['CONSOL ENERGY INC', 'CONSOL Energy Inc']
+   -- cik=1637558 via=efts score=0.50 periodic_in_window=3 tickers_now=- sec_name='CONSOL Coal Resources LP' former=['CNX Coal Resources LP']
+   -- cik=1610418 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='CNX Midstream Partners LP' former=['CONE Midstream Partners LP']
+   -- cik=72207 via=efts score=0.50 periodic_in_window=7 tickers_now=- sec_name='NOBLE ENERGY INC' former=['NOBLE AFFILIATES INC']
+== COV | 'Covidien' | window 2014-07-01..2015-01-27
+   OK cik=1385187 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='Covidien plc' former=['Covidien Ltd.', 'Tyco Healthcare Ltd.']
+   -- cik=1567892 via=efts score=0.00 periodic_in_window=2 tickers_now=- sec_name='Keenova Therapeutics plc' former=['Mallinckrodt plc']
+   -- cik=1275187 via=efts score=0.00 periodic_in_window=5 tickers_now=ANGO sec_name='ANGIODYNAMICS INC' former=[]
+   -- cik=64670 via=efts score=0.00 periodic_in_window=2 tickers_now=- sec_name='MEDTRONIC INC' former=[]
+== CPGX | 'Columbia Pipeline Group' | window 2015-07-02..2016-07-05
+   OK cik=1420783 via=efts score=1.00 periodic_in_window=5 tickers_now=- sec_name='Columbia Pipeline Partners LP' former=['NiSource Energy Partners, L.P.']
+   OK cik=1629995 via=efts score=1.00 periodic_in_window=5 tickers_now=- sec_name='Columbia Pipeline Group, Inc.' former=[]
+   -- cik=1111711 via=efts score=0.00 periodic_in_window=4 tickers_now=NI sec_name='NISOURCE INC.' former=['NISOURCE INC/DE', 'NEW NISOURCE INC']
+   -- cik=1667153 via=efts score=0.00 periodic_in_window=1 tickers_now=- sec_name='CPG OpCo GP LLC' former=[]
+== CSC | 'Computer Sciences Corporation' | window 2014-07-01..2015-12-01
+   OK cik=23082 via=efts score=1.00 periodic_in_window=7 tickers_now=- sec_name='COMPUTER SCIENCES CORP' former=[]
+   -- cik=803578 via=efts score=0.00 periodic_in_window=6 tickers_now=AIFF sec_name='FIREFLY NEUROSCIENCE, INC.' former=['WAVEDANCER, INC.', 'INFORMATION ANALYSIS INC']
+   -- cik=33185 via=efts score=0.00 periodic_in_window=6 tickers_now=EFX sec_name='EQUIFAX INC' former=['EQUIFAX INC']
+   -- cik=1550518 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='Cantabio Pharmaceuticals Inc.' former=['Lion Consulting Group Inc.']
+== CVC | 'Cablevision Systems' | window 2014-07-01..2016-06-22
+   OK cik=1053112 via=efts score=1.00 periodic_in_window=9 tickers_now=- sec_name='CABLEVISION SYSTEMS CORP /NY' former=['CABLEVISIONS SYSTEM CORP /NY', 'CSC PARENT CORP']
+   OK cik=784681 via=efts score=1.00 periodic_in_window=9 tickers_now=- sec_name='CSC HOLDINGS LLC' former=['CSC HOLDINGS INC', 'CABLEVISION SYSTEMS CORP']
+   -- cik=1469372 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='MSG NETWORKS INC.' former=['Madison Square Garden Co', 'Madison Square Garden, Inc.']
+   -- cik=1514991 via=efts score=0.00 periodic_in_window=8 tickers_now=AMCX sec_name='AMC Global Media Inc.' former=['AMC Networks Inc.']
+== DNB | 'Dun & Bradstreet' | window 2014-07-01..2017-04-05
+   OK cik=1115222 via=efts score=1.00 periodic_in_window=11 tickers_now=- sec_name='DUN & BRADSTREET CORP/NW' former=['NEW D&B CORP']
+   -- cik=315958 via=efts score=0.00 periodic_in_window=11 tickers_now=CRMZ sec_name='CREDITRISKMONITOR COM INC' former=['NEW GENERATION FOODS INC']
+   OK cik=1059556 via=efts score=1.00 periodic_in_window=11 tickers_now=MCO sec_name='MOODYS CORP /DE/' former=['DUN & BRADSTREET CORP /DE/', 'NEW DUN & BRADSTREET CORP']
+   -- cik=33185 via=efts score=0.00 periodic_in_window=11 tickers_now=EFX sec_name='EQUIFAX INC' former=['EQUIFAX INC']
+== DNR | 'Denbury Resources' | window 2014-07-01..2015-03-23
+   OK cik=945764 via=efts score=1.00 periodic_in_window=3 tickers_now=- sec_name='DENBURY INC' former=['DENBURY RESOURCES INC']
+   -- cik=1006655 via=efts score=0.00 periodic_in_window=3 tickers_now=EPM sec_name='EVOLUTION PETROLEUM CORP' former=['EVOLUTION PETROLEUM CORP', 'NATURAL GAS SYSTEMS INC/NEW', 'REALITY INTERACTIVE INC']
+   -- cik=92122 via=efts score=0.00 periodic_in_window=3 tickers_now=SO,SOJC,SOJD,SOJE,SOJF,SOMN sec_name='SOUTHERN CO' former=['SOUTHERN CO']
+   -- cik=1160661 via=efts score=0.00 periodic_in_window=3 tickers_now=- sec_name='SOUTHERN POWER CO' former=[]
+== DO | 'Diamond Offshore Drilling' | window 2014-07-01..2016-09-30
+   OK cik=949039 via=efts score=1.00 periodic_in_window=9 tickers_now=- sec_name='DIAMOND OFFSHORE DRILLING, INC.' former=['DIAMOND OFFSHORE DRILLING INC']
+   -- cik=60086 via=efts score=0.00 periodic_in_window=9 tickers_now=L sec_name='LOEWS CORP' former=[]
+   -- cik=4977 via=efts score=0.00 periodic_in_window=9 tickers_now=AFL sec_name='AFLAC INC' former=[]
+   -- cik=8411 via=efts score=0.00 periodic_in_window=9 tickers_now=- sec_name='ATWOOD OCEANICS INC' former=[]
+== DTV | 'DirecTV' | window 2014-07-01..2015-07-29
+   OK cik=1465112 via=efts score=1.00 periodic_in_window=6 tickers_now=- sec_name='DIRECTV' former=[]
+   -- cik=732717 via=efts score=0.00 periodic_in_window=6 tickers_now=T,TBB,T-PA,T-PC sec_name='AT&T INC.' former=['SBC COMMUNICATIONS INC', 'SOUTHWESTERN BELL CORP']
+   -- cik=1335982 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='Goodman Networks Inc' former=[]
+   -- cik=1585738 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='Ethos Media Network, Inc.' former=['Eye On Media Network, Inc.']
+== EMC | 'EMC Corporation' | window 2014-07-01..2016-09-08
+   OK cik=356130 via=efts score=1.00 periodic_in_window=9 tickers_now=- sec_name='EMC INSURANCE GROUP INC' former=[]
+   OK cik=790070 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='EMC CORP' former=[]
+   -- cik=1124610 via=efts score=0.00 periodic_in_window=9 tickers_now=- sec_name='VMWARE LLC' former=['VMWARE, INC.']
+   OK cik=1408146 via=efts score=1.00 periodic_in_window=14 tickers_now=SCYYF sec_name='SCANDIUM INTERNATIONAL MINING CORP.' former=['EMC METALS CORP.', 'GOLDEN PREDATOR MINES INC']
+== ENDP | 'Endo International' | window 2015-01-27..2017-03-02
+   OK cik=1593034 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='Endo International plc' former=['Endo International Ltd']
+   -- cik=1103021 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='BIODELIVERY SCIENCES INTERNATIONAL INC' former=['MAS ACQUISITION XXIII CORP']
+   -- cik=875622 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='BIOSPECIFICS TECHNOLOGIES CORP' former=[]
+   -- cik=1245791 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='GI DYNAMICS, INC.' former=['GI DYNAMICS INC']
+== ESV | 'Ensco' | window 2014-07-01..2016-03-30
+   OK cik=314808 via=efts score=1.00 periodic_in_window=7 tickers_now=VAL,VAL-WT sec_name='Valaris Ltd' former=['Valaris plc', 'Ensco Rowan plc', 'Ensco plc']
+   -- cik=1501585 via=efts score=0.00 periodic_in_window=8 tickers_now=HII sec_name='HUNTINGTON INGALLS INDUSTRIES, INC.' former=['HUNTINGTON INGALLS INDUSTRIES, INC.', 'New Ships, Inc.']
+   -- cik=8411 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='ATWOOD OCEANICS INC' former=[]
+   -- cik=1451505 via=efts score=0.00 periodic_in_window=8 tickers_now=RIG sec_name='Transocean Ltd.' former=[]
+== FDO | 'Family Dollar' | window 2014-07-01..2015-07-08
+   OK cik=34408 via=efts score=1.00 periodic_in_window=6 tickers_now=- sec_name='FAMILY DOLLAR STORES INC' former=[]
+   -- cik=935703 via=efts score=0.50 periodic_in_window=4 tickers_now=DLTR sec_name='DOLLAR TREE, INC.' former=['DOLLAR TREE INC', 'DOLLAR TREE STORES INC']
+   -- cik=923284 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='IRC Retail Centers Inc' former=['INLAND REAL ESTATE CORP', 'INLAND MONTHLY INCOME FUND III INC']
+   -- cik=907254 via=efts score=0.00 periodic_in_window=4 tickers_now=BFS,BFS-PD,BFS-PE sec_name='SAUL CENTERS, INC.' former=['SAUL CENTERS INC']
+== FOSL | 'Fossil Group' | window 2014-07-01..2016-01-05
+   OK cik=883569 via=tickers score=1.00 periodic_in_window=6 tickers_now=FOSL sec_name='Fossil Group, Inc.' former=['FOSSIL INC', 'FOSSIL INCORPORATED']
+   -- cik=748790 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='Global Clean Energy Holdings, Inc.' former=['MEDICAL DISCOVERIES INC']
+   -- cik=1524872 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='Thunder Energies Corp' former=['Thunder Fusion Corp', 'CCJ Acquisition Corp.']
+   -- cik=788784 via=efts score=0.00 periodic_in_window=6 tickers_now=PEG sec_name='PUBLIC SERVICE ENTERPRISE GROUP INC' former=[]
+== FTR | 'Frontier Communications' | window 2014-07-01..2017-03-20
+   OK cik=20520 via=efts score=1.00 periodic_in_window=11 tickers_now=- sec_name='Frontier Communications Parent, Inc.' former=['FRONTIER COMMUNICATIONS CORP', 'CITIZENS COMMUNICATIONS CO', 'CITIZENS UTILITIES CO']
+   -- cik=13573 via=efts score=0.00 periodic_in_window=12 tickers_now=- sec_name='BOWL AMERICA INC' former=[]
+   -- cik=732712 via=efts score=0.50 periodic_in_window=11 tickers_now=VZ sec_name='VERIZON COMMUNICATIONS INC' former=['BELL ATLANTIC CORP']
+   -- cik=1609336 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='Griffin Capital BDC Corp.' former=['Griffin-Benefit Street Partners BDC Corp.']
+== GAS | 'AGL Resources' | window 2014-07-01..2016-07-01
+   OK cik=1004155 via=efts score=1.00 periodic_in_window=12 tickers_now=- sec_name='SOUTHERN CO GAS' former=['AGL RESOURCES INC']
+   -- cik=70145 via=efts score=0.00 periodic_in_window=9 tickers_now=NFG sec_name='NATIONAL FUEL GAS CO' former=[]
+   -- cik=92122 via=efts score=0.00 periodic_in_window=8 tickers_now=SO,SOJC,SOJD,SOJE,SOJF,SOMN sec_name='SOUTHERN CO' former=['SOUTHERN CO']
+   -- cik=1160661 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='SOUTHERN POWER CO' former=[]
+== GMCR | 'Keurig Green Mountain' | window 2014-07-01..2016-03-07
+   OK cik=909954 via=efts score=1.00 periodic_in_window=9 tickers_now=- sec_name='KEURIG GREEN MOUNTAIN, INC.' former=['GREEN MOUNTAIN COFFEE ROASTERS INC', 'GREEN MOUNTAIN COFFEE INC']
+   -- cik=91419 via=efts score=0.00 periodic_in_window=7 tickers_now=SJM sec_name='J M SMUCKER Co' former=['SMUCKER J M CO']
+   -- cik=21344 via=efts score=0.00 periodic_in_window=7 tickers_now=KO sec_name='COCA COLA CO' former=[]
+   -- cik=1334586 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='JAMMIN JAVA CORP.' former=['MARLEY COFFEE INC.', 'Global Electronic Recovery Corp.']
+== GME | 'GameStop' | window 2014-07-01..2016-04-25
+   OK cik=1326380 via=tickers score=1.00 periodic_in_window=8 tickers_now=GME,GME-WT sec_name='GameStop Corp.' former=['GSC Holdings Corp.']
+   -- cik=1528760 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='Exeo Entertainment, Inc.' former=[]
+   -- cik=712515 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='ELECTRONIC ARTS INC.' former=['ELECTRONIC ARTS INC']
+   -- cik=771999 via=efts score=0.00 periodic_in_window=8 tickers_now=DSS sec_name='DSS, INC.' former=['DOCUMENT SECURITY SYSTEMS INC', 'NEW SKY COMMUNICATIONS INC']
+== GNW | 'Genworth Financial' | window 2014-07-01..2015-11-18
+   OK cik=1276520 via=tickers score=1.00 periodic_in_window=6 tickers_now=GNW sec_name='GENWORTH FINANCIAL INC' former=[]
+   -- cik=727892 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='RIVERSOURCE LIFE INSURANCE CO' former=['RIVERSOURCE LIFE INSURANCE CO', 'IDS LIFE INSURANCE CO', 'IDS LIFE FLEXIBLE PAYMENT MARKET VALUE ANNUITY']
+   -- cik=820027 via=efts score=0.50 periodic_in_window=6 tickers_now=AMP sec_name='AMERIPRISE FINANCIAL INC' former=['AMERICAN EXPRESS FINANCIAL CORP', 'AMERICAN EXPRESS FINANCIAL ADVISORS', 'IDS FINANCIAL CORP/MN/']
+   -- cik=1098881 via=efts score=0.50 periodic_in_window=7 tickers_now=- sec_name='U.S. RARE EARTHS, INC' former=['COLORADO RARE EARTHS, INC', 'CALYPSO MEDIA SERVICES GROUP, INC', 'CALYPSO FINANCIAL SERVICES INC']
+== HAR | 'Harman International' | window 2014-07-01..2017-03-16
+   OK cik=800459 via=efts score=1.00 periodic_in_window=11 tickers_now=- sec_name='HARMAN INTERNATIONAL INDUSTRIES INC /DE/' former=[]
+   OK cik=106618 via=efts score=1.00 periodic_in_window=11 tickers_now=- sec_name='HANDY & HARMAN LTD.' former=['WHX CORP', 'WHEELING PITTSBURGH CORP']
+   -- cik=1452857 via=efts score=0.00 periodic_in_window=13 tickers_now=- sec_name='STEEL PARTNERS HOLDINGS L.P.' former=['WEBFINANCIAL L.P.']
+   -- cik=99780 via=efts score=0.00 periodic_in_window=11 tickers_now=TRN sec_name='TRINITY INDUSTRIES INC' former=[]
+== HCBK | 'Hudson City Bancorp' | window 2014-07-01..2015-11-02
+   OK cik=921847 via=efts score=1.00 periodic_in_window=6 tickers_now=- sec_name='HUDSON CITY BANCORP INC' former=[]
+   -- cik=36270 via=efts score=0.00 periodic_in_window=6 tickers_now=MTB,MTB-PH,MTB-PJ,MTB-PK,MTB-PL sec_name='M&T BANK CORP' former=['FIRST EMPIRE STATE CORP']
+   -- cik=1329842 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='Federal Home Loan Bank of New York' former=[]
+   -- cik=70502 via=efts score=0.00 periodic_in_window=6 tickers_now=NRUC sec_name='NATIONAL RURAL UTILITIES COOPERATIVE FINANCE CORP /DC/' former=[]
+== HOT | 'Starwood Hotels and Resorts' | window 2014-07-01..2016-09-22
+   OK cik=316206 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='STARWOOD HOTELS & RESORTS WORLDWIDE, LLC' former=['STARWOOD HOTEL & RESORTS WORLDWIDE, INC', 'STARWOOD HOTEL & RESORTS WORLDWIDE INC', 'STARWOOD LODGING CORP']
+   -- cik=1298946 via=efts score=0.00 periodic_in_window=9 tickers_now=DRH sec_name='DiamondRock Hospitality Co' former=[]
+   -- cik=885508 via=efts score=0.00 periodic_in_window=9 tickers_now=STRS sec_name='STRATUS PROPERTIES INC' former=['FM PROPERTIES INC']
+   -- cik=1434620 via=efts score=0.00 periodic_in_window=11 tickers_now=- sec_name='ILG, LLC' former=['ILG, Inc.', 'Interval Leisure Group, Inc.']
+== HSP | 'Hospira' | window 2014-07-01..2015-09-02
+   OK cik=1274057 via=efts score=1.00 periodic_in_window=5 tickers_now=- sec_name='HOSPIRA INC' former=[]
+   -- cik=883984 via=efts score=0.00 periodic_in_window=6 tickers_now=ICUI sec_name='ICU MEDICAL INC/DE' former=[]
+   -- cik=1082038 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='DURECT CORP' former=[]
+   -- cik=1285819 via=efts score=0.00 periodic_in_window=5 tickers_now=OMER sec_name='OMEROS CORP' former=[]
+== JOY | 'Joy Global' | window 2014-07-01..2015-10-07
+   OK cik=801898 via=efts score=1.00 periodic_in_window=5 tickers_now=- sec_name='JOY GLOBAL INC' former=['HARNISCHFEGER INDUSTRIES INC']
+   -- cik=949157 via=efts score=0.00 periodic_in_window=6 tickers_now=CENX sec_name='CENTURY ALUMINUM CO' former=[]
+   -- cik=55242 via=efts score=0.00 periodic_in_window=5 tickers_now=KMT sec_name='KENNAMETAL INC' former=[]
+   -- cik=855931 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='POTASH CORP OF SASKATCHEWAN INC' former=['POTASH CORPORATION OF SASKATCHEWAN INC', 'POTASH CORPORATION OF SASKATCHEWAN INC.']
+== KRFT | 'Kraft Foods' | window 2014-07-01..2015-07-06
+   OK cik=1545158 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='Kraft Foods Group, Inc.' former=[]
+   OK cik=1103982 via=efts score=1.00 periodic_in_window=4 tickers_now=MDLZ sec_name='Mondelez International, Inc.' former=['KRAFT FOODS INC']
+   -- cik=1418135 via=efts score=0.00 periodic_in_window=4 tickers_now=KDP sec_name='Keurig Dr Pepper Inc.' former=['Dr Pepper Snapple Group, Inc.', 'CSAB Inc.']
+   -- cik=861441 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='LOCORR FUTURES PORTFOLIO FUND L.P.' former=['FUTURES PORTFOLIO FUND L.P.', 'FUTURES PORTFOLIO FUND LP']
+== LLTC | 'Linear Technology' | window 2014-07-01..2017-03-13
+   OK cik=791907 via=efts score=1.00 periodic_in_window=11 tickers_now=- sec_name='LINEAR TECHNOLOGY CORP /CA/' former=[]
+   -- cik=310568 via=efts score=0.00 periodic_in_window=11 tickers_now=- sec_name='MICROSEMI CORP' former=[]
+   -- cik=4127 via=efts score=0.00 periodic_in_window=14 tickers_now=SWKS sec_name='SKYWORKS SOLUTIONS, INC.' former=['SKYWORKS SOLUTIONS INC', 'ALPHA INDUSTRIES INC']
+   -- cik=1096325 via=efts score=0.00 periodic_in_window=12 tickers_now=- sec_name='INTERSIL CORP/DE' former=['INTERSIL HOLDING CO']
+== LM | 'Legg Mason' | window 2014-07-01..2016-12-02
+   OK cik=704051 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='LEGG MASON, INC.' former=['LEGG MASON INC']
+   -- cik=1335190 via=efts score=0.00 periodic_in_window=10 tickers_now=- sec_name='MAGNUM HUNTER RESOURCES CORP' former=['PETRO RESOURCES CORP']
+   -- cik=1552327 via=efts score=0.00 periodic_in_window=3 tickers_now=- sec_name='Morgan Stanley Bank of America Merrill Lynch Trust 2012-C5' former=[]
+   -- cik=720672 via=efts score=0.00 periodic_in_window=12 tickers_now=SF,SF-PB,SFB,SF-PC,SF-PD sec_name='STIFEL FINANCIAL CORP' former=[]
+== LO | 'Lorillard Tobacco Company' | window 2014-07-01..2015-06-11
+   -- cik=1424847 via=efts score=0.50 periodic_in_window=6 tickers_now=- sec_name='LORILLARD, LLC' former=['LORILLARD, INC.']
+   -- cik=764180 via=efts score=0.00 periodic_in_window=5 tickers_now=MO sec_name='ALTRIA GROUP, INC.' former=['ALTRIA GROUP INC', 'PHILIP MORRIS COMPANIES INC']
+   -- cik=1275283 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='REYNOLDS AMERICAN INC' former=[]
+   -- cik=59440 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='VECTOR GROUP LTD' former=['BROOKE GROUP LTD']
+== LVLT | 'Level 3 Communications' | window 2014-11-05..2017-10-13
+   OK cik=794323 via=efts score=1.00 periodic_in_window=13 tickers_now=- sec_name='Level 3 Parent, LLC' former=['LEVEL 3 COMMUNICATIONS INC', 'KIEWIT PETER SONS INC']
+   -- cik=711477 via=efts score=0.00 periodic_in_window=12 tickers_now=- sec_name='KIEWIT ROYALTY TRUST' former=[]
+   -- cik=1122063 via=efts score=0.00 periodic_in_window=9 tickers_now=- sec_name='FTE Networks, Inc.' former=['BEACON ENTERPRISE SOLUTIONS GROUP INC', 'SUNCREST GLOBAL ENERGY CORP', 'GALAXY SPECIALTIES INC']
+   -- cik=12239 via=efts score=0.00 periodic_in_window=14 tickers_now=DOMH sec_name='Dominari Holdings Inc.' former=['Aikido Pharma Inc.', 'AIkido Pharma Inc.', 'SPHERIX INC']
+== MJN | 'Mead Johnson' | window 2014-07-01..2017-06-19
+   OK cik=1452575 via=efts score=1.00 periodic_in_window=13 tickers_now=- sec_name='Mead Johnson Nutrition Co' former=[]
+   -- cik=14272 via=efts score=0.00 periodic_in_window=12 tickers_now=BMY,CELG-RI sec_name='BRISTOL MYERS SQUIBB CO' former=[]
+   -- cik=1408299 via=efts score=0.00 periodic_in_window=14 tickers_now=- sec_name='Entia Biosciences, Inc.' former=['Total Nutraceutical Solutions, Inc.', 'Total Nutraceutical Solutions', 'Generic Marketing Services, Inc.']
+   -- cik=1293593 via=efts score=0.00 periodic_in_window=11 tickers_now=- sec_name='Synutra International, Inc.' former=['Vorsatech Ventures, Inc.']
+== MNK | 'Mallinckrodt' | window 2014-08-18..2017-07-26
+   OK cik=1567892 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='Keenova Therapeutics plc' former=['Mallinckrodt plc']
+   -- cik=1403708 via=efts score=0.00 periodic_in_window=11 tickers_now=- sec_name='Evoke Pharma Inc' former=[]
+   -- cik=1005201 via=efts score=0.00 periodic_in_window=13 tickers_now=- sec_name='Assertio Therapeutics, Inc' former=['DEPOMED INC']
+   -- cik=1613103 via=efts score=0.00 periodic_in_window=10 tickers_now=MDT sec_name='Medtronic plc' former=['Medtronic Ltd', 'Medtronic Holdings Ltd']
+== MUR | 'Murphy Oil' | window 2014-07-01..2017-07-26
+   OK cik=717423 via=tickers score=1.00 periodic_in_window=12 tickers_now=MUR sec_name='MURPHY OIL CORP' former=['MURPHY OIL CORP /DE']
+   -- cik=1573516 via=efts score=0.50 periodic_in_window=12 tickers_now=MUSA sec_name='Murphy USA Inc.' former=[]
+   -- cik=1340122 via=efts score=0.00 periodic_in_window=12 tickers_now=- sec_name='Calumet Specialty Products Partners, L.P.' former=[]
+   -- cik=61398 via=efts score=0.00 periodic_in_window=14 tickers_now=- sec_name='TELLURIAN INC. /DE/' former=['MAGELLAN PETROLEUM CORP /DE/']
+== NBR | 'Nabors Industries' | window 2014-07-01..2015-03-23
+   OK cik=1163739 via=tickers score=1.00 periodic_in_window=3 tickers_now=NBR sec_name='NABORS INDUSTRIES LTD' former=[]
+   -- cik=76321 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='PARKER DRILLING CO /DE/' former=[]
+   -- cik=1509273 via=efts score=0.00 periodic_in_window=3 tickers_now=- sec_name='C&J Old Co,Inc.' former=['C&J Energy Services, Inc.']
+   -- cik=886835 via=efts score=0.00 periodic_in_window=3 tickers_now=- sec_name='SUPERIOR ENERGY SERVICES INC' former=['SMALLS OILFIELD SERVICES CORP']
+== NE | 'Noble Corporation' | window 2014-07-01..2015-07-20
+   -- cik=1895262 via=tickers score=1.00 periodic_in_window=0 tickers_now=NE,NE-WT,NE-WTA sec_name='Noble Corp plc' former=['Noble Finco Ltd']
+   OK cik=1458891 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='Noble Corp' former=['Noble Holding Corp plc', 'Noble Corp plc', 'Noble Corp / Switzerland']
+   OK cik=1169055 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='Noble Finance Co' former=['NOBLE CORP']
+   OK cik=890491 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='BARNES & NOBLE INC' former=[]
+   OK cik=72207 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='NOBLE ENERGY INC' former=['NOBLE AFFILIATES INC']
+== OI | 'Owens-Illinois' | window 2014-07-01..2016-12-02
+   OK cik=812074 via=tickers score=1.00 periodic_in_window=11 tickers_now=OI sec_name='O-I Glass, Inc. /DE/' former=['OWENS ILLINOIS INC /DE/']
+   OK cik=812233 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='OWENS-ILLINOIS GROUP INC' former=['OWENS ILLINOIS GROUP INC']
+== PBI | 'Pitney Bowes' | window 2014-07-01..2017-03-01
+   OK cik=78814 via=tickers score=1.00 periodic_in_window=11 tickers_now=PBI,PBI-PB sec_name='PITNEY BOWES INC /DE/' former=[]
+   -- cik=1330622 via=efts score=0.00 periodic_in_window=10 tickers_now=- sec_name='KBS Real Estate Investment Trust, Inc.' former=[]
+   -- cik=1378590 via=efts score=0.00 periodic_in_window=14 tickers_now=BLIN sec_name='Bridgeline Digital, Inc.' former=['Bridgeline Software, Inc.']
+   -- cik=855931 via=efts score=0.00 periodic_in_window=11 tickers_now=- sec_name='POTASH CORP OF SASKATCHEWAN INC' former=['POTASH CORPORATION OF SASKATCHEWAN INC', 'POTASH CORPORATION OF SASKATCHEWAN INC.']
+== PCL | 'Plum Creek Timber' | window 2014-07-01..2016-02-22
+   OK cik=849213 via=efts score=1.00 periodic_in_window=7 tickers_now=- sec_name='PLUM CREEK TIMBER CO INC' former=['PLUM CREEK TIMBER CO L P']
+   -- cik=946155 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='TIAA REAL ESTATE ACCOUNT' former=[]
+   -- cik=1159297 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='MEADWESTVACO Corp' former=['MW HOLDING CORP']
+   -- cik=1408075 via=efts score=0.00 periodic_in_window=7 tickers_now=GPK sec_name='GRAPHIC PACKAGING HOLDING CO' former=['New Giant CORP']
+== PCP | 'Precision Castparts Corporation' | window 2014-07-01..2016-02-01
+   OK cik=79958 via=efts score=1.00 periodic_in_window=6 tickers_now=- sec_name='PRECISION CASTPARTS CORP' former=[]
+   -- cik=826326 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='ARC Group Worldwide, Inc.' former=['ARC WIRELESS SOLUTIONS INC', 'ANTENNAS AMERICA INC']
+   -- cik=1021162 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='TRIUMPH GROUP INC' former=['TRIUMPH GROUP INC /']
+   -- cik=1378718 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='Wesco Aircraft Holdings, Inc' former=['Wesco Holdings Inc']
+== PETM | 'PetSmart' | window 2014-07-01..2015-03-12
+   OK cik=863157 via=efts score=1.00 periodic_in_window=2 tickers_now=- sec_name='PETSMART INC' former=[]
+   -- cik=894315 via=efts score=0.00 periodic_in_window=4 tickers_now=SITC sec_name='SITE Centers Corp.' former=['DDR CORP', 'DEVELOPERS DIVERSIFIED REALTY CORP', 'DEVELOPERS DIVERSIFIED REALTY']
+   -- cik=923284 via=efts score=0.00 periodic_in_window=3 tickers_now=- sec_name='IRC Retail Centers Inc' former=['INLAND REAL ESTATE CORP', 'INLAND MONTHLY INCOME FUND III INC']
+   -- cik=907254 via=efts score=0.00 periodic_in_window=3 tickers_now=BFS,BFS-PD,BFS-PE sec_name='SAUL CENTERS, INC.' former=['SAUL CENTERS INC']
+== PLL | 'Pall Corporation' | window 2014-07-01..2015-08-28
+   -- cik=1459862 via=efts score=0.00 periodic_in_window=6 tickers_now=PALL sec_name='abrdn Palladium ETF Trust' former=['Aberdeen Standard Palladium ETF Trust', 'ETFS PALLADIUM TRUST']
+   OK cik=75829 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='PALL CORP' former=[]
+   -- cik=1000683 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='BLONDER TONGUE LABORATORIES INC' former=[]
+   -- cik=1460602 via=efts score=0.00 periodic_in_window=5 tickers_now=- sec_name='Orgenesis Inc.' former=['Business Outsourcing Service, Inc.']
+== POM | 'Pepco Holdings' | window 2014-07-01..2016-03-30
+   -- cik=1877971 via=tickers score=0.00 periodic_in_window=0 tickers_now=POM sec_name='POMDOCTOR Ltd' former=[]
+   OK cik=1135971 via=efts score=1.00 periodic_in_window=8 tickers_now=- sec_name='PEPCO HOLDINGS LLC' former=['PEPCO HOLDINGS INC', 'NEW RC INC']
+   -- cik=27879 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='DELMARVA POWER & LIGHT CO /DE/' former=[]
+   -- cik=8192 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='ATLANTIC CITY ELECTRIC CO' former=[]
+   -- cik=79732 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='POTOMAC ELECTRIC POWER CO' former=[]
+== QEP | 'QEP Resources' | window 2014-07-01..2015-07-01
+   OK cik=1108827 via=efts score=1.00 periodic_in_window=5 tickers_now=- sec_name='QEP RESOURCES, INC.' former=['QUESTAR MARKET RESOURCES INC']
+   -- cik=1576044 via=efts score=0.50 periodic_in_window=4 tickers_now=- sec_name='Andeavor Midstream Partners LP' former=['QEP Midstream Partners, LP']
+   -- cik=751652 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='DOMINION QUESTAR CORP' former=['QUESTAR CORP']
+   -- cik=764044 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='QUESTAR PIPELINE CO' former=['QUESTAR PIPELINE, LLC']
+== R | 'Ryder System' | window 2014-07-01..2017-06-19
+   OK cik=85961 via=tickers score=1.00 periodic_in_window=12 tickers_now=R sec_name='RYDER SYSTEM INC' former=[]
+   -- cik=1540047 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='Nexeo Solutions Holdings, LLC' former=[]
+   -- cik=728535 via=efts score=0.00 periodic_in_window=12 tickers_now=JBHT sec_name='HUNT J B TRANSPORT SERVICES INC' former=[]
+   -- cik=1442492 via=efts score=0.00 periodic_in_window=12 tickers_now=LRDC sec_name='Laredo Oil, Inc.' former=['Laredo Mining, Inc.']
+== RAI | 'Reynolds American' | window 2014-07-01..2017-07-26
+   OK cik=1275283 via=efts score=1.00 periodic_in_window=13 tickers_now=- sec_name='REYNOLDS AMERICAN INC' former=[]
+   -- cik=1424847 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='LORILLARD, LLC' former=['LORILLARD, INC.']
+   -- cik=1347858 via=efts score=0.00 periodic_in_window=12 tickers_now=XXII sec_name='22nd Century Group, Inc.' former=['Touchstone Mining LTD']
+   -- cik=849399 via=efts score=0.00 periodic_in_window=16 tickers_now=GEN,GENVR sec_name='Gen Digital Inc.' former=['NortonLifeLock Inc.', 'SYMANTEC CORP']
+== RIG | 'Transocean' | window 2014-07-01..2017-07-26
+   OK cik=1451505 via=tickers score=1.00 periodic_in_window=13 tickers_now=RIG sec_name='Transocean Ltd.' former=[]
+   OK cik=1607250 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='Transocean Partners LLC' former=[]
+   -- cik=45012 via=efts score=0.00 periodic_in_window=12 tickers_now=HAL sec_name='HALLIBURTON CO' former=[]
+   -- cik=859598 via=efts score=0.00 periodic_in_window=13 tickers_now=- sec_name='SEACOR HOLDINGS INC /NEW/' former=['SEACOR SMIT INC', 'SEACOR HOLDINGS INC']
+== SE | 'Spectra Energy' | window 2014-07-01..2017-02-28
+   -- cik=1703399 via=tickers score=0.00 periodic_in_window=0 tickers_now=SE sec_name='Sea Ltd' former=['Sea Ltd']
+   OK cik=1394074 via=efts score=1.00 periodic_in_window=13 tickers_now=- sec_name='Spectra Energy Partners, LP' former=[]
+   OK cik=1373835 via=efts score=1.00 periodic_in_window=11 tickers_now=- sec_name='Spectra Energy Corp.' former=['Gas SpinCo, Inc.']
+   -- cik=1338065 via=efts score=0.00 periodic_in_window=11 tickers_now=- sec_name='DCP Midstream, LP' former=['DCP Midstream Partners, LP']
+   -- cik=1534701 via=efts score=0.00 periodic_in_window=11 tickers_now=PSX sec_name='Phillips 66' former=[]
+== SIAL | 'Sigma-Aldrich' | window 2014-07-01..2015-11-19
+   OK cik=90185 via=efts score=1.00 periodic_in_window=6 tickers_now=- sec_name='SIGMA ALDRICH CORP' former=[]
+   -- cik=1001233 via=efts score=0.00 periodic_in_window=6 tickers_now=SGMOQ sec_name='SANGAMO THERAPEUTICS, INC' former=['SANGAMO BIOSCIENCES INC']
+   -- cik=881890 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='ABAXIS INC' former=[]
+   -- cik=1060736 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='Seagen Inc.' former=['SEATTLE GENETICS INC /WA']
+== SPLS | 'Staples' | window 2014-07-01..2017-09-18
+   OK cik=791519 via=efts score=1.00 periodic_in_window=13 tickers_now=- sec_name='STAPLES INC' former=[]
+   -- cik=877422 via=efts score=0.00 periodic_in_window=13 tickers_now=- sec_name='SpartanNash Co' former=['SPARTAN STORES INC']
+   -- cik=800240 via=efts score=0.00 periodic_in_window=16 tickers_now=- sec_name='ODP Corp' former=['OFFICE DEPOT INC']
+   -- cik=1590565 via=efts score=0.00 periodic_in_window=16 tickers_now=- sec_name='ASIA EQUITY EXCHANGE GROUP, INC.' former=['I IN THE SKY INC.', 'I IN THE SKY, INC.']
+== STJ | 'St Jude Medical' | window 2014-07-01..2017-01-05
+   OK cik=203077 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='ST JUDE MEDICAL, LLC' former=['ST JUDE MEDICAL INC']
+   -- cik=1275187 via=efts score=0.00 periodic_in_window=12 tickers_now=ANGO sec_name='ANGIODYNAMICS INC' former=[]
+   -- cik=1354217 via=efts score=0.00 periodic_in_window=2 tickers_now=- sec_name='Volcano Corp' former=[]
+   -- cik=1800 via=efts score=0.00 periodic_in_window=10 tickers_now=ABT sec_name='ABBOTT LABORATORIES' former=[]
+== SWN | 'Southwestern Energy' | window 2014-07-01..2017-04-04
+   OK cik=7332 via=efts score=1.00 periodic_in_window=12 tickers_now=- sec_name='SOUTHWESTERN ENERGY CO' former=[]
+   -- cik=895126 via=efts score=0.50 periodic_in_window=11 tickers_now=EXE sec_name='EXPAND ENERGY Corp' former=['CHESAPEAKE ENERGY CORP']
+   -- cik=1349436 via=efts score=0.50 periodic_in_window=15 tickers_now=SD sec_name='SANDRIDGE ENERGY INC' former=['RIATA ENERGY INC']
+   -- cik=70145 via=efts score=0.00 periodic_in_window=12 tickers_now=NFG sec_name='NATIONAL FUEL GAS CO' former=[]
+== SWY | 'Safeway' | window 2014-07-01..2015-01-27
+   OK cik=86144 via=efts score=1.00 periodic_in_window=2 tickers_now=- sec_name='SAFEWAY INC' former=[]
+   -- cik=907254 via=efts score=0.00 periodic_in_window=2 tickers_now=BFS,BFS-PD,BFS-PE sec_name='SAUL CENTERS, INC.' former=['SAUL CENTERS INC']
+   -- cik=1536035 via=efts score=0.00 periodic_in_window=2 tickers_now=- sec_name="Roundy's, Inc." former=["Roundy's Parent Company, Inc."]
+   -- cik=1411488 via=efts score=0.00 periodic_in_window=2 tickers_now=- sec_name='BLACKHAWK NETWORK HOLDINGS, INC' former=['BLACKHAWK NETWORK HOLDINGS INC']
+== TDC | 'Teradata' | window 2014-07-01..2017-06-19
+   OK cik=816761 via=tickers score=1.00 periodic_in_window=12 tickers_now=TDC sec_name='TERADATA CORP /DE/' former=['TERADATA CORP /DE/']
+   -- cik=1042783 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='DOT HILL SYSTEMS CORP' former=['BOX HILL SYSTEMS CORP']
+   -- cik=1610532 via=efts score=0.00 periodic_in_window=10 tickers_now=- sec_name='Hortonworks, Inc.' former=[]
+   -- cik=70866 via=efts score=0.00 periodic_in_window=13 tickers_now=VYX,NCRRP sec_name='NCR Voyix Corp' former=['NCR CORP']
+== TE | 'TECO Energy' | window 2014-07-01..2016-07-01
+   -- cik=1992243 via=tickers score=0.50 periodic_in_window=0 tickers_now=TE sec_name='T1 Energy Inc.' former=['FREYR Battery, Inc. /DE/']
+   OK cik=350563 via=efts score=1.00 periodic_in_window=8 tickers_now=- sec_name='TECO ENERGY INC' former=[]
+   -- cik=96271 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='TAMPA ELECTRIC CO' former=[]
+   -- cik=81100 via=efts score=0.50 periodic_in_window=8 tickers_now=- sec_name='PUGET SOUND ENERGY INC' former=['PUGET SOUND POWER & LIGHT CO /WA/']
+   -- cik=1085392 via=efts score=0.50 periodic_in_window=8 tickers_now=- sec_name='PUGET ENERGY INC /WA' former=[]
+== TEG | 'Integrys Energy Group' | window 2014-07-01..2015-07-01
+   OK cik=916863 via=efts score=1.00 periodic_in_window=4 tickers_now=- sec_name='INTEGRYS HOLDING, INC.' former=['INTEGRYS ENERGY GROUP, INC.', 'WPS RESOURCES CORP']
+   -- cik=107833 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='WISCONSIN PUBLIC SERVICE CORP' former=[]
+   -- cik=1109357 via=efts score=0.00 periodic_in_window=4 tickers_now=EXC sec_name='EXELON CORP' former=[]
+   -- cik=9466 via=efts score=0.00 periodic_in_window=4 tickers_now=- sec_name='BALTIMORE GAS & ELECTRIC CO' former=[]
+== TGNA | 'Tegna' | window 2014-07-01..2017-06-02
+   OK cik=39899 via=efts score=1.00 periodic_in_window=13 tickers_now=- sec_name='TEGNA INC' former=['GANNETT CO INC /DE/']
+   -- cik=726513 via=efts score=0.00 periodic_in_window=10 tickers_now=- sec_name='TRIBUNE MEDIA CO' former=['TRIBUNE CO']
+   -- cik=1635718 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='Gannett Media Corp.' former=['Gannett Co., Inc.', 'Gannett SpinCo, Inc.']
+   -- cik=1591877 via=efts score=0.00 periodic_in_window=11 tickers_now=- sec_name='Sizmek Inc.' former=['New Online Co']
+== THC | 'Tenet Healthcare' | window 2014-07-01..2016-04-18
+   OK cik=70318 via=tickers score=1.00 periodic_in_window=7 tickers_now=THC sec_name='TENET HEALTHCARE CORP' former=['NATIONAL MEDICAL ENTERPRISES INC /NV/']
+   -- cik=1098881 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='U.S. RARE EARTHS, INC' former=['COLORADO RARE EARTHS, INC', 'CALYPSO MEDIA SERVICES GROUP, INC', 'CALYPSO FINANCIAL SERVICES INC']
+   -- cik=855931 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='POTASH CORP OF SASKATCHEWAN INC' former=['POTASH CORPORATION OF SASKATCHEWAN INC', 'POTASH CORPORATION OF SASKATCHEWAN INC.']
+   -- cik=1254419 via=efts score=0.00 periodic_in_window=6 tickers_now=- sec_name='MEDASSETS INC' former=[]
+== TWC | 'Time Warner Cable' | window 2014-07-01..2016-05-18
+   OK cik=1377013 via=efts score=1.00 periodic_in_window=10 tickers_now=- sec_name='SPECTRUM MANAGEMENT HOLDING COMPANY, LLC' former=['TIME WARNER CABLE INC.']
+   -- cik=1005757 via=efts score=0.00 periodic_in_window=12 tickers_now=- sec_name='CSG SYSTEMS INTERNATIONAL INC' former=[]
+   -- cik=1611983 via=efts score=0.00 periodic_in_window=7 tickers_now=- sec_name='Liberty Broadband Corp' former=[]
+   -- cik=1166691 via=efts score=0.00 periodic_in_window=8 tickers_now=CMCSA,CCZ sec_name='COMCAST CORP' former=['AT&T COMCAST CORP']
+== TYC | 'Tyco International' | window 2014-07-01..2016-09-06
+   OK cik=833444 via=efts score=1.00 periodic_in_window=9 tickers_now=JCI sec_name='Johnson Controls International plc' former=['TYCO INTERNATIONAL plc', 'TYCO INTERNATIONAL LTD', 'TYCO INTERNATIONAL LTD /BER/']
+   OK cik=1385157 via=efts score=1.00 periodic_in_window=9 tickers_now=TEL sec_name='TE Connectivity plc' former=['TE Connectivity Ltd.', 'Tyco Electronics Ltd.']
+   -- cik=1350593 via=efts score=0.00 periodic_in_window=9 tickers_now=MWA sec_name='Mueller Water Products, Inc.' former=[]
+   -- cik=1546640 via=efts score=0.00 periodic_in_window=8 tickers_now=- sec_name='ADT Corp' former=[]
+== URBN | 'Urban Outfitters' | window 2014-07-01..2017-03-20
+   OK cik=912615 via=tickers score=1.00 periodic_in_window=10 tickers_now=URBN sec_name='URBAN OUTFITTERS INC' former=[]
+   -- cik=1524025 via=efts score=0.00 periodic_in_window=11 tickers_now=TLYS sec_name="TILLY'S, INC." former=[]
+   -- cik=919012 via=efts score=0.50 periodic_in_window=11 tickers_now=AEO sec_name='AMERICAN EAGLE OUTFITTERS INC' former=['AMERICAN EAGLE OUTFITTERS INC']
+   -- cik=890319 via=efts score=0.00 periodic_in_window=11 tickers_now=- sec_name='TAUBMAN CENTERS INC' former=[]
+== WFM | 'Whole Foods Market' | window 2014-07-01..2017-08-29
+   OK cik=865436 via=efts score=1.00 periodic_in_window=14 tickers_now=- sec_name='WHOLE FOODS MARKET INC' former=[]
+   -- cik=1020859 via=efts score=0.33 periodic_in_window=14 tickers_now=UNFI sec_name='UNITED NATURAL FOODS INC' former=[]
+   -- cik=879101 via=efts score=0.00 periodic_in_window=13 tickers_now=KIM,KIM-PL,KIM-PM,KIM-PN sec_name='KIMCO REALTY CORP' former=[]
+   -- cik=1018724 via=efts score=0.00 periodic_in_window=13 tickers_now=AMZN sec_name='AMAZON COM INC' former=[]
+== WIN | 'Windstream Communications' | window 2014-07-01..2015-04-07
+   -- cik=1282266 via=efts score=0.50 periodic_in_window=3 tickers_now=- sec_name='WINDSTREAM HOLDINGS, INC.' former=['WINDSTREAM CORP', 'VALOR COMMUNICATIONS GROUP INC']
+   -- cik=1585644 via=efts score=0.50 periodic_in_window=3 tickers_now=- sec_name='WINDSTREAM SERVICES, LLC' former=['WINDSTREAM CORP']
+   -- cik=855931 via=efts score=0.00 periodic_in_window=3 tickers_now=- sec_name='POTASH CORP OF SASKATCHEWAN INC' former=['POTASH CORPORATION OF SASKATCHEWAN INC', 'POTASH CORPORATION OF SASKATCHEWAN INC.']
+   -- cik=1037016 via=efts score=0.00 periodic_in_window=3 tickers_now=- sec_name='NII HOLDINGS INC' former=['NEXTEL INTERNATIONAL INC', 'MCCAW INTERNATIONAL LTD']
+== YHOO | 'Yahoo!' | window 2014-07-01..2017-06-19
+   OK cik=1011006 via=efts score=1.00 periodic_in_window=19 tickers_now=- sec_name='ALTABA INC.' former=['YAHOO INC']
+   -- cik=829323 via=efts score=0.00 periodic_in_window=12 tickers_now=INUV sec_name='Inuvo, Inc.' former=['KOWABUNGA! INC.', 'THINK PARTNERSHIP INC', 'CGI HOLDING CORP']
+   -- cik=1068875 via=efts score=0.00 periodic_in_window=12 tickers_now=- sec_name='AVANTAX, INC.' former=['BLUCORA, INC.', 'INFOSPACE INC', 'INFOSPACE COM INC']
+   -- cik=1610532 via=efts score=0.00 periodic_in_window=10 tickers_now=- sec_name='Hortonworks, Inc.' former=[]

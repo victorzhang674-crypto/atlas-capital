@@ -261,10 +261,13 @@ def known_facts(facts: pd.DataFrame, as_of: AsOf) -> pd.DataFrame:
 
     So an earlier `as_of` sees the value as originally filed and a later one the restated
     value, once the restating filing (a 10-K/A, a 10-Q/A or a later comparative) is public.
-    The result is checked with `assert_no_lookahead` (`LookAheadError` if a later fact slipped
-    through).
+    A fact whose period ends after its filing date is a filer error (no period can end after
+    the report that states it) and is left out, never re-dated (Stage 13's
+    `fundamentals_period_after_filing` check reports it). The result is checked with
+    `assert_no_lookahead` (`LookAheadError` if a later fact slipped through).
     """
-    known = latest_filings(pit_filter(facts, as_of))
+    possible = facts[facts["period_end"] <= facts["filed"]]
+    known = latest_filings(pit_filter(possible, as_of))
     assert_no_lookahead(known, as_of)
     return known
 

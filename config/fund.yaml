@@ -29,6 +29,7 @@ data:
     alpaca_feed: iex  # Alpaca data feed: iex (free tier) | sip (paid)
     alpaca_data_url: https://data.alpaca.markets  # Alpaca market data API base URL
     adj_mismatch_tolerance: 0.005  # record recomputed vs vendor adj_close gaps above 0.5%
+    memo_size: 1000  # yfinance: downloaded (symbol, window) bar sets kept per provider (LRU)
   # Universe reference data sources (Stage 08).
   reference:
     sp500_constituents_url: https://en.wikipedia.org/wiki/List_of_S%26P_500_companies  # constituents table
@@ -163,6 +164,7 @@ data:
       fundamentals_jump: warning  # a fundamental value changing more than fundamentals_jump_ratio in a quarter
       macro_gap: warning  # a macro series with a gap or no recent observation
       vendor_mix: warning  # bars from more than one vendor in the window (IEX vs consolidated volume)
+      fundamentals_period_after_filing: warning  # an XBRL fact dated after its own filing (left out of the point-in-time view)
   # DataView (Stage 13): the single point-in-time door to the data.
   view:
     cache_size: 256  # results kept in the LRU cache shared by a view and the views advance() creates
