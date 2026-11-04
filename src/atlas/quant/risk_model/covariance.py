@@ -22,7 +22,8 @@ Policy shared by every estimator (`quant.risk_model`):
    variance) is dropped (`constant`). Under `missing="pairwise"`, while some pair shares fewer
    than `min_history` sessions, the name in most such pairs is dropped (`overlap`; ties: fewer
    returns, then the later name). Under `missing="complete"` only the sessions where every
-   remaining name has a return are used (fewer than `min_history` → `DataError`). Dropped
+   remaining name has a return are used (fewer than `min_history` → `DataError`; the other
+   sessions keep their positions, so EWMA decay still counts them). Dropped
    names are never estimated (no estimate → no new risk) and are reported in
    `CovResult.dropped`. Nothing left → `DataError`.
 2. Pairwise moments use each pair's common sessions (the sample covariance equals pandas'
@@ -92,10 +93,11 @@ def cov_from_corr[M: (np.ndarray, pd.DataFrame)](corr: M, vol: np.ndarray | pd.S
 # --- result ---------------------------------------------------------------------------------
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class CovResult:
     """A daily covariance estimate. `cov`, `corr` (DataFrames) and `vol` (Series) are fresh
     copies built from the read-only `matrix`, so editing them never changes the result.
+    Results compare (and hash) by identity: compare `matrix` with `np.array_equal`.
 
     `n_obs` is the number of sessions used (with at least one return under `pairwise`, with
     every return under `complete`); `end` is the last session of the input; `shrinkage` is
@@ -232,7 +234,7 @@ class CovarianceEstimator(ABC):
         """The daily covariance of the names in `returns` (see the module docstring)."""
         frame = _validate(returns)
         names = [str(c) for c in frame.columns]
-        x = frame.to_numpy(dtype="float64")
+        x = frame.to_numpy(dtype="float64", copy=True)  # never a view of the caller's frame
         dropped: dict[str, str] = {}
 
         present = ~np.isnan(x)
@@ -261,7 +263,7 @@ class CovarianceEstimator(ABC):
                     break
                 dropped.update({names[j]: "constant" for j in flat})
                 keep = [j for j in keep if j not in flat]
-            x = x[rows]
+            x[~rows] = np.nan  # sessions keep their positions (EWMA decay slots)
         else:
             for name in _overlap_drops(
                 present[:, keep], [names[j] for j in keep], self.min_history
@@ -282,6 +284,9 @@ class CovarianceEstimator(ABC):
                 f"{self.method} estimate is not finite (e.g. EWMA weights that underflow to 0 "
                 "for names seen only long ago): no covariance"
             )
+        zero = [symbols[i] for i in np.flatnonzero(np.diag(raw) <= 0.0)]
+        if zero:  # the condition floor would invent a variance for them: no guess
+            raise DataError(f"{self.method} estimate has a zero variance for {zero}: no covariance")
         cov, adjustments, cond = self._finalise(raw, repaired)
         if dropped or adjustments:
             _log.warning(

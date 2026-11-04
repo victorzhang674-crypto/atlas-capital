@@ -107,6 +107,17 @@ MUTANTS: list[tuple[str, str, str, str, list[str]]] = [
     ("unsorted index accepted", R + "covariance.py",
      "returns.index.is_unique and returns.index.is_monotonic_increasing", "returns.index.is_unique",
      [COV]),
+    # --- post-DONE audit fixes -------------------------------------------------------------------
+    ("AUDIT CovResult compares field by field", R + "covariance.py",
+     "@dataclass(frozen=True, eq=False)\nclass CovResult:", "@dataclass(frozen=True)\nclass CovResult:",
+     [COV]),
+    ("AUDIT complete policy drops rows (EWMA loses decay slots)", R + "covariance.py",
+     "            x[~rows] = np.nan", "            x = x[rows]", [COV]),
+    ("AUDIT zero estimated variance floored instead of refused", R + "covariance.py",
+     "        if zero:", "        if False:", [COV]),
+    ("AUDIT invalid GARCH forecast not a fallback", R + "volatility.py",
+     "    if not (math.isfinite(variance) and variance > 0.0):\n        return fall_back(",
+     "    if False:\n        return fall_back(", [GAR]),
     # --- vol forecasts ----------------------------------------------------------------------------
     ("GARCH: integrated parameters accepted", R + "volatility.py",
      "        and alpha + beta < 1.0\n", "        and alpha + beta <= 1.0\n", [GAR]),
@@ -129,8 +140,8 @@ MUTANTS: list[tuple[str, str, str, str, list[str]]] = [
      "    return values * math.sqrt(_periods(periods, config))",
      "    return values * _periods(periods, config)", [VOL]),
     ("zero variance accepted", R + "volatility.py",
-     "    if not (math.isfinite(variance) and variance > 0.0):",
-     "    if not math.isfinite(variance):", [VOL]),
+     "    if not (math.isfinite(variance) and variance > 0.0):\n        raise DataError(",
+     "    if not math.isfinite(variance):\n        raise DataError(", [VOL]),
 ]
 
 

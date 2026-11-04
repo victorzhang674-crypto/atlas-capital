@@ -468,3 +468,50 @@ def test_shrinkage_repairs_the_pairwise_sample_before_shrinking(method: str) -> 
     assert np.linalg.eigvalsh(res.matrix).min() > 0
     sample = SampleCovariance(min_history=63).estimate(frame)
     assert sample.adjustments == ("nearest_psd", "condition_floor")
+
+
+# --- post-DONE audit (2026-11-04) -----------------------------------------------------------
+
+
+def test_cov_results_compare_by_identity_and_hash() -> None:
+    # A dataclass `==` over numpy arrays raises ("truth value ... is ambiguous") and a frozen
+    # dataclass with an array field is unhashable: results compare by identity instead.
+    frame = _frame()
+    a = SampleCovariance(min_history=10).estimate(frame)
+    b = SampleCovariance(min_history=10).estimate(frame)
+    assert a == a and a != b
+    assert len({a, b}) == 2
+    assert np.array_equal(a.matrix, b.matrix)
+
+
+def test_ewma_complete_policy_keeps_decay_positions() -> None:
+    # Under `complete` a session dropped for one name's missing return still counts as a
+    # session: the weights follow session positions, as under `pairwise`.
+    frame = pd.DataFrame({"X": [1.0, 2.0, 3.0, 4.0], "Y": [1.0, -1.0, 0.5, 2.0]}, index=sessions(4))
+    frame.loc[frame.index[2], "Y"] = np.nan
+    res = EWMACovariance(lam=0.5, min_history=3, missing="complete").estimate(frame)
+    w = np.array([0.125, 0.25, 1.0])  # sessions 0, 1, 3 (session 2 keeps its slot: 0.5)
+    x, y = np.array([1.0, 2.0, 4.0]), np.array([1.0, -1.0, 2.0])
+    assert res.n_obs == 3
+    assert res.cov.loc["X", "X"] == pytest.approx((w * x * x).sum() / w.sum())
+    assert res.cov.loc["X", "Y"] == pytest.approx((w * x * y).sum() / w.sum())
+    assert res.cov.loc["Y", "Y"] == pytest.approx((w * y * y).sum() / w.sum())
+
+
+def test_zero_estimated_variance_raises_data_error() -> None:
+    # Not constant (S01 moved long ago), but every return with EWMA weight left is 0:
+    # an estimated variance of exactly 0 has no correlation and no risk: no covariance.
+    frame = _frame(t=1200, n=2)
+    frame.iloc[:100, 1] = np.random.default_rng(3).normal(0, 0.02, 100)
+    frame.iloc[100:, 1] = 0.0
+    with pytest.raises(DataError, match="variance"):
+        EWMACovariance(lam=0.5, min_history=63).estimate(frame)
+
+
+def test_estimate_never_writes_to_the_callers_frame() -> None:
+    frame = _frame(t=100, n=2)
+    frame.iloc[:10, 1] = np.nan
+    before = frame.copy()
+    for missing in ("pairwise", "complete"):
+        SampleCovariance(min_history=63, missing=missing).estimate(frame)
+    pd.testing.assert_frame_equal(frame, before)

@@ -23,3 +23,17 @@ All output below comes from commands run in this stage's chat (Project.md Rule 1
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Merged into `main` — 2026-11-04
+- `zsh artifacts/merged-main-check.sh` in the owner's Terminal panel (Rule 6 exception: the sandbox cannot write the main checkout or reach GitHub): fast-forward 8023120 → `69baf9f`; on merged `main` `uv run pytest -q` → 2528 passed, 14 deselected; brief's Verify → 83 passed; `make check` → exit 0; pushed `main` and the branch · raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt)
+
+#### Post-DONE audit follow-up — 2026-11-04
+Owner's request: "can you help me to audit this stage: check for completion, mistakes and errors, and remaining gaps? after auditing, help me to fix them." Completion re-checked (every In-scope item, brief tasks 1–4, both criteria): complete. Four mistakes found and fixed test-first (A `CovResult` equality raised / unhashable; B EWMA under `complete` lost the decay slots of dropped sessions; C a zero estimated variance was floored into an invented variance; D an invalid GARCH forecast raised instead of falling back); gaps E–G recorded (worklog, Backlog).
+- `uv run pytest tests/unit/quant/risk_model -q` (brief's Verify) → 90 passed · raw: [artifacts/followup-verify-risk-model.txt](artifacts/followup-verify-risk-model.txt); with `-W error` → 90 passed
+- `uv run pytest -q` → 2535 passed, 0 failed, 14 deselected · raw: [artifacts/followup-pytest.txt](artifacts/followup-pytest.txt)
+- `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 258 files already formatted; `uv run mypy src/atlas` → no issues in 112 source files; `make check` → exit 0 (2535 passed) · raw: `artifacts/followup-*.txt`
+- Coverage of `atlas.quant.risk_model` → 98% · raw: [artifacts/followup-coverage.txt](artifacts/followup-coverage.txt)
+- Mutation checks → **44/44 caught** (4 new `AUDIT` mutants; a first attempt stopped on a duplicate pattern before mutating anything: [artifacts/followup-mutation-checks-setup-error.txt](artifacts/followup-mutation-checks-setup-error.txt)) · raw: [artifacts/followup-mutation-checks.txt](artifacts/followup-mutation-checks.txt)
+- Real-lake check (read only) → exit 0, results unchanged (LW cond 4.50e3, OAS 2.85e3, every output PSD; `complete` → `DataError` 60 < 63) · raw: [artifacts/followup-real-lake-check.txt](artifacts/followup-real-lake-check.txt)
+- New tests: `test_cov_results_compare_by_identity_and_hash`, `test_ewma_complete_policy_keeps_decay_positions`, `test_zero_estimated_variance_raises_data_error`, `test_estimate_never_writes_to_the_callers_frame`, `test_garch_falls_back_on_an_invalid_forecast` (3 cases). Both acceptance criteria remain verified.
+

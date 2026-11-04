@@ -146,3 +146,16 @@ def test_garch_ignores_nan_returns(path: pd.Series, monkeypatch: pytest.MonkeyPa
     (sent,) = fit.calls
     assert len(sent) == 997 and not np.isnan(sent).any()
     assert np.allclose(sent, clean.to_numpy() * 100.0)  # percent units
+
+
+@pytest.mark.parametrize("bad", [float("nan"), 0.0, -1.0])
+def test_garch_falls_back_on_an_invalid_forecast(
+    path: pd.Series, monkeypatch: pytest.MonkeyPatch, bad: float
+) -> None:
+    # Valid parameters but a non-finite or non-positive one-step variance: fall back, never
+    # return (or raise on) a guessed vol.
+    result = _result()
+    result.forecast = lambda **_: SimpleNamespace(variance=pd.DataFrame([[bad]]))  # type: ignore[attr-defined]
+    monkeypatch.setattr(volatility, "_fit_garch", _fake_fit(result))
+    with capture_logs() as logs:
+        _assert_fell_back(path, "invalid forecast", logs)

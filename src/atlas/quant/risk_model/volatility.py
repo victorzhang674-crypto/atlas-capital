@@ -14,8 +14,10 @@ Next-session forecasts for one name (`VolForecast`), all assuming a zero daily m
 - `garch_vol`: GARCH(1,1), zero mean, normal errors, fitted by `arch` on the returns in
   percent (NaN dropped); the forecast is `ω + alpha r_T² + β sigma_T²`. It **falls back to EWMA**
   (`fallback` = the reason, `method` = `ewma`, a warning logged) when there are fewer than
-  `garch_min_obs` returns, the optimiser raises, it does not converge, or the parameters are
-  invalid (`ω ≤ 0`, `alpha < 0`, `β < 0`, `alpha + β ≥ 1`, or not finite).
+  `garch_min_obs` returns, the optimiser raises, it does not converge, the parameters are
+  invalid (`ω ≤ 0`, `alpha < 0`, `β < 0`, `alpha + β ≥ 1`, or not finite) or the forecast is
+  not a positive number. Missing returns are skipped, so after a missing last session the
+  forecast is one step past the last return (EWMA decays the missing slot instead).
 - `blend_vol`: `w_ewma sigma²_ewma + w_garch sigma²_garch + w_realised sigma²_realised` with
   `quant.risk_model.volatility.blend_weights` (summing to 1); a GARCH fallback is carried.
 - `forecast_vol(returns, method)` dispatches (default `quant.risk_model.volatility.method`);
@@ -284,6 +286,8 @@ def garch_vol(
     ):
         return fall_back(f"invalid parameters (omega {omega}, alpha {alpha}, beta {beta})")
     variance = float(res.forecast(horizon=1, reindex=False).variance.iloc[-1, 0]) / 1e4
+    if not (math.isfinite(variance) and variance > 0.0):
+        return fall_back(f"invalid forecast (variance {variance})")
     params = {
         "omega": omega / 1e4,
         "alpha": alpha,
