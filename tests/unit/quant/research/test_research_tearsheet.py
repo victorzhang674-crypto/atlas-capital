@@ -11,6 +11,7 @@ from research_world import CAL, ResearchWorld, build_research_world
 
 from atlas.core.config import AtlasConfig
 from atlas.core.errors import LookAheadError
+from atlas.core.run_context import run_context
 from atlas.core.storage import DEFAULT_REGISTRY, Lake
 from atlas.quant.research import (
     FIGURES,
@@ -20,6 +21,7 @@ from atlas.quant.research import (
     forward_returns,
     ic_series,
     quantile_analysis,
+    rank_autocorrelation,
     research_signal,
     vector_backtest,
 )
@@ -179,3 +181,31 @@ def test_unrealised_horizon_is_null_in_json(
         ]
         is None
     )
+
+
+def test_tearsheet_records_the_run(inputs: tuple[pd.DataFrame, ForwardReturns]) -> None:
+    # Audit finding A: the tear sheet says which run (and config) produced it
+    signal, labels = inputs
+    assert build_tearsheet("planted", signal, labels, config=CFG).summary["run"] is None
+    with run_context(config=CFG, stage="research.signal") as ctx:
+        run = build_tearsheet("planted", signal, labels, config=CFG).summary["run"]
+    assert run == {
+        "run_id": ctx.run_id,
+        "mode": ctx.mode,
+        "config_fingerprint": ctx.config_fingerprint,
+        "stage": "research.signal",
+    }
+    assert len(run["run_id"]) == 26 and run["config_fingerprint"]
+
+
+def test_turnover_proxy_uses_lag_one(inputs: tuple[pd.DataFrame, ForwardReturns]) -> None:
+    # Audit finding B: 1 - lag-1 rank autocorrelation, whatever lags are configured
+    signal, labels = inputs
+    cfg = AtlasConfig(
+        quant={"research": {"horizons": [1, 5], "min_names": 15, "autocorr_lags": [3, 6]}}
+    )
+    decay = build_tearsheet("planted", signal, labels, config=cfg).summary["decay"]
+    assert list(decay["rank_autocorrelation"]) == ["3", "6"]
+    lag1 = rank_autocorrelation(signal, (1,), config=cfg).loc[1]
+    assert decay["turnover_proxy"] == pytest.approx(1 - lag1)
+    assert decay["turnover_proxy"] != pytest.approx(1 - decay["rank_autocorrelation"]["3"])

@@ -32,6 +32,7 @@ from atlas.core.config import AtlasConfig
 from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.core.pit import guard_not_label
+from atlas.core.run_context import current_run_context
 from atlas.quant.research.ic import (
     METHODS,
     Method,
@@ -188,7 +189,9 @@ class SignalTearSheet:
         left.set_title("mean IC by horizon")
         left.legend()
         ac = self.autocorrelation
-        right.bar([str(k) for k in ac.index], ac.to_numpy(), color="#7a9cc6")
+        positions = np.arange(len(ac))
+        right.bar(positions, ac.to_numpy(), color="#7a9cc6")
+        right.set_xticks(positions, [str(k) for k in ac.index])
         right.set_xlabel("lag (evaluation dates)")
         right.set_title("signal rank autocorrelation")
         fig.suptitle(f"{self.name}: decay")
@@ -233,7 +236,9 @@ def build_tearsheet(
     """The tear sheet of `signal` (evaluation dates x symbols) against `labels` (module
     docstring). `sectors`: symbol -> sector (`None` unknown, never pooled); `regimes`: date ->
     regime label (Stage 21; without it the by-regime section says it is not available).
-    `kind`, `frequency` and `universe` are recorded in the summary."""
+    `kind`, `frequency` and `universe` are recorded in the summary, and so is the active run
+    (`run_id`, `mode`, `config_fingerprint`, `stage`; `None` outside a `run_context`). The
+    turnover proxy is 1 - the lag-1 rank autocorrelation, whatever lags are configured."""
     guard_not_label(signal, "signal")
     cfg = config if config is not None else AtlasConfig()
     rc = cfg.quant.research
@@ -271,6 +276,7 @@ def build_tearsheet(
     if regimes is None:
         by_regime["note"] = "no regimes supplied (regime detection is Stage 21)"
     ac = rank_autocorrelation(signal, rc.autocorr_lags, config=cfg)
+    lag1 = ac.loc[1] if 1 in ac.index else rank_autocorrelation(signal, (1,), config=cfg).loc[1]
     backtest_end = calendar.offset(pd.Timestamp(dates[-1]).date(), step)
     backtest = vector_backtest(signal, labels.daily.loc[: pd.Timestamp(backtest_end)], config=cfg)
     decay = {
@@ -279,10 +285,22 @@ def build_tearsheet(
             for method in METHODS
         },
         "rank_autocorrelation": {str(k): v for k, v in ac.items()},
-        "turnover_proxy": 1.0 - float(ac.iloc[0]),
+        "turnover_proxy": 1.0 - float(lag1),
     }
+    ctx = current_run_context()
+    run = (
+        None
+        if ctx is None
+        else {
+            "run_id": ctx.run_id,
+            "mode": ctx.mode,
+            "config_fingerprint": ctx.config_fingerprint,
+            "stage": ctx.stage,
+        }
+    )
     summary = {
         "signal": name,
+        "run": run,
         "kind": kind,
         "frequency": frequency,
         "universe": universe,

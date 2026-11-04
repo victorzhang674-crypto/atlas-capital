@@ -1,0 +1,18 @@
+......................................................................   [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                          Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------
+src/atlas/cli/research_cmd.py                    96      5    95%   67, 77-79, 209
+src/atlas/quant/research/__init__.py              7      0   100%
+src/atlas/quant/research/ic.py                  137      5    96%   43, 76, 122, 138, 265
+src/atlas/quant/research/labels.py               87      1    99%   159
+src/atlas/quant/research/quantiles.py            85      1    99%   45
+src/atlas/quant/research/signals.py              89      4    96%   103-105, 113
+src/atlas/quant/research/tearsheet.py           202      2    99%   375, 380
+src/atlas/quant/research/vector_backtest.py     111      2    98%   69, 160
+---------------------------------------------------------------------------
+TOTAL                                           814     20    98%
+70 passed in 36.32s
+exit=0

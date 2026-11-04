@@ -26,3 +26,14 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Post-DONE audit follow-up — Stage 17 — 2026-11-04
+Owner's request after DONE: audit the whole stage; owner's decision: "Fix A–C, note D–H" (see the [worklog](worklog.md) and the Decisions log).
+- Fixed: (A) `atlas research signal` runs inside a `run_context` (stage `research.signal`), logs JSON lines with the `run_id` to `research.log` in the output folder, and the tear sheet records `run` — `test_research_signal_writes_tearsheet_to_lake_runs`, `test_tearsheet_records_the_run`; (B) `turnover_proxy` = 1 − lag-1 rank autocorrelation whatever lags are configured — `test_turnover_proxy_uses_lag_one`; (C) `artifacts/merged-main-check-records.txt` committed. Noted: D–H in `PROGRESS.md › Backlog`.
+- Commands run (this chat), raw `artifacts/followup-*.txt`:
+  - `uv run pytest -q` → 2430 passed, 0 failed, 14 deselected, exit 0
+  - `uv run ruff check .` → All checks passed!; `uv run ruff format --check .` → 248 files already formatted; `uv run mypy src/atlas` → no issues in 108 files
+  - brief's Verify `uv run pytest tests/unit/quant/research -q` → 60 passed; research + CLI `-W error` → 70 passed; coverage 98%
+  - `make check` → exit 0 (ruff, format, mypy, 2430 passed, 14 deselected)
+  - mutation checks → 30/30 caught (3 new mutants for A and B)
+- The acceptance criteria above are unchanged and still verified (the planted-IC tests are in the 60 passed).

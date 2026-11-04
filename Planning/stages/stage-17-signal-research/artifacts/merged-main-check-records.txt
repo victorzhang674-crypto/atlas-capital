@@ -1,0 +1,63 @@
+# Stage 17: fast-forward + verification on merged main · 2026-11-04 09:54 EST · mode --records-only
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/stage-17-signal-research-905219
+Updating d3337f5..6c922f2
+Fast-forward
+ Planning/PROGRESS.md                               |   3 +
+ .../stage-17-signal-research/artifacts/ci-runs.txt |  33 ++++
+ .../artifacts/merged-main-check.sh                 |  29 ++++
+ .../artifacts/merged-main-check.txt                | 191 +++++++++++++++++++++
+ .../stage-17-signal-research/verification.md       |   2 +
+ .../stages/stage-17-signal-research/worklog.md     |   8 +
+ 6 files changed, 266 insertions(+)
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/ci-runs.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/merged-main-check.sh
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/merged-main-check.txt
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD 6c922f2
+
+$ git diff --stat HEAD~1..HEAD
+ Planning/PROGRESS.md                               |   3 +
+ .../stage-17-signal-research/artifacts/ci-runs.txt |  33 ++++
+ .../artifacts/merged-main-check.sh                 |  29 ++++
+ .../artifacts/merged-main-check.txt                | 191 +++++++++++++++++++++
+ .../stage-17-signal-research/verification.md       |   2 +
+ .../stages/stage-17-signal-research/worklog.md     |   8 +
+ 6 files changed, 266 insertions(+)
+exit=0
+
+$ uv run pytest tests/unit/quant/research -q
+58 passed in 19.13s
+exit=0
+
+$ git log --oneline -3
+6c922f2 stage-17: merged-main, CI and audit-fix records
+d3337f5 stage-17: Signal research toolkit (IC, quantiles, decay)
+379731a stage-16: CI and records-push records
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
+
+$ git push origin main claude/stage-17-signal-research-905219
+To https://github.com/victorzhang674-crypto/atlas-capital.git
+   d3337f5..6c922f2  claude/stage-17-signal-research-905219 -> claude/stage-17-signal-research-905219
+   d3337f5..6c922f2  main -> main
+exit=0
+
+$ git status -sb
+## main...origin/main
+exit=0
+
+$ gh run list --limit 3
+queued		stage-17: merged-main, CI and audit-fix records	CI	main	push	41852346388	0s	2026-11-04T14:55:00Z
+queued		stage-17: merged-main, CI and audit-fix records	CI	claude/stage-17-signal-research-905219	push	41852346332	0s	2026-11-04T14:55:00Z
+completed	success	stage-17: Signal research toolkit (IC, quantiles, decay)	CI	main	push	41850555615	9m28s	2026-11-04T14:44:19Z
+exit=0
+# CI runs of 6c922f2 (stage-17 records commit), checked 2026-11-04 10:04 EST
+completed	success	stage-17: merged-main, CI and audit-fix records	CI	main	push	41852346388	9m19s	2026-11-04T14:55:00Z
+completed	success	stage-17: merged-main, CI and audit-fix records	CI	claude/stage-17-signal-research-905219	push	41852346332	8m27s	2026-11-04T14:55:00Z
+completed	success	stage-17: Signal research toolkit (IC, quantiles, decay)	CI	main	push	41850555615	9m28s	2026-11-04T14:44:19Z
+completed	success	stage-17: Signal research toolkit (IC, quantiles, decay)	CI	claude/stage-17-signal-research-905219	push	41850555289	7m21s	2026-11-04T14:44:19Z

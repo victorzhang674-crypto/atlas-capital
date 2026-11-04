@@ -75,8 +75,16 @@ def test_research_signal_writes_tearsheet_to_lake_runs(world: ResearchWorld) -> 
     summary = json.loads((out / "tearsheet.json").read_text())
     assert summary["signal"] == "reversal_5d" and summary["frequency"] == "weekly"
     assert summary["labels"]["horizons"] == [1, 5, 21, 63]
+    run = summary["run"]  # audit finding A: the command runs inside a run context
+    assert len(run["run_id"]) == 26 and run["stage"] == "research.signal"
+    assert run["mode"] == "dev" and run["config_fingerprint"]
     text = _plain(result.output)
     assert "IC spearman" in text and "Long-short backtest" in text and str(out) in text
+    assert f"Run {run['run_id']}" in text
+    log = [json.loads(line) for line in (out / "research.log").read_text().splitlines()]
+    evaluated = [r for r in log if r["event"] == "research.signal_evaluated"]
+    assert len(evaluated) == 1 and evaluated[0]["run_id"] == run["run_id"]
+    assert all(r["run_id"] == run["run_id"] for r in log)
 
 
 def test_research_signal_out_option(world: ResearchWorld, tmp_path: Path) -> None:

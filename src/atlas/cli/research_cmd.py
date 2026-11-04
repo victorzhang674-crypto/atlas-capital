@@ -4,7 +4,10 @@
 technical feature or a Stage 16 fundamental factor on the evaluation dates in the window
 (point in time: one `DataView` per date, the universe's members at that date), against
 forward returns, and writes its tear sheet (`tearsheet.json`, CSVs, PNG figures) to
-`<lake>/<quant.research.out_dir>/<name>/` or `--out`. It only reads the lake. A bare year
+`<lake>/<quant.research.out_dir>/<name>/` or `--out`. It only reads the lake. It runs inside a
+`run_context` (stage `research.signal`), so its logs carry the `run_id` and the tear sheet
+records the run and the config fingerprint; the log goes to `research.log` (JSON lines) in the
+output directory, the console shows warnings and errors only. A bare year
 means 1 January (`--from`) or 31 December (`--to`). Exit codes: 0 ok, 1 the run failed,
 2 bad arguments.
 """
@@ -22,6 +25,8 @@ from rich.table import Table
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig, load_config
 from atlas.core.errors import AtlasError, ConfigError
+from atlas.core.logging import configure_logging, reset_logging
+from atlas.core.run_context import run_context
 from atlas.core.storage import Lake
 from atlas.data.view import DataView
 from atlas.quant.research import (
@@ -170,7 +175,10 @@ def signal_cmd(
         transient=not console.is_terminal,
     )
     try:
-        with progress:
+        with run_context(config=config, stage="research.signal") as run, progress:
+            configure_logging(
+                level="INFO", log_file=target / "research.log", console_level="WARNING"
+            )
             task = progress.add_task(f"{name}: signal dates", total=len(dates))
             sheet = research_signal(
                 name,
@@ -182,10 +190,12 @@ def signal_cmd(
                 universe=universe,
                 progress=lambda _day: progress.advance(task),
             )
-        written = sheet.save(target)
+            written = sheet.save(target)
     except AtlasError as exc:
         console.print(f"[red]Research failed:[/red] {type(exc).__name__}: {exc}")
         raise typer.Exit(1) from None
+    finally:
+        reset_logging()
     console.print(_summary_table(sheet))
     bt = sheet.summary["backtest"]
     console.print(
@@ -197,7 +207,7 @@ def signal_cmd(
     blocked = sheet.summary["labels"]["blocked"]
     if blocked:
         console.print(f"[yellow]Note:[/yellow] {len(blocked)} name(s) had no labels (blocked).")
-    console.print(f"Tear sheet: {target} ({len(written)} files)")
+    console.print(f"Run {run.run_id}. Tear sheet: {target} ({len(written)} files)")
 
 
 __all__ = ["parse_bound", "research_app", "signal_cmd"]

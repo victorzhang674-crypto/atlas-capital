@@ -24,7 +24,10 @@ caught    costs not charged
 caught    signal weights from raw ranks
 caught    Sharpe annualised by P, not sqrt P
 caught    headline horizon from overlapping windows
+caught    AUDIT-A run not recorded in the tear sheet
+caught    AUDIT-A CLI log file not configured
+caught    AUDIT-B turnover proxy from the first configured lag
 caught    NaN written into the JSON
 
-27/27 mutants caught
+30/30 mutants caught
 exit=0
