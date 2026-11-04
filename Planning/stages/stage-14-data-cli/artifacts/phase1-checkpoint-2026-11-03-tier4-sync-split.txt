@@ -1,0 +1,5 @@
+######## AST comparison of the old sync.py with the package modules
+old definitions: 77; problems: none
+######## test_sync_state.py with the old monkeypatch target, before moving it to atlas.data.sync.state
+FAILED tests/unit/data/test_sync_state.py::test_state_save_is_atomic - Failed...
+1 failed, 25 passed in 0.69s

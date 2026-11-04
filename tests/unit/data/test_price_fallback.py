@@ -148,6 +148,16 @@ def test_factory_yfinance_only_without_keys() -> None:
     assert isinstance(build_price_provider(_cfg()), YFinanceProvider)
 
 
+def test_factory_passes_the_yahoo_no_data_list() -> None:
+    # Phase 1 checkpoint, Tier 4: names Yahoo has no data for skip Yahoo (and go to Alpaca).
+    chain = build_price_provider(_cfg(keys=True))
+    assert isinstance(chain, FallbackPriceProvider)
+    assert isinstance(chain.primary, YFinanceProvider)
+    assert {"YHOO", "AVB"} <= chain.primary.no_data
+    alone = build_price_provider(_cfg())
+    assert isinstance(alone, YFinanceProvider) and "YHOO" in alone.no_data
+
+
 def test_factory_adds_alpaca_when_keys_set() -> None:
     chain = build_price_provider(_cfg(keys=True))
     assert isinstance(chain, FallbackPriceProvider)

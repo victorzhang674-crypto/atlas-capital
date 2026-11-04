@@ -1,0 +1,12 @@
+######## archive: red before the module existed
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/tests/unit/data/test_archive.py'.
+E   ModuleNotFoundError: No module named 'atlas.data.archive'
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.43s
+######## scratch lake: atlas data sync --from 2026-10-20 --datasets prices,news --symbols AAPL,AVB (Alpaca keys loaded)
+│ prices │    2 │       0 │  1 │     1 │      0 │   11 │      1 │    27.0 │      │
+│ news   │    2 │       0 │  2 │     0 │      0 │  208 │      1 │     7.9 │      │
+exit 0
+raw/alpaca/news/2026-11-04/024615-06873a06d7e8.parquet  208 rows
+raw/yfinance/daily/2026-11-04/024607-076fa8f3c491.parquet  11 rows (AAPL)
+sync.log: prices.known_no_data symbols=1 (AVB not asked from Yahoo; Alpaca fallback: empty after the 2026-08 delisting)

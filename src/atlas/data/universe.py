@@ -15,18 +15,22 @@ keeps the members that pass the liquidity filters (`cfg.data.tradable`) on raw d
 known strictly before the decision cutoff. Residual biases: `docs/data-limitations.md`.
 """
 
+from collections.abc import Collection
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from typing import Literal
+from pathlib import Path
+from typing import Literal, Self
 
 import pandas as pd
+from pydantic import ValidationError, model_validator
 
 from atlas.core.calendar import TradingCalendar
-from atlas.core.config import AtlasConfig, UniverseConfig
-from atlas.core.errors import DataError
+from atlas.core.config import AtlasConfig, UniverseConfig, read_config_file
+from atlas.core.errors import ConfigError, DataError
 from atlas.core.logging import get_logger
 from atlas.core.pit import AsOf, assert_no_lookahead, bar_available_at, pit_filter
 from atlas.core.storage import DEFAULT_REGISTRY, Column, ColumnType, Lake, TableSchema
+from atlas.core.types.base import AtlasModel, NonEmptyStr
 from atlas.core.types.instruments import normalize_symbol
 from atlas.data.prices import PRICES_DAILY
 from atlas.data.reference import (
@@ -92,12 +96,53 @@ class MembershipBuild:
     anomalies: tuple[MembershipAnomaly, ...]
 
 
+KnownAnomaly = tuple[date, str, AnomalyKind]
+"""`(date, symbol, kind)` of a reviewed change-log anomaly (see `load_known_anomalies`)."""
+
+
+class _KnownAnomalyEntry(AtlasModel):
+    date: date
+    symbol: NonEmptyStr
+    kind: AnomalyKind
+    note: str | None = None
+
+
+class _KnownAnomaliesFile(AtlasModel):
+    """Body of `config/membership_anomalies.yaml`."""
+
+    known: tuple[_KnownAnomalyEntry, ...] = ()
+
+    @model_validator(mode="after")
+    def _unique(self) -> Self:
+        keys = [(e.date, e.symbol, e.kind) for e in self.known]
+        if len(set(keys)) != len(keys):
+            raise ValueError("an anomaly is listed twice")
+        return self
+
+
+def load_known_anomalies(path: Path) -> frozenset[KnownAnomaly]:
+    """The reviewed anomalies in `path` (`known: [{date, symbol, kind, note}]`; see
+    `config/membership_anomalies.yaml`). A missing file gives none; invalid content raises
+    `ConfigError` naming the file."""
+    data = read_config_file(path)
+    try:
+        body = _KnownAnomaliesFile.model_validate(data)
+    except ValidationError as exc:
+        problems = "; ".join(
+            f"{'.'.join(str(p) for p in err['loc']) or '<root>'}: {err['msg']}"
+            for err in exc.errors()
+        )
+        raise ConfigError(f"{path}: {problems}") from None
+    return frozenset((e.date, e.symbol, e.kind) for e in body.known)
+
+
 def build_membership(
     constituents: pd.DataFrame,
     changes: pd.DataFrame,
     *,
     index_id: str = "SP500",
     ticker_map: TickerMap | None = None,
+    known_anomalies: Collection[KnownAnomaly] = frozenset(),
 ) -> MembershipBuild:
     """Rebuild membership intervals from today's `constituents` and the `changes` log
     (frames shaped like `parse_constituents` / `parse_changes`).
@@ -107,7 +152,8 @@ def build_membership(
     before (its last day as a member). A row whose two sides resolve to one instrument is a
     rename and is skipped. Otherwise an added name's interval starts on the date and a removed
     name's interval ends on it. Rows that contradict the state become `MembershipAnomaly`s
-    (logged as warnings) and leave it unchanged. An interval with no dated start begins at
+    and leave it unchanged; each is logged as a warning, or at info when it is in
+    `known_anomalies` (reviewed, `load_known_anomalies`). An interval with no dated start begins at
     `SP500_INCEPTION`, or, for a current member that no row names, at the constituents
     table's `date_added`.
     """
@@ -166,14 +212,17 @@ def build_membership(
         start = added_on.get(symbol, SP500_INCEPTION) if end is None else SP500_INCEPTION
         rows.append((symbol, start, end))
 
+    known = set(known_anomalies)
     for a in anomalies:
-        _log.warning(
+        reviewed = (a.date, a.symbol, a.kind) in known
+        (_log.info if reviewed else _log.warning)(
             "universe.membership_anomaly",
             index_id=index_id,
             day=a.date.isoformat(),
             symbol=a.symbol,
             kind=a.kind,
             detail=a.detail,
+            known=reviewed,
         )
     intervals = pd.DataFrame(
         {
@@ -217,13 +266,15 @@ def refresh_universe_reference(
     *,
     config: AtlasConfig | None = None,
     ticker_map: TickerMap | None = None,
+    known_anomalies: Collection[KnownAnomaly] | None = None,
 ) -> ReferenceReport:
     """Rebuild `index_membership` (index `SP500`) and `instruments` from the two source pages
     (idempotent). The `SP500` rows of `index_membership` are replaced and rows of other
     indices kept; `instruments` rows are upserted by symbol, so instruments of other indices
     stay.
 
-    `ticker_map` defaults to `load_ticker_map(config.data.reference.ticker_changes_file)`;
+    `ticker_map` defaults to `load_ticker_map(config.data.reference.ticker_changes_file)`,
+    `known_anomalies` to `load_known_anomalies(config.data.reference.known_anomalies_file)`;
     ETFs are the tickers of every ticker-list universe in `config.data.universes`; first and
     last trade dates come from `prices_daily` when the lake has prices.
     """
@@ -233,9 +284,14 @@ def refresh_universe_reference(
         if ticker_map is not None
         else load_ticker_map(cfg.data.reference.ticker_changes_file)
     )
+    known = (
+        known_anomalies
+        if known_anomalies is not None
+        else load_known_anomalies(cfg.data.reference.known_anomalies_file)
+    )
     constituents = parse_constituents(constituents_html)
     changes = parse_changes(changes_html)
-    build = build_membership(constituents, changes, ticker_map=tmap)
+    build = build_membership(constituents, changes, ticker_map=tmap, known_anomalies=known)
     etfs = sorted({t for u in cfg.data.universes.values() for t in u.tickers})
     instruments = build_instruments(
         constituents,

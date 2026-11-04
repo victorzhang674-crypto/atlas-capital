@@ -1,0 +1,75 @@
+# Symbols Yahoo has no daily bars for (Stage 07; list added in the Phase 1 checkpoint,
+# 2026-11-03), read by atlas.data.providers.yfinance_provider.load_yahoo_no_data through
+# data.prices.yahoo_no_data_file. The yfinance adapter does not request them, as if Yahoo had
+# answered with nothing: each costs ~25 s of yfinance retries otherwise, and a former member's
+# reused ticker would give another company's prices. With the Alpaca keys set, the fallback
+# asks Alpaca instead. Entries: symbol, date last checked, note. Built from the main lake's
+# sync checkpoint by Planning/stages/stage-07-price-data/artifacts/
+# phase1-checkpoint-2026-11-03-write-yahoo-no-data.py; delete an entry to ask Yahoo again.
+
+# The list, by symbol (64 entries).
+symbols:
+  - {symbol: ACE, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: AET, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: AGN, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: ANDV, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: ARG, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: AVB, checked: 2026-11-02, note: "Yahoo dropped it after the 2026-08 delisting; Alpaca has 2020-07-27 onward"}
+  - {symbol: AVP, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: BCR, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: BHI, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: BMS, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: BRCM, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: BXLT, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: CCE, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: CELG, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: CFN, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: CMCSK, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: COL, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: COV, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: CPGX, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: CSC, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: CVC, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: DPS, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: DTV, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: ESRX, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: ESV, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: EVHC, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: FDO, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: FTR, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: GAS, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: GGP, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: GMCR, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: HAR, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: HCBK, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: HOT, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: HSP, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: JOY, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: KRFT, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: LLTC, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: LO, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: LVLT, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: MJN, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: PCP, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: PETM, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: RAI, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: RHT, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: RTN, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: SCG, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: SIAL, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: SNI, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: STJ, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: SWY, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: TEG, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: TFCF, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: TFCFA, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: TSS, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: TWC, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: TWX, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: TYC, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: VIAB, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: WCG, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: WFM, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: WIN, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: WYN, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}
+  - {symbol: YHOO, checked: 2026-11-01, note: "no bars from Yahoo or Alpaca in the 2026-11-01 backfill"}

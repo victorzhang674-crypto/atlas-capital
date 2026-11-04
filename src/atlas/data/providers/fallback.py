@@ -11,7 +11,7 @@ from atlas.core.errors import ConfigError, DataError
 from atlas.core.logging import get_logger
 from atlas.data.providers.alpaca_provider import AlpacaPriceProvider
 from atlas.data.providers.base import PriceProvider, check_request, empty_actions, empty_daily
-from atlas.data.providers.yfinance_provider import YFinanceProvider
+from atlas.data.providers.yfinance_provider import YFinanceProvider, load_yahoo_no_data
 
 _log = get_logger(__name__)
 
@@ -120,9 +120,12 @@ def build_price_provider(cfg: AtlasConfig) -> PriceProvider:
 
     The primary is `cfg.data.providers.prices`; the other vendor backs it up when usable
     (Alpaca needs both `ALPACA_API_KEY_ID` and `ALPACA_API_SECRET_KEY`). `prices: alpaca`
-    without keys raises `ConfigError`. Without Alpaca keys the result is yfinance alone.
+    without keys raises `ConfigError`. Without Alpaca keys the result is yfinance alone. The
+    yfinance adapter skips the symbols of `cfg.data.prices.yahoo_no_data_file`.
     """
-    yahoo = YFinanceProvider(cfg.data.prices)
+    yahoo = YFinanceProvider(
+        cfg.data.prices, no_data=load_yahoo_no_data(cfg.data.prices.yahoo_no_data_file)
+    )
     alpaca = AlpacaPriceProvider.from_config(cfg)
     if cfg.data.providers.prices == "alpaca":
         if alpaca is None:

@@ -89,7 +89,10 @@ matter most for a backfill:
 
 - **Delisted names.** Yahoo has no bars for most companies that were acquired or went
   bankrupt, so former members can lack prices (they are `empty` in the sync summary, not
-  errors). Survivorship-free membership does not mean survivorship-free prices.
+  errors). Survivorship-free membership does not mean survivorship-free prices. Names known
+  to have no Yahoo bars (`config/yahoo_no_data.yaml`) are not asked again (each costs ~25 s
+  of yfinance retries); with Alpaca keys they go straight to the Alpaca fallback. Yahoo drops
+  a name soon after it delists, so the lake is the only copy of its earlier bars.
 - **Former members' fundamentals.** EDGAR's ticker map lists current registrants only;
   `config/cik_overrides.yaml` adds every former member since 2015 (the default backfill start).
   Members that left before 2015 get "no CIK" (fundamentals and earnings `empty`).

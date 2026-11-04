@@ -30,6 +30,7 @@ data:
     alpaca_data_url: https://data.alpaca.markets  # Alpaca market data API base URL
     adj_mismatch_tolerance: 0.005  # record recomputed vs vendor adj_close gaps above 0.5%
     memo_size: 1000  # yfinance: downloaded (symbol, window) bar sets kept per provider (LRU)
+    yahoo_no_data_file: config/yahoo_no_data.yaml  # symbols Yahoo has no bars for: not requested
   # Universe reference data sources (Stage 08).
   reference:
     sp500_constituents_url: https://en.wikipedia.org/wiki/List_of_S%26P_500_companies  # constituents table
@@ -37,6 +38,7 @@ data:
     user_agent: AtlasCapital/0.1 (research and paper-trading simulator)  # sent with every request
     request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
     ticker_changes_file: config/ticker_changes.yaml  # manual ticker renames, relative to the repo root
+    known_anomalies_file: config/membership_anomalies.yaml  # reviewed change-log anomalies, logged at info
   # SEC EDGAR fundamentals (Stage 09). The User-Agent comes from the SEC_USER_AGENT secret (.env).
   fundamentals:
     company_tickers_url: https://www.sec.gov/files/company_tickers.json  # ticker -> CIK list
@@ -186,6 +188,7 @@ data:
     sentiment_window_days: 365  # news scoring runs in windows of this many calendar days
     status_min_price_years: 8.0  # status: years between first and last bar for "enough price history"
     universe: sp500  # index universe whose members (at any time in the window) are synced
+    archive_raw: true  # keep every price and news answer as it arrived under raw/<vendor>/ in the lake
     # Threads per provider pool; each client's throttle still bounds its request rate.
     workers: {yahoo: 1, sec: 4, fred: 2, alpaca: 2, wikipedia: 1, local: 1}  # yahoo stays 1: yfinance is not thread-safe
     # Keys (symbols or macro series) per chunk; the checkpoint is written after each chunk.

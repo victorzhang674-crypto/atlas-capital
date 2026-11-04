@@ -78,3 +78,11 @@ Owner request (see worklog, 2026-11-02). Re-run in this chat on `8056137`, befor
 - Acceptance criteria (M1 coverage) still met and now shown directly by the brief's Verify command.
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 4) — 2026-11-03
+- Raw archive (red first; real-data check) · raw: [artifacts/phase1-checkpoint-2026-11-03-tier4-archive.txt](artifacts/phase1-checkpoint-2026-11-03-tier4-archive.txt)
+- `sync` package split: AST comparison 77 definitions, 0 changed · raw: [artifacts/phase1-checkpoint-2026-11-03-tier4-sync-split.txt](artifacts/phase1-checkpoint-2026-11-03-tier4-sync-split.txt)
+- `make check` → exit 0 (2160 passed); integration 1 passed; CLI tests 20 passed; `-m live` 12 passed, 1 failed (LM lexicon source: "Google Drive - Quota exceeded", external) · raw: [artifacts/phase1-checkpoint-2026-11-03-tier4-verify.txt](artifacts/phase1-checkpoint-2026-11-03-tier4-verify.txt)
+- Acceptance criteria (M1 coverage) unaffected: no lake data changed; the status command is the same code (moved).
+
+**Result:** ALL CRITERIA VERIFIED

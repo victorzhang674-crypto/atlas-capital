@@ -1,0 +1,36 @@
+######## make check
+uv run ruff format --check .
+216 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 95 source files
+uv run pytest -q
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.75 s (limit 20 s)
+2160 passed, 14 deselected in 47.65s
+ - ... skipped remainder
+exit=0
+######## Verify commands
+$ uv run pytest -m integration -q
+1 passed, 2173 deselected in 2.18s
+$ uv run pytest tests/unit/data -q   (Stage 07 Verify)
+966 passed, 13 deselected in 27.18s
+$ uv run pytest tests/unit/data/test_universe.py -q   (Stage 08 Verify)
+68 passed, 1 deselected in 2.89s
+$ uv run pytest tests/unit/cli -q
+20 passed in 2.71s
+######## uv run pytest tests/unit/data -m live -v -rs
+tests/unit/data/events/test_events_live.py::test_live_aapl_earnings_events PASSED
+tests/unit/data/events/test_events_live.py::test_live_fred_release_dates PASSED
+tests/unit/data/events/test_events_live.py::test_live_yahoo_calendar PASSED
+tests/unit/data/fundamentals/test_fundamentals_live.py::test_live_edgar_aapl PASSED
+tests/unit/data/macro/test_macro_live.py::test_live_fred_cpi PASSED
+tests/unit/data/news/test_news_live.py::test_live_alpaca_news PASSED
+tests/unit/data/news/test_news_live.py::test_live_yahoo_news PASSED
+tests/unit/data/sentiment/test_sentiment_live.py::test_live_download_lm_lexicon FAILED
+tests/unit/data/test_price_live.py::test_yfinance_live_smoke PASSED
+tests/unit/data/test_price_live.py::test_alpaca_live_smoke PASSED
+tests/unit/data/test_price_live.py::test_yfinance_live_actions PASSED
+tests/unit/data/test_price_live.py::test_alpaca_live_actions PASSED
+tests/unit/data/test_universe.py::test_live_wikipedia_pages_parse PASSED
+E           atlas.core.errors.DataError: LM master dictionary lacks columns ['Word', 'Negative', 'Positive', 'Uncertainty']
+=========== 1 failed, 12 passed, 966 deselected in 119.81s (0:01:59) ===========
+# the LM lexicon URL answered 'Google Drive - Quota exceeded' (HTML, 2040 bytes) on 2026-11-03: an outage of the source, no lexicon code changed

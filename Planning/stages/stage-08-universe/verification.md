@@ -32,3 +32,10 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 4) — 2026-11-03
+- Reviewed anomalies logged at info (red first) · raw: [artifacts/phase1-checkpoint-2026-11-03-tier4-red-anomalies.txt](artifacts/phase1-checkpoint-2026-11-03-tier4-red-anomalies.txt)
+- `uv run pytest tests/unit/data/test_universe.py -q` (brief's Verify) → 68 passed, 1 deselected; `make check` → exit 0 (ruff, format 216 files, mypy 95 files, 2160 passed, 14 deselected); integration 1 passed; `-m live` 12 passed, 1 failed (the LM lexicon source answered "Google Drive - Quota exceeded"; no lexicon code changed) · raw: [stage-14 artifacts/phase1-checkpoint-2026-11-03-tier4-verify.txt](../stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-03-tier4-verify.txt)
+- Acceptance criteria still evidenced (`test_acceptance_members_2019_06_03`, the `tradable` tests passed).
+
+**Result:** ALL CRITERIA VERIFIED

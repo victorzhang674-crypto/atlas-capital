@@ -90,4 +90,5 @@ exit (61/64); nanobind shutdown lines (upstream).
 - Tier 2: done. Item 4 found one more bug, also fixed: Alpaca repeats a corporate action once per CUSIP (GE's 2021-06-25 dividend came back twice). The news part of item 4 was done as an added real recording; the built pages stay for their designed edge cases.
 - Tier 3: done, except item 2, which was measured rather than changed: `fundamentals_panel` takes ~92–118 s per as-of day for 502 members on the real lake. Windowing the facts gave identical values and no speed-up; a one-pass rewrite or a per-symbol cache is for the owner to choose (Stage 16 sets the access pattern). Found and fixed on the way: facts dated after their own filing are left out (AAL's share count). Found and left for the owner: 6 symbols hold a reused ticker's later company's facts (AA, ADT, NE, POM, SE, TE).
 - Tier 3 item 2, follow-up: the owner chose the per-symbol cache; done (28.6 s per monthly panel on the real lake, was ~92–118 s; identical values).
-- Tier 4: not started.
+- Owner-approved purges (2026-11-03): the six reused tickers' wrong-company rows (5 595) and BBBY's two Yahoo rows.
+- Tier 4 (2026-11-03): done — reviewed anomalies at info, Yahoo no-data list (64 names), raw price/news archive, `sync` package split.

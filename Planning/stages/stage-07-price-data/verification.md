@@ -78,3 +78,10 @@ Owner request ("Start Tier 2"; see worklog, 2026-11-02). Run in this chat on the
 - `uv run pytest tests/unit/data -q` (brief's Verify) → 949 passed, 13 deselected; `make check` → exit 0 (ruff, format 207 files, mypy 88 files, 2143 passed, 14 deselected); `-m live` → 13 passed · raw: [stage-13 artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt](../stage-13-data-quality-dataview/artifacts/phase1-checkpoint-2026-11-02-tier3-verify.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 1 checkpoint follow-up (Tier 4) — 2026-11-03
+- Yahoo no-data list (red first) · raw: [artifacts/phase1-checkpoint-2026-11-03-tier4-red-yahoo-no-data.txt](artifacts/phase1-checkpoint-2026-11-03-tier4-red-yahoo-no-data.txt)
+- `uv run pytest tests/unit/data -q` (brief's Verify) → 966 passed, 13 deselected; `make check` → exit 0 (ruff, format 216 files, mypy 95 files, 2160 passed, 14 deselected); integration 1 passed; `-m live` 12 passed, 1 failed (the LM lexicon source answered "Google Drive - Quota exceeded"; no lexicon code changed) · raw: [stage-14 artifacts/phase1-checkpoint-2026-11-03-tier4-verify.txt](../stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-03-tier4-verify.txt)
+- Acceptance criteria still evidenced (split-adjusted fixtures, idempotence, failed symbol never aborts the batch: passed in the brief's Verify).
+
+**Result:** ALL CRITERIA VERIFIED

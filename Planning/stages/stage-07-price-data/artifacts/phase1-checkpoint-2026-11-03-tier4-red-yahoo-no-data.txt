@@ -1,0 +1,6 @@
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/tests/unit/data/test_price_yfinance.py'.
+E   ImportError: cannot import name 'load_yahoo_no_data' from 'atlas.data.providers.yfinance_provider' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-one-checkpoint-stages-80625b/src/atlas/data/providers/yfinance_provider.py)
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.52s
+######## writer
+wrote config/yahoo_no_data.yaml: 64 symbols

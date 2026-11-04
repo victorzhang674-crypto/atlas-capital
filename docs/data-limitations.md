@@ -28,8 +28,9 @@ so a 2019 backtest sees AIV, CELG, ETFC, …, not today's list), but not all of 
    date, 1957-03-04 (`SP500_INCEPTION`). Treat a 1957 start as "at least since the log began".
 4. **Source errors are kept visible, not fixed.** A row the reconstruction cannot apply
    (an added name that is not a member just after, a removed name that already is, a cell
-   that is not a ticker) becomes a `MembershipAnomaly`, is logged as a warning and changes
-   nothing. In the recorded snapshot (2026-10-27) there are **13 anomalies, all dated before
+   that is not a ticker) becomes a `MembershipAnomaly`, is logged and changes nothing:
+   at info if it is in the reviewed list `config/membership_anomalies.yaml`, else as a
+   warning (a new anomaly in a refreshed log stands out). In the recorded snapshot (2026-10-27) there are **13 anomalies, all dated before
    2018-01-01** (a test pins this): mostly reused tickers and gaps before 2000, plus one
    anachronism (the log writes Under Armour's class C shares, added 2016-04-08 as `UA.C`,
    under their later ticker `UA`; so before 2016-12-07 the reconstruction gives the class A

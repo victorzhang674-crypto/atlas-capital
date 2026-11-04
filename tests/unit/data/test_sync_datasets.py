@@ -412,7 +412,7 @@ def test_live_sources_are_lazy_and_fail_safe(tmp_lake: Lake, cfg: AtlasConfig) -
     bare = cfg.model_copy(update={"secrets": Secrets()})
     sources = SyncSources.live(bare, tmp_lake)  # builds nothing yet: no key is needed here
     assert sources.calendar_fred() is None  # no FRED key: the calendar keeps FOMC dates only
-    assert isinstance(sources.news_provider(), YahooNewsProvider)
+    assert isinstance(sources.news_provider().inner, YahooNewsProvider)  # archived (Tier 4)
     with pytest.raises(ConfigError, match="FRED_API_KEY"):
         sources.fred()
     with pytest.raises(ConfigError, match="SEC_USER_AGENT"):
@@ -426,5 +426,5 @@ def test_live_sources_are_lazy_and_fail_safe(tmp_lake: Lake, cfg: AtlasConfig) -
         }
     )
     news = SyncSources.live(keyed, tmp_lake).news_provider()
-    assert isinstance(news, AlpacaNewsProvider)  # Alpaca alone: no recent-only Yahoo fallback
+    assert isinstance(news.inner, AlpacaNewsProvider)  # Alpaca alone: no recent-only fallback
     news.close()

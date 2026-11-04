@@ -11,10 +11,10 @@ import pytest
 from price_helpers import FakeYFinance, load_yf_symbol
 
 from atlas.core.config import PriceDataConfig
-from atlas.core.errors import DataError
+from atlas.core.errors import ConfigError, DataError
 from atlas.core.logging import configure_logging, reset_logging
 from atlas.data.providers.base import ACTION_COLUMNS, DAILY_COLUMNS, PriceProvider
-from atlas.data.providers.yfinance_provider import YFinanceProvider
+from atlas.data.providers.yfinance_provider import YFinanceProvider, load_yahoo_no_data
 
 START, END = date(2020, 8, 3), date(2020, 9, 30)
 
@@ -199,6 +199,35 @@ def test_download_memo_is_bounded() -> None:
     assert len(fake.download_calls) == 1
     provider.fetch_daily(["AAPL"], START, END)  # evicted: fetched again
     assert [call[0] for call in fake.download_calls[1:]] == [["AAPL"]]
+
+
+def test_known_no_data_symbols_are_not_requested() -> None:
+    # Phase 1 checkpoint, Tier 4: Yahoo spends ~25 s on each name it has no data for; names
+    # recorded as such (config/yahoo_no_data.yaml) are not asked again, as if Yahoo had
+    # returned nothing, so a fallback provider serves them (Alpaca when its keys are set).
+    fake = FakeYFinance()
+    provider = YFinanceProvider(
+        PriceDataConfig(), download=fake.download, splits=fake.splits, sleep=lambda s: None,
+        no_data=("spy", "SIVB"),
+    )  # fmt: skip
+    assert provider.no_data == frozenset({"SPY", "SIVB"})
+    daily = provider.fetch_daily(["AAPL", "SPY", "SIVB"], START, END)
+    actions = provider.fetch_actions(["AAPL", "SPY"], START, END)
+    assert set(daily["symbol"]) == {"AAPL"} and set(actions["symbol"]) == {"AAPL"}
+    assert [call[0] for call in fake.download_calls] == [["AAPL"]]
+    assert fake.split_calls == ["AAPL"]
+
+
+def test_yahoo_no_data_file(repo_root: Path, tmp_path: Path) -> None:
+    known = load_yahoo_no_data(repo_root / "config" / "yahoo_no_data.yaml")
+    assert {"YHOO", "WFM", "AVB", "ACE"} <= known and len(known) == 64
+    assert load_yahoo_no_data(tmp_path / "none.yaml") == frozenset()
+    bad = tmp_path / "bad.yaml"
+    bad.write_text(
+        "symbols: [{symbol: AAA, checked: 2026-11-01}, {symbol: aaa, checked: 2026-11-02}]\n"
+    )
+    with pytest.raises(ConfigError, match=r"bad\.yaml"):
+        load_yahoo_no_data(bad)
 
 
 def test_tz_aware_index_uses_new_york_date() -> None:

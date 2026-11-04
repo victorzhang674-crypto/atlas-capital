@@ -1,5 +1,7 @@
 """Stage 08: S&P 500 reference data, membership history, instruments and `Universe`."""
 
+import io
+import json
 from collections.abc import Sequence
 from datetime import UTC, date, datetime
 from pathlib import Path
@@ -15,6 +17,7 @@ from universe_helpers import changes, changes_html, constituents, constituents_h
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig, ReferenceDataConfig
 from atlas.core.errors import ConfigError, DataError
+from atlas.core.logging import configure_logging, reset_logging
 from atlas.core.pit import AsOf, pit_filter
 from atlas.core.storage import Lake
 from atlas.core.types.instruments import AssetClass, Instrument
@@ -37,6 +40,7 @@ from atlas.data.universe import (
     MembershipBuild,
     Universe,
     build_membership,
+    load_known_anomalies,
     members_on,
     refresh_universe_reference,
 )
@@ -264,6 +268,59 @@ def test_bad_symbol_is_an_anomaly() -> None:  # Review focus 1
     build = build_membership(constituents("A"), changes((D(2020, 1, 2), "B$D", "C")))
     assert [(a.symbol, a.kind) for a in build.anomalies] == [("B$D", "bad_symbol")]
     assert _intervals(build)["C"] == [(SP500_INCEPTION, D(2020, 1, 2))]
+
+
+def test_known_anomaly_logged_at_info(tmp_path: Path) -> None:
+    # Phase 1 checkpoint, Tier 4: the 13 reviewed anomalies of the recorded log were warnings
+    # on every refresh (twice per sync); a reviewed one is info now, a new one still a warning.
+    rows = changes((D(2020, 1, 2), "Z", None), (D(2021, 1, 4), "Y", None))
+    log_file = tmp_path / "atlas.log"
+    configure_logging(log_file=log_file, console=io.StringIO())
+    try:
+        build = build_membership(
+            constituents("A"), rows, known_anomalies={(D(2020, 1, 2), "Z", "added_not_member")}
+        )
+    finally:
+        reset_logging()
+    assert len(build.anomalies) == 2  # still reported in the build either way
+    lines = [json.loads(line) for line in log_file.read_text(encoding="utf-8").splitlines()]
+    logged = [
+        (ln["level"], ln["symbol"], ln["known"])
+        for ln in lines
+        if ln["event"] == "universe.membership_anomaly"
+    ]
+    assert sorted(logged) == [("info", "Z", True), ("warning", "Y", False)]
+
+
+def test_known_anomalies_file_matches_the_recorded_log(
+    repo_root: Path, fixture_build: MembershipBuild
+) -> None:
+    known = load_known_anomalies(repo_root / "config" / "membership_anomalies.yaml")
+    assert known == {(a.date, a.symbol, a.kind) for a in fixture_build.anomalies}
+    assert len(known) == 13
+    assert AtlasConfig().data.reference.known_anomalies_file == Path(
+        "config/membership_anomalies.yaml"
+    )
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        "known: [{date: 2020-01-02, symbol: Z, kind: typo}]",
+        "known: [{date: 2020-01-02, symbol: Z, kind: bad_symbol}, "
+        "{date: 2020-01-02, symbol: Z, kind: bad_symbol}]",
+    ],
+    ids=["unknown kind", "duplicate"],
+)
+def test_bad_known_anomalies_file(tmp_path: Path, body: str) -> None:
+    path = tmp_path / "anomalies.yaml"
+    path.write_text(body + "\n")
+    with pytest.raises(ConfigError, match=r"anomalies\.yaml"):
+        load_known_anomalies(path)
+
+
+def test_missing_known_anomalies_file_is_empty(tmp_path: Path) -> None:
+    assert load_known_anomalies(tmp_path / "none.yaml") == frozenset()
 
 
 def test_current_member_without_add_row_uses_date_added() -> None:

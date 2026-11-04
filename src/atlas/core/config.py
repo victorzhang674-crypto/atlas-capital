@@ -275,7 +275,9 @@ class PriceDataConfig(_Frozen):
     `alpaca_feed` is the Alpaca data feed (`iex` on the free tier). `adj_mismatch_tolerance`
     is the fraction above which our recomputed adjusted close and the vendor's are recorded
     as a mismatch (0.005 = 0.5%). `memo_size` bounds the yfinance adapter's memo of downloaded
-    (symbol, window) bar sets; the least recently used is dropped first.
+    (symbol, window) bar sets; the least recently used is dropped first. `yahoo_no_data_file`
+    lists symbols Yahoo has no bars for, which the yfinance adapter does not request (relative
+    to the repo root).
     """
 
     batch_size: Annotated[int, Field(gt=0)] = 50
@@ -287,6 +289,7 @@ class PriceDataConfig(_Frozen):
     alpaca_data_url: str = "https://data.alpaca.markets"
     adj_mismatch_tolerance: _OpenFrac = 0.005
     memo_size: Annotated[int, Field(gt=0)] = 1000
+    yahoo_no_data_file: Path = Path("config/yahoo_no_data.yaml")
 
 
 class TradableConfig(_Frozen):
@@ -321,7 +324,9 @@ class ReferenceDataConfig(_Frozen):
     The two URLs are the Wikipedia pages holding the S&P 500 constituents table and change
     log; `user_agent` is sent with every request (Wikimedia's robot policy wants a
     descriptive one); `request_timeout_seconds` bounds one HTTP request. `ticker_changes_file`
-    is the manual ticker-rename list, relative to the repo root and not resolved here.
+    is the manual ticker-rename list and `known_anomalies_file` the reviewed change-log
+    anomalies (logged at info, not as warnings), both relative to the repo root and not
+    resolved here.
     """
 
     sp500_constituents_url: str = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
@@ -329,6 +334,7 @@ class ReferenceDataConfig(_Frozen):
     user_agent: str = "AtlasCapital/0.1 (research and paper-trading simulator)"
     request_timeout_seconds: Annotated[float, Field(gt=0)] = 30.0
     ticker_changes_file: Path = Path("config/ticker_changes.yaml")
+    known_anomalies_file: Path = Path("config/membership_anomalies.yaml")
 
 
 class FundamentalsConfig(_Frozen):
@@ -713,7 +719,8 @@ class SyncConfig(_Frozen):
     checkpointed in windows of `news_window_days` calendar days, news scoring in windows of
     `sentiment_window_days`. `status` counts a symbol as having enough price history when its
     first and last bars are `status_min_price_years` years apart. `universe` is the index
-    universe whose members (at any time in the window) are synced.
+    universe whose members (at any time in the window) are synced. `archive_raw` keeps every
+    price and news answer as it arrived under the lake's `raw/<vendor>/` (`atlas.data.archive`).
     """
 
     default_start: date = date(2015, 1, 1)
@@ -724,6 +731,7 @@ class SyncConfig(_Frozen):
     sentiment_window_days: Annotated[int, Field(ge=1)] = 365
     status_min_price_years: Annotated[float, Field(gt=0)] = 8.0
     universe: Annotated[str, Field(min_length=1)] = "sp500"
+    archive_raw: bool = True
     workers: SyncWorkers = Field(default_factory=SyncWorkers)
     chunk_size: SyncChunks = Field(default_factory=SyncChunks)
 

@@ -92,7 +92,8 @@ def test_state_save_is_atomic(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     def boom(*args: object, **kwargs: object) -> str:
         raise OSError("disk full")
 
-    monkeypatch.setattr("atlas.data.sync.canonical_state_json", boom)
+    # `SyncState.save` lives in `atlas.data.sync.state` since the Phase 1 checkpoint split.
+    monkeypatch.setattr("atlas.data.sync.state.canonical_state_json", boom)
     with pytest.raises(OSError, match="disk full"):
         state.save()
     assert path.read_bytes() == before

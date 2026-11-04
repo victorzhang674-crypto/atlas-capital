@@ -1,0 +1,25 @@
+# Reviewed anomalies of the S&P 500 change log (Stage 08; list added in the Phase 1 checkpoint,
+# 2026-11-03), read by atlas.data.universe.load_known_anomalies; not part of load_config.
+# build_membership logs an anomaly it finds here at info and any other as a warning, so a new
+# one in a refreshed log still stands out. Each entry: date and symbol of the change-log row,
+# kind (added_not_member | removed_while_member | bad_symbol) and a note: the row's security
+# name, plus the cause where docs/data-limitations.md states one ("Source errors are kept
+# visible, not fixed"; "Ticker identity"); the others fall under its general explanation
+# (reused tickers and gaps of the log before 2000). All 13 are the anomalies of the recorded
+# snapshot (revision 1379179365); none changes membership (the row is skipped).
+
+# The list, newest first (13 entries).
+known:
+  - {date: 2017-09-01, symbol: DD, kind: removed_while_member, note: "E. I. du Pont; reused ticker (DD, later today's DuPont)"}
+  - {date: 2015-03-23, symbol: AGN, kind: removed_while_member, note: "Allergan; reused ticker (AGN)"}
+  - {date: 2014-05-01, symbol: UAA, kind: added_not_member, note: "Under Armour; the log writes the class C shares under their later ticker UA"}
+  - {date: 2011-02-25, symbol: JOYG, kind: added_not_member, note: "Joy Global"}
+  - {date: 2005-11-18, symbol: T, kind: removed_while_member, note: "AT&T Corporation; reused ticker (T, later SBC/AT&T Inc.)"}
+  - {date: 1999-04-12, symbol: ACT, kind: added_not_member, note: "Actavis"}
+  - {date: 1998-12-11, symbol: FSR, kind: added_not_member, note: "Firstar"}
+  - {date: 1998-12-11, symbol: AN, kind: removed_while_member, note: "Amoco"}
+  - {date: 1998-12-11, symbol: SUN, kind: removed_while_member, note: "SunAmerica"}
+  - {date: 1997-06-17, symbol: CCR, kind: added_not_member, note: "Countrywide Credit Industries"}
+  - {date: 1994-09-30, symbol: NCC, kind: added_not_member, note: "National City"}
+  - {date: 1994-09-30, symbol: MCK, kind: removed_while_member, note: "McKesson"}
+  - {date: 1976-07-01, symbol: BUD, kind: added_not_member, note: "Anheuser Busch"}

@@ -15,7 +15,10 @@ no split history (`yf.Ticker(s).splits` is `None`) is also left out, with a
 is still served. Downloads and split histories are memoised per instance: `fetch_actions`
 after `fetch_daily` on the same window makes no new request. The download memo keeps at most
 `memo_size` (symbol, window) bar sets, dropping the least recently used; split histories are
-small and kept for the instance's life.
+small and kept for the instance's life. Symbols in `no_data` (Yahoo is known to have no bars
+for them: `config/yahoo_no_data.yaml`, `load_yahoo_no_data`) are left out without a request,
+exactly as if Yahoo had returned nothing, which saves ~25 s of yfinance retries per name and
+lets a fallback provider serve them.
 
 Error boundary: yfinance signals vendor trouble with many exception types (HTTP, rate-limit,
 JSON, its own errors), so *any* exception raised inside `yf.download` / `Ticker.splits` is
@@ -28,20 +31,24 @@ the chained cause. Errors in this module's own parsing are not caught.
 import time
 import warnings
 from collections import OrderedDict
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Collection, Sequence
 from datetime import date, timedelta
 from functools import partial
+from pathlib import Path
+from typing import Self
 
 import numpy as np
 import pandas as pd
 import yfinance as yf
 from pandas.errors import Pandas4Warning
+from pydantic import ValidationError, model_validator
 
 from atlas.core.calendar import MARKET_TZ
-from atlas.core.config import PriceDataConfig
-from atlas.core.errors import DataError
+from atlas.core.config import PriceDataConfig, read_config_file
+from atlas.core.errors import ConfigError, DataError
 from atlas.core.logging import get_logger
-from atlas.core.types.instruments import vendor_symbol
+from atlas.core.types.base import AtlasModel
+from atlas.core.types.instruments import Symbol, normalize_symbol, vendor_symbol
 from atlas.data.providers.base import (
     RetryPolicy,
     Throttle,
@@ -104,9 +111,12 @@ class YFinanceProvider:
         download: DownloadFn | None = None,
         splits: SplitsFn | None = None,
         sleep: Callable[[float], None] = time.sleep,
+        no_data: Collection[str] = (),
     ) -> None:
-        """A provider with `config` (default `PriceDataConfig()`; pass `cfg.data.prices`)."""
+        """A provider with `config` (default `PriceDataConfig()`; pass `cfg.data.prices`);
+        `no_data` lists symbols Yahoo has no bars for (not requested)."""
         cfg = config if config is not None else PriceDataConfig()
+        self._no_data = frozenset(normalize_symbol(s) for s in no_data)
         self._batch_size = cfg.batch_size
         self._policy = RetryPolicy.from_config(cfg)
         self._download = (
@@ -120,6 +130,11 @@ class YFinanceProvider:
         self._memo_size = cfg.memo_size
         self._bars: OrderedDict[tuple[str, date, date], pd.DataFrame] = OrderedDict()
         self._splits: dict[str, tuple[tuple[date, float], ...] | None] = {}
+
+    @property
+    def no_data(self) -> frozenset[str]:
+        """Canonical symbols this provider never asks Yahoo about (known to have no bars)."""
+        return self._no_data
 
     def fetch_daily(self, symbols: Sequence[str], start: date, end: date) -> pd.DataFrame:
         """Raw daily bars of `symbols` for sessions in `[start, end]` (see module docstring)."""
@@ -168,7 +183,11 @@ class YFinanceProvider:
     ) -> dict[str, pd.DataFrame]:
         """Yahoo's rows per canonical symbol (date index). Left out: a symbol with no bar, and
         one with bars but no split history (its raw prices cannot be rebuilt; logged once)."""
-        wanted = check_request(symbols, start, end)
+        requested = check_request(symbols, start, end)
+        wanted = [s for s in requested if s not in self._no_data]
+        skipped = len(requested) - len(wanted)
+        if skipped:
+            _log.info("prices.known_no_data", vendor=self.name, symbols=skipped)
         got: dict[str, pd.DataFrame] = {}
         for symbol in wanted:
             key = (symbol, start, end)
@@ -290,3 +309,38 @@ def _action(
         "amount": amount,
         "vendor": YFinanceProvider.name,
     }
+
+
+class _NoDataEntry(AtlasModel):
+    symbol: Symbol
+    checked: date
+    note: str | None = None
+
+
+class _NoDataFile(AtlasModel):
+    """Body of `config/yahoo_no_data.yaml`."""
+
+    symbols: tuple[_NoDataEntry, ...] = ()
+
+    @model_validator(mode="after")
+    def _unique(self) -> Self:
+        names = [e.symbol for e in self.symbols]
+        if len(set(names)) != len(names):
+            raise ValueError("a symbol is listed twice")
+        return self
+
+
+def load_yahoo_no_data(path: Path) -> frozenset[str]:
+    """The canonical symbols in `path` (`symbols: [{symbol, checked, note}]`; see
+    `config/yahoo_no_data.yaml`). A missing file gives none; invalid content raises
+    `ConfigError` naming the file."""
+    data = read_config_file(path)
+    try:
+        body = _NoDataFile.model_validate(data)
+    except ValidationError as exc:
+        problems = "; ".join(
+            f"{'.'.join(str(p) for p in err['loc']) or '<root>'}: {err['msg']}"
+            for err in exc.errors()
+        )
+        raise ConfigError(f"{path}: {problems}") from None
+    return frozenset(e.symbol for e in body.symbols)
