@@ -1,0 +1,27 @@
+run 41933211458 watch-exit=0
+
+✓ main CI · 41933211458
+Triggered via push about 6 minutes ago
+
+JOBS
+✓ check in 5m58s (ID 126935066652)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+run 41933211309 watch-exit=0
+
+✓ claude/stage-19-planning-execution-76a5e5 CI · 41933211309
+Triggered via push about 9 minutes ago
+
+JOBS
+✓ check in 8m49s (ID 126935066163)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+ci-done

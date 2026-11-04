@@ -982,6 +982,8 @@ Full block and raw output: [verification.md](stages/stage-19-factor-risk-model/v
   - `make check` → exit 0: `uv run ruff check .` → All checks passed! · `uv run ruff format --check .` → 277 files already formatted · `uv run mypy src/atlas` → Success: no issues found in 119 source files · `uv run pytest -q` → 2658 passed, 0 failed, 19 deselected (live/llm/integration)
   - `uv run pytest tests/unit/quant/risk_model -q` (brief's Verify) → 193 passed
   - mutation checks → 54/54 caught on the final code (one mutant made equivalent by the audit removed with its redundant check); `-W error` → 193 passed; coverage of `atlas.quant.risk_model` 97%
+  - On merged `main` (`80884a6`, fast-forward of `75b2d4b` via the owner's Terminal panel): `uv run pytest -q` → 2658 passed; brief's Verify → 193 passed; `make check` → exit 0; pushed `main` and `claude/stage-19-planning-execution-76a5e5` · raw: [artifacts/merged-main-check.txt](stages/stage-19-factor-risk-model/artifacts/merged-main-check.txt)
+  - GitHub Actions CI: success on `80884a6` (main 41933211458, branch 41933211309) · raw: [artifacts/ci-runs.txt](stages/stage-19-factor-risk-model/artifacts/ci-runs.txt)
   - Real lake (read only): integration test 2023 on the final code → 4 passed, 1 skipped (flag-gated calibration); 2018–2024 build → 1,761 sessions fitted, 0 skipped, R² mean 0.35, bias statistics 0.85–1.14 (single names 1.005, random long/short 1.054, cap-weighted 1.143), `build_risk_model` 0.013 s for 422 names
 - Acceptance criteria:
   - [x] Synthetic recovery and bias tests pass — evidence: `test_synthetic_recovery_correlation` (all 20 factors corr > 0.95), `test_calibration_bias_statistic_near_one` (in [0.9, 1.1]), recovery tests listed in verification.md; real-data bias 0.85–1.14
