@@ -48,3 +48,11 @@ def test_matplotlib_is_a_runtime_dependency(pyproject: dict[str, object]) -> Non
     project = pyproject["project"]
     assert isinstance(project, dict)
     assert _floor(project["dependencies"], "matplotlib") >= (3, 11)
+
+
+def test_arch_is_a_runtime_dependency(pyproject: dict[str, object]) -> None:
+    # Stage 18: GARCH(1,1) volatility forecasts (`atlas.quant.risk_model.volatility`) fit with
+    # `arch` at runtime (spec §11 numerics), so it is a runtime dependency.
+    project = pyproject["project"]
+    assert isinstance(project, dict)
+    assert _floor(project["dependencies"], "arch") >= (8, 0)

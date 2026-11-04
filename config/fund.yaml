@@ -234,6 +234,23 @@ quant:
       weighting: equal  # equal | signal (weights grow with the rank's distance from the median)
       cost_bps: 5.0  # basis points per unit of one-side turnover (cf. backtest.costs.half_spread_bps)
       gross: 2.0  # long leg + |short leg| as a fraction of NAV (2.0 = 100% long, 100% short)
+  # Covariance and volatility forecasting (Stage 18, atlas.quant.risk_model); daily returns in, daily units out.
+  risk_model:
+    min_history: 63  # fewest returns of a name (and common sessions of a pair, pairwise) to estimate it; fewer drops it
+    missing: pairwise  # pairwise (each pair on its common sessions, then nearest PSD) | complete (sessions where all have a return)
+    max_condition: 1.0e+5  # largest condition number of a covariance; above it the small eigenvalues are floored
+    default_method: ledoit_wolf  # sample | ewma | ledoit_wolf (constant-correlation target) | oas
+    ewma_lambda: 0.94  # EWMA decay per session (RiskMetrics daily)
+    # Next-session volatility forecasts of single names.
+    volatility:
+      method: blend  # default next-session vol forecast: ewma | garch | realised | blend
+      realised_window: 21  # sessions in the realised vol (root mean square of daily returns)
+      garch_min_obs: 252  # fewest returns to fit GARCH(1,1); fewer (or a failed fit) falls back to EWMA
+      # Blend of next-session variances (fractions, summing to 1).
+      blend_weights:
+        ewma: 0.4  # weight of the EWMA variance
+        garch: 0.4  # weight of the GARCH(1,1) variance
+        realised: 0.2  # weight of the realised variance
 
 # LLM gateway values (consumed by Stage 24).
 llm:

@@ -20,6 +20,7 @@ import atlas.core.config
 from atlas.core.config import (
     AtlasConfig,
     BacktestConfig,
+    BlendWeights,
     CalendarConfig,
     CostConfig,
     EventsConfig,
@@ -36,6 +37,7 @@ from atlas.core.config import (
     ReferenceDataConfig,
     ResearchBacktestConfig,
     ResearchConfig,
+    RiskModelConfig,
     Secrets,
     SentimentConfig,
     SnapshotConfig,
@@ -45,6 +47,7 @@ from atlas.core.config import (
     SyncWorkers,
     TradableConfig,
     ViewConfig,
+    VolatilityConfig,
     _deep_merge,
     _yaml_layers,
     config_fingerprint,
@@ -1277,6 +1280,48 @@ def test_quant_research_min_names_covers_quantiles() -> None:  # Stage 17 D1
     with pytest.raises(ValidationError, match="min_names"):
         ResearchConfig(n_quantiles=10, min_names=9)
     assert ResearchConfig(n_quantiles=10, min_names=10).min_names == 10
+
+
+def test_quant_risk_model_defaults() -> None:  # Stage 18 D1
+    r = AtlasConfig().quant.risk_model
+    assert r == RiskModelConfig()
+    assert r.model_dump() == {
+        "min_history": 63, "missing": "pairwise", "max_condition": 1.0e5,
+        "default_method": "ledoit_wolf", "ewma_lambda": 0.94,
+        "volatility": {
+            "method": "blend", "realised_window": 21, "garch_min_obs": 252,
+            "blend_weights": {"ewma": 0.4, "garch": 0.4, "realised": 0.2},
+        },
+    }  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("model", "field", "value"),
+    [
+        (RiskModelConfig, "min_history", 1),
+        (RiskModelConfig, "missing", "drop"),
+        (RiskModelConfig, "max_condition", 1.0),
+        (RiskModelConfig, "max_condition", float("inf")),
+        (RiskModelConfig, "default_method", "shrunk"),
+        (RiskModelConfig, "ewma_lambda", 0.0),
+        (RiskModelConfig, "ewma_lambda", 1.0),
+        (VolatilityConfig, "method", "arima"),
+        (VolatilityConfig, "realised_window", 1),
+        (VolatilityConfig, "garch_min_obs", 29),
+        (BlendWeights, "ewma", -0.1),
+        (BlendWeights, "garch", float("nan")),
+    ],
+)
+def test_quant_risk_model_validation(model: type[BaseModel], field: str, value: object) -> None:
+    # Stage 18 D1
+    with pytest.raises(ValidationError, match=field):
+        model(**{field: value})
+
+
+def test_quant_risk_model_blend_weights_sum_to_one() -> None:  # Stage 18 D1
+    with pytest.raises(ValidationError, match="sum to 1"):
+        BlendWeights(ewma=0.5, garch=0.5, realised=0.5)
+    assert BlendWeights(ewma=1.0, garch=0.0, realised=0.0).ewma == 1.0
 
 
 # --- Phase 0 checkpoint (Tier 4): one FrozenDict, YAML merge keys ------------------------------

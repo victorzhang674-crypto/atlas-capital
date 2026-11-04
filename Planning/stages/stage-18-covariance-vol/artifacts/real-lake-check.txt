@@ -1,0 +1,25 @@
+# Stage 18 real-lake check · decision day 2022-01-03 · lake /Users/zzjsmacbookair/Projects/atlas-capital/data
+view + returns: 7.3 s
+returns: 252 sessions x 504 names (2021-01-04 .. 2021-12-31), members 504, blocked 0, NaN share 0.0125
+look-ahead: last return 2021-12-31 < decision day 2022-01-03: ok
+
+method       missing    names dropped(by reason)          adjustments                 shrinkage  min_eig      max_eig      cond      psd  sym  med_ann_vol mean_corr  secs
+sample       pairwise     498 {'history': 5, 'overlap': 1}   nearest_psd,condition_floor         -  4.802e-07  4.802e-02  1.000e+05 True True 0.2574      0.2456  0.37
+ewma         pairwise     498 {'history': 5, 'overlap': 1}   nearest_psd,condition_floor         -  6.079e-07  6.079e-02  1.000e+05 True True 0.2459      0.3474  1.04
+ledoit_wolf  pairwise     498 {'history': 5, 'overlap': 1}   nearest_psd                    0.1333  1.031e-05  4.635e-02  4.496e+03 True True 0.2567      0.2459  0.33
+oas          pairwise     498 {'history': 5, 'overlap': 1}   nearest_psd                    0.0464  1.599e-05  4.562e-02  2.854e+03 True True 0.2586      0.2301  0.32
+ledoit_wolf  complete   DataError: only 60 complete sessions, fewer than min_history (63)
+
+cross-check sample variances vs pandas: max |diff| 3.894e-07 (bound lambda_max/max_condition 4.802e-07): ok
+
+vol forecasts (1,000 sessions to 2021-12-31; annualised, sqrt(252))
+name   n_obs  ewma    realised  garch   blend   garch alpha  beta    persist  fallback
+AAPL    1000  0.2669  0.2978    0.2458  0.2653  0.1402       0.8135  0.9537   -
+MSFT    1000  0.2431  0.2712    0.2166  0.2390  0.1918       0.7587  0.9505   -
+JPM     1000  0.1792  0.1863    0.1672  0.1760  0.1746       0.7676  0.9422   -
+XOM     1000  0.2193  0.1932    0.2101  0.2106  0.1008       0.8889  0.9897   -
+SPY     1000  0.1531  0.1684    0.1227  0.1451  0.2338       0.7253  0.9591   -
+realised vols cross-checked against numpy: ok
+
+total 11.3 s
+exit=0

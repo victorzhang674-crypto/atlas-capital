@@ -1,0 +1,41 @@
+caught    sample ddof 0
+caught    sample not demeaned
+caught    LEAK EWMA weights reversed (oldest weighted most)
+caught    EWMA weights not normalised per pair
+caught    half-life off by one
+caught    EWMA path: missing return does not decay
+caught    LW: pi without the S^2 term
+caught    LW: theta diagonal kept
+caught    LW: rho off-diagonal sqrt ratio inverted
+caught    LW: rbar includes the diagonal
+caught    LW: intensity not divided by T
+SURVIVED  LW: intensity not clamped below
+caught    LW: S divided by n-1
+SURVIVED  OAS: 2/p terms dropped
+caught    OAS: target not scaled by tr/p
+caught    OAS: shrinkage not capped at 1
+caught    Higham 2002 without Dykstra correction
+caught    nearest_psd clips at a positive floor
+caught    keep_diagonal ignored in nearest_psd
+caught    condition floor at lambda_max / (2 max_condition)
+caught    estimator skips the PSD repair
+caught    estimator skips the condition floor
+caught    is_psd tolerance too loose
+caught    min_history off by one
+caught    overlap rule disabled
+caught    overlap tie-break picks the earlier name
+caught    constant names kept
+caught    unsorted index accepted
+caught    GARCH: integrated parameters accepted
+caught    GARCH: convergence flag ignored
+caught    GARCH: short-history guard off
+caught    GARCH: fit on fractions, not percent
+caught    GARCH: omega not converted to fractions
+caught    blend: realised weight used for GARCH
+caught    realised vol: window includes one extra session
+caught    realised vol demeaned
+caught    annualise vol by P, not sqrt(P)
+caught    zero variance accepted
+
+36/38 mutants caught
+exit=1

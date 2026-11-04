@@ -1,0 +1,16 @@
+$ uv run pytest tests/unit/quant/risk_model -q --cov=atlas.quant.risk_model --cov-report=term-missing
+........................................................................ [ 86%]
+...........                                                              [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                       Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------
+src/atlas/quant/risk_model/__init__.py         4      0   100%
+src/atlas/quant/risk_model/covariance.py     243      5    98%   89, 171, 217, 226, 250
+src/atlas/quant/risk_model/psd.py             85      2    98%   102, 146
+src/atlas/quant/risk_model/volatility.py     173      1    99%   232
+------------------------------------------------------------------------
+TOTAL                                        505      8    98%
+83 passed in 6.91s
+exit=0

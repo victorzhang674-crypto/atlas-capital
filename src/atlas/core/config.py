@@ -997,12 +997,65 @@ class ResearchConfig(_Frozen):
         return self
 
 
+class BlendWeights(_Frozen):
+    """Weights of the realised-vol blend (Stage 18): the blended next-session variance is
+    `ewma * var_ewma + garch * var_garch + realised * var_realised`. Each weight is a
+    non-negative fraction and the three sum to 1."""
+
+    ewma: Annotated[float, Field(ge=0, le=1)] = 0.4
+    garch: Annotated[float, Field(ge=0, le=1)] = 0.4
+    realised: Annotated[float, Field(ge=0, le=1)] = 0.2
+
+    @model_validator(mode="after")
+    def _sum_to_one(self) -> Self:
+        total = self.ewma + self.garch + self.realised
+        if abs(total - 1.0) > 1e-9:
+            raise ValueError(f"blend weights must sum to 1, got {total}")
+        return self
+
+
+class VolatilityConfig(_Frozen):
+    """Volatility forecasts (`atlas.quant.risk_model.volatility`, Stage 18).
+
+    `method` is the default forecast (`ewma`, `garch`, `realised` or `blend`). Realised vol is
+    the root mean square of the last `realised_window` daily returns; GARCH(1,1) is fitted only
+    on at least `garch_min_obs` returns (fewer, or a failed fit, falls back to EWMA); the blend
+    weights the three variances with `blend_weights`.
+    """
+
+    method: Literal["ewma", "garch", "realised", "blend"] = "blend"
+    realised_window: Annotated[int, Field(ge=2)] = 21
+    garch_min_obs: Annotated[int, Field(ge=30)] = 252
+    blend_weights: BlendWeights = Field(default_factory=BlendWeights)
+
+
+class RiskModelConfig(_Frozen):
+    """Covariance estimators and volatility forecasts (`atlas.quant.risk_model`, Stage 18).
+
+    Units: daily simple returns in, daily covariances and vols out. A name needs `min_history`
+    returns (and, under `missing="pairwise"`, `min_history` common sessions with every other
+    name) to be estimated. `missing` is `pairwise` (each pair on its common sessions, then the
+    nearest PSD matrix) or `complete` (only sessions where every name has a return). A
+    covariance whose condition number exceeds `max_condition` has its small eigenvalues
+    floored. `default_method` is the estimator `covariance_estimator()` builds by default;
+    `ewma_lambda` is the EWMA decay per session (RiskMetrics daily 0.94).
+    """
+
+    min_history: Annotated[int, Field(ge=2)] = 63
+    missing: Literal["pairwise", "complete"] = "pairwise"
+    max_condition: Annotated[float, Field(gt=1, allow_inf_nan=False)] = 1.0e5
+    default_method: Literal["sample", "ewma", "ledoit_wolf", "oas"] = "ledoit_wolf"
+    ewma_lambda: _OpenFrac = 0.94
+    volatility: VolatilityConfig = Field(default_factory=VolatilityConfig)
+
+
 class QuantConfig(_Frozen):
     """Quant engine settings (Phase 2)."""
 
     features: FeaturesConfig = Field(default_factory=FeaturesConfig)
     factors: FactorsConfig = Field(default_factory=FactorsConfig)
     research: ResearchConfig = Field(default_factory=ResearchConfig)
+    risk_model: RiskModelConfig = Field(default_factory=RiskModelConfig)
 
 
 class AtlasConfig(BaseSettings):
