@@ -206,6 +206,17 @@ quant:
       min_history: 63  # fewest valid own-history values for an own-history percentile
       universe: sp500  # universe whose members at as_of form the cross-section (plus the requested symbols)
       min_universe: 20  # fewest valid cross-section values for a universe percentile
+  # Fundamental factor library (Stage 16, atlas.quant.factors).
+  factors:
+    universe: sp500  # universe whose members at as_of get factor exposures by default
+    winsor_lower: 0.01  # cross-sectional quantile each factor is clipped at from below (fraction)
+    winsor_upper: 0.99  # cross-sectional quantile each factor is clipped at from above (fraction)
+    min_names: 20  # fewest valid raw values for a factor to be cleaned; fewer leaves it all NaN
+    size_neutral: false  # also regress each factor (except size) on the size exposure
+    period_tolerance_days: 20  # a year-ago fiscal period may end this many days from 365 (1095) days before the latest
+    margin_quarters: 8  # discrete quarters of gross margin in margin stability
+    min_abs_eps: 0.01  # USD; EPS growth is NaN when the year-ago TTM EPS is smaller in absolute value
+    max_price_age_sessions: 5  # market cap needs a close from the last this many known sessions
 
 # LLM gateway values (consumed by Stage 24).
 llm:

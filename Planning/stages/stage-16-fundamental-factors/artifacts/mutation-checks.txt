@@ -1,0 +1,32 @@
+caught    earnings yield over EV
+caught    accruals not negated
+caught    margin std ddof 0
+caught    growth vs 3-year-ago TTM
+caught    issuance not negated
+caught    growth ignores staleness
+caught    EPS floor ignored
+caught    shares not split-adjusted
+caught    cap ignores the price session's split basis
+caught    EV without debt
+caught    zscore ddof 1
+caught    no winsorising
+caught    fill with the overall median
+caught    no sector demeaning
+caught    size regression without sector dummies
+caught    AUDIT sector-less names demeaned as one group
+caught    AUDIT sector-less names filled from their own group
+caught    AUDIT final z-score over sector-less names too
+caught    no final z-score
+caught    AUDIT margin span from a fixed 92 days
+caught    AUDIT no instruments at all treated as sector-less
+caught    min_names ignored
+caught    composite over sum of weights
+caught    store stamps the cutoff itself
+caught    store read without the PIT filter
+caught    TTM prefers quarters to the annual figure
+caught    LOOK-AHEAD history uses every stored fact
+caught    LOOK-AHEAD panel reads a later view
+caught    LOOK-AHEAD split factors from unfiltered actions
+
+29/29 mutants caught
+exit=0

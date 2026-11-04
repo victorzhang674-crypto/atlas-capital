@@ -886,10 +886,45 @@ class FeaturesConfig(_Frozen):
     snapshot: SnapshotConfig = Field(default_factory=SnapshotConfig)
 
 
+class FactorsConfig(_Frozen):
+    """The fundamental factor library (`atlas.quant.factors`, Stage 16).
+
+    `factor_panel` covers the members of `universe` at `as_of` by default. Cleaning clips each
+    factor at its cross-sectional `winsor_lower`/`winsor_upper` quantiles (fractions,
+    0 <= lower < upper <= 1) and leaves a factor with fewer than `min_names` valid raw values
+    all NaN; `size_neutral` also regresses each factor (except size) on the size exposure.
+    A year-ago (three-years-ago) fiscal period is the one ending nearest 365 (1095) days
+    before the latest, within `period_tolerance_days`; margin stability uses the last
+    `margin_quarters` discrete quarters; EPS growth needs a year-ago TTM EPS of at least
+    `min_abs_eps` USD in absolute value; the price for market cap is the latest known close no
+    older than `max_price_age_sessions` sessions.
+    """
+
+    universe: Annotated[str, Field(min_length=1)] = "sp500"
+    winsor_lower: Annotated[float, Field(ge=0, le=1)] = 0.01
+    winsor_upper: Annotated[float, Field(ge=0, le=1)] = 0.99
+    min_names: Annotated[int, Field(ge=2)] = 20
+    size_neutral: bool = False
+    period_tolerance_days: Annotated[int, Field(ge=1)] = 20
+    margin_quarters: Annotated[int, Field(ge=2)] = 8
+    min_abs_eps: Annotated[float, Field(gt=0)] = 0.01
+    max_price_age_sessions: Annotated[int, Field(ge=1)] = 5
+
+    @model_validator(mode="after")
+    def _winsor_ordered(self) -> Self:
+        if not self.winsor_lower < self.winsor_upper:
+            raise ValueError(
+                f"winsor_lower ({self.winsor_lower}) must be below winsor_upper "
+                f"({self.winsor_upper})"
+            )
+        return self
+
+
 class QuantConfig(_Frozen):
     """Quant engine settings (Phase 2)."""
 
     features: FeaturesConfig = Field(default_factory=FeaturesConfig)
+    factors: FactorsConfig = Field(default_factory=FactorsConfig)
 
 
 class AtlasConfig(BaseSettings):

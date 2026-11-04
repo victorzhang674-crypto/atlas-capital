@@ -1,0 +1,16 @@
+........................................................................ [ 63%]
+..........................................                               [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                     Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------
+src/atlas/quant/factors/__init__.py          5      0   100%
+src/atlas/quant/factors/cleaning.py        108      2    98%   145, 186
+src/atlas/quant/factors/composite.py        36      1    97%   61
+src/atlas/quant/factors/fundamental.py     216      3    99%   125, 222, 462
+src/atlas/quant/factors/store.py           106      1    99%   90
+----------------------------------------------------------------------
+TOTAL                                      471      7    99%
+114 passed in 220.22s (0:03:40)
+exit=0

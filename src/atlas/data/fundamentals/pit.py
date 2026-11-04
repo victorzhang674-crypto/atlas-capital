@@ -12,7 +12,7 @@ USD per share, shares); a derived EPS quarter is only approximate (share counts 
 """
 
 import math
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import Any
@@ -153,8 +153,8 @@ def _q4_from_three_quarters(
 
 def _to_dates(frame: pd.DataFrame) -> pd.DataFrame:
     out = frame.copy()
-    out["period_start"] = [ts.date() for ts in out["s"]]
-    out["period_end"] = [ts.date() for ts in out["e"]]
+    out["period_start"] = pd.Series([ts.date() for ts in out["s"]], index=out.index, dtype="object")
+    out["period_end"] = pd.Series([ts.date() for ts in out["e"]], index=out.index, dtype="object")
     out["value"] = out["value"].astype("float64")
     out["available_at"] = out["available_at"].astype("datetime64[us, UTC]")
     return out
@@ -200,20 +200,32 @@ def _metric(row: pd.Series, source: str, tag: str | None = None) -> MetricValue:
     )
 
 
-def ttm(periods: pd.DataFrame, config: FundamentalsConfig) -> MetricValue | None:
-    """Trailing-twelve-month value of a flow concept (`resolve_concept` output), or `None`.
+TTM_COLUMNS = ("period_start", "period_end", "value", "available_at", "accn", "tag", "source")
+"""Columns of `ttm_values`: one row per period end where a TTM value can be built."""
 
-    At the latest period end where it can be built: the fiscal year ending there
-    (`source="annual"`), else the sum of four contiguous discrete quarters ending there
-    (`source="quarters"`). `available_at`/`accn` are those of the latest input.
+
+def _empty_ttm() -> pd.DataFrame:
+    return _empty_quarters()[list(TTM_COLUMNS)]
+
+
+def ttm_values(
+    periods: pd.DataFrame, config: FundamentalsConfig, *, quarters: pd.DataFrame | None = None
+) -> pd.DataFrame:
+    """Trailing-twelve-month values of a flow concept (`resolve_concept` output) at every
+    period end where one can be built, sorted by `period_end` (`TTM_COLUMNS`).
+
+    At each end: the fiscal year ending there (`source="annual"`), else the sum of four
+    contiguous discrete quarters ending there (`source="quarters"`). `available_at`/`accn` are
+    those of the latest input; `tag` joins the tags used. `quarters` may pass the concept's
+    `quarterly_values(periods, config)` when the caller already has it.
     """
     flows = periods[periods["duration_days"] > 0]
     if flows.empty:
-        return None
+        return _empty_ttm()
     annual = _with_ts(flows)
     annual = annual[annual["duration_days"].between(*config.annual_days)]
     candidates = [annual.assign(source="annual", rank=0)]
-    q = _with_ts(quarterly_values(flows, config))
+    q = _with_ts(quarterly_values(flows, config) if quarters is None else quarters)
     cols = ["s", "e", "value", "available_at", "accn", "tag"]
     m = q[cols].add_prefix("q4_")
     for i in (3, 2, 1):
@@ -238,12 +250,22 @@ def ttm(periods: pd.DataFrame, config: FundamentalsConfig) -> MetricValue | None
         )
     found = pd.concat(candidates, ignore_index=True)
     if found.empty:
+        return _empty_ttm()
+    best = found.sort_values(["e", "rank"], kind="stable").drop_duplicates(subset="e", keep="first")
+    best = _to_dates(best)
+    best["accn"] = best["accn"].astype("str")
+    best["tag"] = best["tag"].astype("str")
+    return best[list(TTM_COLUMNS)].reset_index(drop=True)
+
+
+def ttm(periods: pd.DataFrame, config: FundamentalsConfig) -> MetricValue | None:
+    """Trailing-twelve-month value of a flow concept (`resolve_concept` output) at the latest
+    period end where it can be built (the last row of `ttm_values`), or `None`."""
+    values = ttm_values(periods, config)
+    if values.empty:
         return None
-    best = found.sort_values(["e", "rank"], ascending=[False, True], kind="stable").iloc[0]
-    best = best.copy()
-    best["period_start"] = best["s"].date()
-    best["period_end"] = best["e"].date()
-    return _metric(best, str(best["source"]))
+    last = values.iloc[-1]
+    return _metric(last, str(last["source"]))
 
 
 def latest_balance(periods: pd.DataFrame) -> MetricValue | None:
@@ -372,6 +394,103 @@ def concept_values(
         found = ttm(periods, config) if concept.kind == "flow" else latest_balance(periods)
         values[_metric_name(concept)] = found
     return values
+
+
+HISTORY_COLUMNS = (
+    "concept",
+    "period_start",
+    "period_end",
+    "value",
+    "ttm",
+    "available_at",
+    "source",
+    "ttm_source",
+)
+"""Columns of `concept_history`: one row per concept and fiscal period end."""
+
+
+def _empty_history() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "concept": pd.Series(dtype="str"),
+            "period_start": pd.Series(dtype="object"),
+            "period_end": pd.Series(dtype="object"),
+            "value": pd.Series(dtype="float64"),
+            "ttm": pd.Series(dtype="float64"),
+            "available_at": pd.Series(dtype="datetime64[us, UTC]"),
+            "source": pd.Series(dtype="object"),
+            "ttm_source": pd.Series(dtype="object"),
+        }
+    )
+
+
+def _flow_history(periods: pd.DataFrame, config: FundamentalsConfig) -> pd.DataFrame:
+    q = quarterly_values(periods, config)
+    t = ttm_values(periods, config, quarters=q)
+    q = q[["period_start", "period_end", "value", "available_at", "source"]]
+    t = t[["period_end", "value", "available_at", "source"]].rename(
+        columns={"value": "ttm", "available_at": "ttm_available_at", "source": "ttm_source"}
+    )
+    q = q.astype({"period_end": "object"})
+    t = t.astype({"period_end": "object"})
+    both = q.merge(t, on="period_end", how="outer").sort_values("period_end", kind="stable")
+    both["available_at"] = both[["available_at", "ttm_available_at"]].max(axis=1)
+    return both.drop(columns="ttm_available_at")
+
+
+def _stock_history(periods: pd.DataFrame) -> pd.DataFrame:
+    instants = periods[periods["duration_days"] == 0].sort_values("period_end", kind="stable")
+    return pd.DataFrame(
+        {
+            "period_start": None,
+            "period_end": instants["period_end"],
+            "value": instants["value"],
+            "ttm": math.nan,
+            "available_at": instants["available_at"],
+            "source": "reported",
+            "ttm_source": None,
+        }
+    )
+
+
+def concept_history(
+    known: pd.DataFrame,
+    concept_map: ConceptMap,
+    names: Sequence[str],
+    config: FundamentalsConfig,
+) -> pd.DataFrame:
+    """Every fiscal period of the concepts `names` in `known` (one company's `known_facts`):
+    `HISTORY_COLUMNS`, sorted by concept (in `names` order) and `period_end`.
+
+    A flow has one row per end of a discrete quarter (`quarterly_values`: `value`,
+    `period_start`, `source`) or of a TTM (`ttm_values`: `ttm`, `ttm_source`), NaN/None for
+    the side that is missing; `available_at` is the later of the two. A stock has one row per
+    instant (`value` = the balance, `ttm` NaN, `period_start` None). Units are the concept's
+    (USD, USD per share, shares). An unknown concept name raises `ValueError`.
+    """
+    unknown = [n for n in names if n not in concept_map]
+    if unknown:
+        raise ValueError(f"unknown concept(s) {unknown}; known: {list(concept_map)}")
+    frames = []
+    for name in names:
+        concept = concept_map[name]
+        periods = resolve_concept(known, concept)
+        part = _flow_history(periods, config) if concept.kind == "flow" else _stock_history(periods)
+        if not part.empty:
+            frames.append(part.assign(concept=name))
+    if not frames:
+        return _empty_history()
+    out = pd.concat(frames, ignore_index=True)
+    out["value"] = out["value"].astype("float64")
+    out["ttm"] = out["ttm"].astype("float64")
+    out["available_at"] = pd.to_datetime(out["available_at"], utc=True).astype(
+        "datetime64[us, UTC]"
+    )
+    out["period_start"] = out["period_start"].astype("object")
+    out["period_start"] = out["period_start"].where(out["period_start"].notna(), None)
+    for col in ("source", "ttm_source"):
+        out[col] = out[col].astype("object").where(out[col].notna(), None)
+    return out[list(HISTORY_COLUMNS)].reset_index(drop=True)
 
 
 def fundamentals_pit_detail(

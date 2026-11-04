@@ -42,12 +42,15 @@ from atlas.data.fundamentals.parser import (
 )
 from atlas.data.fundamentals.pit import (
     DETAIL_COLUMNS,
+    HISTORY_COLUMNS,
     QUARTER_COLUMNS,
     RATIO_NAMES,
+    TTM_COLUMNS,
     Fundamentals,
     MetricValue,
     assemble_detail,
     compute_ratios,
+    concept_history,
     concept_values,
     fundamentals_pit,
     fundamentals_pit_detail,
@@ -57,12 +60,14 @@ from atlas.data.fundamentals.pit import (
     metric_names,
     quarterly_values,
     ttm,
+    ttm_values,
 )
 
 __all__ = [
     "DETAIL_COLUMNS",
     "FACT_COLUMNS",
     "FUNDAMENTALS_FACTS",
+    "HISTORY_COLUMNS",
     "INDEX_COLUMNS",
     "PERIOD_COLUMNS",
     "PERIOD_KEY",
@@ -70,6 +75,7 @@ __all__ = [
     "RATIO_INPUTS",
     "RATIO_NAMES",
     "RAW_FACT_COLUMNS",
+    "TTM_COLUMNS",
     "Alternative",
     "CikMap",
     "CikOverride",
@@ -86,6 +92,7 @@ __all__ = [
     "build_cik_map",
     "build_edgar_client",
     "compute_ratios",
+    "concept_history",
     "concept_values",
     "fundamentals_pit",
     "fundamentals_pit_detail",
@@ -103,4 +110,5 @@ __all__ = [
     "quarterly_values",
     "resolve_concept",
     "ttm",
+    "ttm_values",
 ]

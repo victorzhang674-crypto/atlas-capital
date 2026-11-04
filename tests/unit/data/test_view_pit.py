@@ -383,6 +383,10 @@ METHODS: dict[str, Callable[[DataView], Any]] = {
     "quality_issues": lambda v: v.quality_issues(),
     "blocked": lambda v: v.blocked,
     "sessions": lambda v: v.sessions(30),
+    "fundamentals_history": lambda v: v.fundamentals_history(
+        ["AAA", "BBB"], ["revenue", "total_assets"]
+    ),
+    "split_factors": lambda v: v.split_factors(UNIVERSE, 60),
 }
 """Every public data method of `DataView`, called as strategy or agent code would."""
 
@@ -509,6 +513,12 @@ def _leak_fundamentals(mp: pytest.MonkeyPatch) -> None:
     _wrap(mp, view_module, "assemble_detail", _late_frame)
 
 
+def _leak_history(mp: pytest.MonkeyPatch) -> None:  # Stage 16
+    import atlas.data.view as view_module
+
+    _wrap(mp, view_module, "concept_history", _late_frame)
+
+
 LEAKS: dict[str, Callable[[pytest.MonkeyPatch], None]] = {
     "prices": _leak_bars,
     "returns": _leak_bars,
@@ -528,6 +538,8 @@ LEAKS: dict[str, Callable[[pytest.MonkeyPatch], None]] = {
     "quality_issues": _leak_quality,
     "blocked": _leak_quality,
     "sessions": _leak_bars,
+    "fundamentals_history": _leak_history,
+    "split_factors": _leak_bars,
 }
 """How to make each method's delegate leak a row from after the cutoff."""
 
@@ -568,6 +580,10 @@ MULTI: dict[str, Callable[[DataView], Any]] = {
     "returns": lambda v: set(v.returns(["AAA", "BAD"], 30).columns),
     "adv": lambda v: set(v.adv(["AAA", "BAD"]).index),
     "fundamentals_panel": lambda v: set(v.fundamentals_panel(["AAA", "BAD"]).index),
+    "fundamentals_history": lambda v: set(
+        v.fundamentals_history(["AAA", "BAD"], ["revenue"])["symbol"]
+    ),
+    "split_factors": lambda v: set(v.split_factors(["AAA", "BAD"], 30).columns),
     "events": lambda v: (
         set(v.events(horizon_days=30)["symbol"].dropna())
         | set(v.events(["AAA", "BAD"], horizon_days=30)["symbol"].dropna())

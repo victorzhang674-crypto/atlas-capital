@@ -1,0 +1,27 @@
+# Stage 16 — Fundamental factor library · Verification evidence
+
+Every output below comes from commands run by the AI in this stage's chat (Project.md Rule 1), on the final code (after the owner-requested audit and its fixes). Raw outputs are in `artifacts/`.
+
+#### Verification evidence — Stage 16 — 2026-11-04
+- Commands run (this chat):
+  - `uv run pytest -q` → 2322 passed, 0 failed, 14 deselected (live/llm/integration) · raw: [artifacts/pytest.txt](artifacts/pytest.txt)
+  - `uv run ruff check .` → All checks passed! · raw: [artifacts/ruff-check.txt](artifacts/ruff-check.txt)
+  - `uv run ruff format --check .` → 231 files already formatted · raw: [artifacts/ruff-format.txt](artifacts/ruff-format.txt)
+  - `uv run mypy src/atlas` → Success: no issues found in 100 source files · raw: [artifacts/mypy.txt](artifacts/mypy.txt)
+  - `uv run pytest tests/unit/quant/factors -q` (brief's Verify) → 114 passed · raw: [artifacts/verify-factors.txt](artifacts/verify-factors.txt)
+  - `make check` → exit 0 (lint, format, mypy, 2322 passed) · raw: [artifacts/make-check.txt](artifacts/make-check.txt)
+  - Stage tests with `-W error` → 114 passed · raw: [artifacts/verify-factors-werror.txt](artifacts/verify-factors-werror.txt)
+  - Coverage of `atlas.quant.factors` → 99% (471 statements, 7 missed: defensive branches) · raw: [artifacts/coverage.txt](artifacts/coverage.txt)
+  - Mutation checks ([artifacts/mutate.py](artifacts/mutate.py): 29 deliberate bugs, incl. 3 look-ahead mutants and 5 audit mutants) → 29/29 caught · raw: [artifacts/mutation-checks.txt](artifacts/mutation-checks.txt)
+  - Real-lake smoke run, read only ([artifacts/real_lake_smoke.py](artifacts/real_lake_smoke.py), main checkout's lake): 2024-01-31 → 502 names, 132.6 s; 2026-09-30 → 503 names, 194.2 s; exit 0 · raw: [artifacts/real-lake-smoke.txt](artifacts/real-lake-smoke.txt)
+  - Gate check at the start: `uv run pytest -q` → 2160 passed, 14 deselected · raw: [artifacts/gate-check-pytest.txt](artifacts/gate-check-pytest.txt)
+- Acceptance criteria (brief):
+  - [x] **Factor panels for any date use only filings available at that date** — evidence: `test_factor_pit.py`: `test_later_rows_change_nothing_at_the_as_of` (later 10-Qs, a 10-K/A, a later split and later bars leave the panel at the as-of identical, and do change it at 2024-06-03), `test_restatement_used_only_once_public`, `test_filing_at_the_cutoff` (accepted 1 s before the cutoff: used; at and 1 s after: not), `test_panel_equals_the_panel_of_the_truncated_lake[2023-02-06, 2023-02-07, 2024-03-01]` (full lake = lake holding only rows known at the cutoff), `test_reading_the_as_of_never_sees_later_filings`; the new `DataView.fundamentals_history` / `split_factors` in the Stage 13 leak suite (`test_future_rows_never_leak`, `test_guard_raises_if_filter_bypassed`, `test_injected_rows_are_visible_later`); store reads `test_read_latest_date_not_after_the_as_of`, `test_guard_raises_if_a_later_row_slips_through`; mutants "LOOK-AHEAD history uses every stored fact", "LOOK-AHEAD panel reads a later view", "LOOK-AHEAD split factors from unfiltered actions" all caught. Audit fix: names without a sector (on the real lake: every former S&P 500 member) are no longer grouped with each other (`test_unknown_sector_names_are_not_each_others_peers`; mutants "AUDIT sector-less names …" caught)
+  - [x] **The cleaning invariants hold** — evidence: `test_factor_cleaning.py` (winsor bounds and order `test_winsor_bounds_and_order`; z mean ≈ 0 / std ≈ 1 `test_zscore_mean_zero_std_one`; sector-demeaned sums ≈ 0 `test_sector_demeaned_sums_are_zero`; size-neutral residual ⟂ size `test_size_neutral_residual_orthogonal_to_size_and_sectors`; fill flags; hypothesis `test_cleaning_invariants_property`, 60 examples), `test_factor_panel.py::test_exposures_invariants` (with and without size neutralisation), and on the real lake over the names with a known sector: max |mean| 2.7e-17, max |std − 1| 1.1e-16, max |sector sum| 1.5e-14 (2024-01-31) and 2.1e-17 / 1.1e-16 / 9.6e-15 (2026-09-30)
+- Brief tasks: (1) market cap + EV with PIT shares — `test_factor_market.py`, `test_split_restates_shares`; (2) each raw factor with known values — `test_factor_raw.py::test_known_value[…]` ×17 and the closed-form checks in `test_factor_panel.py`; (3) cleaning tests — above; (4) composite + persistence — `test_factor_composite.py`, `test_factor_store.py`.
+- Deviation (recorded in the Decisions log): `net_debt_ebitda` uses EBIT (TTM operating income) because D&A is not in the Stage 09 concept map (needs a full fundamentals re-ingest; Backlog). This is an In-scope item definition, not an acceptance criterion.
+- Waivers: none
+
+**Known gaps (not criteria; in `PROGRESS.md › Backlog`):** net debt / EBIT instead of EBITDA; former members have no sector in `instruments` (scored against the market since the audit; full fix = sector backfill, Stage 08); thin raw coverage of gross profitability and margin stability (~37%) and of EV-based factors (~60%) on the real lake, filled with sector medians and flagged; 41 names without a market cap (not investigated); multi-class share counts; one panel takes about 2–3 minutes on the real lake and there is no CLI to fill the cache; the test suite now takes about 3 minutes (was 40 s).
+
+**Result:** ALL CRITERIA VERIFIED

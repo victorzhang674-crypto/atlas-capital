@@ -23,6 +23,7 @@ from atlas.core.config import (
     CalendarConfig,
     CostConfig,
     EventsConfig,
+    FactorsConfig,
     FeaturesConfig,
     FundamentalsConfig,
     FundConfig,
@@ -1182,6 +1183,40 @@ def test_quant_features_validation(model: type, field: str, value: object) -> No
 def test_quant_snapshot_min_history_within_history() -> None:
     with pytest.raises(ValidationError, match="min_history"):
         SnapshotConfig(history_sessions=50, min_history=51)
+
+
+def test_quant_factors_defaults() -> None:  # Stage 16 D1
+    f = AtlasConfig().quant.factors
+    assert f == FactorsConfig()
+    assert f.model_dump() == {
+        "universe": "sp500", "winsor_lower": 0.01, "winsor_upper": 0.99, "min_names": 20,
+        "size_neutral": False, "period_tolerance_days": 20, "margin_quarters": 8,
+        "min_abs_eps": 0.01, "max_price_age_sessions": 5,
+    }  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("universe", ""),
+        ("winsor_lower", -0.01),
+        ("winsor_upper", 1.01),
+        ("winsor_lower", float("nan")),
+        ("min_names", 1),
+        ("period_tolerance_days", 0),
+        ("margin_quarters", 1),
+        ("min_abs_eps", 0.0),
+        ("max_price_age_sessions", 0),
+    ],
+)
+def test_quant_factors_validation(field: str, value: object) -> None:  # Stage 16 D1
+    with pytest.raises(ValidationError, match=field):
+        FactorsConfig(**{field: value})
+
+
+def test_quant_factors_winsor_bounds_ordered() -> None:  # Stage 16 D1
+    with pytest.raises(ValidationError, match="winsor_lower"):
+        FactorsConfig(winsor_lower=0.5, winsor_upper=0.5)
 
 
 # --- Phase 0 checkpoint (Tier 4): one FrozenDict, YAML merge keys ------------------------------

@@ -1,0 +1,80 @@
+lake: /Users/zzjsmacbookair/Projects/atlas-capital/data
+
+=== as-of 2024-01-31 (cutoff 2024-01-31T13:00:00+00:00): 502 names, 132.6 s, config_hash ea0279da348c
+                     raw_valid  raw_pct  filled  median_raw  p01_raw  p99_raw
+earnings_yield             461     91.8      41      0.0394  -0.1149   0.2026
+book_yield                 464     92.4      38      0.2686  -0.1663   1.2966
+fcf_yield                  399     79.5     103      0.0384  -0.1582   0.2362
+ebit_ev                    297     59.2     205      0.0459  -0.0751   0.1895
+sales_ev                   376     74.9     126      0.2831   0.0453   3.8761
+roe                        461     91.8      41      0.1585  -0.3500   2.6036
+roa                        495     98.6       7      0.0553  -0.1022   0.2757
+gross_profitability        185     36.9     317      0.2749   0.0416   0.8735
+accruals                   495     98.6       7      0.0335  -0.0556   0.1658
+margin_stability           180     35.9     322     -0.0159  -0.2555  -0.0026
+revenue_growth             491     97.8      11      0.0615  -0.3569   0.7675
+eps_growth                 480     95.6      22      0.0520  -3.7780  10.5600
+revenue_cagr_3y            488     97.2      14      0.0970  -0.1144   0.5701
+debt_to_equity             380     75.7     122      0.6301   0.0000   9.7311
+net_debt_ebitda            297     59.2     205      1.8015  -3.4993  18.5159
+size                       464     92.4      38     24.1934  22.6813  28.0911
+net_issuance               463     92.2      39      0.0043  -0.1419   0.1601
+names with a known sector: 453 without: 49
+max |mean| exposure (known-sector names): 2.7449222683889082e-17
+max |std-1| (known-sector names): 1.1102230246251565e-16
+max |sector sum|: 1.5432100042289676e-14
+sector-less names, mean / std of exposures over all factors: 0.003 1.207
+market cap median USD bn: 32.14 missing caps: 38
+sectors: {'Industrials': 74, 'Financials': 68, 'Information Technology': 59, 'Health Care': 58, 'Unknown': 49, 'Consumer Discretionary': 43, 'Consumer Staples': 32, 'Utilities': 30, 'Real Estate': 30, 'Materials': 22, 'Energy': 19, 'Communication Services': 18}
+style composite corr:
+           value  quality  growth  leverage  size  issuance
+value      1.00    -0.04    0.04     -0.09 -0.18      0.24
+quality   -0.04     1.00    0.03     -0.00  0.16      0.06
+growth     0.04     0.03    1.00      0.12  0.07     -0.13
+leverage  -0.09    -0.00    0.12      1.00 -0.10     -0.03
+size      -0.18     0.16    0.07     -0.10  1.00      0.02
+issuance   0.24     0.06   -0.13     -0.03  0.02      1.00
+AAPL cap bn 2924.5 {'earnings_yield': 0.0332, 'book_yield': 0.0212, 'roe': 1.5608, 'revenue_growth': -0.028, 'net_issuance': 0.0223, 'size': 28.7042}
+MSFT cap bn 3036.0 {'earnings_yield': 0.0272, 'book_yield': 0.0785, 'roe': 0.3464, 'revenue_growth': 0.1151, 'net_issuance': 0.0018, 'size': 28.7416}
+JPM cap bn 509.6 {'earnings_yield': 0.1006, 'book_yield': 0.6228, 'roe': 0.1615, 'revenue_growth': 0.2485, 'net_issuance': 0.0144, 'size': 26.9569}
+NVDA cap bn 1550.5 {'earnings_yield': 0.0122, 'book_yield': 0.0215, 'roe': 0.5678, 'revenue_growth': 0.5707, 'net_issuance': -0.0041, 'size': 28.0696}
+
+=== as-of 2026-09-30 (cutoff 2026-09-30T12:00:00+00:00): 503 names, 194.2 s, config_hash ea0279da348c
+                     raw_valid  raw_pct  filled  median_raw  p01_raw  p99_raw
+earnings_yield             459     91.3      44      0.0420  -0.1029   0.1472
+book_yield                 462     91.8      41      0.2352  -0.1722   1.1210
+fcf_yield                  392     77.9     111      0.0426  -0.1633   0.1899
+ebit_ev                    297     59.0     206      0.0487  -0.0277   0.1545
+sales_ev                   376     74.8     127      0.2665   0.0415   3.9616
+roe                        467     92.8      36      0.1632  -0.2132   2.4422
+roa                        500     99.4       3      0.0619  -0.0558   0.4007
+gross_profitability        188     37.4     315      0.2909   0.0538   0.8396
+accruals                   500     99.4       3      0.0365  -0.0710   0.1667
+margin_stability           184     36.6     319     -0.0146  -0.1764  -0.0021
+revenue_growth             496     98.6       7      0.0819  -0.0994   0.8323
+eps_growth                 484     96.2      19      0.1552  -6.7989  19.2630
+revenue_cagr_3y            486     96.6      17      0.0610  -0.1226   0.4512
+debt_to_equity             381     75.7     122      0.5882   0.0000  13.2521
+net_debt_ebitda            306     60.8     197      1.6395  -2.9055  13.4797
+size                       462     91.8      41     24.5096  22.8634  28.7465
+net_issuance               457     90.9      46      0.0112  -0.3215   0.1490
+names with a known sector: 501 without: 2
+max |mean| exposure (known-sector names): 2.1273734603595815e-17
+max |std-1| (known-sector names): 1.1102230246251565e-16
+max |sector sum|: 9.575673587391975e-15
+sector-less names, mean / std of exposures over all factors: -0.395 0.649
+market cap median USD bn: 44.09 missing caps: 41
+sectors: {'Industrials': 83, 'Financials': 76, 'Information Technology': 74, 'Health Care': 60, 'Consumer Discretionary': 47, 'Consumer Staples': 33, 'Utilities': 31, 'Real Estate': 30, 'Materials': 24, 'Communication Services': 22, 'Energy': 21, 'Unknown': 2}
+style composite corr:
+           value  quality  growth  leverage  size  issuance
+value      1.00    -0.03   -0.08     -0.04 -0.34      0.26
+quality   -0.03     1.00    0.01      0.11  0.02      0.22
+growth    -0.08     0.01    1.00     -0.01  0.18     -0.18
+leverage  -0.04     0.11   -0.01      1.00 -0.09      0.04
+size      -0.34     0.02    0.18     -0.09  1.00     -0.15
+issuance   0.26     0.22   -0.18      0.04 -0.15      1.00
+AAPL cap bn 4807.3 {'earnings_yield': 0.0268, 'book_yield': 0.0224, 'roe': 1.1991, 'revenue_growth': 0.1424, 'net_issuance': 0.0166, 'size': 29.2012}
+MSFT cap bn 3779.3 {'earnings_yield': 0.0354, 'book_yield': 0.1171, 'roe': 0.3023, 'revenue_growth': 0.1779, 'net_issuance': 0.001, 'size': 28.9606}
+JPM cap bn 890.4 {'earnings_yield': 0.073, 'book_yield': 0.4207, 'roe': 0.1736, 'revenue_growth': 0.1353, 'net_issuance': 0.0333, 'size': 27.515}
+NVDA cap bn 5475.8 {'earnings_yield': 0.0352, 'book_yield': 0.0418, 'roe': 0.8423, 'revenue_growth': 0.8338, 'net_issuance': 0.0082, 'size': 29.3314}
+exit=0

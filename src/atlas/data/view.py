@@ -29,6 +29,7 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from typing import Any, Self
 
+import numpy as np
 import pandas as pd
 
 from atlas.core.calendar import TradingCalendar
@@ -42,9 +43,11 @@ from atlas.core.types.research import Evidence
 from atlas.data.events import Events
 from atlas.data.fundamentals import (
     FUNDAMENTALS_FACTS,
+    HISTORY_COLUMNS,
     ConceptMap,
     Fundamentals,
     assemble_detail,
+    concept_history,
     concept_values,
     known_fact_count,
     known_facts,
@@ -347,9 +350,11 @@ class DataView:
 
         return self._cached("sessions", (n,), compute)
 
-    def _bars(self, symbols: tuple[str, ...], n: int) -> pd.DataFrame:
-        """Known bars of `symbols` over the last `n` sessions plus our adjustment columns
-        (`split_factor`, `total_factor`, `calc_adj_close`; actions known at `as_of`)."""
+    def _bars_and_actions(
+        self, symbols: tuple[str, ...], n: int
+    ) -> tuple[pd.DataFrame, pd.DataFrame]:
+        """Known bars of `symbols` over the last `n` sessions (sorted by symbol and date) and
+        the usable corporate actions known at `as_of` that go ex inside that window."""
         sessions = self._sessions(n)
         first, last = sessions[0], sessions[-1]
         bars = self._known(
@@ -370,7 +375,13 @@ class DataView:
                 )
             kept.append(usable)
         usable_all = pd.concat(kept, ignore_index=True) if kept else actions
-        return guard_frame(adjustment_factors(bars, usable_all), self._as_of)
+        return bars, usable_all
+
+    def _bars(self, symbols: tuple[str, ...], n: int) -> pd.DataFrame:
+        """Known bars of `symbols` over the last `n` sessions plus our adjustment columns
+        (`split_factor`, `total_factor`, `calc_adj_close`; actions known at `as_of`)."""
+        bars, actions = self._bars_and_actions(symbols, n)
+        return guard_frame(adjustment_factors(bars, actions), self._as_of)
 
     def prices(self, symbols: Sequence[str], lookback: int) -> pd.DataFrame:
         """Daily bars of `symbols` over the last `lookback` sessions whose bars are known at
@@ -437,6 +448,35 @@ class DataView:
             return out[list(ADV_COLUMNS)].astype({"adv_usd": "float64", "adv_shares": "float64"})
 
         return self._cached("adv", (wanted, n), compute)
+
+    def split_factors(self, symbols: Sequence[str], lookback: int) -> pd.DataFrame:
+        """The split factor of each of the last `lookback` sessions whose bars are known:
+        index `date` (tz-naive `DatetimeIndex`, the `sessions(lookback)` grid), one float column
+        per unblocked symbol in request order. A session's factor is the product of
+        `1 / ratio` over the usable splits known at `as_of` that go ex after it, inside the
+        window (1.0 when there are none), as in `prices`' adjustment: a share count dated on
+        a session, divided by its factor, is in today's shares."""
+        wanted, n = self._allowed(symbols), _positive("lookback", lookback)
+
+        def compute() -> pd.DataFrame:
+            sessions = self._sessions(n)
+            _, actions = self._bars_and_actions(wanted, n)
+            splits = actions[actions["type"] == "split"]
+            days = np.array(sessions, dtype="datetime64[D]")
+            out = pd.DataFrame(
+                1.0,
+                index=pd.DatetimeIndex(pd.to_datetime(list(sessions)), name="date"),
+                columns=list(wanted),
+            )
+            for symbol, ex_date, ratio in zip(
+                splits["symbol"], splits["ex_date"], splits["ratio"], strict=True
+            ):
+                before = days < np.datetime64(ex_date, "D")
+                out.loc[before, symbol] = out.loc[before, symbol] / float(ratio)
+            out.columns.name = None
+            return out.astype("float64")
+
+        return self._cached("split_factors", (wanted, n), compute)
 
     # --- readers --------------------------------------------------------------------------------
 
@@ -533,6 +573,62 @@ class DataView:
             return panel
 
         return self._cached("fundamentals_panel", (wanted,), compute)
+
+    def fundamentals_history(self, symbols: Sequence[str], concepts: Sequence[str]) -> pd.DataFrame:
+        """Every fiscal period of `concepts` (concept-map names such as `revenue`,
+        `shares_outstanding`) known at `as_of`, for each unblocked symbol of `symbols`:
+        `symbol` + `HISTORY_COLUMNS` (`concept_history`), symbols in request order, then
+        concept and `period_end`. Flows give the discrete quarter (`value`) and the TTM
+        (`ttm`) at each period end, stocks each balance; units are the concept's. A restatement
+        is used once it is public; no staleness rule is applied (callers compare `period_end`
+        with `as_of`). Raises `ValueError` for an unknown concept and `DataError` when
+        `fundamentals_facts` was never written."""
+        if isinstance(concepts, str):
+            raise ValueError("concepts must be a sequence of concept names, not one string")
+        names = tuple(dict.fromkeys(c.strip() for c in concepts))
+        cmap = self._fundamentals.concept_map
+        unknown = [c for c in names if c not in cmap]
+        if unknown:
+            raise ValueError(f"unknown concept(s) {unknown}; known: {list(cmap)}")
+        wanted = self._allowed(symbols)
+
+        def compute() -> pd.DataFrame:
+            lake = self._shared.lake
+            if not lake.has_table(FUNDAMENTALS_FACTS.name):
+                raise DataError("fundamentals_facts is empty: run ingest_fundamentals first")
+            facts = lake.read_table(
+                FUNDAMENTALS_FACTS.name, filters=[("symbol", "in", list(wanted))]
+            )
+            own = dict(tuple(facts.groupby("symbol", sort=False)))
+            empty = facts.iloc[0:0]
+            frames = []
+            for sym in wanted:
+                part = self._history_of(sym, own.get(sym, empty), names)
+                if not part.empty:
+                    frames.append(part.assign(symbol=sym))
+            if not frames:
+                return concept_history(
+                    empty, cmap, names, self._shared.config.data.fundamentals
+                ).assign(symbol=pd.Series(dtype="str"))[["symbol", *HISTORY_COLUMNS]]
+            out = pd.concat(frames, ignore_index=True)
+            return guard_frame(out[["symbol", *HISTORY_COLUMNS]], self._as_of)
+
+        return self._cached("fundamentals_history", (wanted, names), compute)
+
+    def _history_of(self, symbol: str, facts: pd.DataFrame, names: tuple[str, ...]) -> pd.DataFrame:
+        """`concept_history` of one symbol's stored `facts` at this view's as-of, from the
+        cross-day cache while the known facts are the same."""
+        shared, point = self._shared, self._as_of
+        key = ("history", symbol, shared.lake.generation, known_fact_count(facts, point), names)
+        return shared.fundamentals_cache.get(
+            key,
+            lambda: concept_history(
+                known_facts(facts, point),
+                self._fundamentals.concept_map,
+                names,
+                shared.config.data.fundamentals,
+            ),
+        )
 
     def _fundamentals_detail(self, symbol: str, facts: pd.DataFrame) -> pd.DataFrame:
         """`fundamentals_pit_detail` of one symbol's stored `facts` at this view's as-of, with
