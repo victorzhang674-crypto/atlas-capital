@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from datetime import date, time
 from decimal import Decimal
 from itertools import pairwise
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Annotated, Any, Literal, Self
 
 import yaml
@@ -920,11 +920,89 @@ class FactorsConfig(_Frozen):
         return self
 
 
+def _ascending_positive(name: str, values: tuple[int, ...]) -> tuple[int, ...]:
+    """`values` if non-empty, positive and strictly ascending; `ValueError` naming `name`."""
+    if not values:
+        raise ValueError(f"{name} must not be empty")
+    if any(v < 1 for v in values):
+        raise ValueError(f"{name} must be positive, got {values}")
+    if any(b <= a for a, b in pairwise(values)):
+        raise ValueError(f"{name} must be strictly ascending without repeats, got {values}")
+    return values
+
+
+class ResearchBacktestConfig(_Frozen):
+    """The vectorised long-short backtest of the signal research toolkit (Stage 17).
+
+    On the first evaluation date of each `rebalance` period (`signal` = every evaluation
+    date) it goes long the top quantile and short the bottom one, each leg `gross / 2` of NAV
+    (fractions: 2.0 = 100% long and 100% short), with `equal` weights or `signal` weights
+    (proportional to the distance of the name's rank from the median). Each rebalance costs
+    `cost_bps` basis points per unit of one-side turnover (sum of |weight change|).
+    """
+
+    rebalance: Literal["signal", "weekly", "monthly", "quarterly"] = "monthly"
+    weighting: Literal["equal", "signal"] = "equal"
+    cost_bps: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 5.0
+    gross: Annotated[float, Field(gt=0, allow_inf_nan=False)] = 2.0
+
+
+class ResearchConfig(_Frozen):
+    """The signal research toolkit (`atlas.quant.research`, Stage 17).
+
+    Signals are evaluated on the first session of each `frequency` period for the members of
+    `universe` at that date, against forward total returns over `horizons` sessions. A date
+    needs `min_names` names with both a signal and a label (`min_group_names` inside one
+    sector) for its IC and quantiles; quantile analysis uses `n_quantiles` buckets; the rank
+    autocorrelation of the signal is measured at `autocorr_lags` evaluation dates; the IC
+    chart shows a `rolling_ic_window`-date rolling mean. Tear sheets are written under
+    `<data.lake_path>/<out_dir>/<signal name>/` (`out_dir` relative to the lake).
+    """
+
+    universe: Annotated[str, Field(min_length=1)] = "sp500"
+    horizons: tuple[int, ...] = (1, 5, 21, 63)
+    frequency: Literal["daily", "weekly", "monthly"] = "monthly"
+    n_quantiles: Annotated[int, Field(ge=2)] = 5
+    min_names: Annotated[int, Field(ge=3)] = 20
+    min_group_names: Annotated[int, Field(ge=3)] = 10
+    autocorr_lags: tuple[int, ...] = (1, 2, 3, 6, 12)
+    rolling_ic_window: Annotated[int, Field(ge=1)] = 12
+    out_dir: Annotated[str, Field(min_length=1)] = "runs/research"
+    backtest: ResearchBacktestConfig = Field(default_factory=ResearchBacktestConfig)
+
+    @field_validator("horizons")
+    @classmethod
+    def _horizons(cls, value: tuple[int, ...]) -> tuple[int, ...]:
+        return _ascending_positive("horizons", value)
+
+    @field_validator("autocorr_lags")
+    @classmethod
+    def _lags(cls, value: tuple[int, ...]) -> tuple[int, ...]:
+        return _ascending_positive("autocorr_lags", value)
+
+    @field_validator("out_dir")
+    @classmethod
+    def _relative_out_dir(cls, value: str) -> str:
+        path = PurePosixPath(value)
+        if path.is_absolute() or ".." in path.parts:
+            raise ValueError(f"out_dir must be a path inside the lake, got {value!r}")
+        return value
+
+    @model_validator(mode="after")
+    def _min_names_covers_quantiles(self) -> Self:
+        if self.min_names < self.n_quantiles:
+            raise ValueError(
+                f"min_names ({self.min_names}) must be at least n_quantiles ({self.n_quantiles})"
+            )
+        return self
+
+
 class QuantConfig(_Frozen):
     """Quant engine settings (Phase 2)."""
 
     features: FeaturesConfig = Field(default_factory=FeaturesConfig)
     factors: FactorsConfig = Field(default_factory=FactorsConfig)
+    research: ResearchConfig = Field(default_factory=ResearchConfig)
 
 
 class AtlasConfig(BaseSettings):

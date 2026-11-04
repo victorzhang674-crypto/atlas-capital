@@ -11,6 +11,7 @@ from collections.abc import Mapping
 import numpy as np
 import pandas as pd
 
+from atlas.core.pit import guard_not_label
 from atlas.quant.factors.cleaning import zscore
 from atlas.quant.factors.fundamental import FACTORS, GROUPS
 
@@ -24,8 +25,10 @@ def composite(
     For each row: sum(w_i * x_i) / sum(|w_i|) over the factors with a value in that row (a
     missing factor's weight is left out rather than counted as 0); NaN when none has one.
     With `standardize` the result is z-scored across rows (mean 0, population std 1).
-    `weights` must name known columns, be finite and not all zero (`ValueError`).
+    `weights` must name known columns, be finite and not all zero (`ValueError`); forward-
+    return labels (Stage 17) raise `LookAheadError`.
     """
+    guard_not_label(factors, "factor frame")
     if not weights:
         raise ValueError("weights must name at least one factor")
     unknown = [name for name in weights if name not in factors.columns]

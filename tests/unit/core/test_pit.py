@@ -13,10 +13,14 @@ from atlas.core.config import load_config
 from atlas.core.errors import DataError, LookAheadError
 from atlas.core.pit import (
     AVAILABILITY_RULES,
+    LABEL_ATTR,
     AsOf,
     assert_no_lookahead,
     bar_available_at,
+    guard_not_label,
+    is_label,
     pit_filter,
+    tag_label,
     to_available_at,
 )
 
@@ -292,3 +296,65 @@ def test_pit_filter_with_duplicate_index_labels() -> None:
     with pytest.raises(LookAheadError, match="2 row"):
         assert_no_lookahead(frame, AS_OF)
     assert assert_no_lookahead(out, AS_OF) is None
+
+
+# --- forward-return labels (Stage 17 D2) -----------------------------------------------------
+
+
+def _label_frame() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"AAA": [0.01, -0.02, 0.03], "BBB": [0.0, 0.01, -0.01]},
+        index=pd.DatetimeIndex(["2024-01-02", "2024-01-03", "2024-01-04"], name="date"),
+    )
+
+
+def test_tag_label_marks_a_copy() -> None:
+    plain = _label_frame()
+    tagged = tag_label(plain)
+    assert tagged is not plain
+    assert tagged.attrs[LABEL_ATTR] is True
+    assert LABEL_ATTR not in plain.attrs
+    assert is_label(tagged) and not is_label(plain)
+    pd.testing.assert_frame_equal(tagged, plain)
+    series = tag_label(plain["AAA"])
+    assert is_label(series)
+
+
+@pytest.mark.parametrize(
+    "derive",
+    [
+        lambda f: f,
+        lambda f: f * 2,
+        lambda f: f - f.mean(),
+        lambda f: f.rank(axis=1),
+        lambda f: f.shift(1),
+        lambda f: f.reindex(columns=["BBB", "AAA"]),
+        lambda f: f.iloc[1:],
+        lambda f: f["AAA"],
+        lambda f: f.stack(),
+        lambda f: f + _label_frame(),
+    ],
+    ids=["same", "times2", "demean", "rank", "shift", "reindex", "slice", "column", "stack", "add"],
+)
+def test_guard_rejects_labels_and_derived_frames(derive: object) -> None:
+    labels = tag_label(_label_frame())
+    derived = derive(labels)  # type: ignore[operator]
+    assert is_label(derived)
+    with pytest.raises(LookAheadError, match="forward-return label"):
+        guard_not_label(derived, "signal")
+
+
+def test_guard_rejects_label_objects() -> None:
+    class Holder:
+        __atlas_label__ = True
+
+    with pytest.raises(LookAheadError, match="features"):
+        guard_not_label(Holder(), "features")
+
+
+def test_guard_accepts_plain_frames() -> None:
+    frame = _label_frame()
+    assert guard_not_label(frame) is None
+    assert guard_not_label(frame["AAA"]) is None
+    assert guard_not_label(None) is None
+    assert not is_label(frame.to_numpy())

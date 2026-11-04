@@ -34,6 +34,8 @@ from atlas.core.config import (
     QualityConfig,
     QuantConfig,
     ReferenceDataConfig,
+    ResearchBacktestConfig,
+    ResearchConfig,
     Secrets,
     SentimentConfig,
     SnapshotConfig,
@@ -1217,6 +1219,64 @@ def test_quant_factors_validation(field: str, value: object) -> None:  # Stage 1
 def test_quant_factors_winsor_bounds_ordered() -> None:  # Stage 16 D1
     with pytest.raises(ValidationError, match="winsor_lower"):
         FactorsConfig(winsor_lower=0.5, winsor_upper=0.5)
+
+
+def test_quant_research_defaults() -> None:  # Stage 17 D1
+    r = AtlasConfig().quant.research
+    assert r == ResearchConfig()
+    assert r.model_dump() == {
+        "universe": "sp500", "horizons": (1, 5, 21, 63), "frequency": "monthly",
+        "n_quantiles": 5, "min_names": 20, "min_group_names": 10,
+        "autocorr_lags": (1, 2, 3, 6, 12), "rolling_ic_window": 12, "out_dir": "runs/research",
+        "backtest": {"rebalance": "monthly", "weighting": "equal", "cost_bps": 5.0, "gross": 2.0},
+    }  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("universe", ""),
+        ("horizons", ()),
+        ("horizons", (0, 5)),
+        ("horizons", (5, 1)),
+        ("horizons", (1, 1)),
+        ("frequency", "hourly"),
+        ("n_quantiles", 1),
+        ("min_group_names", 2),
+        ("autocorr_lags", ()),
+        ("autocorr_lags", (0,)),
+        ("autocorr_lags", (2, 1)),
+        ("rolling_ic_window", 0),
+        ("out_dir", ""),
+        ("out_dir", "/abs/path"),
+        ("out_dir", "../outside"),
+    ],
+)
+def test_quant_research_validation(field: str, value: object) -> None:  # Stage 17 D1
+    with pytest.raises(ValidationError, match=field):
+        ResearchConfig(**{field: value})
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("rebalance", "yearly"),
+        ("weighting", "cap"),
+        ("cost_bps", -1.0),
+        ("cost_bps", float("nan")),
+        ("gross", 0.0),
+        ("gross", float("inf")),
+    ],
+)
+def test_quant_research_backtest_validation(field: str, value: object) -> None:  # Stage 17 D1
+    with pytest.raises(ValidationError, match=field):
+        ResearchBacktestConfig(**{field: value})
+
+
+def test_quant_research_min_names_covers_quantiles() -> None:  # Stage 17 D1
+    with pytest.raises(ValidationError, match="min_names"):
+        ResearchConfig(n_quantiles=10, min_names=9)
+    assert ResearchConfig(n_quantiles=10, min_names=10).min_names == 10
 
 
 # --- Phase 0 checkpoint (Tier 4): one FrozenDict, YAML merge keys ------------------------------

@@ -17,6 +17,14 @@ describes). The availability rules, by source:
 | Earnings event (EDGAR 8-K 2.02, 10-Q/10-K) | the filing's EDGAR acceptance timestamp |
 | Scheduled event (FOMC, CPI, NFP; snapshot) | 00:00 New York on 1 January; snapshot: when taken |
 | Earnings reaction | the bar availability of the last session of its window |
+
+Forward-return labels (Stage 17) are the opposite of point-in-time data: the return from a
+decision day to a later session, known only after that session. They exist to evaluate
+signals and must never feed one. `tag_label` marks a label frame (a pandas `attrs` entry,
+which pandas carries through arithmetic, ranks, shifts, reindexing and slicing) and
+`guard_not_label` raises `LookAheadError` when a tagged object is passed where a signal or a
+feature is expected. The guard catches accidental use; rebuilding a frame from raw numpy
+values drops the tag and is not detected.
 """
 
 from datetime import UTC, date, datetime, time, timedelta
@@ -158,3 +166,33 @@ def assert_no_lookahead(df: pd.DataFrame, as_of: AsOf, time_col: str = "availabl
         f"{len(late)} row(s) have {time_col} not strictly before the cutoff "
         f"{as_of.cutoff.isoformat()} (latest: {latest_text}; unknown: {int(late.isna().sum())})"
     )
+
+
+LABEL_ATTR: Final = "atlas_label"
+"""Key of the pandas `attrs` entry that marks a forward-return label frame or series."""
+
+
+def tag_label[T: (pd.DataFrame, pd.Series)](frame: T) -> T:
+    """A copy of `frame` (a DataFrame or Series of forward-return labels) tagged as a label."""
+    out = frame.copy()
+    out.attrs[LABEL_ATTR] = True
+    return out
+
+
+def is_label(obj: object) -> bool:
+    """Whether `obj` is a forward-return label: a DataFrame or Series tagged by `tag_label`
+    (or derived from one), or an object whose class sets `__atlas_label__ = True`."""
+    if isinstance(obj, pd.DataFrame | pd.Series):
+        return bool(obj.attrs.get(LABEL_ATTR, False))
+    return getattr(obj, "__atlas_label__", False) is True
+
+
+def guard_not_label(obj: object, what: str = "signal") -> None:
+    """Raise `LookAheadError` if `obj`, passed as a `what` (a signal, features), is a
+    forward-return label: labels are known only after their horizon and are for evaluation
+    only."""
+    if is_label(obj):
+        raise LookAheadError(
+            f"the {what} is a forward-return label (or derived from one): labels are known "
+            "only after their horizon and may be used to evaluate a signal, never to build one"
+        )

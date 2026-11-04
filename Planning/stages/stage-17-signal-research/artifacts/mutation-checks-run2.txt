@@ -1,0 +1,30 @@
+caught    LEAK label window includes the decision day
+caught    label view one session too early
+caught    blocked names not reported
+caught    LEAK guard disabled
+caught    LEAK label tag ignored
+caught    LEAK composite accepts labels
+caught    stale signal row
+caught    spearman ranks over unmatched names
+SURVIVED  constant cross-section not excluded
+caught    Newey-West without Bartlett weights
+caught    Newey-West lags one too many
+caught    IC std ddof 0
+caught    hit rate counts zero
+caught    AUDIT names without sector pooled
+caught    rank autocorrelation compares a date with itself
+caught    bucket edges ceil(r q / n)
+caught    ties split across buckets
+caught    LEAK daily buckets earn the decision day
+caught    monotonicity sign flipped
+caught    LEAK backtest earns the next session's return early
+caught    no drift between rebalances
+caught    turnover against cash, not the drifted book
+caught    costs not charged
+caught    signal weights from raw ranks
+caught    Sharpe annualised by P, not sqrt P
+caught    headline horizon from overlapping windows
+caught    NaN written into the JSON
+
+26/27 mutants caught
+exit=1

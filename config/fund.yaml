@@ -217,6 +217,23 @@ quant:
     margin_quarters: 8  # discrete quarters of gross margin in margin stability
     min_abs_eps: 0.01  # USD; EPS growth is NaN when the year-ago TTM EPS is smaller in absolute value
     max_price_age_sessions: 5  # market cap needs a close from the last this many known sessions
+  # Signal research toolkit (Stage 17, atlas.quant.research): IC, quantiles, decay, L/S backtest.
+  research:
+    universe: sp500  # names evaluated on each date: the members of this universe at that date
+    horizons: [1, 5, 21, 63]  # forward-return horizons in sessions (label = close of t to close of t+h)
+    frequency: monthly  # evaluation dates: first session of each daily | weekly | monthly period
+    n_quantiles: 5  # buckets of the quantile analysis and the long-short legs (top vs bottom)
+    min_names: 20  # fewest names with both a signal and a label for a date's IC and quantiles
+    min_group_names: 10  # fewest such names inside one sector for the by-sector IC
+    autocorr_lags: [1, 2, 3, 6, 12]  # lags (evaluation dates) of the signal rank autocorrelation
+    rolling_ic_window: 12  # evaluation dates in the rolling mean of the IC chart
+    out_dir: runs/research  # tear sheets go to <lake>/<out_dir>/<signal name>/ (relative to the lake)
+    # Vectorised long-short backtest (top minus bottom quantile).
+    backtest:
+      rebalance: monthly  # first evaluation date of each signal | weekly | monthly | quarterly period
+      weighting: equal  # equal | signal (weights grow with the rank's distance from the median)
+      cost_bps: 5.0  # basis points per unit of one-side turnover (cf. backtest.costs.half_spread_bps)
+      gross: 2.0  # long leg + |short leg| as a fraction of NAV (2.0 = 100% long, 100% short)
 
 # LLM gateway values (consumed by Stage 24).
 llm:

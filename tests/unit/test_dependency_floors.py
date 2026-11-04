@@ -40,3 +40,11 @@ def test_duckdb_and_pyarrow_floors_are_tested_versions(pyproject: dict[str, obje
     assert isinstance(project, dict)
     assert _floor(project["dependencies"], "duckdb") >= (2, 0)
     assert _floor(project["dependencies"], "pyarrow") >= (19, 0)
+
+
+def test_matplotlib_is_a_runtime_dependency(pyproject: dict[str, object]) -> None:
+    # Stage 17: the signal tear sheet (`atlas research signal`) saves matplotlib figures, so
+    # matplotlib is a runtime dependency of the CLI, not a dev-only one.
+    project = pyproject["project"]
+    assert isinstance(project, dict)
+    assert _floor(project["dependencies"], "matplotlib") >= (3, 11)

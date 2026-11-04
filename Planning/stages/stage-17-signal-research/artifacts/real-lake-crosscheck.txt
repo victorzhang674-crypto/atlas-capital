@@ -1,0 +1,4 @@
+2017-03-01: names 412  independent -0.088484  tear sheet -0.088484
+2019-06-03: names 439  independent -0.105929  tear sheet -0.105929
+2021-02-01: names 459  independent -0.393462  tear sheet -0.393462
+max abs difference 1.39e-17

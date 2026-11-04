@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from atlas.core.errors import LookAheadError
+from atlas.core.pit import tag_label
 from atlas.quant.factors import FACTORS, GROUPS, composite, style_composites
 
 IDX = pd.Index(["A", "B", "C", "D"], name="symbol")
@@ -80,3 +82,9 @@ def test_style_composites() -> None:
     pd.testing.assert_series_equal(
         styles["size"], composite(frame, {"size": 1.0}), check_names=False
     )
+
+
+def test_composite_rejects_labels() -> None:  # Stage 17: forward-return labels never feed a signal
+    labels = tag_label(pd.DataFrame({"a": [0.1, -0.2, 0.3], "b": [0.0, 0.1, 0.2]}))
+    with pytest.raises(LookAheadError, match="forward-return label"):
+        composite(labels, {"a": 1.0, "b": 1.0})

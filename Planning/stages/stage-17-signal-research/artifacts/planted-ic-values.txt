@@ -1,0 +1,2 @@
+synthetic 500x400, planted 0.05: mean Pearson IC 0.05123 (|err| 0.00123), mean Spearman IC 0.05021 (|err| 0.00021; normal theory 0.04775)
+through the lake 200x157 dates, exact planted 0.05: Pearson IC min 0.050000000000 max 0.050000000000 (max |err| 1.0e-15); mean Spearman 0.04469 (|err| 0.00531)
