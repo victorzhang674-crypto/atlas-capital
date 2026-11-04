@@ -1,0 +1,33 @@
+# CI runs of d3337f5 (stage-17 commit), checked 2026-11-04 09:53 EST
+
+✓ main CI · 41850555615
+Triggered via push about 9 minutes ago
+
+JOBS
+✓ check in 9m24s (ID 126645390546)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=126645390546
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41850555615
+
+✓ claude/stage-17-signal-research-905219 CI · 41850555289
+Triggered via push about 9 minutes ago
+
+JOBS
+✓ check in 7m17s (ID 126645388398)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=126645388398
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41850555289
+completed	success	stage-17: Signal research toolkit (IC, quantiles, decay)	CI	main	push	41850555615	9m28s	2026-11-04T14:44:19Z
+completed	success	stage-17: Signal research toolkit (IC, quantiles, decay)	CI	claude/stage-17-signal-research-905219	push	41850555289	7m21s	2026-11-04T14:44:19Z
+completed	success	stage-16: CI and records-push records	CI	claude/agitated-driscoll-166517	push	41824444937	4m16s	2026-11-04T11:52:21Z
+completed	success	stage-16: CI and records-push records	CI	main	push	41824444429	4m1s	2026-11-04T11:52:21Z

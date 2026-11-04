@@ -1,0 +1,191 @@
+# Stage 17: fast-forward + verification on merged main · 2026-11-04 09:34 EST · mode full
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/stage-17-signal-research-905219
+Updating 379731a..d3337f5
+Fast-forward
+ Planning/PROGRESS.md                               |   39 +-
+ .../artifacts/coverage.txt                         |   18 +
+ .../artifacts/gate-check-pytest.txt                |   58 +
+ .../artifacts/make-check.txt                       |   66 +
+ .../stage-17-signal-research/artifacts/mutate.py   |  133 ++
+ .../artifacts/mutation-checks-run1.txt             |   30 +
+ .../artifacts/mutation-checks-run2.txt             |   30 +
+ .../artifacts/mutation-checks.txt                  |   30 +
+ .../stage-17-signal-research/artifacts/mypy.txt    |    2 +
+ .../artifacts/planted-ic-values.txt                |    2 +
+ .../stage-17-signal-research/artifacts/pytest.txt  |   59 +
+ .../artifacts/real-lake-cli.txt                    |   14 +
+ .../artifacts/real-lake-crosscheck.txt             |    4 +
+ .../artifacts/real_lake_crosscheck.py              |   39 +
+ .../artifacts/ruff-check.txt                       |    2 +
+ .../artifacts/ruff-format.txt                      |    2 +
+ .../artifacts/tearsheet-momentum_12_1/backtest.png |  Bin 0 -> 67224 bytes
+ .../tearsheet-momentum_12_1/backtest_returns.csv   | 1512 ++++++++++++++++++++
+ .../tearsheet-momentum_12_1/cumulative_spread.png  |  Bin 0 -> 50658 bytes
+ .../artifacts/tearsheet-momentum_12_1/decay.png    |  Bin 0 -> 36015 bytes
+ .../artifacts/tearsheet-momentum_12_1/ic.png       |  Bin 0 -> 32950 bytes
+ .../tearsheet-momentum_12_1/ic_series.csv          |   73 +
+ .../tearsheet-momentum_12_1/quantile_returns.csv   |  289 ++++
+ .../tearsheet-momentum_12_1/quantiles.png          |  Bin 0 -> 25199 bytes
+ .../tearsheet-momentum_12_1/tearsheet.json         |  723 ++++++++++
+ .../artifacts/verify-research-werror.txt           |    3 +
+ .../artifacts/verify-research.txt                  |    3 +
+ Planning/stages/stage-17-signal-research/plan.md   |  113 ++
+ .../stage-17-signal-research/verification.md       |   26 +
+ .../stages/stage-17-signal-research/worklog.md     |  110 ++
+ config/fund.yaml                                   |   17 +
+ pyproject.toml                                     |    4 +-
+ src/atlas/cli/app.py                               |    5 +-
+ src/atlas/cli/research_cmd.py                      |  203 +++
+ src/atlas/core/config.py                           |   80 +-
+ src/atlas/core/pit.py                              |   38 +
+ src/atlas/quant/factors/composite.py               |    5 +-
+ src/atlas/quant/research/__init__.py               |  118 ++
+ src/atlas/quant/research/ic.py                     |  271 ++++
+ src/atlas/quant/research/labels.py                 |  177 +++
+ src/atlas/quant/research/quantiles.py              |  168 +++
+ src/atlas/quant/research/signals.py                |  166 +++
+ src/atlas/quant/research/tearsheet.py              |  381 +++++
+ src/atlas/quant/research/vector_backtest.py        |  205 +++
+ tests/unit/cli/conftest.py                         |    7 +-
+ tests/unit/cli/test_research_cmd.py                |  128 ++
+ tests/unit/core/test_config.py                     |   60 +
+ tests/unit/core/test_pit.py                        |   66 +
+ tests/unit/quant/factors/test_factor_composite.py  |    8 +
+ tests/unit/quant/research/conftest.py              |    8 +
+ tests/unit/quant/research/research_world.py        |  159 ++
+ .../unit/quant/research/test_research_backtest.py  |  197 +++
+ tests/unit/quant/research/test_research_ic.py      |  293 ++++
+ tests/unit/quant/research/test_research_labels.py  |  184 +++
+ .../unit/quant/research/test_research_quantiles.py |  176 +++
+ tests/unit/quant/research/test_research_signals.py |  142 ++
+ .../unit/quant/research/test_research_tearsheet.py |  181 +++
+ tests/unit/test_dependency_floors.py               |    8 +
+ uv.lock                                            |  136 +-
+ 59 files changed, 6961 insertions(+), 10 deletions(-)
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/coverage.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/gate-check-pytest.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/mutate.py
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/mutation-checks-run1.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/mutation-checks-run2.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/mutation-checks.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/mypy.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/planted-ic-values.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/pytest.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/real-lake-cli.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/real-lake-crosscheck.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/real_lake_crosscheck.py
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/ruff-check.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/ruff-format.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/backtest.png
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/backtest_returns.csv
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/cumulative_spread.png
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/decay.png
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/ic.png
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/ic_series.csv
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/quantile_returns.csv
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/quantiles.png
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/tearsheet-momentum_12_1/tearsheet.json
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/verify-research-werror.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/verify-research.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/plan.md
+ create mode 100644 Planning/stages/stage-17-signal-research/verification.md
+ create mode 100644 Planning/stages/stage-17-signal-research/worklog.md
+ create mode 100644 src/atlas/cli/research_cmd.py
+ create mode 100644 src/atlas/quant/research/__init__.py
+ create mode 100644 src/atlas/quant/research/ic.py
+ create mode 100644 src/atlas/quant/research/labels.py
+ create mode 100644 src/atlas/quant/research/quantiles.py
+ create mode 100644 src/atlas/quant/research/signals.py
+ create mode 100644 src/atlas/quant/research/tearsheet.py
+ create mode 100644 src/atlas/quant/research/vector_backtest.py
+ create mode 100644 tests/unit/cli/test_research_cmd.py
+ create mode 100644 tests/unit/quant/research/conftest.py
+ create mode 100644 tests/unit/quant/research/research_world.py
+ create mode 100644 tests/unit/quant/research/test_research_backtest.py
+ create mode 100644 tests/unit/quant/research/test_research_ic.py
+ create mode 100644 tests/unit/quant/research/test_research_labels.py
+ create mode 100644 tests/unit/quant/research/test_research_quantiles.py
+ create mode 100644 tests/unit/quant/research/test_research_signals.py
+ create mode 100644 tests/unit/quant/research/test_research_tearsheet.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD d3337f5
+
+$ uv sync --group dev
+ + matplotlib==3.11.2
+ + pillow==13.0.0
+ + pyparsing==3.3.3
+exit=0
+
+$ uv lock --check
+Resolved 87 packages in 4ms
+exit=0
+
+$ uv run pytest -q
+........................
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.45 s (limit 20 s)
+2428 passed, 14 deselected in 222.14s (0:03:42)
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest tests/unit/quant/research -q
+58 passed in 22.75s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+248 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 108 source files
+uv run pytest -q
+........................
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.77 s (limit 20 s)
+2428 passed, 14 deselected in 257.70s (0:04:17)
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+d3337f5 stage-17: Signal research toolkit (IC, quantiles, decay)
+379731a stage-16: CI and records-push records
+ede3d98 stage-16: merged-main check records
+exit=0
+
+$ git branch --merged main
++ claude/agitated-driscoll-166517
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
++ claude/stage-17-signal-research-905219
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
+
+$ git push origin main claude/stage-17-signal-research-905219
+To https://github.com/victorzhang674-crypto/atlas-capital.git
+   379731a..d3337f5  main -> main
+ * [new branch]      claude/stage-17-signal-research-905219 -> claude/stage-17-signal-research-905219
+exit=0
+
+$ git status -sb
+## main...origin/main
+exit=0
+
+$ gh run list --limit 3
+queued		stage-17: Signal research toolkit (IC, quantiles, decay)	CI	main	push	41850555615	0s	2026-11-04T14:44:19Z
+queued		stage-17: Signal research toolkit (IC, quantiles, decay)	CI	claude/stage-17-signal-research-905219	push	41850555289	0s	2026-11-04T14:44:19Z
+completed	success	stage-16: CI and records-push records	CI	claude/agitated-driscoll-166517	push	41824444937	4m16s	2026-11-04T11:52:21Z
+exit=0
