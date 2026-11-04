@@ -1,0 +1,122 @@
+# Stage 18: fast-forward + verification on merged main · 2026-11-04 12:18 EST · mode full
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/stage-18-covariance-vol-0d3e46
+Updating 69baf9f..5c021a3
+Fast-forward
+ Planning/PROGRESS.md                               |   8 +-
+ .../artifacts/followup-coverage.txt                |  16 +++
+ .../artifacts/followup-make-check.txt              |  69 ++++++++++
+ .../followup-mutation-checks-setup-error.txt       |  46 +++++++
+ .../artifacts/followup-mutation-checks.txt         |  48 +++++++
+ .../artifacts/followup-mypy.txt                    |   3 +
+ .../artifacts/followup-pytest.txt                  |  62 +++++++++
+ .../artifacts/followup-real-lake-check.stderr.txt  |   4 +
+ .../artifacts/followup-real-lake-check.txt         |  25 ++++
+ .../artifacts/followup-ruff-check.txt              |   3 +
+ .../artifacts/followup-ruff-format.txt             |   3 +
+ .../followup-verify-risk-model-werror.txt          |   5 +
+ .../artifacts/followup-verify-risk-model.txt       |   5 +
+ .../artifacts/merged-main-check.sh                 |  29 ++++
+ .../artifacts/merged-main-check.txt                | 150 +++++++++++++++++++++
+ .../stage-18-covariance-vol/artifacts/mutate.py    |  15 ++-
+ .../stages/stage-18-covariance-vol/verification.md |  14 ++
+ Planning/stages/stage-18-covariance-vol/worklog.md |  13 ++
+ src/atlas/quant/risk_model/covariance.py           |  13 +-
+ src/atlas/quant/risk_model/volatility.py           |   8 +-
+ .../unit/quant/risk_model/test_risk_covariance.py  |  47 +++++++
+ tests/unit/quant/risk_model/test_risk_garch.py     |  13 ++
+ 22 files changed, 589 insertions(+), 10 deletions(-)
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-coverage.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-make-check.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-mutation-checks-setup-error.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-mutation-checks.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-mypy.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-pytest.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-real-lake-check.stderr.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-real-lake-check.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-ruff-check.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-ruff-format.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-verify-risk-model-werror.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/followup-verify-risk-model.txt
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/merged-main-check.sh
+ create mode 100644 Planning/stages/stage-18-covariance-vol/artifacts/merged-main-check.txt
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD 5c021a3
+
+$ uv sync --group dev
+Resolved 95 packages in 16ms
+Checked 94 packages in 30ms
+exit=0
+
+$ uv lock --check
+Resolved 95 packages in 3ms
+exit=0
+
+$ uv run pytest -q
+......................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.16 s (limit 20 s)
+2535 passed, 14 deselected in 143.66s (0:02:23)
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest tests/unit/quant/risk_model -q
+90 passed in 2.61s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+258 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 112 source files
+uv run pytest -q
+......................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.22 s (limit 20 s)
+2535 passed, 14 deselected in 141.21s (0:02:21)
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+5c021a3 stage-18: audit follow-up (identity equality, complete-policy decay, zero variance, GARCH forecast fallback)
+69baf9f stage-18: Covariance & volatility forecasting
+8023120 stage-17: audit follow-up merged-main and CI records
+exit=0
+
+$ git branch --merged main
++ claude/agitated-driscoll-166517
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
++ claude/stage-17-signal-research-905219
++ claude/stage-18-covariance-vol-0d3e46
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
+
+$ git push origin main claude/stage-18-covariance-vol-0d3e46
+To https://github.com/victorzhang674-crypto/atlas-capital.git
+   69baf9f..5c021a3  claude/stage-18-covariance-vol-0d3e46 -> claude/stage-18-covariance-vol-0d3e46
+   69baf9f..5c021a3  main -> main
+exit=0
+
+$ git status -sb
+## main...origin/main
+exit=0
+
+$ gh run list --limit 3
+queued		stage-18: audit follow-up (identity equality, complete-policy decay, …	CI	main	push	41877181474	0s	2026-11-04T17:23:43Z
+queued		stage-18: audit follow-up (identity equality, complete-policy decay, …	CI	claude/stage-18-covariance-vol-0d3e46	push	41877181454	0s	2026-11-04T17:23:43Z
+completed	success	stage-18: Covariance & volatility forecasting	CI	main	push	41872886155	4m56s	2026-11-04T16:58:30Z
+exit=0

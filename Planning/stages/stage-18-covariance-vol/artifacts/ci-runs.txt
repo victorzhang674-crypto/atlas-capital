@@ -1,0 +1,2 @@
+completed	success	stage-18: Covariance & volatility forecasting	CI	main	push	41872886155	4m56s	2026-11-04T16:58:30Z
+completed	success	stage-18: Covariance & volatility forecasting	CI	claude/stage-18-covariance-vol-0d3e46	push	41872885674	7m0s	2026-11-04T16:58:30Z

@@ -36,4 +36,6 @@ Owner's request: "can you help me to audit this stage: check for completion, mis
 - Mutation checks → **44/44 caught** (4 new `AUDIT` mutants; a first attempt stopped on a duplicate pattern before mutating anything: [artifacts/followup-mutation-checks-setup-error.txt](artifacts/followup-mutation-checks-setup-error.txt)) · raw: [artifacts/followup-mutation-checks.txt](artifacts/followup-mutation-checks.txt)
 - Real-lake check (read only) → exit 0, results unchanged (LW cond 4.50e3, OAS 2.85e3, every output PSD; `complete` → `DataError` 60 < 63) · raw: [artifacts/followup-real-lake-check.txt](artifacts/followup-real-lake-check.txt)
 - New tests: `test_cov_results_compare_by_identity_and_hash`, `test_ewma_complete_policy_keeps_decay_positions`, `test_zero_estimated_variance_raises_data_error`, `test_estimate_never_writes_to_the_callers_frame`, `test_garch_falls_back_on_an_invalid_forecast` (3 cases). Both acceptance criteria remain verified.
-
+- On merged `main` (`5c021a3`, fast-forward of `69baf9f` via the owner's Terminal panel): `uv run pytest -q` → 2535 passed; brief's Verify → 90 passed; `make check` → exit 0; pushed `main` and the branch · raw: [artifacts/merged-main-check-followup.txt](artifacts/merged-main-check-followup.txt)
+- GitHub Actions CI on `69baf9f`: success on `main` (41872886155) and the branch (41872885674) · raw: [artifacts/ci-runs.txt](artifacts/ci-runs.txt)
+- GitHub Actions CI on `5c021a3`: success on `main` (41877181474) and the branch (41877181454) · raw: [artifacts/ci-runs-followup.txt](artifacts/ci-runs-followup.txt)
