@@ -86,3 +86,4 @@ Owner request (see worklog, 2026-11-02). Re-run in this chat on `8056137`, befor
 - Acceptance criteria (M1 coverage) unaffected: no lake data changed; the status command is the same code (moved).
 
 **Result:** ALL CRITERIA VERIFIED
+- On merged `main` (`98ad034`, fast-forward from `e11886f`; owner's Terminal panel): full suite 2160 passed; integration 1 passed; ruff, format, mypy clean; Verify runs passed; `make check` exit 0; `atlas data status` ran on the real lake; checkout clean · raw: [artifacts/phase1-checkpoint-2026-11-03-tier4-merged-main-check.txt](artifacts/phase1-checkpoint-2026-11-03-tier4-merged-main-check.txt)

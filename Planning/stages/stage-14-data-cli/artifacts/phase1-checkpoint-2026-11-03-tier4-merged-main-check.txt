@@ -1,0 +1,187 @@
+# Phase 1 checkpoint Tier 4: fast-forward + verification on merged main · 2026-11-03 21:55 EST · 21:55  up 24 days, 12:56, 2 users, load averages: 6.93 6.49 6.42
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/phase-one-checkpoint-stages-80625b
+Updating e11886f..98ad034
+Fast-forward
+ Planning/PROGRESS.md                               |   20 +-
+ ...eckpoint-2026-11-03-tier4-red-yahoo-no-data.txt |    6 +
+ ...point-2026-11-03-write-yahoo-no-data-output.txt |    1 +
+ ...e1-checkpoint-2026-11-03-write-yahoo-no-data.py |   34 +
+ .../stages/stage-07-price-data/verification.md     |    7 +
+ Planning/stages/stage-07-price-data/worklog.md     |    7 +
+ ...1-checkpoint-2026-11-03-tier4-red-anomalies.txt |    4 +
+ Planning/stages/stage-08-universe/verification.md  |    7 +
+ Planning/stages/stage-08-universe/worklog.md       |    7 +
+ .../phase1-checkpoint-2026-11-02-report.md         |    3 +-
+ .../phase1-checkpoint-2026-11-03-tier4-archive.txt |   12 +
+ ...oint-2026-11-03-tier4-sync-split-ast-compare.py |   39 +
+ ...ase1-checkpoint-2026-11-03-tier4-sync-split.txt |    5 +
+ .../phase1-checkpoint-2026-11-03-tier4-verify.txt  |   36 +
+ Planning/stages/stage-14-data-cli/verification.md  |    8 +
+ Planning/stages/stage-14-data-cli/worklog.md       |    7 +
+ config/fund.yaml                                   |    3 +
+ config/membership_anomalies.yaml                   |   25 +
+ config/yahoo_no_data.yaml                          |   75 +
+ docs/data-limitations.md                           |    5 +-
+ docs/data.md                                       |    5 +-
+ src/atlas/core/config.py                           |   14 +-
+ src/atlas/data/archive.py                          |  120 ++
+ src/atlas/data/providers/fallback.py               |    9 +-
+ src/atlas/data/providers/yfinance_provider.py      |   68 +-
+ src/atlas/data/sync.py                             | 1757 --------------------
+ src/atlas/data/sync/__init__.py                    |  115 ++
+ src/atlas/data/sync/datasets.py                    |  256 +++
+ src/atlas/data/sync/engine.py                      |  329 ++++
+ src/atlas/data/sync/run.py                         |  166 ++
+ src/atlas/data/sync/state.py                       |  315 ++++
+ src/atlas/data/sync/status.py                      |  271 +++
+ src/atlas/data/sync/steps.py                       |  499 ++++++
+ src/atlas/data/universe.py                         |   70 +-
+ tests/unit/data/test_archive.py                    |  130 ++
+ tests/unit/data/test_price_fallback.py             |   10 +
+ tests/unit/data/test_price_yfinance.py             |   33 +-
+ tests/unit/data/test_sync_datasets.py              |    4 +-
+ tests/unit/data/test_sync_state.py                 |    3 +-
+ tests/unit/data/test_universe.py                   |   57 +
+ 40 files changed, 2749 insertions(+), 1793 deletions(-)
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-03-tier4-red-yahoo-no-data.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-03-write-yahoo-no-data-output.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase1-checkpoint-2026-11-03-write-yahoo-no-data.py
+ create mode 100644 Planning/stages/stage-08-universe/artifacts/phase1-checkpoint-2026-11-03-tier4-red-anomalies.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-03-tier4-archive.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-03-tier4-sync-split-ast-compare.py
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-03-tier4-sync-split.txt
+ create mode 100644 Planning/stages/stage-14-data-cli/artifacts/phase1-checkpoint-2026-11-03-tier4-verify.txt
+ create mode 100644 config/membership_anomalies.yaml
+ create mode 100644 config/yahoo_no_data.yaml
+ create mode 100644 src/atlas/data/archive.py
+ delete mode 100644 src/atlas/data/sync.py
+ create mode 100644 src/atlas/data/sync/__init__.py
+ create mode 100644 src/atlas/data/sync/datasets.py
+ create mode 100644 src/atlas/data/sync/engine.py
+ create mode 100644 src/atlas/data/sync/run.py
+ create mode 100644 src/atlas/data/sync/state.py
+ create mode 100644 src/atlas/data/sync/status.py
+ create mode 100644 src/atlas/data/sync/steps.py
+ create mode 100644 tests/unit/data/test_archive.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD 98ad034
+
+$ uv sync --group dev
+Resolved 80 packages in 21ms
+Checked 79 packages in 24ms
+exit=0
+
+$ uv lock --check
+Resolved 80 packages in 3ms
+exit=0
+
+$ uv run pytest -q
+...............................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.81 s (limit 20 s)
+2160 passed, 14 deselected in 38.24s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest -m integration -q
+1 passed, 2173 deselected in 1.47s
+exit=0
+
+$ uv run ruff check .
+All checks passed!
+exit=0
+
+$ uv run ruff format --check .
+216 files already formatted
+exit=0
+
+$ uv run mypy src/atlas
+Success: no issues found in 95 source files
+exit=0
+
+$ uv run pytest tests/unit/data -q
+966 passed, 13 deselected in 26.21s
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest tests/unit/data/test_universe.py -q
+68 passed, 1 deselected in 3.28s
+exit=0
+
+$ uv run pytest tests/unit/cli -q
+20 passed in 2.59s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+216 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 95 source files
+uv run pytest -q
+...............................
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.63 s (limit 20 s)
+2160 passed, 14 deselected in 50.26s
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+98ad034 phase-1 checkpoint: Tier 4 follow-ups (stages 07, 08, 14)
+e11886f phase-1 checkpoint: BBBY's Yahoo rows deleted (stage 09 records)
+ed11631 phase-1 checkpoint: purge of six reused tickers' rows (stage 09 records)
+exit=0
+
+$ git branch --merged main
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ COLUMNS=160 uv run atlas data status
+                                         Lake tables on 2026-11-03                                          
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
+┃ table               ┃ dataset      ┃      rows ┃   keys ┃ first      ┃ last       ┃ last sync            ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━╇━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩
+│ index_membership    │ universe     │       879 │    860 │ 1957-03-04 │ 2026-10-06 │ 2026-11-01 18:52 UTC │
+│ instruments         │ universe     │       890 │    890 │ 2015-01-02 │ 2026-10-05 │ 2026-11-01 18:52 UTC │
+│ prices_daily        │ prices       │ 1,857,576 │    714 │ 2015-01-02 │ 2026-10-30 │ 2026-11-02 20:02 UTC │
+│ corporate_actions   │ prices       │    23,219 │    593 │ 2015-01-02 │ 2026-10-30 │ 2026-11-02 20:02 UTC │
+│ fundamentals_facts  │ fundamentals │ 2,086,094 │    742 │ 2005-12-31 │ 2027-07-17 │ 2026-11-03 02:15 UTC │
+│ macro_series        │ macro        │        22 │     22 │ -          │ -          │ 2026-11-01 20:05 UTC │
+│ macro_observations  │ macro        │   523,749 │     22 │ 2000-01-01 │ 2026-10-30 │ 2026-11-01 20:05 UTC │
+│ news                │ news         │   845,313 │ 21,810 │ 2015-01-01 │ 2026-11-01 │ 2026-11-01 22:48 UTC │
+│ events              │ events       │    34,064 │    743 │ 2015-01-06 │ 2027-01-29 │ 2026-11-03 02:18 UTC │
+│ macro_events        │ events       │       392 │      0 │ 2015-01-09 │ 2027-12-08 │ 2026-11-03 02:18 UTC │
+│ earnings_reactions  │ events       │    29,936 │    653 │ 2015-01-07 │ 2026-10-28 │ 2026-11-03 02:18 UTC │
+│ news_sentiment      │ sentiment    │   845,313 │      0 │ 2015-01-01 │ 2026-11-01 │ 2026-11-01 22:48 UTC │
+│ social_posts        │ sentiment    │         0 │      0 │ -          │ -          │ 2026-11-01 22:48 UTC │
+│ data_quality_issues │ quality      │        88 │     85 │ 2026-11-02 │ 2026-11-02 │ 2026-11-01 20:30 UTC │
+└─────────────────────┴──────────────┴───────────┴────────┴────────────┴────────────┴──────────────────────┘
+                                                              Coverage (503 current members)                                                               
+┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ dataset               ┃ rule                                              ┃ covered ┃    pct ┃ missing (first 10)                                       ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ prices                │ >= 8 years of daily prices                        │ 475/503 │  94.4% │ ABNB, APP, CARR, CEG, COIN, CRWD, DASH, DDOG, DOW, EXE … │
+│ prices (listed >= 8y) │ >= 8 years, members with that much vendor history │ 475/475 │ 100.0% │                                                          │
+│ fundamentals          │ at least one stored XBRL fact                     │ 502/503 │  99.8% │ VYLR                                                     │
+│ macro                 │ catalog series with observations                  │   22/22 │ 100.0% │                                                          │
+│ news                  │ at least one tagged article                       │ 503/503 │ 100.0% │                                                          │
+│ events                │ at least one earnings event                       │ 503/503 │ 100.0% │                                                          │
+└───────────────────────┴───────────────────────────────────────────────────┴─────────┴────────┴──────────────────────────────────────────────────────────┘
+Quality report 2026-11-02: critical 2, warning 86; blocked: WBD
+Last run: sync 2015-01-01 .. 2026-11-02 finished 2026-11-03T02:18:19.738533+00:00 (ok)
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
