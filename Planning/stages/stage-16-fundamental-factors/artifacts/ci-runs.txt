@@ -1,0 +1,20 @@
+completed	success	stage-16: merged-main check records	CI	main	push	41822817736	6m34s	2026-11-04T11:40:22Z
+completed	success	stage-16: merged-main check records	CI	claude/agitated-driscoll-166517	push	41822817234	8m52s	2026-11-04T11:40:22Z
+completed	cancelled	stage-16: Fundamental factor library	CI	claude/agitated-driscoll-166517	push	41822236279	5m20s	2026-11-04T11:36:05Z
+completed	cancelled	stage-16: Fundamental factor library	CI	main	push	41822236186	5m21s	2026-11-04T11:36:04Z
+completed	success	phase-1 checkpoint: Tier 4 merged-main check records	CI	claude/phase-one-checkpoint-stages-80625b	push	41764086065	1m48s	2026-11-04T02:57:56Z
+completed	success	phase-1 checkpoint: Tier 4 merged-main check records	CI	main	push	41764086061	1m22s	2026-11-04T02:57:56Z
+
+✓ main CI · 41822817736
+Triggered via push about 9 minutes ago
+
+JOBS
+✓ check in 5m29s (ID 126550424039)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=126550424039
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41822817736

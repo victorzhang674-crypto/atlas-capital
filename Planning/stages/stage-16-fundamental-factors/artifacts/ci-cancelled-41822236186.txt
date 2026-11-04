@@ -1,0 +1,386 @@
+
+X main CI · 41822236186
+Triggered via push about 13 minutes ago
+
+JOBS
+X check in 5m17s (ID 126547953147)
+
+ANNOTATIONS
+X Canceling since a higher priority waiting request for ci-refs/heads/main exists
+check: .github#1
+
+X The operation was canceled.
+check: .github#41
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=126547953147
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41822236186
+check	Set up job	﻿2026-11-04T11:36:08.6981916Z Current runner version: '2.338.2'
+check	Set up job	2026-11-04T11:36:08.7002729Z ##[group]Runner Image Provisioner
+check	Set up job	2026-11-04T11:36:08.7003499Z Hosted Compute Agent
+check	Set up job	2026-11-04T11:36:08.7004005Z Version: 20261028.624
+check	Set up job	2026-11-04T11:36:08.7004581Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+check	Set up job	2026-11-04T11:36:08.7005192Z Build Date: 2026-10-28T21:51:42Z
+check	Set up job	2026-11-04T11:36:08.7005829Z Worker ID: {d2302c54-3cc0-4964-93c9-36f2b9410440}
+check	Set up job	2026-11-04T11:36:08.7006465Z Region: westus3
+check	Set up job	2026-11-04T11:36:08.7007251Z Cloud: Azure
+check	Set up job	2026-11-04T11:36:08.7007769Z ##[endgroup]
+check	Set up job	2026-11-04T11:36:08.7008920Z ##[group]Operating System
+check	Set up job	2026-11-04T11:36:08.7009430Z Ubuntu
+check	Set up job	2026-11-04T11:36:08.7009983Z 24.04.5
+check	Set up job	2026-11-04T11:36:08.7010435Z LTS
+check	Set up job	2026-11-04T11:36:08.7010903Z ##[endgroup]
+check	Set up job	2026-11-04T11:36:08.7011395Z ##[group]Runner Image
+check	Set up job	2026-11-04T11:36:08.7011951Z Image: ubuntu-24.04
+check	Set up job	2026-11-04T11:36:08.7012519Z Version: 20261101.360.1
+check	Set up job	2026-11-04T11:36:08.7013400Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+check	Set up job	2026-11-04T11:36:08.7014826Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+check	Set up job	2026-11-04T11:36:08.7015651Z ##[endgroup]
+check	Set up job	2026-11-04T11:36:08.7016841Z ##[group]GITHUB_TOKEN Permissions
+check	Set up job	2026-11-04T11:36:08.7018582Z Contents: read
+check	Set up job	2026-11-04T11:36:08.7019185Z Metadata: read
+check	Set up job	2026-11-04T11:36:08.7019672Z ##[endgroup]
+check	Set up job	2026-11-04T11:36:08.7021674Z Secret source: Actions
+check	Set up job	2026-11-04T11:36:08.7022515Z Cache mode: write
+check	Set up job	2026-11-04T11:36:08.7023116Z Prepare workflow directory
+check	Set up job	2026-11-04T11:36:08.7277052Z Prepare all required actions
+check	Set up job	2026-11-04T11:36:08.7315950Z Getting action download info
+check	Set up job	2026-11-04T11:36:09.1181542Z Download action repository 'actions/checkout@v7.0.1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+check	Set up job	2026-11-04T11:36:09.2447167Z Download action repository 'astral-sh/setup-uv@v10.3.3' (SHA:68559e99cc807c1eb7e9238fd43a15bba460eec2)
+check	Set up job	2026-11-04T11:36:10.5563664Z Complete job name: check
+check	Run actions/checkout@v7.0.1	﻿2026-11-04T11:36:10.6252328Z ##[group]Run actions/checkout@v7.0.1
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6253136Z with:
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6253591Z   repository: victorzhang674-crypto/atlas-capital
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6257349Z   token: ***
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6257739Z   ssh-strict: true
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6258134Z   ssh-user: git
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6258540Z   persist-credentials: true
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6258976Z   clean: true
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6259387Z   sparse-checkout-cone-mode: true
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6259868Z   fetch-depth: 1
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6260265Z   fetch-tags: false
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6260659Z   show-progress: true
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6261055Z   lfs: false
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6261424Z   submodules: false
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6261840Z   set-safe-directory: true
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6262293Z   allow-unsafe-pr-checkout: false
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.6262904Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.8963549Z Syncing repository: victorzhang674-crypto/atlas-capital
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.8965737Z ##[group]Getting Git version info
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.8966446Z Working directory is '/home/runner/work/atlas-capital/atlas-capital'
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9017274Z [command]/usr/bin/git version
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9188041Z git version 2.56.0
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9234327Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9249583Z Temporarily overriding HOME='/home/runner/work/_temp/000f0969-a261-4001-9745-71b6c5467159' before making global git config changes
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9257755Z Adding repository directory to the temporary git global config as a safe directory
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9260233Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/atlas-capital/atlas-capital
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9329029Z Deleting the contents of '/home/runner/work/atlas-capital/atlas-capital'
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9331365Z ##[group]Determining repository object format
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9333103Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9334357Z ##[group]Initializing the repository
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9348317Z [command]/usr/bin/git init /home/runner/work/atlas-capital/atlas-capital
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9470118Z hint: Using 'master' as the name for the initial branch. This default branch name
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9475373Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9477284Z hint: to use in all of your new repositories, which will suppress this warning,
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9479106Z hint: call:
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9479864Z hint:
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9480734Z hint: 	git config --global init.defaultBranch <name>
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9481913Z hint:
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9507714Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9520571Z hint: 'development'. The just-created branch can be renamed via this command:
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9531522Z hint:
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9533614Z hint: 	git branch -m <name>
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9534480Z hint:
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9535521Z hint: Disable this message with "git config set advice.defaultBranchName false"
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9538104Z Initialized empty Git repository in /home/runner/work/atlas-capital/atlas-capital/.git/
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9544791Z [command]/usr/bin/git remote add origin https://github.com/victorzhang674-crypto/atlas-capital
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9564606Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9565846Z ##[group]Disabling automatic garbage collection
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9567162Z [command]/usr/bin/git config --local gc.auto 0
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9643311Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9644969Z ##[group]Setting up auth
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9645885Z Removing SSH command configuration
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9647235Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:10.9700940Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0238510Z Removing HTTP extra header
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0240400Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0259282Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0481697Z Removing includeIf entries pointing to credentials config files
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0489306Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0532233Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0755248Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0815968Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git.path /home/runner/work/_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0975885Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0981460Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.0986733Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.1008923Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.1010610Z ##[group]Fetching the repository
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:11.1015691Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1137fb70220f008e277d641c82999e60d1a9ff4d:refs/remotes/origin/main
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.0858563Z From https://github.com/victorzhang674-crypto/atlas-capital
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.0877279Z  * [new ref]         1137fb70220f008e277d641c82999e60d1a9ff4d -> origin/main
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.0881717Z [command]/usr/bin/git branch --list --remote origin/main
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.0922457Z   origin/main
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.0946156Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.0975809Z 1137fb70220f008e277d641c82999e60d1a9ff4d
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1031678Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1033369Z ##[group]Determining the checkout info
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1035149Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1038947Z [command]/usr/bin/git sparse-checkout disable
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1074669Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1134541Z ##[group]Checking out the ref
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1136414Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1822216Z Switched to a new branch 'main'
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1835873Z branch 'main' set up to track 'origin/main'.
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1892494Z ##[endgroup]
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1927557Z [command]/usr/bin/git log -1 --format=%H
+check	Run actions/checkout@v7.0.1	2026-11-04T11:36:12.1978573Z 1137fb70220f008e277d641c82999e60d1a9ff4d
+check	Run astral-sh/setup-uv@v10.3.3	﻿2026-11-04T11:36:12.2368593Z ##[group]Run astral-sh/setup-uv@v10.3.3
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2369527Z with:
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2370135Z   enable-cache: true
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2370856Z   activate-environment: false
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2371657Z   no-project: false
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2372636Z   working-directory: /home/runner/work/atlas-capital/atlas-capital
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2381400Z   github-token: ***
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2383197Z   cache-dependency-glob: **/*requirements*.txt
+check	Run astral-sh/setup-uv@v10.3.3	**/*requirements*.in
+check	Run astral-sh/setup-uv@v10.3.3	**/*constraints*.txt
+check	Run astral-sh/setup-uv@v10.3.3	**/*constraints*.in
+check	Run astral-sh/setup-uv@v10.3.3	**/pyproject.toml
+check	Run astral-sh/setup-uv@v10.3.3	**/uv.lock
+check	Run astral-sh/setup-uv@v10.3.3	**/*.py.lock
+check	Run astral-sh/setup-uv@v10.3.3	
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2385256Z   restore-cache: true
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2385966Z   save-cache: auto
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2386721Z   prune-cache: false
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2387459Z   cache-python: false
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2388234Z   ignore-nothing-to-cache: false
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2389113Z   ignore-empty-workdir: false
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2389948Z   download-from-astral-mirror: true
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2390830Z   add-problem-matchers: true
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2391662Z   quiet: false
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2459405Z   resolution-strategy: highest
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.2460749Z ##[endgroup]
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.4409025Z Trying to find version for uv in: /home/runner/work/atlas-capital/atlas-capital/uv.toml
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.4416074Z Could not find file: /home/runner/work/atlas-capital/atlas-capital/uv.toml
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.4438215Z Trying to find version for uv in: /home/runner/work/atlas-capital/atlas-capital/pyproject.toml
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.4457971Z Could not determine uv version from uv.toml or pyproject.toml. Falling back to latest.
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.4478192Z Fetching manifest data from https://releases.astral.sh/github/versions/main/v1/uv.ndjson ...
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:12.6008135Z Downloading uv from "https://releases.astral.sh/github/uv/releases/download/0.13.7/uv-x86_64-unknown-linux-gnu.tar.gz" ...
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.1239557Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/33c689f3-9000-439f-bd50-7aa41114d96f -f /home/runner/work/_temp/8c36e56d-e238-4aa6-91b1-dc1c87338061
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.7386162Z Added /home/runner/.local/bin to the path
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.7386986Z Added /opt/hostedtoolcache/uv/0.13.7/x86_64 to the path
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.7387626Z Set UV_PYTHON_INSTALL_DIR to /home/runner/work/_temp/uv-python-dir
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.7388727Z Added /home/runner/work/_temp/uv-python-dir to the path
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.7406334Z Set UV_CACHE_DIR to /home/runner/work/_temp/setup-uv-cache
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.7407165Z Successfully installed uv version 0.13.7
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.7933125Z Searching files using cache dependency glob: /home/runner/work/atlas-capital/atlas-capital/**/*requirements*.txt,/home/runner/work/atlas-capital/atlas-capital/**/*requirements*.in,/home/runner/work/atlas-capital/atlas-capital/**/*constraints*.txt,/home/runner/work/atlas-capital/atlas-capital/**/*constraints*.in,/home/runner/work/atlas-capital/atlas-capital/**/pyproject.toml,/home/runner/work/atlas-capital/atlas-capital/**/uv.lock,/home/runner/work/atlas-capital/atlas-capital/**/*.py.lock
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.9069715Z /home/runner/work/atlas-capital/atlas-capital/pyproject.toml
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.9387702Z /home/runner/work/atlas-capital/atlas-capital/uv.lock
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.9396199Z Found 2 files to hash.
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:13.9498093Z Trying to restore cache from GitHub Actions cache with key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-b79c73324edb1c87bdd1ddec9a9b211017c9cecddec3379a2c69eeadfa1a7c08
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:14.1529924Z Cache hit for: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-b79c73324edb1c87bdd1ddec9a9b211017c9cecddec3379a2c69eeadfa1a7c08
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:15.3619477Z Received 37748736 of 161052887 (23.4%), 36.0 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:16.3687817Z Received 125829120 of 161052887 (78.1%), 59.9 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:17.3632005Z Received 125829120 of 161052887 (78.1%), 40.0 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:18.3635497Z Received 125829120 of 161052887 (78.1%), 30.0 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:19.3625284Z Received 125829120 of 161052887 (78.1%), 24.0 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:20.3627397Z Received 125829120 of 161052887 (78.1%), 20.0 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:21.3638180Z Received 125829120 of 161052887 (78.1%), 17.1 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:22.3640437Z Received 125829120 of 161052887 (78.1%), 15.0 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:23.3656849Z Received 125829120 of 161052887 (78.1%), 13.3 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:24.3649830Z Received 125829120 of 161052887 (78.1%), 12.0 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:25.3653945Z Received 125829120 of 161052887 (78.1%), 10.9 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:26.3660450Z Received 125829120 of 161052887 (78.1%), 10.0 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:27.3663611Z Received 125829120 of 161052887 (78.1%), 9.2 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:28.3662703Z Received 125829120 of 161052887 (78.1%), 8.6 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:29.3655875Z Received 152664279 of 161052887 (94.8%), 9.7 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:30.3669157Z Received 152664279 of 161052887 (94.8%), 9.1 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:31.3673228Z Received 152664279 of 161052887 (94.8%), 8.6 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:32.3678432Z Received 152664279 of 161052887 (94.8%), 8.1 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:33.3684123Z Received 152664279 of 161052887 (94.8%), 7.7 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:34.3688364Z Received 152664279 of 161052887 (94.8%), 7.3 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:35.3698624Z Received 152664279 of 161052887 (94.8%), 6.9 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:36.3704721Z Received 152664279 of 161052887 (94.8%), 6.6 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:37.3703474Z Received 152664279 of 161052887 (94.8%), 6.3 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:38.3708982Z Received 152664279 of 161052887 (94.8%), 6.1 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:39.3709400Z Received 152664279 of 161052887 (94.8%), 5.8 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:40.3712168Z Received 152664279 of 161052887 (94.8%), 5.6 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:41.3708786Z Received 152664279 of 161052887 (94.8%), 5.4 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:42.2726206Z Received 161052887 of 161052887 (100.0%), 5.5 MBs/sec
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:42.2727358Z Cache Size: ~154 MB (161052887 B)
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:42.2761540Z [command]/usr/bin/tar -xf /home/runner/work/_temp/d19105c9-fe36-46c0-bdac-7a3e78cdfad0/cache.tzst -P -C /home/runner/work/atlas-capital/atlas-capital --use-compress-program unzstd
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:43.4219633Z Cache restored successfully
+check	Run astral-sh/setup-uv@v10.3.3	2026-11-04T11:36:43.4293205Z cache restored from GitHub Actions cache with key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-b79c73324edb1c87bdd1ddec9a9b211017c9cecddec3379a2c69eeadfa1a7c08
+check	Run uv sync --locked --group dev	﻿2026-11-04T11:36:43.6746747Z ##[group]Run uv sync --locked --group dev
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.6747126Z ^[[36;1muv sync --locked --group dev^[[0m
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.6772319Z shell: /usr/bin/bash -e {0}
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.6772544Z env:
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.6772779Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.6773119Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.6773605Z ##[endgroup]
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.7006827Z Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.7007516Z Creating virtual environment at: .venv
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.7047131Z Resolved 80 packages in 0.83ms
+check	Run uv sync --locked --group dev	2026-11-04T11:36:43.7119119Z    Building atlas-capital @ file:///home/runner/work/atlas-capital/atlas-capital
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.0996223Z       Built atlas-capital @ file:///home/runner/work/atlas-capital/atlas-capital
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.1010878Z Prepared 1 package in 394ms
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2047662Z Installed 79 packages in 102ms
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2061030Z  + annotated-doc==0.0.5
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2061742Z  + annotated-types==0.8.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2062218Z  + anyio==4.15.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2062676Z  + ast-serialize==0.13.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2063318Z  + atlas-capital==0.1.0 (from file:///home/runner/work/atlas-capital/atlas-capital)
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2064021Z  + beautifulsoup4==4.15.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2064310Z  + certifi==2026.10.23
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2064582Z  + cffi==2.1.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2064764Z  + cfgv==3.5.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2064952Z  + charset-normalizer==3.5.2
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2065154Z  + coverage==7.17.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2065330Z  + curl-cffi==0.17.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2065505Z  + distlib==0.4.4
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2065673Z  + duckdb==2.0.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2065849Z  + exchange-calendars==4.13.2
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2066046Z  + filelock==4.2.4
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2066209Z  + h11==0.16.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2066377Z  + httpcore==1.0.9
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2066785Z  + httpx==0.28.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2067027Z  + hypothesis==6.170.11
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2067298Z  + identify==2.6.20
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2067557Z  + idna==3.20
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2067816Z  + iniconfig==2.3.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2068086Z  + korean-lunar-calendar==0.4.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2068371Z  + librt==0.16.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2068621Z  + lxml==6.1.3
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2068874Z  + markdown-it-py==4.2.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2069165Z  + mdurl==0.1.2
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2069415Z  + multitasking==0.0.13
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2069682Z  + mypy==2.4.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2069929Z  + mypy-extensions==1.1.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2070217Z  + nodeenv==1.11.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2070462Z  + numpy==2.5.4
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2070703Z  + packaging==26.3
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2070955Z  + pandas==3.1.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2071216Z  + pandas-stubs==3.0.5.260914
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2071511Z  + pathspec==1.1.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2071760Z  + peewee==4.5.3
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2072009Z  + platformdirs==4.13.5
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2072193Z  + pluggy==1.7.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2072357Z  + pre-commit==4.7.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2072545Z  + pre-commit-hooks==6.0.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2072733Z  + protobuf==7.36.2
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2072897Z  + pyarrow==26.0.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2073064Z  + pycparser==3.12
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2073229Z  + pydantic==2.14.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2073400Z  + pydantic-core==2.50.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2073596Z  + pydantic-settings==2.16.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2073805Z  + pygments==2.21.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2073962Z  + pyluach==2.3.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2074127Z  + pytest==9.1.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2074295Z  + pytest-cov==7.1.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2074474Z  + python-dateutil==3.0.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2074678Z  + python-discovery==1.6.4
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2074868Z  + python-dotenv==1.2.4
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2075049Z  + python-ulid==4.0.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2075219Z  + pytz==2026.5
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2075388Z  + pyyaml==6.0.3
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2075550Z  + rapidfuzz==3.14.6
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2075719Z  + requests==2.34.2
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2075882Z  + respx==0.23.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2076321Z  + rich==15.0.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2076494Z  + ruamel-yaml==0.19.1
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2076842Z  + ruff==0.17.2
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2077034Z  + shellingham==1.5.4
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2077289Z  + six==1.17.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2077465Z  + sortedcontainers==2.4.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2077649Z  + soupsieve==3.0.4
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2077821Z  + structlog==26.1.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2078119Z  + toolz==1.2.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2078288Z  + typer==0.27.3
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2078470Z  + types-pyyaml==6.0.12.20260906
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2078686Z  + typing-extensions==4.16.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2078890Z  + typing-inspection==0.4.4
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2079081Z  + tzdata==2026.5
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2079251Z  + urllib3==2.8.0
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2079426Z  + virtualenv==21.14.13
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2079607Z  + websockets==17.3
+check	Run uv sync --locked --group dev	2026-11-04T11:36:44.2079779Z  + yfinance==1.7.0
+check	Run make check	﻿2026-11-04T11:36:44.2838787Z ##[group]Run make check
+check	Run make check	2026-11-04T11:36:44.2839024Z ^[[36;1mmake check^[[0m
+check	Run make check	2026-11-04T11:36:44.2855963Z shell: /usr/bin/bash -e {0}
+check	Run make check	2026-11-04T11:36:44.2856344Z env:
+check	Run make check	2026-11-04T11:36:44.2856756Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+check	Run make check	2026-11-04T11:36:44.2857132Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+check	Run make check	2026-11-04T11:36:44.2857383Z ##[endgroup]
+check	Run make check	2026-11-04T11:36:44.3098178Z uv run ruff check .
+check	Run make check	2026-11-04T11:36:44.3997326Z All checks passed!
+check	Run make check	2026-11-04T11:36:44.4020877Z uv run ruff format --check .
+check	Run make check	2026-11-04T11:36:44.5024759Z 231 files already formatted
+check	Run make check	2026-11-04T11:36:44.5065788Z uv run mypy src/atlas
+check	Run make check	2026-11-04T11:36:56.1119561Z Success: no issues found in 100 source files
+check	Run make check	2026-11-04T11:36:56.1417317Z uv run pytest -q
+check	Run make check	2026-11-04T11:37:10.3184710Z ........................................................................ [  3%]
+check	Run make check	2026-11-04T11:37:11.1784973Z ........................................................................ [  6%]
+check	Run make check	2026-11-04T11:37:16.5514106Z ........................................................................ [  9%]
+check	Run make check	2026-11-04T11:37:17.8467266Z ........................................................................ [ 12%]
+check	Run make check	2026-11-04T11:37:18.3178133Z ........................................................................ [ 15%]
+check	Run make check	2026-11-04T11:37:18.6732353Z ........................................................................ [ 18%]
+check	Run make check	2026-11-04T11:37:18.7640977Z ........................................................................ [ 21%]
+check	Run make check	2026-11-04T11:37:18.8330660Z ........................................................................ [ 24%]
+check	Run make check	2026-11-04T11:37:20.3227486Z ........................................................................ [ 27%]
+check	Run make check	2026-11-04T11:37:20.9028409Z ........................................................................ [ 31%]
+check	Run make check	2026-11-04T11:37:20.9427428Z ........................................................................ [ 34%]
+check	Run make check	2026-11-04T11:37:21.0329037Z ........................................................................ [ 37%]
+check	Run make check	2026-11-04T11:37:23.9873393Z ........................................................................ [ 40%]
+check	Run make check	2026-11-04T11:37:24.8387311Z ........................................................................ [ 43%]
+check	Run make check	2026-11-04T11:37:33.4447732Z ........................................................................ [ 46%]
+check	Run make check	2026-11-04T11:37:38.0581913Z ........................................................................ [ 49%]
+check	Run make check	2026-11-04T11:37:39.4590521Z ........................................................................ [ 52%]
+check	Run make check	2026-11-04T11:37:40.3743508Z ........................................................................ [ 55%]
+check	Run make check	2026-11-04T11:37:41.3859662Z ........................................................................ [ 58%]
+check	Run make check	2026-11-04T11:37:42.9849932Z ........................................................................ [ 62%]
+check	Run make check	2026-11-04T11:37:44.4074935Z ........................................................................ [ 65%]
+check	Run make check	2026-11-04T11:37:53.0115321Z ........................................................................ [ 68%]
+check	Run make check	2026-11-04T11:37:55.8820861Z ........................................................................ [ 71%]
+check	Run make check	2026-11-04T11:38:07.4477783Z ........................................................................ [ 74%]
+check	Run make check	2026-11-04T11:38:14.0260942Z ........................................................................ [ 77%]
+check	Run make check	2026-11-04T11:38:20.0940389Z ........................................................................ [ 80%]
+check	Run make check	2026-11-04T11:41:21.0096858Z ##[error]The operation was canceled.
+check	Post Run actions/checkout@v7.0.1	﻿2026-11-04T11:41:21.0302686Z Post job cleanup.
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7557951Z [command]/usr/bin/git version
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7559432Z git version 2.56.0
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7562705Z Temporarily overriding HOME='/home/runner/work/_temp/ef576158-4099-47c5-ab4b-983ff2f643a0' before making global git config changes
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7563776Z Adding repository directory to the temporary git global config as a safe directory
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7564767Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/atlas-capital/atlas-capital
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7566130Z Removing SSH command configuration
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7566950Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7568727Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7570363Z Removing HTTP extra header
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7571054Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7573180Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7575221Z Removing includeIf entries pointing to credentials config files
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7576010Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7576997Z includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git.path
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7577932Z includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git/worktrees/*.path
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7578656Z includeif.gitdir:/github/workspace/.git.path
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7579231Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7580753Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git.path
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7581799Z /home/runner/work/_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7583774Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-9d121c2e\-12ec\-4731\-b8cf\-254b4331a200\.config
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7585982Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git/worktrees/*.path
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7587346Z /home/runner/work/_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7589337Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-9d121c2e\-12ec\-4731\-b8cf\-254b4331a200\.config
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7591404Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7592331Z /github/runner_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7594085Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-9d121c2e\-12ec\-4731\-b8cf\-254b4331a200\.config
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7595935Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7597037Z /github/runner_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7599006Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-9d121c2e\-12ec\-4731\-b8cf\-254b4331a200\.config
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7601038Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+check	Post Run actions/checkout@v7.0.1	2026-11-04T11:41:21.7603165Z Removing credentials config '/home/runner/work/_temp/git-credentials-9d121c2e-12ec-4731-b8cf-254b4331a200.config'
+check	Complete job	﻿2026-11-04T11:41:21.7687630Z Cleaning up orphan processes
+check	Complete job	2026-11-04T11:41:21.7978935Z Terminate orphan process: pid (2077) (make)
+check	Complete job	2026-11-04T11:41:21.8011836Z Terminate orphan process: pid (2123) (uv)
+check	Complete job	2026-11-04T11:41:21.8053711Z Terminate orphan process: pid (2126) (pytest)
