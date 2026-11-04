@@ -1,0 +1,12 @@
+caught    audit: skip does not cover the regression
+caught    audit: per-factor history check removed
+caught    audit: stale history accepted
+caught    audit: off-by-one staleness
+caught    audit: non-finite model accepted
+caught    audit: asymmetric f accepted
+caught    audit: ETF drops not reported
+caught    audit: LEAK ETF exposures use factor returns after the view
+caught    audit: snapshots without the minimum history
+caught    audit: LEAK snapshot model sees the whole history
+
+10/10 mutants caught

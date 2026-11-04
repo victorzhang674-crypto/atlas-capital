@@ -1,0 +1,12 @@
+src/atlas/quant/risk_model/__init__.py          11      0   100%
+src/atlas/quant/risk_model/analytics.py         57      0   100%
+src/atlas/quant/risk_model/covariance.py       246      5    98%   90, 173, 219, 228, 252
+src/atlas/quant/risk_model/etf_mapping.py       67      0   100%
+src/atlas/quant/risk_model/factor_model.py     260      9    97%   280, 282, 285, 288, 390, 392, 394, 396, 462
+src/atlas/quant/risk_model/loader.py           120     10    92%   97, 116-117, 159, 172, 186, 205, 236-238
+src/atlas/quant/risk_model/psd.py               85      2    98%   102, 146
+src/atlas/quant/risk_model/regression.py        61      3    95%   45, 48, 91
+src/atlas/quant/risk_model/specific.py          72      0   100%
+src/atlas/quant/risk_model/store.py            130      4    97%   103, 164, 245, 249
+src/atlas/quant/risk_model/volatility.py       175      1    99%   234
+TOTAL                                         1284     34    97%

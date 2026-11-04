@@ -1029,6 +1029,81 @@ class VolatilityConfig(_Frozen):
     blend_weights: BlendWeights = Field(default_factory=BlendWeights)
 
 
+GICS_SECTORS: tuple[str, ...] = (
+    "Communication Services",
+    "Consumer Discretionary",
+    "Consumer Staples",
+    "Energy",
+    "Financials",
+    "Health Care",
+    "Industrials",
+    "Information Technology",
+    "Materials",
+    "Real Estate",
+    "Utilities",
+)
+"""The 11 GICS sector names as the instruments table holds them."""
+
+
+class EtfConfig(_Frozen):
+    """ETF exposures by time-series regression on the factor returns (Stage 19): the last
+    `window` sessions, at least `min_obs` of them observed, with a ridge penalty `ridge`
+    relative to the mean diagonal of `FᵀF` (the sector constraint makes the factor returns
+    nearly collinear). `universe` names the ETF list read by default from real data."""
+
+    universe: Annotated[str, Field(min_length=1)] = "macro_etfs"
+    window: Annotated[int, Field(ge=30)] = 252
+    min_obs: Annotated[int, Field(ge=30)] = 126
+    ridge: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 1.0e-3
+
+    @model_validator(mode="after")
+    def _min_obs_within_window(self) -> Self:
+        if self.min_obs > self.window:
+            raise ValueError(f"min_obs ({self.min_obs}) must not exceed window ({self.window})")
+        return self
+
+
+class FactorModelConfig(_Frozen):
+    """The Barra-style factor risk model (`atlas.quant.risk_model.factor_model`, Stage 19).
+
+    `sectors` are the sector factors (GICS names). The factor covariance is an EWMA with
+    half-life `factor_half_life` sessions plus a Newey-West adjustment of `newey_west_lags`
+    lags; specific variance is an EWMA (`specific_half_life`) of squared residuals whose vol is
+    shrunk to the sector median with strength `shrinkage_q` (0 = no shrinkage) and floored at
+    `specific_floor_vol` (daily). A daily cross-section needs `min_cross_section` names. Styles
+    are winsorised at the `style_winsor_*` quantiles; a name missing more than
+    `max_missing_styles` styles is dropped. The fundamental styles are refreshed from the factor
+    panel every `anchor_months` month-ends (1 = monthly, 3 = quarter-ends; the panel is the
+    slow part of a real-data build and fundamentals change quarterly). A model is built only
+    when its factor history reaches within `max_stale_sessions` sessions of the as-of.
+    """
+
+    sectors: tuple[str, ...] = GICS_SECTORS
+    factor_half_life: Annotated[int, Field(ge=1)] = 90
+    newey_west_lags: Annotated[int, Field(ge=0)] = 2
+    specific_half_life: Annotated[int, Field(ge=1)] = 90
+    min_cross_section: Annotated[int, Field(ge=10)] = 100
+    style_winsor_lower: Annotated[float, Field(ge=0, le=1)] = 0.01
+    style_winsor_upper: Annotated[float, Field(ge=0, le=1)] = 0.99
+    max_missing_styles: Annotated[int, Field(ge=0)] = 2
+    shrinkage_q: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 1.0
+    specific_floor_vol: Annotated[float, Field(gt=0, allow_inf_nan=False)] = 0.002
+    anchor_months: Annotated[int, Field(ge=1, le=12)] = 1
+    max_stale_sessions: Annotated[int, Field(ge=0)] = 5
+    etf: EtfConfig = Field(default_factory=EtfConfig)
+
+    @model_validator(mode="after")
+    def _checked(self) -> Self:
+        if not self.sectors or len(set(self.sectors)) != len(self.sectors):
+            raise ValueError(f"sectors must be non-empty and unique, got {self.sectors}")
+        if not self.style_winsor_lower < self.style_winsor_upper:
+            raise ValueError(
+                f"style_winsor_lower ({self.style_winsor_lower}) must be below "
+                f"style_winsor_upper ({self.style_winsor_upper})"
+            )
+        return self
+
+
 class RiskModelConfig(_Frozen):
     """Covariance estimators and volatility forecasts (`atlas.quant.risk_model`, Stage 18).
 
@@ -1047,6 +1122,7 @@ class RiskModelConfig(_Frozen):
     default_method: Literal["sample", "ewma", "ledoit_wolf", "oas"] = "ledoit_wolf"
     ewma_lambda: _OpenFrac = 0.94
     volatility: VolatilityConfig = Field(default_factory=VolatilityConfig)
+    factor_model: FactorModelConfig = Field(default_factory=FactorModelConfig)
 
 
 class QuantConfig(_Frozen):

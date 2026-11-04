@@ -1,0 +1,6 @@
+caught    WLS weights are cap, not sqrt(cap)
+caught    factor covariance not symmetrised
+caught    PSD repair skipped
+caught    condition floor skipped
+
+4/4 mutants caught

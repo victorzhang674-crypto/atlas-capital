@@ -381,7 +381,9 @@ EXPORTS = {
 def test_package_exports() -> None:
     import atlas.quant.risk_model as rm
 
-    assert set(rm.__all__) == EXPORTS
+    # Stage 19 added the factor risk model to the same package (its names are pinned in
+    # test_factor_risk_package.py): the Stage 18 API must stay exported.
+    assert set(rm.__all__) >= EXPORTS
     for name in rm.__all__:
         assert getattr(rm, name) is not None
 

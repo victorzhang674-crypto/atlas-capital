@@ -23,7 +23,9 @@ from atlas.core.config import (
     BlendWeights,
     CalendarConfig,
     CostConfig,
+    EtfConfig,
     EventsConfig,
+    FactorModelConfig,
     FactorsConfig,
     FeaturesConfig,
     FundamentalsConfig,
@@ -1292,6 +1294,7 @@ def test_quant_risk_model_defaults() -> None:  # Stage 18 D1
             "method": "blend", "realised_window": 21, "garch_min_obs": 252,
             "blend_weights": {"ewma": 0.4, "garch": 0.4, "realised": 0.2},
         },
+        "factor_model": FactorModelConfig().model_dump(),
     }  # fmt: skip
 
 
@@ -1376,3 +1379,59 @@ def test_yaml_merge_key_in_a_config_file(tmp_path: Path) -> None:
     universes = load_config(config_dir=d).data.universes
     assert (universes["etfs"].index, universes["etfs"].tickers) == (None, ("SPY", "QQQ"))
     assert (universes["sp500"].description, universes["sp500"].index) == ("S&P 500", "SP500")
+
+
+_GICS = (
+    "Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy",
+    "Financials", "Health Care", "Industrials", "Information Technology", "Materials",
+    "Real Estate", "Utilities",
+)  # fmt: skip
+
+
+def test_quant_factor_model_defaults() -> None:  # Stage 19 D1
+    f = AtlasConfig().quant.risk_model.factor_model
+    assert f == FactorModelConfig()
+    assert f.sectors == _GICS
+    assert f.model_dump() == {
+        "sectors": _GICS, "factor_half_life": 90, "newey_west_lags": 2, "specific_half_life": 90,
+        "min_cross_section": 100, "style_winsor_lower": 0.01, "style_winsor_upper": 0.99,
+        "max_missing_styles": 2, "shrinkage_q": 1.0, "specific_floor_vol": 0.002,
+        "anchor_months": 1, "max_stale_sessions": 5,
+        "etf": {"universe": "macro_etfs", "window": 252, "min_obs": 126, "ridge": 1.0e-3},
+    }  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("model", "field", "value"),
+    [
+        (FactorModelConfig, "sectors", ()),
+        (FactorModelConfig, "sectors", ("Energy", "Energy")),
+        (FactorModelConfig, "factor_half_life", 0),
+        (FactorModelConfig, "newey_west_lags", -1),
+        (FactorModelConfig, "specific_half_life", 0),
+        (FactorModelConfig, "min_cross_section", 9),
+        (FactorModelConfig, "style_winsor_lower", -0.1),
+        (FactorModelConfig, "style_winsor_upper", 1.1),
+        (FactorModelConfig, "max_missing_styles", -1),
+        (FactorModelConfig, "shrinkage_q", -1.0),
+        (FactorModelConfig, "shrinkage_q", float("nan")),
+        (FactorModelConfig, "specific_floor_vol", 0.0),
+        (FactorModelConfig, "anchor_months", 0),
+        (FactorModelConfig, "anchor_months", 13),
+        (FactorModelConfig, "max_stale_sessions", -1),
+        (EtfConfig, "window", 29),
+        (EtfConfig, "min_obs", 29),
+        (EtfConfig, "ridge", -1.0),
+    ],
+)
+def test_quant_factor_model_validation(model: type[BaseModel], field: str, value: object) -> None:
+    # Stage 19 D1
+    with pytest.raises(ValidationError, match=field):
+        model(**{field: value})
+
+
+def test_quant_factor_model_cross_field_validation() -> None:  # Stage 19 D1
+    with pytest.raises(ValidationError, match="style_winsor_lower"):
+        FactorModelConfig(style_winsor_lower=0.6, style_winsor_upper=0.5)
+    with pytest.raises(ValidationError, match="min_obs"):
+        EtfConfig(window=60, min_obs=61)

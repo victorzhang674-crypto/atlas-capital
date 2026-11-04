@@ -1,0 +1,48 @@
+caught    constraint not applied
+caught    WLS weights ignored (OLS)
+caught    rank check removed
+caught    residuals shrunk
+caught    sector shares by name count, not cap
+caught    too-few-names check removed
+caught    LEAK specific EWMA weights reversed
+caught    specific EWMA not squared
+caught    specific EWMA counts missing residuals in the weights
+caught    shrinkage denominator ignores q
+caught    shrinkage target is the mean
+caught    sector dispersion with ddof 1
+caught    vol floor removed
+caught    short-history drop disabled
+caught    centre is the equal-weighted mean
+caught    std with ddof 1
+caught    winsorisation skipped
+caught    missing style not neutral
+caught    market column zero
+SURVIVED  WLS weights are cap, not sqrt(cap)
+caught    LEAK history.up_to includes the next session
+caught    LEAK model ignores the as-of cut
+caught    factor EWMA weights reversed
+caught    Newey-West Bartlett weight dropped
+caught    Newey-West lag not applied
+SURVIVED  factor covariance not symmetrised
+SURVIVED  PSD repair skipped
+SURVIVED  condition floor skipped
+caught    factor history minimum disabled
+caught    cov() leaves out the specific variance
+caught    by_factor uses x*x
+caught    mctr divided by variance
+caught    specific variance linear in |w|
+caught    nonzero weight on unknown name tolerated
+caught    bias statistic without the root
+caught    bias statistic minimum disabled
+caught    ETF window ignored
+caught    ETF returns not demeaned
+caught    ETF residual variance without dof
+caught    ETF minimum observations disabled
+caught    ETF name clash allowed
+caught    LEAK factor returns available at the decision of their own day
+caught    other settings' rows read
+caught    LEAK loader uses the regressed session's own close for the styles
+caught    loader caps scaled by the inverse price ratio
+
+41/45 mutants caught
+done

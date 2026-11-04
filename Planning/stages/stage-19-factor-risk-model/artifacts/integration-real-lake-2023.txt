@@ -1,0 +1,28 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-19-planning-execution-76a5e5/.venv/bin/python3
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-19-planning-execution-76a5e5
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 5 items
+
+tests/integration/test_risk_model_real_lake.py::test_daily_regressions_are_sane PASSED [ 20%]
+tests/integration/test_risk_model_real_lake.py::test_model_at_year_end_is_valid_and_adds_up PASSED [ 40%]
+tests/integration/test_risk_model_real_lake.py::test_persisted_model_round_trips PASSED [ 60%]
+tests/integration/test_risk_model_real_lake.py::test_etf_exposures_on_real_data PASSED [ 80%]
+tests/integration/test_risk_model_real_lake.py::test_bias_statistics_2018_2024 SKIPPED [100%]
+
+============================= slowest 10 durations =============================
+1511.94s setup    tests/integration/test_risk_model_real_lake.py::test_daily_regressions_are_sane
+183.23s setup    tests/integration/test_risk_model_real_lake.py::test_model_at_year_end_is_valid_and_adds_up
+0.11s call     tests/integration/test_risk_model_real_lake.py::test_persisted_model_round_trips
+0.07s teardown tests/integration/test_risk_model_real_lake.py::test_bias_statistics_2018_2024
+0.02s call     tests/integration/test_risk_model_real_lake.py::test_etf_exposures_on_real_data
+0.02s setup    tests/integration/test_risk_model_real_lake.py::test_persisted_model_round_trips
+0.01s call     tests/integration/test_risk_model_real_lake.py::test_model_at_year_end_is_valid_and_adds_up
+
+(3 durations < 0.005s hidden.  Use -vv to show these durations.)
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:143: set ATLAS_RISK_MODEL_FULL=1 for the 2018-2024 calibration
+================== 4 passed, 1 skipped in 1696.86s (0:28:16) ===================
+exit=0

@@ -1,0 +1,97 @@
+# Stage 19 — Factor risk model · Work log
+
+Append entries in order. Record failures and dead ends as honestly as successes. Commands run as `UV_CACHE_DIR=$TMPDIR/uv-cache-s19 UV_NO_SYNC=1 MPLCONFIGDIR=$TMPDIR/mpl uv run …` (sandbox), shortened below to `uv run …`.
+
+## 2026-11-04 19:30 — Rule 0, reading, gate check
+- Did: read `Project.md`, `Planning/PROGRESS.md` (Stage 18 handoff, Backlog), the Stage 19 brief, roadmap row 19, the Stage 15–18 quant code (`atlas.quant.features`, `factors`, `research`, `risk_model`), `DataView` and the lake `instruments` table (11 GICS sector names, 387 rows without a sector = former members and ETFs). Rule 0: "Project.md read. Current stage: 19 — Factor risk model (NOT STARTED)."
+- Ran: `uv sync --group dev` in the new worktree (PyPI allowed) → ok; `uv run pytest -q` → 2535 passed, 14 deselected, exit 0 (166 s). Stage 18 `verification.md` → **ALL CRITERIA VERIFIED**. Gate passed.
+- Next: copy the template, write `plan.md`.
+
+## 2026-11-04 19:50 — stage folder and plan
+- Did: copied `Planning/stages/_template/{worklog,verification}.md`; wrote [plan.md](plan.md) (14 interpretations, D1–D3, 11 tasks); `PROGRESS.md`: stage IN PROGRESS, two Decisions log rows.
+- Next: Task 0.
+
+## 2026-11-04 20:00 — Task 0: `quant.risk_model.factor_model` config
+- Did: tests `test_quant_factor_model_defaults`, `test_quant_factor_model_validation` (15 cases), `test_quant_factor_model_cross_field_validation` in `tests/unit/core/test_config.py`; updated `test_quant_risk_model_defaults` (the dump gained `factor_model`).
+- Ran: collection error (no `EtfConfig`) → red. Added `GICS_SECTORS`, `EtfConfig`, `FactorModelConfig`, `RiskModelConfig.factor_model` in `src/atlas/core/config.py` and the YAML block in `config/fund.yaml`. `tests/unit/core/test_config.py` → 272 passed.
+
+## 2026-11-04 20:10 — Task 1: synthetic world
+- Did: `tests/unit/quant/risk_model/factor_risk_world.py` (`make_world`: 11 sectors, 8 styles, static caps, true factor covariance projected onto the cap-weighted sector constraint, heterogeneous specific vols) and `test_factor_risk_world.py` (5 tests).
+- Problems / fixes: the test module imported `tests.unit…` (there is no `tests` package; the existing risk tests import `risk_world` directly) → plain import; a tuple used as a column indexer → `list(SECTORS)`. Later the world was moved from plain weekdays to NYSE sessions (`TradingCalendar`) because the store needs real sessions; `business_days=True` keeps the 20,000-session long-run test (beyond the calendar's 2030 end) on weekdays.
+- Ran: 5 passed.
+
+## 2026-11-04 20:20 — Task 2: constrained WLS (`regression.py`)
+- Did: `test_factor_risk_regression.py` (8 tests: constraint holds, noise-free exact recovery, dense KKT cross-check, WLS beats OLS under `1/√cap` noise, empty sector → NaN, frozen/aligned result, validation, synthetic recovery). Implemented `sector_constraint`, `constrained_wls` (null-space method, `lstsq`, rank check), `RegressionResult`.
+- Problems / fixes: `test_synthetic_recovery_correlation` failed at first: correlation 0.937 for the smallest sector (27 names: estimation noise 1.8%/√27 ≈ 0.35% against a 1.0% sector factor vol). That is the design of the world, not a bug: raised the world's default `sector_vol` to 1.25% (kept the brief's >0.95 threshold). Now every factor > 0.95.
+- Ran: 8 passed.
+
+## 2026-11-04 20:35 — Task 4: specific risk (`specific.py`)
+- Did: `test_factor_risk_specific.py` (11 tests). `ewma_specific_variance`, `shrink_to_sector_median` (Barra USE4 form), `specific_variance` (history/sector drops, floor), `SpecificResult`.
+- Problems / fixes: my hand-computed shrunk vol was 0.034029; the code (and the loop-based formula test next to it) gave 0.034027. Redoing the arithmetic by hand (v = 0.04/0.0616025 = 0.649326) confirmed 0.034027: the *test's* number was wrong, corrected. Also `check_names=False` for a Series name.
+- Ran: 11 passed.
+
+## 2026-11-04 21:00 — Tasks 3 and 5: factor model (`factor_model.py`)
+- Did: `FactorSet`, `standardize_styles`, `prepare_exposures`, `CrossSection`, `fit_factor_history`, `FactorHistory`, `newey_west_covariance`, `factor_covariance`, `RiskModel`, `build_risk_model`; `test_factor_risk_model.py` (28 tests incl. the hand-computed Newey-West example, AR(1) long-run variance, hypothesis PSD property, point-in-time, build-time, calibration). A first `bias_statistic` was written early for the calibration test (completed in Task 6).
+- Problems / fixes: (1) the read-only test used chained assignment on a returned copy (pandas warns) → hold the copies in variables; (2) wrong expected count (496 vs 497: 500 + `NEWCO` − 4 dropped); (3) the point-in-time test built a boolean mask of the wrong shape → `.loc[later] = 9.0`.
+- Measured (synthetic, N = 500, T = 750, seeds 31–33): regression 7 ms/session (5.3–6.1 s for 750 sessions); `build_risk_model` 0.013–0.018 s per date (limit 2 s); bias statistic over 250 out-of-sample sessions, mean over 20 portfolios: random long/short 1.011–1.028, long-only 0.969–1.024, single names 0.963–1.025, cap-weighted market 0.951–1.053. The raw factor covariance has condition number ∞ (static caps make the constrained factor returns exactly collinear), so the `condition_floor` repair always applies (floor λmax/1e5, ≈ 0.003% daily vol): expected, recorded in `RiskModel.adjustments`. Test bounds set to the plan's [0.9, 1.1].
+- Ran: 28 passed.
+
+## 2026-11-04 21:20 — Task 6: portfolio analytics (`analytics.py`)
+- Did: `test_factor_risk_analytics.py` (9 tests: hypothesis decomposition, hand example, X'w, finite-difference gradient, zero portfolio, unknown names, validation, order independence, bias statistic). `PortfolioRisk`, `portfolio_risk`, `factor_exposures`, `marginal_contribution`, `bias_statistic`.
+- Ran: 9 passed first time.
+
+## 2026-11-04 21:30 — Task 7: ETF betas (`etf_mapping.py`)
+- Did: `test_factor_risk_etf.py` (10 tests). `etf_exposures` (ridge OLS on demeaned data, dof-corrected residual variance, floor), `EtfExposures`, `extend_model`.
+- Notes: the sector constraint makes only the part of a beta orthogonal to the constraint direction identifiable, so the recovery tests plant betas in that subspace (documented in the module); the ridge picks the minimum-norm solution, which leaves all risk numbers unchanged.
+- Problems / fixes: "every ETF dropped" test used `etf.iloc[:50]`, which shares no dates with the last-252 window (→ `ValueError`, correct) → use `iloc[-50:]`; a fixture rebuilt the cross-section list on every loop iteration (22 s) → hoisted (2.5 s).
+- Ran: 10 passed.
+
+## 2026-11-04 21:50 — Task 8: persistence (`store.py`)
+- Did: tables `factor_returns`, `risk_model_snapshots` (registered in `DEFAULT_REGISTRY`), `RiskModelStore` (`write_factor_returns`, `read_factor_returns`, `read_diagnostics`, `write_snapshot`, `read_snapshot`, `snapshot_dates`), `risk_model_config_hash`; `test_factor_risk_store.py` (10 tests).
+- Problems / fixes — a real look-ahead bug caught while reading the semantics of `AsOf.for_session`: it is the *08:00 decision* of the day, so a `DataView` at D knows bars through D−1. My first `available_at` (the day's cutoff − 1 µs, copied from `FactorStore`) would have exposed a factor return of session D at D's 08:00, before D's close. Fixed: `RiskModel.as_of` and the store key are the **data date** (last session included) and `available_at = bar_available_at(data date)`; readers use a decision as-of, so D's rows appear from the next session's morning. Tests changed accordingly (`after(day)` = next session; `test_read_is_point_in_time` asserts invisibility on D itself).
+- Also: the synthetic world's weekday dates included market holidays (MLK Day) → the calendar raised in `bar_available_at`; the world now uses NYSE sessions.
+- Ran: 10 passed.
+
+## 2026-11-04 22:20 — Task 9a: loader (`loader.py`) on the Stage 16 synthetic lake
+- Did: `style_inputs`, `build_model_from_view`, `load_cross_sections`, `build_factor_history`; `tests/unit/quant/risk_model/conftest.py` (puts `tests/unit/quant/factors` on `sys.path` so the Stage 16 `factor_world.build_factor_world` can be reused when this directory is run alone); `test_factor_risk_loader.py` (6 tests incl. "rewriting the bars of the last session changes only that session's returns" and a source-level "uses only DataView" check).
+- Problems / fixes: expected 24 sessions in the window; there are 23 (Presidents' Day) — test number corrected. The look-ahead test first multiplied the last bar by 1.5, which tripped the data-quality checks so every symbol was blocked, leaving an empty `PricePanel` and an obscure `KeyError` inside `beta_252d`: the loader now raises `DataError("every name in the window is blocked …")` and the test uses a 4% change.
+- Limits: the Stage 16 world has only 12 names and 3 sectors, fewer than the 20 factors; the regression cannot be fitted on it (`DataError`, by design), so the loader→regression path is exercised by the real-lake integration test (Task 9b).
+- Ran: 6 passed (25 s).
+
+## 2026-11-04 22:40 — package exports, lint, types
+- Did: `atlas.quant.risk_model.__init__` exports (66 names). `ruff format` reformatted 12 files; `ruff check` fixed 2 + 6 manual (SIM108 ×2, E501, RUF043, RUF059 ×2); one mypy error in the loader (`Series | DataFrame`) → `cast`.
+- Changed a Stage 18 test: `test_risk_covariance.py::test_package_exports` asserted `set(__all__) == EXPORTS` (the exact Stage 18 names), which cannot hold once the package grows. It now asserts `EXPORTS <= set(__all__)` (the Stage 18 API stays exported), and the new `test_factor_risk_package.py` pins the Stage 19 names. Not a weakened assertion: the intent (Stage 18's names remain public) is kept.
+- Ran: `uv run ruff check src tests` → All checks passed; `uv run ruff format src tests` → formatted; `uv run mypy src/atlas` → Success: no issues found in 119 source files; `uv run pytest tests/unit/quant/risk_model -q` → 177 passed.
+
+## 2026-11-04 23:00 — mutation checks, real-lake dry run
+- Ran: `artifacts/mutate.py` (45 mutants) → 41 caught, 4 SURVIVED: WLS weights `cap` instead of `√cap` in `fit_factor_history`, factor covariance not symmetrised, PSD repair skipped, condition floor skipped. Real gaps in the tests, not equivalent mutants:
+  - added `test_history_uses_sqrt_cap_weights` (history row equals a direct `constrained_wls` with `√cap`) and `test_newey_west_is_exactly_symmetric` (`array_equal`);
+  - the repair tests were weaker than they looked: my "indefinite" example (strong negative autocorrelation) was not actually indefinite, and the two repairs mask each other (the floor also fixes a non-PSD matrix). New `_inconsistent_pairs()` frame (pairwise correlations a~b = 1, b~c = 1, a~c = −1, NaN elsewhere) is verified indefinite before repair; `test_repairs_are_recorded` asserts `nearest_psd` for it, `condition_floor` for a singular frame and no adjustment for a clean one.
+  - Re-run of the four → 4/4 caught, so 45/45 · raw: [artifacts/mutation-checks.txt](artifacts/mutation-checks.txt), [artifacts/mutation-checks-rerun.txt](artifacts/mutation-checks-rerun.txt). One extra test added before the run for the ETF degrees-of-freedom mutant (a 10% tolerance could not see n vs n−K−1).
+- Real-lake dry run (2021-10-01..2022-03-31, read only): 126 sessions × ~504 names, regressions 17.6 ms/session, R² mean 0.364, annualised factor vols sane (market 18.4%, energy 29.2%, leverage 1.5%), no NaN factor-days. **Loading took 831 s** (6 monthly anchors): cProfile on one month shows ~136 s per anchor inside the Stage 16 `factor_panel` (`DataView.fundamentals_panel` / `fundamentals_history`, per-symbol loops over ~500 names), not in the risk-model code. The script then failed: warm-up 40 < `min_history` 63 sessions (my argument, the library correctly raised `DataError`).
+- Decision: new config key `quant.risk_model.factor_model.anchor_months` (1 = refresh the fundamental styles every month-end; the evidence run uses 3 = quarter-ends, since fundamentals change quarterly) so the 2018–2024 build is feasible (28 anchors ≈ 1 h instead of 84 ≈ 3 h); script takes `warmup` and `model_every`. Test `test_anchor_months_holds_fundamental_styles_longer`. The slow `factor_panel` goes to the Backlog.
+- Ran: `uv run pytest tests/unit/quant/risk_model -q` → 183 passed (brief's Verify) · `-W error` → 183 passed · coverage of `atlas.quant.risk_model` 97% (new modules 92–100%) · `make check` → exit 0 (ruff, 277 files formatted, mypy 119 files, 2647 passed, 18 deselected) · raw: [artifacts/make-check.txt](artifacts/make-check.txt), [artifacts/verify-brief.txt](artifacts/verify-brief.txt), [artifacts/coverage.txt](artifacts/coverage.txt).
+- Next: full 2018–2024 real-lake run (background), then verification records, commit, merge.
+
+## 2026-11-04 23:30 — owner-requested audit ("help me to fully audit this stage, find the remaining gaps and fix the problems of this stage")
+Re-read the brief, the plan and every module line by line against Project.md and CLAUDE.md. Gaps found and fixed (failing test first for 1–5):
+1. `fit_factor_history(on_short="skip")` caught only cross-section errors; a rank-deficient regression day still aborted the whole build → the regression is now inside the guarded block (`test_skip_also_covers_a_rank_deficient_day`).
+2. `factor_covariance` checked only the number of sessions: a factor observed on a handful of days (a sector absent most of the window) would get a covariance from those few points → each factor needs `min_history` observed returns, else `DataError` naming it (`test_factor_covariance_needs_min_history_per_factor`).
+3. `build_risk_model` silently built a model from a history ending long before the as-of (a stale model labelled current) → new config key `factor_model.max_stale_sessions` (5); more sessions between the last factor return and the as-of → `DataError` (`test_stale_history_is_rejected`).
+4. `extend_model` dropped the ETFs' own drop reasons → merged into `RiskModel.dropped` (`test_extend_model_reports_dropped_etfs`).
+5. `RiskModel` accepted non-finite `x`/`f`/`d` and an asymmetric `f` → validated (`test_risk_model_validates_values`).
+6. The regression docstring (and plan interpretation 5) claimed the market factor *is* the cap-weighted market return; that is exact only with cap regression weights, approximate with √cap → wording fixed and pinned by `test_market_factor_tracks_the_cap_weighted_return` (corr > 0.98 with √cap; equal to 1e-14 with cap weights).
+7. No real-data path for the brief's ETF item → `etf_exposures_from_view(view, history, etfs=None)` (default universe `factor_model.etf.universe` = `macro_etfs`, new config key) using only factor returns up to the view's last known session.
+8. The brief's persistence item had storage but no orchestration → `build_and_store(lake, store, start, end, config, symbols=None, etfs=None)`: fits the window, writes factor returns, writes a snapshot on every month-end with at least `min_history` sessions (models built from a view at the next session, history cut at the month-end).
+9. `build_model_from_view` / `build_factor_history` had no unit tests → wiring tests with monkeypatched inputs; tests for 7 and 8 on the Stage 16 synthetic lake / a scratch lake. Honest note: the code and tests of 7–9 were written in one step, not red-first; their bite is shown by mutants instead.
+10. The integration test was impractical (every model build re-ran `factor_panel`, ~2 min each; the full calibration would have taken hours) and carried a dummy `assert bias_statistic is not None` → rewritten: quarterly anchors, one shared year-end model fixture, a real ETF check (SPY market beta ≈ 1, XLE/XLK load on their sectors), bias statistics computed with `bias_statistic`.
+- Mutants for every audit fix added to `artifacts/mutate.py` (55 in all); `--only "audit:"` → 10/10 caught · raw: [artifacts/mutation-checks-audit.txt](artifacts/mutation-checks-audit.txt). The first version of the "skip" mutant did not really move the regression out of the `try`; replaced by one that reproduces the pre-audit code exactly.
+- New config keys: `max_stale_sessions` 5, `etf.universe` macro_etfs (YAML commented; config tests updated).
+- Ran (final code): `make check` → exit 0 (ruff all passed, 277 files formatted, mypy 119 files, 2658 passed, 19 deselected; 643 s, run alongside the real-lake jobs) · brief's Verify `uv run pytest tests/unit/quant/risk_model -q` → 193 passed · raw: [artifacts/make-check.txt](artifacts/make-check.txt), [artifacts/verify-brief.txt](artifacts/verify-brief.txt).
+- Ran (final code, real lake read only): `ATLAS__DATA__LAKE_PATH=~/Projects/atlas-capital/data uv run pytest tests/integration/test_risk_model_real_lake.py -m integration -v` → 4 passed, 1 skipped (the 2018–2024 calibration, by flag) in 1,697 s (load + fit 2023 with quarterly anchors 1,512 s; year-end `style_inputs` 183 s): regressions sane (≥ 95% of sessions fitted, ≥ 300 names, R² in (0.1, 0.9), market vol plausible, no NaN factor-day), year-end model PD and its decomposition adds up, an equal-weighted portfolio is mostly factor risk, the stored snapshot round-trips and is invisible on its own data date, SPY market beta ≈ 1 with R² > 0.95, XLE/XLK load > 0.5 on Energy / Information Technology · raw: [artifacts/integration-real-lake-2023.txt](artifacts/integration-real-lake-2023.txt).
+- Real-lake coverage diagnosis (2018–2024 run shows n_names mean 387 of ~503 members): one cross-section each on 2018-03-01 / 2023-03-01 → members 503 / 502, with a return 429 / 497, kept 342 / 410; dropped `sector` 51 / 53 (no GICS sector in `instruments`), `cap` 36 / 34 (no market cap from `factor_panel`); no name dropped for missing styles. Data-coverage gaps of Stages 07/08/09, not risk-model code: the model correctly refuses to guess → Backlog.
+
+## 2026-11-05 00:30 — final mutation run, last fix, records
+- Ran: 2018–2024 real-lake build finished (exit 0; 1,761 sessions, 0 skipped, bias 0.85–1.14, `build_risk_model` 0.013 s for 422 names) · raw: [artifacts/real-lake-bias.txt](artifacts/real-lake-bias.txt). It started before the audit fixes; those change no numerical path, and the final code was re-run on the real lake by the integration test.
+- Ran: full `artifacts/mutate.py` (55) on the audited code → 54 caught, 1 SURVIVED: "factor history minimum disabled". Cause: the audit's per-factor check (every factor ≥ `min_history` observed returns) implies the session-count check, so the mutant had become equivalent. Fix: removed the redundant check (docstring updated; empty factor frame → `ValueError`) and the mutant; re-ran every `factor_model.py` mutant → 21/21 · raw: [artifacts/mutation-checks-final.txt](artifacts/mutation-checks-final.txt), [artifacts/mutation-checks-final-factor-model.txt](artifacts/mutation-checks-final-factor-model.txt). `-W error` → 193 passed.
+- Records: `plan.md` ticked (one deviation annotated), `verification.md`, `PROGRESS.md` (status, checkbox, two Decisions log rows, Backlog incl. the real-data coverage gap, handoff + evidence).

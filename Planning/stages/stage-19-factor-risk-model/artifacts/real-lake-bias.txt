@@ -1,0 +1,42 @@
+# Stage 19 real-lake check · 2018-01-02 .. 2024-12-31 · lake /Users/zzjsmacbookair/Projects/atlas-capital/data
+cross-sections: 1761 sessions, names/session 503, load 5976 s
+regressions: 1761 sessions fitted, skipped 0, fit 305 s (173.3 ms/session); R2 mean 0.350 (min 0.055), n_names mean 387
+annualised factor vol (%) over the window:
+market                    21.71
+Communication Services    12.72
+Consumer Discretionary    10.29
+Consumer Staples           9.86
+Energy                    24.09
+Financials                10.89
+Health Care               10.18
+Industrials                9.19
+Information Technology    10.69
+Materials                 11.57
+Real Estate               13.55
+Utilities                 13.29
+momentum                   5.12
+value                      3.52
+quality                    2.11
+size                       3.58
+beta                       7.95
+growth                     2.76
+leverage                   1.54
+liquidity                  3.42
+NaN factor-days: 0
+models built at 12 month-ends; build time mean 139.1 s (incl. style_inputs: factor_panel + features); adjustments {}
+realised-return cells: 97734, missing (counted as 0): 21 (0.02%)
+bias statistic sqrt(mean z^2), pooled out-of-sample (1.00 = calibrated):
+  cap_weighted              1.143  (n=252)
+  equal_weighted            1.064  (n=252)
+  random_long_short         1.054  (n=2520)
+  tilt_momentum             0.887  (n=252)
+  tilt_value                0.915  (n=252)
+  tilt_quality              0.891  (n=252)
+  tilt_size                 1.026  (n=252)
+  tilt_beta                 0.940  (n=252)
+  tilt_growth               0.848  (n=252)
+  tilt_leverage             0.891  (n=252)
+  tilt_liquidity            0.990  (n=252)
+  single_names              1.005  (n=97734)
+build_risk_model from a fitted history: 422 names, 0.013 s; dropped 80; adjustments ()
+finished
