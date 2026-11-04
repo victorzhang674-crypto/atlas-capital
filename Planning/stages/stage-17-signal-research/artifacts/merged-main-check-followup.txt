@@ -1,0 +1,118 @@
+# Stage 17: fast-forward + verification on merged main · 2026-11-04 10:33 EST · mode full
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/stage-17-signal-research-905219
+Updating 6c922f2..659dec9
+Fast-forward
+ Planning/PROGRESS.md                               |  7 +++
+ .../artifacts/followup-coverage.txt                | 18 ++++++
+ .../artifacts/followup-make-check.txt              | 66 ++++++++++++++++++++++
+ .../artifacts/followup-mypy.txt                    |  2 +
+ .../artifacts/followup-pytest.txt                  | 59 +++++++++++++++++++
+ .../artifacts/followup-ruff-check.txt              |  2 +
+ .../artifacts/followup-ruff-format.txt             |  2 +
+ .../artifacts/followup-verify-research-werror.txt  |  3 +
+ .../artifacts/followup-verify-research.txt         |  3 +
+ .../artifacts/merged-main-check-records.txt        | 63 +++++++++++++++++++++
+ .../stage-17-signal-research/artifacts/mutate.py   |  7 +++
+ .../artifacts/mutation-checks-run3.txt             | 30 ++++++++++
+ .../artifacts/mutation-checks.txt                  |  5 +-
+ .../stage-17-signal-research/verification.md       | 11 ++++
+ .../stages/stage-17-signal-research/worklog.md     | 13 +++++
+ src/atlas/cli/research_cmd.py                      | 18 ++++--
+ src/atlas/quant/research/tearsheet.py              | 24 +++++++-
+ tests/unit/cli/test_research_cmd.py                |  8 +++
+ .../unit/quant/research/test_research_tearsheet.py | 30 ++++++++++
+ 19 files changed, 363 insertions(+), 8 deletions(-)
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/followup-coverage.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/followup-make-check.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/followup-mypy.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/followup-pytest.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/followup-ruff-check.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/followup-ruff-format.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/followup-verify-research-werror.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/followup-verify-research.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/merged-main-check-records.txt
+ create mode 100644 Planning/stages/stage-17-signal-research/artifacts/mutation-checks-run3.txt
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD 659dec9
+
+$ uv sync --group dev
+Resolved 87 packages in 19ms
+Checked 86 packages in 31ms
+exit=0
+
+$ uv lock --check
+Resolved 87 packages in 3ms
+exit=0
+
+$ uv run pytest -q
+........................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.28 s (limit 20 s)
+2430 passed, 14 deselected in 147.06s (0:02:27)
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest tests/unit/quant/research -q
+60 passed in 17.43s
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+248 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 108 source files
+uv run pytest -q
+........................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.23 s (limit 20 s)
+2430 passed, 14 deselected in 146.95s (0:02:26)
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+659dec9 stage-17: audit follow-up (run id, turnover proxy, records)
+6c922f2 stage-17: merged-main, CI and audit-fix records
+d3337f5 stage-17: Signal research toolkit (IC, quantiles, decay)
+exit=0
+
+$ git branch --merged main
++ claude/agitated-driscoll-166517
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
++ claude/stage-17-signal-research-905219
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
+
+$ git push origin main claude/stage-17-signal-research-905219
+To https://github.com/victorzhang674-crypto/atlas-capital.git
+   6c922f2..659dec9  claude/stage-17-signal-research-905219 -> claude/stage-17-signal-research-905219
+   6c922f2..659dec9  main -> main
+exit=0
+
+$ git status -sb
+## main...origin/main
+exit=0
+
+$ gh run list --limit 3
+queued		stage-17: audit follow-up (run id, turnover proxy, records)	CI	main	push	41859897907	0s	2026-11-04T15:38:45Z
+completed	success	stage-17: merged-main, CI and audit-fix records	CI	main	push	41852346388	9m19s	2026-11-04T14:55:00Z
+completed	success	stage-17: merged-main, CI and audit-fix records	CI	claude/stage-17-signal-research-905219	push	41852346332	8m27s	2026-11-04T14:55:00Z
+exit=0
+# CI runs of 659dec9 (stage-17 audit follow-up), checked 2026-11-04 10:40 EST
+# CI runs of 659dec9f28bddc2192d2fd0d202dcbd53ca66b3b (stage-17 audit follow-up), checked 2026-11-04 10:46 EST
+completed	success	stage-17: audit follow-up (run id, turnover proxy, records)	CI	claude/stage-17-signal-research-905219	push	41859898881	7m55s	2026-11-04T15:38:46Z
+completed	success	stage-17: audit follow-up (run id, turnover proxy, records)	CI	main	push	41859897907	6m14s	2026-11-04T15:38:45Z
