@@ -870,6 +870,7 @@ Full block and raw output: [verification.md](stages/stage-16-fundamental-factors
   - `uv run mypy src/atlas` → Success: no issues found in 100 source files
   - `uv run pytest tests/unit/quant/factors -q` (brief's Verify) → 114 passed
   - `make check` → exit 0; `-W error` → 114 passed; coverage of `atlas.quant.factors` 99%; mutation checks 29/29 caught; real-lake smoke (read only) 2024-01-31 and 2026-09-30 → 502 / 503 names, invariants to 1e-14
+  - On merged `main` (`1137fb7`, fast-forward of `518a6d6` via the owner's Terminal panel): `uv run pytest -q` → 2322 passed; brief's Verify → 114 passed; `make check` → exit 0; pushed `main` and `claude/agitated-driscoll-166517` to `origin` · raw: [artifacts/merged-main-check.txt](stages/stage-16-fundamental-factors/artifacts/merged-main-check.txt)
 - Acceptance criteria:
   - [x] Factor panels for any date use only filings available at that date — evidence: `test_factor_pit.py` (later rows change nothing at the as-of and do change it later; 1 s before / at / after the cutoff; truncated-lake equality on 3 dates), leak suite on `fundamentals_history`/`split_factors`, store PIT reads, 3 look-ahead mutants caught; sector-less names not grouped (audit fix)
   - [x] The cleaning invariants hold — evidence: `test_factor_cleaning.py` (winsor bounds, z mean≈0/std≈1, sector sums≈0, size orthogonality, hypothesis property test), `test_exposures_invariants`, real lake: |mean| ≤ 2.7e-17, |std − 1| ≤ 1.1e-16, |sector sum| ≤ 1.5e-14

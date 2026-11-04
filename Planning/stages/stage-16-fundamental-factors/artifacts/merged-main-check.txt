@@ -1,0 +1,158 @@
+# Stage 16: fast-forward + verification on merged main · 2026-11-04 06:26 EST · mode full
+$ git status --short   (before; empty = clean)
+exit=0
+
+$ git merge --ff-only claude/agitated-driscoll-166517
+Updating 518a6d6..1137fb7
+Fast-forward
+ Planning/PROGRESS.md                               |  48 +-
+ .../artifacts/.gitkeep                             |   0
+ .../artifacts/coverage.txt                         |  16 +
+ .../artifacts/gate-check-pytest.txt                |  55 +++
+ .../artifacts/make-check.txt                       |  65 +++
+ .../artifacts/merged-main-check.sh                 |  28 ++
+ .../artifacts/mutate.py                            | 131 ++++++
+ .../artifacts/mutation-checks.txt                  |  32 ++
+ .../artifacts/mypy.txt                             |   2 +
+ .../artifacts/pytest.txt                           |  58 +++
+ .../artifacts/real-lake-smoke.txt                  |  80 ++++
+ .../artifacts/real_lake_smoke.py                   |  51 +++
+ .../artifacts/ruff-check.txt                       |   2 +
+ .../artifacts/ruff-format.txt                      |   2 +
+ .../artifacts/verify-factors-werror.txt            |   4 +
+ .../artifacts/verify-factors.txt                   |   4 +
+ .../stages/stage-16-fundamental-factors/plan.md    | 107 +++++
+ .../stage-16-fundamental-factors/verification.md   |  27 ++
+ .../stages/stage-16-fundamental-factors/worklog.md |  74 ++++
+ config/fund.yaml                                   |  11 +
+ src/atlas/core/config.py                           |  35 ++
+ src/atlas/data/fundamentals/__init__.py            |   8 +
+ src/atlas/data/fundamentals/pit.py                 | 149 ++++++-
+ src/atlas/data/view.py                             | 104 ++++-
+ src/atlas/quant/factors/__init__.py                |  74 ++++
+ src/atlas/quant/factors/cleaning.py                | 188 ++++++++
+ src/atlas/quant/factors/composite.py               |  62 +++
+ src/atlas/quant/factors/fundamental.py             | 491 +++++++++++++++++++++
+ src/atlas/quant/factors/store.py                   | 214 +++++++++
+ tests/unit/core/test_config.py                     |  35 ++
+ .../data/fundamentals/test_fundamentals_history.py | 206 +++++++++
+ tests/unit/data/test_view_history.py               | 184 ++++++++
+ tests/unit/data/test_view_pit.py                   |  16 +
+ tests/unit/quant/factors/factor_world.py           | 384 ++++++++++++++++
+ tests/unit/quant/factors/test_factor_cleaning.py   | 280 ++++++++++++
+ tests/unit/quant/factors/test_factor_composite.py  |  82 ++++
+ tests/unit/quant/factors/test_factor_market.py     | 146 ++++++
+ tests/unit/quant/factors/test_factor_panel.py      | 217 +++++++++
+ tests/unit/quant/factors/test_factor_pit.py        | 167 +++++++
+ tests/unit/quant/factors/test_factor_raw.py        | 360 +++++++++++++++
+ tests/unit/quant/factors/test_factor_store.py      | 166 +++++++
+ 41 files changed, 4340 insertions(+), 25 deletions(-)
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/.gitkeep
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/coverage.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/gate-check-pytest.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/merged-main-check.sh
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/mutate.py
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/mutation-checks.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/mypy.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/pytest.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/real-lake-smoke.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/real_lake_smoke.py
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/ruff-check.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/ruff-format.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/verify-factors-werror.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/verify-factors.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/plan.md
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/verification.md
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/worklog.md
+ create mode 100644 src/atlas/quant/factors/__init__.py
+ create mode 100644 src/atlas/quant/factors/cleaning.py
+ create mode 100644 src/atlas/quant/factors/composite.py
+ create mode 100644 src/atlas/quant/factors/fundamental.py
+ create mode 100644 src/atlas/quant/factors/store.py
+ create mode 100644 tests/unit/data/fundamentals/test_fundamentals_history.py
+ create mode 100644 tests/unit/data/test_view_history.py
+ create mode 100644 tests/unit/quant/factors/factor_world.py
+ create mode 100644 tests/unit/quant/factors/test_factor_cleaning.py
+ create mode 100644 tests/unit/quant/factors/test_factor_composite.py
+ create mode 100644 tests/unit/quant/factors/test_factor_market.py
+ create mode 100644 tests/unit/quant/factors/test_factor_panel.py
+ create mode 100644 tests/unit/quant/factors/test_factor_pit.py
+ create mode 100644 tests/unit/quant/factors/test_factor_raw.py
+ create mode 100644 tests/unit/quant/factors/test_factor_store.py
+exit=0
+# checkout: /Users/zzjsmacbookair/Projects/atlas-capital · branch main · HEAD 1137fb7
+
+$ uv sync --group dev
+Resolved 80 packages in 15ms
+Checked 79 packages in 25ms
+exit=0
+
+$ uv lock --check
+Resolved 80 packages in 3ms
+exit=0
+
+$ uv run pytest -q
+.................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.73 s (limit 20 s)
+2322 passed, 14 deselected in 197.86s (0:03:17)
+ - ... skipped remainder
+exit=0
+
+$ uv run pytest tests/unit/quant/factors -q
+114 passed in 137.05s (0:02:17)
+exit=0
+
+$ make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+231 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 100 source files
+uv run pytest -q
+.................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.87 s (limit 20 s)
+2322 passed, 14 deselected in 194.50s (0:03:14)
+ - ... skipped remainder
+exit=0
+
+$ git log --oneline -3
+1137fb7 stage-16: Fundamental factor library
+518a6d6 phase-1 checkpoint: Tier 4 merged-main check records
+98ad034 phase-1 checkpoint: Tier 4 follow-ups (stages 07, 08, 14)
+exit=0
+
+$ git branch --merged main
++ claude/agitated-driscoll-166517
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+exit=0
+
+$ git status --short   (after; empty = clean)
+exit=0
+
+$ git push origin main claude/agitated-driscoll-166517
+To https://github.com/victorzhang674-crypto/atlas-capital.git
+   518a6d6..1137fb7  main -> main
+ * [new branch]      claude/agitated-driscoll-166517 -> claude/agitated-driscoll-166517
+exit=0
+
+$ git status -sb
+## main...origin/main
+exit=0
+
+$ gh run list --limit 3
+queued		stage-16: Fundamental factor library	CI	claude/agitated-driscoll-166517	push	41822236279	0s	2026-11-04T11:36:05Z
+queued		stage-16: Fundamental factor library	CI	main	push	41822236186	0s	2026-11-04T11:36:04Z
+completed	success	phase-1 checkpoint: Tier 4 merged-main check records	CI	claude/phase-one-checkpoint-stages-80625b	push	41764086065	1m48s	2026-11-04T02:57:56Z
+exit=0
