@@ -1,0 +1,52 @@
+caught    percentile ties counted below only
+caught    percentile window ignored (expanding)
+caught    vol score = min instead of max
+caught    CRISIS without the floors
+caught    LOW threshold inclusive
+caught    breadth counts at-the-average as above
+caught    breadth min names ignored
+caught    trend UP needs only majority
+caught    trend without the MA vote allowed
+caught    states not ordered by vol
+caught    order reversed (turbulent first)
+caught    transition matrix not permuted
+caught    no standardisation stored
+caught    filter skips the transition step
+caught    filter not normalised
+caught    look-ahead: fit window includes the month
+caught    look-ahead: probability of day t uses row t
+caught    min_obs ignored
+caught    degenerate starts accepted
+caught    multithreaded fits (not reproducible)
+caught    growth tie counts as up
+caught    inflation tie counts as falling
+caught    claims not inverted
+caught    claims short/long swapped
+caught    proxy unhedged
+caught    proxy sign flipped
+caught    proxy level from 0 before the data
+caught    zscore on a partial window
+caught    OAS used when too short
+caught    stress threshold inclusive
+caught    NFCI ignored
+caught    scalar not clipped
+caught    stress multiplier dropped
+caught    HMM threshold strict
+caught    quadrant multiplier dropped
+caught    state may be dated on its data date
+caught    look-ahead: FRED rows not filtered by the decision
+caught    look-ahead: HMM filter sees the panel's later rows
+caught    look-ahead: VIX percentile uses later sessions
+caught    look-ahead: credit proxy z uses later sessions
+caught    HMM fit slope known at t, not at the month start
+caught    panel anchored at the decision (not fixed)
+caught    breadth on today's members for every day
+caught    FRED gaps filled without limit
+caught    stored state available at its decision
+caught    other settings' rows read
+caught    rewrite appends instead of replacing
+caught    latest returns the oldest
+caught    macro_vintages not point in time
+caught    members_on accepts a later day
+
+50/50 mutants caught

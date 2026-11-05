@@ -1,0 +1,10 @@
+src/atlas/data/macro/pit.py                   83      0   100%
+src/atlas/quant/regime/__init__.py             7      0   100%
+src/atlas/quant/regime/hmm.py                170      0   100%
+src/atlas/quant/regime/loader.py             189      0   100%
+src/atlas/quant/regime/macro_quadrant.py      92      0   100%
+src/atlas/quant/regime/state.py               75      0   100%
+src/atlas/quant/regime/store.py              103      0   100%
+src/atlas/quant/regime/vol_trend.py           51      0   100%
+TOTAL                                       1224     40    97%
+884 passed, 1 deselected in 50.18s

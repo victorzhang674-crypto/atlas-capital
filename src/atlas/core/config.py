@@ -1165,6 +1165,179 @@ class MetricsConfig(_Frozen):
         return _ascending_positive("liquidity_horizons", value)
 
 
+class RegimeVolConfig(_Frozen):
+    """Volatility regime (`atlas.quant.regime.vol_trend`, Stage 21).
+
+    Units: windows are sessions; thresholds are percentiles (fractions in (0, 1]); the floors
+    are VIX index points and an annualised volatility fraction. The benchmark's 21-session
+    realised vol and VIX are each ranked against their trailing `percentile_window` sessions
+    (`percentile_min_obs` needed); the score is the larger rank. Score < `low_below` → LOW,
+    < `high_from` → NORMAL, < `crisis_from` → HIGH, else CRISIS when VIX ≥ `crisis_vix_floor`
+    or realised vol ≥ `crisis_rv_floor` (otherwise HIGH).
+    """
+
+    percentile_window: Annotated[int, Field(ge=20)] = 1260
+    percentile_min_obs: Annotated[int, Field(ge=2)] = 252
+    low_below: _OpenFrac = 0.25
+    high_from: _OpenFrac = 0.75
+    crisis_from: _Frac = 0.95
+    crisis_vix_floor: _NonNeg = 30.0
+    crisis_rv_floor: _NonNeg = 0.30
+
+    @model_validator(mode="after")
+    def _ordered(self) -> Self:
+        if self.percentile_min_obs > self.percentile_window:
+            raise ValueError(
+                f"percentile_min_obs ({self.percentile_min_obs}) must not exceed "
+                f"percentile_window ({self.percentile_window})"
+            )
+        if not self.low_below < self.high_from < self.crisis_from:
+            raise ValueError("low_below < high_from < crisis_from must be ascending")
+        return self
+
+
+class RegimeTrendConfig(_Frozen):
+    """Trend regime (Stage 21). Three votes (benchmark above its 200-session SMA, 12-1
+    momentum > 0, breadth > `breadth_bull_above`); breadth needs `breadth_min_names` members
+    with a value. Bullish share of the available votes ≥ `up_share` → UP, ≤ `down_share` →
+    DOWN, else NEUTRAL. Shares are fractions."""
+
+    breadth_min_names: Annotated[int, Field(ge=1)] = 20
+    breadth_bull_above: _OpenFrac = 0.5
+    up_share: Annotated[float, Field(gt=0.5, le=1)] = 1.0
+    down_share: Annotated[float, Field(ge=0, lt=0.5)] = 0.34
+
+
+class RegimeHMMConfig(_Frozen):
+    """Statistical regime: Gaussian HMM (hmmlearn) on an expanding window refitted monthly
+    (Stage 21). `n_states` 2 or 3, ordered by volatility; a fit needs `min_obs` feature rows
+    (sessions); `n_init` seeded starts (`seed + i`), each up to `n_iter` EM iterations with
+    tolerance `tol` (log-likelihood); a start with a state holding less than
+    `min_state_share` of the rows (or a singular covariance) is degenerate and skipped. The
+    risk scalar treats P(turbulent) ≥ `turbulent_prob` as the turbulent state."""
+
+    n_states: Annotated[int, Field(ge=2, le=3)] = 3
+    min_obs: Annotated[int, Field(ge=50)] = 504
+    n_init: Annotated[int, Field(ge=1)] = 5
+    n_iter: Annotated[int, Field(ge=10)] = 200
+    tol: Annotated[float, Field(gt=0)] = 1.0e-4
+    seed: Annotated[int, Field(ge=0)] = 21
+    turbulent_prob: _OpenFrac = 0.5
+    min_state_share: Annotated[float, Field(ge=0, lt=0.5)] = 0.01
+
+
+class RegimeCreditConfig(_Frozen):
+    """Credit stress inputs (Stage 21). FRED serves the HY OAS (`oas_series`, percent) only for
+    the last 3 years, so a price proxy is used where it is short: the duration-hedged excess
+    log return of `proxy_long` over `proxy_hedge` (`ln r_long - proxy_hedge_ratio · ln
+    r_hedge`); its negative running sum is the spread-widening level. The z-score uses the
+    trailing `zscore_window` observations; `source` `auto` takes the OAS when that many OAS
+    observations are known, else the proxy (`oas` / `proxy` force one). Stress when
+    z > `zscore_threshold`."""
+
+    source: Literal["auto", "oas", "proxy"] = "auto"
+    oas_series: str = "BAMLH0A0HYM2"
+    proxy_long: str = "HYG"
+    proxy_hedge: str = "IEF"
+    proxy_hedge_ratio: _NonNeg = 0.5
+    zscore_window: Annotated[int, Field(ge=20)] = 252
+    zscore_threshold: Annotated[float, Field(gt=0)] = 2.0
+
+
+class RegimeStressConfig(_Frozen):
+    """Stress flag (Stage 21): credit z-score above its threshold or the Chicago Fed NFCI
+    (index, 0 = average conditions) above `nfci_threshold`."""
+
+    nfci_threshold: Annotated[float, Field(allow_inf_nan=False)] = 0.0
+
+
+class RegimeMacroConfig(_Frozen):
+    """Macro quadrant (Stage 21). Claims trend = mean of the last `claims_short_weeks` weekly
+    initial claims minus the mean of the last `claims_long_weeks`; FRED observations within
+    `lookback_days` calendar days before the decision day are read."""
+
+    claims_short_weeks: Annotated[int, Field(ge=1)] = 4
+    claims_long_weeks: Annotated[int, Field(ge=2)] = 26
+    lookback_days: Annotated[int, Field(ge=400)] = 800
+
+    @model_validator(mode="after")
+    def _weeks(self) -> Self:
+        if self.claims_short_weeks >= self.claims_long_weeks:
+            raise ValueError("claims_short_weeks must be below claims_long_weeks")
+        return self
+
+
+class RegimeVolScalars(_Frozen):
+    """Risk-scalar multiplier per volatility regime (fractions in (0, 1])."""
+
+    low: _Frac = 1.0
+    normal: _Frac = 1.0
+    high: _Frac = 0.7
+    crisis: _Frac = 0.4
+
+
+class RegimeTrendScalars(_Frozen):
+    """Risk-scalar multiplier per trend regime (fractions in (0, 1])."""
+
+    up: _Frac = 1.0
+    neutral: _Frac = 0.9
+    down: _Frac = 0.75
+
+
+class RegimeQuadrantScalars(_Frozen):
+    """Risk-scalar multiplier per macro quadrant (fractions in (0, 1])."""
+
+    goldilocks: _Frac = 1.0
+    reflation: _Frac = 1.0
+    stagflation: _Frac = 0.85
+    deflation: _Frac = 0.9
+
+
+class RegimeScalarConfig(_Frozen):
+    """The deterministic `risk_scalar` mapping (Stage 21): the product of the multipliers of
+    the vol regime, the trend regime, the stress flag (`stress` when flagged), the HMM
+    (`hmm_turbulent` when P(turbulent) ≥ `hmm.turbulent_prob`) and the macro quadrant; a
+    missing component multiplies by 1; the product is clipped to [`floor`, `cap`] ⊂
+    [0.25, 1]. Vol and trend tables must be monotone (a worse label never raises it)."""
+
+    floor: Annotated[float, Field(ge=0.25, le=1)] = 0.25
+    cap: Annotated[float, Field(ge=0.25, le=1)] = 1.0
+    vol: RegimeVolScalars = Field(default_factory=RegimeVolScalars)
+    trend: RegimeTrendScalars = Field(default_factory=RegimeTrendScalars)
+    stress: _Frac = 0.6
+    hmm_turbulent: _Frac = 0.85
+    quadrant: RegimeQuadrantScalars = Field(default_factory=RegimeQuadrantScalars)
+
+    @model_validator(mode="after")
+    def _shape(self) -> Self:
+        if self.floor > self.cap:
+            raise ValueError(f"floor ({self.floor}) must not exceed cap ({self.cap})")
+        v, t = self.vol, self.trend
+        if not v.low >= v.normal >= v.high >= v.crisis:
+            raise ValueError("vol multipliers must be monotone: low >= normal >= high >= crisis")
+        if not t.up >= t.neutral >= t.down:
+            raise ValueError("trend multipliers must be monotone: up >= neutral >= down")
+        return self
+
+
+class RegimeConfig(_Frozen):
+    """Market-regime detection (`atlas.quant.regime`, Stage 21). The benchmark is
+    `fund.benchmark`; breadth uses the point-in-time members of universe `universe`; the HMM
+    window starts at `train_start`; FRED daily series are carried forward over at most
+    `max_fill_sessions` sessions without an observation."""
+
+    universe: Annotated[str, Field(min_length=1)] = "sp500"
+    train_start: date = date(2015, 1, 1)
+    max_fill_sessions: Annotated[int, Field(ge=0)] = 5
+    vol: RegimeVolConfig = Field(default_factory=RegimeVolConfig)
+    trend: RegimeTrendConfig = Field(default_factory=RegimeTrendConfig)
+    hmm: RegimeHMMConfig = Field(default_factory=RegimeHMMConfig)
+    credit: RegimeCreditConfig = Field(default_factory=RegimeCreditConfig)
+    stress: RegimeStressConfig = Field(default_factory=RegimeStressConfig)
+    macro: RegimeMacroConfig = Field(default_factory=RegimeMacroConfig)
+    risk_scalar: RegimeScalarConfig = Field(default_factory=RegimeScalarConfig)
+
+
 class QuantConfig(_Frozen):
     """Quant engine settings (Phase 2)."""
 
@@ -1173,6 +1346,7 @@ class QuantConfig(_Frozen):
     research: ResearchConfig = Field(default_factory=ResearchConfig)
     risk_model: RiskModelConfig = Field(default_factory=RiskModelConfig)
     metrics: MetricsConfig = Field(default_factory=MetricsConfig)
+    regime: RegimeConfig = Field(default_factory=RegimeConfig)
 
 
 class AtlasConfig(BaseSettings):

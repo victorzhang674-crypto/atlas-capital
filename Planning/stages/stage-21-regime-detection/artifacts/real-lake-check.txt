@@ -1,0 +1,65 @@
+Model is not converging.  Current: -2405.683202357714 is not greater than -2405.683198608501. Delta is -3.7492131923499983e-06
+Model is not converging.  Current: -2847.8861662847125 is not greater than -2847.886152332237. Delta is -1.395247545588063e-05
+history 2017-01-03..2022-12-30: 1510 decision days in 54.8 s; written 1510; read back equal: True
+config_hash 013d1b22ee30; stored dates 2017-01-03 .. 2022-12-30
+
+# PIT checks
+every data_date < as_of: True
+store.latest(2020-03-16) -> 2020-03-16
+store.read(.., as_of=2020-03-16) last -> 2020-03-16
+
+# Label counts per year (vol / trend / quadrant / stress / scalar mean)
+2017 251 {'NORMAL': 59, 'LOW': 192} {'UP': 251} {'Deflation': 41, 'Goldilocks': 96, 'Reflation': 65, 'Stagflation': 49} stress 0.00 p_turb>=0.5 0.00 scalar mean 0.954 min 0.85 credit src {'proxy': 251} missing {'hmm': 39}
+2018 251 {'LOW': 26, 'NORMAL': 100, 'HIGH': 120, 'CRISIS': 5} {'UP': 203, 'NEUTRAL': 9, 'DOWN': 39} {'Reflation': 90, 'Goldilocks': 128, 'Deflation': 33} stress 0.03 p_turb>=0.5 0.62 scalar mean 0.741 min 0.25 credit src {'proxy': 251} missing {}
+2019 252 {'HIGH': 76, 'CRISIS': 3, 'NORMAL': 168, 'LOW': 5} {'DOWN': 25, 'NEUTRAL': 22, 'UP': 205} {'Deflation': 101, 'Stagflation': 91, 'Reflation': 58, 'Goldilocks': 2} stress 0.01 p_turb>=0.5 0.30 scalar mean 0.763 min 0.25 credit src {'proxy': 252} missing {}
+2020 253 {'NORMAL': 31, 'LOW': 1, 'HIGH': 148, 'CRISIS': 73} {'UP': 162, 'NEUTRAL': 31, 'DOWN': 60} {'Deflation': 94, 'Goldilocks': 40, 'Reflation': 104, 'Stagflation': 15} stress 0.11 p_turb>=0.5 0.63 scalar mean 0.553 min 0.25 credit src {'proxy': 253} missing {}
+2021 252 {'HIGH': 91, 'CRISIS': 1, 'NORMAL': 160} {'UP': 252} {'Reflation': 73, 'Goldilocks': 78, 'Stagflation': 77, 'Deflation': 24} stress 0.00 p_turb>=0.5 0.18 scalar mean 0.820 min 0.34 credit src {'proxy': 252} missing {}
+2022 251 {'NORMAL': 56, 'HIGH': 165, 'CRISIS': 30} {'UP': 36, 'NEUTRAL': 15, 'DOWN': 200} {'Stagflation': 96, 'Reflation': 60, 'Goldilocks': 31, 'Deflation': 64} stress 0.20 p_turb>=0.5 0.41 scalar mean 0.489 min 0.25 credit src {'proxy': 251} missing {}
+
+# Episodes (plan interpretation 12; thresholds fixed before the run)
+2020 crash 2020-03-09 2020-04-09 {'days': 24, 'crisis': 1.0, 'high_or_crisis': 1.0, 'stress': 1.0, 'down': 1.0, 'p_turb>=0.5': 1.0, 'scalar<=0.5': 1.0, 'scalar<1': 1.0, 'min_scalar': 0.25}
+2022 bear 2022-01-03 2022-10-31 {'days': 209, 'crisis': 0.139, 'high_or_crisis': 0.794, 'stress': 0.234, 'down': 0.775, 'p_turb>=0.5': 0.287, 'scalar<=0.5': 0.526, 'scalar<1': 0.995, 'min_scalar': 0.25}
+2017 calm 2017-01-03 2017-12-29 {'days': 251, 'crisis': 0.0, 'high_or_crisis': 0.0, 'stress': 0.0, 'down': 0.0, 'p_turb>=0.5': 0.0, 'scalar<=0.5': 0.0, 'scalar<1': 0.359, 'min_scalar': 0.85}
+PASS 2020 CRISIS >= 50%
+PASS 2020 stress >= 50%
+PASS 2020 scalar <= 0.5 on >= 50%
+PASS 2020 P(turbulent) >= 0.5 on >= 50%
+PASS 2022 DOWN >= 50%
+PASS 2022 HIGH/CRISIS >= 40%
+PASS 2022 scalar < 1 on >= 80%
+FAIL 2017 scalar < 1 on <= 25%
+PASS 2017 no CRISIS day
+ALL EPISODE CHECKS PASS: False
+
+# Attribution of scalar < 1 in calm 2017 (scalar recomputed without each component)
+without vol: scalar < 1 on 0.359
+without trend: scalar < 1 on 0.359
+without stress: scalar < 1 on 0.359
+without hmm: scalar < 1 on 0.359
+without quadrant: scalar < 1 on 0.000
+
+# Spot days
+2020-02-24 HIGH UP Goldilocks - (0.0, 1.0, 0.0) scalar 0.700 rv 0.138 vix 17.08 credit_z -1.27 (proxy) nfci -0.83 breadth 0.8 ()
+2020-03-16 CRISIS DOWN Reflation stress (0.0, 0.0, 1.0) scalar 0.250 rv 0.670 vix 57.83 credit_z 4.7 (proxy) nfci -0.67 breadth 0.12 ()
+2020-03-23 CRISIS DOWN Stagflation stress (0.0, 0.0, 1.0) scalar 0.250 rv 0.802 vix 66.04 credit_z 7.23 (proxy) nfci -0.48 breadth 0.03 ()
+2020-06-01 HIGH NEUTRAL Deflation - (0.0, 0.001, 0.999) scalar 0.482 rv 0.222 vix 27.51 credit_z 0.77 (proxy) nfci -0.51 breadth 0.44 ()
+2022-06-17 CRISIS DOWN Stagflation stress (0.0, 0.0, 1.0) scalar 0.250 rv 0.312 vix 32.95 credit_z 3.88 (proxy) nfci -0.26397 breadth 0.12 ()
+2022-10-13 HIGH DOWN Stagflation - (0.0, 0.999, 0.001) scalar 0.446 rv 0.238 vix 33.57 credit_z 1.47 (proxy) nfci -0.06267 breadth 0.16 ()
+2017-06-01 LOW UP Goldilocks - (1.0, 0.0, 0.0) scalar 1.000 rv 0.078 vix 10.41 credit_z -1.29 (proxy) nfci -0.82 breadth 0.73 ()
+
+# One-day view equals the history (spot days)
+2020-03-16 exactly equal: False | labels, stress and scalar equal: True (44.2 s)
+   hmm_probs: one-day (5.060013476280785e-202, 1.8293903832388602e-145, 1.0) | history (5.0600134761165495e-202, 1.8293903832458272e-145, 1.0)
+   realised_vol: one-day 0.6702288229847125 | history 0.6702288229847122
+   price_to_sma_200: one-day 0.8891757983070977 | history 0.8891757983070979
+   momentum_12_1: one-day 0.22282453552614623 | history 0.22282453552614667
+   breadth: one-day 0.11946902654867257 | history 0.11894273127753303
+   credit_z: one-day 4.700505820212084 | history 4.700505820211766
+   blocked at the one-day view: ['EOG', 'HP']
+2022-06-17 exactly equal: False | labels, stress and scalar equal: True (11.8 s)
+   hmm_probs: one-day (4.5952848737747395e-35, 1.3363753583380993e-06, 0.9999986636246415) | history (4.5952848737490756e-35, 1.336375358334173e-06, 0.9999986636246415)
+   realised_vol: one-day 0.31239586547007847 | history 0.3123958654700788
+   price_to_sma_200: one-day 0.8336589710825726 | history 0.8336589710825728
+   credit_z: one-day 3.8842392436922015 | history 3.88423924369206
+   blocked at the one-day view: []
+exit 0

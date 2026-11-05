@@ -1,0 +1,7 @@
+tests/integration/test_regime_real_lake.py::test_history_is_point_in_time_and_complete PASSED [ 16%]
+tests/integration/test_regime_real_lake.py::test_march_2020_is_crisis_and_stress PASSED [ 33%]
+tests/integration/test_regime_real_lake.py::test_2022_bear_market_is_flagged PASSED [ 50%]
+tests/integration/test_regime_real_lake.py::test_calm_2017_is_not_flagged_by_the_market_components PASSED [ 66%]
+tests/integration/test_regime_real_lake.py::test_one_day_view_agrees_with_the_history PASSED [ 83%]
+tests/integration/test_regime_real_lake.py::test_history_persists PASSED [100%]
+========================= 6 passed in 68.80s (0:01:08) =========================

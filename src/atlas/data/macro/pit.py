@@ -60,6 +60,29 @@ def macro_pit_detail(
     return chosen[list(DETAIL_COLUMNS)].reset_index(drop=True)
 
 
+def macro_vintages(
+    observations: pd.DataFrame, series_ids: Sequence[str], as_of: AsOf, lookback: timedelta
+) -> pd.DataFrame:
+    """Every vintage of `series_ids` known at `as_of` (rows of `macro_observations` with
+    `available_at` strictly before the cutoff, missing values included) for observations dated
+    from `as_of.day - lookback` to `as_of.day`, sorted by series (request order), observation
+    date and `realtime_start`. `known_observations` of the result at any earlier as-of gives
+    what that as-of knew (Stage 21: one read serves a history of decisions). `lookback` must be
+    positive (`ValueError`)."""
+    if lookback <= timedelta(0):
+        raise ValueError(f"lookback must be positive, got {lookback}")
+    ids = list(series_ids)
+    known = pit_filter(observations[observations["series_id"].isin(ids)], as_of)
+    first = as_of.day - lookback
+    inside = known["obs_date"].map(lambda d: first <= d <= as_of.day).astype(bool)
+    chosen = known.loc[inside].copy()
+    chosen["_order"] = chosen["series_id"].map({s: i for i, s in enumerate(ids)})
+    chosen = chosen.sort_values(["_order", "obs_date", "realtime_start"], kind="stable")
+    out = chosen[list(OBS_COLUMNS)].reset_index(drop=True)
+    assert_no_lookahead(out, as_of)
+    return out
+
+
 def macro_pit(
     observations: pd.DataFrame, series_ids: Sequence[str], as_of: AsOf, lookback: timedelta
 ) -> pd.DataFrame:
@@ -132,6 +155,13 @@ class Macro:
         """`macro_pit_detail` of `series_ids` at `as_of`."""
         ids, point = self._ids(series_ids), self._as_of(as_of)
         return macro_pit_detail(self.observations(ids), ids, point, lookback)
+
+    def vintages(
+        self, series_ids: Sequence[str], as_of: date | AsOf, lookback: timedelta
+    ) -> pd.DataFrame:
+        """`macro_vintages` of `series_ids` at `as_of` (Stage 21)."""
+        ids, point = self._ids(series_ids), self._as_of(as_of)
+        return macro_vintages(self.observations(ids), ids, point, lookback)
 
     def series_info(self) -> pd.DataFrame:
         """The stored `macro_series` rows (title, frequency, units, seasonal adjustment, kind)."""

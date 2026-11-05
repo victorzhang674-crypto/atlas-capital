@@ -387,6 +387,8 @@ METHODS: dict[str, Callable[[DataView], Any]] = {
         ["AAA", "BBB"], ["revenue", "total_assets"]
     ),
     "split_factors": lambda v: v.split_factors(UNIVERSE, 60),
+    "macro_vintages": lambda v: v.macro_vintages(["DGS10", "CPIAUCSL"], 120),  # Stage 21
+    "members_on": lambda v: v.members_on(v.day),  # Stage 21
 }
 """Every public data method of `DataView`, called as strategy or agent code would."""
 
@@ -540,12 +542,14 @@ LEAKS: dict[str, Callable[[pytest.MonkeyPatch], None]] = {
     "sessions": _leak_bars,
     "fundamentals_history": _leak_history,
     "split_factors": _leak_bars,
+    "macro_vintages": lambda mp: _wrap(mp, Macro, "vintages", _late_frame),  # Stage 21
 }
 """How to make each method's delegate leak a row from after the cutoff."""
 
 NO_TIMESTAMPS = {
     "universe": "membership is dated by start/end dates, covered by the leak suite",
     "instrument": "static reference data, no knowledge time",
+    "members_on": "membership is dated by start/end dates, as universe (Stage 21)",
 }
 
 
@@ -590,9 +594,11 @@ MULTI: dict[str, Callable[[DataView], Any]] = {
     ),
     "universe": lambda v: set(v.universe()),
     "tradable": lambda v: set(v.tradable()),
+    "members_on": lambda v: set(v.members_on(v.day)),  # Stage 21
 }
 NOT_PER_SYMBOL = {
     "macro": "series, not symbols: see test_macro_drops_blocked_series",
+    "macro_vintages": "series, not symbols: see test_macro_vintages_drops_blocked_series",
     "market_news": "market-wide, about no single symbol",
     "quality_issues": "the report itself names the blocked symbol",
     "blocked": "the blocked set itself",
@@ -747,3 +753,44 @@ def test_limitations_doc_has_stage_13_section() -> None:
     section = text.split("## Data quality and DataView (Stage 13)")[1]
     for phrase in ("window_sessions", "adjusted close", "return_outlier", "vendor_mix", "cache"):
         assert phrase in section
+
+
+# --- Stage 21: every known vintage, membership on an earlier day ------------------------------
+
+
+def test_macro_vintages_drops_blocked_series(world: World) -> None:  # Stage 21
+    cfg = AtlasConfig.model_validate(
+        {"data": {"quality": {"severity": {"macro_gap": "critical"}, "macro_max_age_days": {
+            "daily": 10, "weekly": 21, "monthly": 30, "quarterly": 230, "annual": 550}}}}
+    )  # fmt: skip
+    view = world.view(world.clean, config=cfg)
+    assert set(view.macro_vintages(["DGS10", "CPIAUCSL"], 120)["series_id"]) == {"DGS10"}
+
+
+def test_macro_vintages_reproduce_macro(world: World) -> None:  # Stage 21
+    """The latest known vintage per observation of `macro_vintages` is `macro`'s frame."""
+    from atlas.data.macro.pit import known_observations
+
+    view = world.view(world.clean)
+    rows = view.macro_vintages(["DGS10", "CPIAUCSL"], 120)
+    columns = ["series_id", "obs_date", "value", "realtime_start", "available_at"]
+    assert list(rows.columns) == columns
+    latest = known_observations(rows, view.as_of).dropna(subset=["value"])
+    wide = latest.pivot(index="obs_date", columns="series_id", values="value")
+    wide = wide.reindex(columns=["DGS10", "CPIAUCSL"]).astype("float64")
+    wide.index = pd.DatetimeIndex(pd.to_datetime(wide.index), name="obs_date")
+    wide.columns.name = None
+    pd.testing.assert_frame_equal(wide.sort_index(), view.macro(["DGS10", "CPIAUCSL"], 120))
+    with pytest.raises(ValueError, match="lookback"):
+        view.macro_vintages(["DGS10"], 0)
+    with pytest.raises(ValueError, match="sequence"):
+        view.macro_vintages("DGS10", 30)
+
+
+def test_members_on_an_earlier_day(world: World) -> None:  # Stage 21
+    view = world.view(world.clean, WORLD_LATER)
+    assert view.members_on(view.day) == view.universe()
+    earlier = world.view(world.clean)
+    assert view.members_on(earlier.day) == sorted(set(earlier.universe()) - view.blocked)
+    with pytest.raises(ValueError, match="after"):
+        earlier.members_on(WORLD_LATER)

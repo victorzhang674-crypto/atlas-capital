@@ -285,6 +285,67 @@ quant:
     liquidity_horizons: [1, 3, 5]  # sessions at which the liquid share of a book is reported
     adv_min_coverage: 0.9  # an ADV from the data must cover this share of its window's sessions, else no usable ADV
     cornish_fisher_z_max: 4.0  # Cornish-Fisher VaR needs its quantile map increasing on |z| <= this (4 = 99.994% of the mass), else DataError
+  # Market-regime detection (Stage 21, atlas.quant.regime). The benchmark is fund.benchmark.
+  regime:  # regime detection settings (vol, trend, HMM, credit, stress, macro quadrant, risk scalar)
+    universe: sp500  # breadth = share of this universe's point-in-time members above their 200-session SMA
+    train_start: 2015-01-01  # first session of the HMM's expanding training window
+    max_fill_sessions: 5  # FRED daily series (VIX, curve) carried forward over at most this many sessions
+    vol:  # volatility regime: LOW / NORMAL / HIGH / CRISIS
+      percentile_window: 1260  # sessions each of realised vol and VIX is ranked against (5 years)
+      percentile_min_obs: 252  # fewest sessions for a percentile; fewer leave it missing
+      low_below: 0.25  # vol score (larger of the two percentiles) below this -> LOW
+      high_from: 0.75  # score from here -> HIGH (between low_below and here -> NORMAL)
+      crisis_from: 0.95  # score from here -> CRISIS, if one of the floors below is also met
+      crisis_vix_floor: 30.0  # CRISIS needs VIX >= this (index points) ...
+      crisis_rv_floor: 0.30  # ... or 21-session realised vol >= this (annualised fraction); else HIGH
+    trend:  # trend regime: UP / NEUTRAL / DOWN
+      breadth_min_names: 20  # fewest members with a 200-session SMA for a breadth vote
+      breadth_bull_above: 0.5  # breadth vote is bullish when this share of members is above its SMA
+      up_share: 1.0  # bullish share of the available votes at or above this -> UP
+      down_share: 0.34  # at or below this -> DOWN (else NEUTRAL)
+    hmm:  # statistical regime: Gaussian HMM, expanding window, refitted monthly
+      n_states: 3  # Gaussian HMM states (2 or 3), ordered by volatility: calm / (normal) / turbulent
+      min_obs: 504  # fewest feature rows (sessions) to fit; before that hmm_probs is null
+      n_init: 5  # seeded EM starts per fit (seed + i); the best log-likelihood is kept
+      n_iter: 200  # EM iterations per start
+      tol: 1.0e-4  # EM convergence tolerance on the log-likelihood
+      seed: 21  # base random seed of the fits
+      turbulent_prob: 0.5  # P(turbulent) at or above this applies the hmm_turbulent risk multiplier
+      min_state_share: 0.01  # an EM start whose smallest state holds less than this share of the rows is degenerate and skipped
+    credit:  # credit stress inputs (HY OAS or the HYG/IEF proxy)
+      source: auto  # credit z-score input: auto (HY OAS when zscore_window obs are known, else proxy) | oas | proxy
+      oas_series: BAMLH0A0HYM2  # ICE BofA US HY OAS on FRED (percent; FRED keeps 3 years only)
+      proxy_long: HYG  # proxy long leg: high-yield bond ETF
+      proxy_hedge: IEF  # proxy hedge leg: 7-10y Treasury ETF
+      proxy_hedge_ratio: 0.5  # hedge ratio h (about HYG / IEF duration) in ln r_long - h ln r_hedge
+      zscore_window: 252  # observations in the credit z-score window
+      zscore_threshold: 2.0  # credit z-score above this sets the stress flag
+    stress:  # stress flag: credit z-score or NFCI
+      nfci_threshold: 0.0  # Chicago Fed NFCI above this (tighter than average) sets the stress flag
+    macro:  # macro quadrant: growth x inflation
+      claims_short_weeks: 4  # claims trend: mean of the last 4 weekly initial claims ...
+      claims_long_weeks: 26  # ... minus the mean of the last 26
+      lookback_days: 800  # calendar days of FRED release history read for the quadrant
+    # risk_scalar = product of the multipliers below, clipped to [floor, cap]; Stage 43 multiplies target_vol_annual by it.
+    risk_scalar:  # deterministic risk scalar mapping
+      floor: 0.25  # lowest risk scalar (fraction of normal risk)
+      cap: 1.0  # highest risk scalar
+      vol:  # multiplier per volatility regime (monotone)
+        low: 1.0  # LOW
+        normal: 1.0  # NORMAL
+        high: 0.7  # HIGH
+        crisis: 0.4  # CRISIS
+      trend:  # multiplier per trend regime (monotone)
+        up: 1.0  # UP
+        neutral: 0.9  # NEUTRAL
+        down: 0.75  # DOWN
+      stress: 0.6  # multiplier when the stress flag is set
+      hmm_turbulent: 0.85  # multiplier when P(turbulent) >= hmm.turbulent_prob
+      quadrant:  # multiplier per macro quadrant
+        goldilocks: 1.0  # growth up, inflation falling
+        reflation: 1.0  # growth up, inflation rising
+        stagflation: 0.85  # growth down, inflation rising
+        deflation: 0.9  # growth down, inflation falling
 
 # LLM gateway values (consumed by Stage 24).
 llm:

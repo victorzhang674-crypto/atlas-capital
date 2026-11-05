@@ -16,6 +16,7 @@ from atlas.data.macro.pit import (
     known_observations,
     macro_pit,
     macro_pit_detail,
+    macro_vintages,
 )
 from atlas.data.macro.series import (
     MACRO_OBSERVATIONS,
@@ -63,6 +64,7 @@ __all__ = [
     "load_macro_series",
     "macro_pit",
     "macro_pit_detail",
+    "macro_vintages",
     "parse_observations",
     "parse_series_metadata",
     "real_rate",

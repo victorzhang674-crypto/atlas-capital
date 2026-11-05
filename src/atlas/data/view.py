@@ -671,6 +671,31 @@ class DataView:
 
         return self._cached("macro", (ids, span), compute)
 
+    def macro_vintages(self, series: Sequence[str], lookback: timedelta | int) -> pd.DataFrame:
+        """Every vintage of `series` known at `as_of` (`Macro.vintages`, Stage 21): rows of
+        `macro_observations` (`series_id`, `obs_date`, `value`, `realtime_start`,
+        `available_at`) published before the cutoff, for observations dated within `lookback`
+        (a `timedelta`, or calendar days) before `as_of.day`; a series with a `critical`
+        quality issue is left out. Filtering these rows at an earlier as-of (Stage 10
+        `known_observations`) gives what that as-of knew, so one read serves a history of
+        decisions."""
+        if isinstance(series, str):
+            raise ValueError("series must be a sequence of FRED ids, not one string")
+        span = (
+            timedelta(days=_positive("lookback", lookback))
+            if isinstance(lookback, int)
+            else lookback
+        )
+        if span <= timedelta(0):
+            raise ValueError(f"lookback must be positive, got {lookback!r}")
+        blocked = self.blocked
+        ids = tuple(s for s in dict.fromkeys(x.strip().upper() for x in series) if s not in blocked)
+        return self._cached(
+            "macro_vintages",
+            (ids, span),
+            lambda: guard_frame(self._macro.vintages(list(ids), self._as_of, span), self._as_of),
+        )
+
     # --- news, sentiment, social ----------------------------------------------------------------
 
     def news(
@@ -770,6 +795,20 @@ class DataView:
             "universe",
             (name,),
             lambda: [s for s in self._universe.members(self._as_of, name) if s not in blocked],
+        )
+
+    def members_on(self, day: date, name: str = "sp500") -> list[str]:
+        """Sorted members of universe `name` on an earlier trading day `day` (`Universe.members`;
+        membership is dated by its start/end dates, so the members of any day up to `as_of.day`
+        are known at `as_of`), without the symbols blocked at `as_of` (Stage 21). A `day` after
+        `as_of.day` raises `ValueError`."""
+        if day > self.day:
+            raise ValueError(f"day {day} is after the view's day {self.day}")
+        blocked = self.blocked
+        return self._cached(
+            "members_on",
+            (day, name),
+            lambda: [s for s in self._universe.members(day, name) if s not in blocked],
         )
 
     def tradable(self, name: str = "sp500") -> list[str]:
