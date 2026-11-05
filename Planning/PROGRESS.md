@@ -1014,6 +1014,8 @@ Full block and raw output: [verification.md](stages/stage-20-risk-metrics/verifi
   - `make check` → exit 0: `uv run ruff check .` → All checks passed! · `uv run ruff format --check .` → 296 files already formatted · `uv run mypy src/atlas` → Success: no issues found in 127 source files · `uv run pytest -q` → 2801 passed, 0 failed, 19 deselected (live/llm/integration)
   - `uv run pytest tests/unit/quant/metrics -q` (brief's Verify) → 127 passed
   - `-W error` → 127 passed; coverage of `atlas.quant.metrics` 99%; mutation checks 72/72 caught on the final code (first run 71/72, test gap fixed)
+  - On merged `main` (`c844465`, fast-forward of `bfd5290` via the owner's Terminal panel): `uv run pytest -q` → 2801 passed; brief's Verify → 127 passed; `make check` → exit 0; pushed `main` and `claude/stage-20-completion-30d1cd` · raw: [artifacts/merged-main-check.txt](stages/stage-20-risk-metrics/artifacts/merged-main-check.txt)
+  - GitHub Actions CI: success on `c844465` (main 41949981068, branch 41949980641) · raw: [artifacts/ci-runs.txt](stages/stage-20-risk-metrics/artifacts/ci-runs.txt)
   - Real lake (read only, decision day 2025-01-02): SPY 2020–2024 Sharpe 0.746, max drawdown 33.7%; long/short book VaR95 0.49–0.51%, CVaR97.5 0.71–0.75%; Monte Carlo within 0.11% of normal; contributions sum to the vol; all invariants held
 - Acceptance criteria:
   - [x] Every metric documented with units — evidence: `test_every_module_states_units`, `test_every_public_callable_documents_its_units` (69 public names)
