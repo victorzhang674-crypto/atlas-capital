@@ -1,0 +1,12 @@
+== mutmut-run.log
+12.29 mutations/second
+exit=0
+== mutmut-run2.log
+14.17 mutations/second
+exit=0
+== mutmut-run3.log
+⠧ 2678/2678  🎉 2465 🫥 0  ⏰ 5  🤔 0  🙁 208  🔇 0  🧙 0
+15.40 mutations/second
+== mutmut-run4.log
+⠸ 2678/2678  🎉 2466 🫥 0  ⏰ 5  🤔 0  🙁 207  🔇 0  🧙 0
+14.02 mutations/second

@@ -190,10 +190,8 @@ def _drawdowns(r: np.ndarray) -> np.ndarray:
     """Drawdowns at positions 0..n of the wealth path that starts at 1 (position 0 = before
     the first return), as fractions <= 0."""
     wealth = np.concatenate(([1.0], np.cumprod(1.0 + r)))
-    peak = np.maximum.accumulate(wealth)
-    with np.errstate(divide="ignore", invalid="ignore"):
-        dd = np.where(peak > 0, wealth / peak - 1.0, -1.0)
-    return dd
+    peak = np.maximum.accumulate(wealth)  # >= 1: the path starts at 1, so never a zero peak
+    return wealth / peak - 1.0
 
 
 def drawdown_series(returns: ReturnsLike) -> pd.Series:

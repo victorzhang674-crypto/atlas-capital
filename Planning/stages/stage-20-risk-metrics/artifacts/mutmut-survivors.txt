@@ -1,0 +1,819 @@
+### atlas.quant.metrics.liquidity.x__adv_on__mutmut_3
+-        raise ValueError("adv must be a Series by symbol (currency per session)")
++        raise ValueError("XXadv must be a Series by symbol (currency per session)XX")
+
+### atlas.quant.metrics.liquidity.x__adv_on__mutmut_7
+-        raise ValueError("adv has duplicate symbols")
++        raise ValueError("XXadv has duplicate symbolsXX")
+
+### atlas.quant.metrics.liquidity.x__adv_on__mutmut_10
+-    values = adv.reindex(positions.index).astype("float64").to_numpy()
++    values = adv.reindex(positions.index).astype(None).to_numpy()
+
+### atlas.quant.metrics.liquidity.x__adv_on__mutmut_16
+-        raise ValueError("adv contains infinite values")
++        raise ValueError("XXadv contains infinite valuesXX")
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_5
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, None)
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_7
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, )
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_8
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, "XXpositionsXX")
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_9
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, "POSITIONS")
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_24
+-    usable = np.isfinite(capacity) & (capacity > 0.0)
++    usable = np.isfinite(capacity) | (capacity > 0.0)
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_26
+-    usable = np.isfinite(capacity) & (capacity > 0.0)
++    usable = np.isfinite(capacity) & (capacity >= 0.0)
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_28
+-    with np.errstate(divide="ignore", invalid="ignore"):
++    with np.errstate(divide=None, invalid="ignore"):
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_29
+-    with np.errstate(divide="ignore", invalid="ignore"):
++    with np.errstate(divide="ignore", invalid=None):
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_30
+-    with np.errstate(divide="ignore", invalid="ignore"):
++    with np.errstate(invalid="ignore"):
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_31
+-    with np.errstate(divide="ignore", invalid="ignore"):
++    with np.errstate(divide="ignore", ):
+
+### atlas.quant.metrics.liquidity.x_days_to_liquidate__mutmut_50
+-        days = np.where(usable, size / np.where(usable, capacity, 1.0), math.inf)
++        days = np.where(usable, size / np.where(usable, capacity, 2.0), math.inf)
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_5
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, None)
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_7
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, )
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_8
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, "XXpositionsXX")
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_9
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, "POSITIONS")
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_24
+-    days = days_to_liquidate(pos, adv, participation=rate, config=cfg)
++    days = days_to_liquidate(pos, adv, participation=rate, config=None)
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_28
+-    days = days_to_liquidate(pos, adv, participation=rate, config=cfg)
++    days = days_to_liquidate(pos, adv, participation=rate, )
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_39
+-    capacity = rate * np.nan_to_num(_adv_on(pos, adv), nan=0.0)
++    capacity = rate * np.nan_to_num(_adv_on(pos, adv), )
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_52
+-    capacity = np.where(capacity > 0.0, capacity, 0.0)
++    capacity = np.where(capacity >= 0.0, capacity, 0.0)
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_82
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning(None, names=[str(s) for s in no_adv[:10]], count=len(no_adv))
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_83
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning("liquidity_no_adv", names=None, count=len(no_adv))
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_84
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=None)
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_85
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning(names=[str(s) for s in no_adv[:10]], count=len(no_adv))
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_86
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning("liquidity_no_adv", count=len(no_adv))
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_87
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], )
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_88
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning("XXliquidity_no_advXX", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_89
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning("LIQUIDITY_NO_ADV", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_90
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning("liquidity_no_adv", names=[str(None) for s in no_adv[:10]], count=len(no_adv))
+
+### atlas.quant.metrics.liquidity.x_liquidity_profile__mutmut_91
+-        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:10]], count=len(no_adv))
++        _log.warning("liquidity_no_adv", names=[str(s) for s in no_adv[:11]], count=len(no_adv))
+
+### atlas.quant.metrics.liquidity.x_liquidity_from_view__mutmut_3
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, None)
+
+### atlas.quant.metrics.liquidity.x_liquidity_from_view__mutmut_5
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, )
+
+### atlas.quant.metrics.liquidity.x_liquidity_from_view__mutmut_6
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, "XXpositionsXX")
+
+### atlas.quant.metrics.liquidity.x_liquidity_from_view__mutmut_7
+-    pos = as_weights(positions, "positions")
++    pos = as_weights(positions, "POSITIONS")
+
+### atlas.quant.metrics.exposure.x__labels__mutmut_5
+-    series = groups if isinstance(groups, pd.Series) else pd.Series(dict(groups), dtype=object)
++    series = groups if isinstance(groups, pd.Series) else pd.Series(dict(groups), dtype=None)
+
+### atlas.quant.metrics.exposure.x__labels__mutmut_7
+-    series = groups if isinstance(groups, pd.Series) else pd.Series(dict(groups), dtype=object)
++    series = groups if isinstance(groups, pd.Series) else pd.Series(dict(groups), )
+
+### atlas.quant.metrics.exposure.x__labels__mutmut_10
+-        raise ValueError("groups has duplicate symbols")
++        raise ValueError("XXgroups has duplicate symbolsXX")
+
+### atlas.quant.metrics.exposure.x_group_net__mutmut_8
+-    return w.groupby(labels).sum().sort_index().rename("net")
++    return w.groupby(labels).sum().sort_index().rename(None)
+
+### atlas.quant.metrics.exposure.x_group_net__mutmut_10
+-    return w.groupby(labels).sum().sort_index().rename("net")
++    return w.groupby(labels).sum().sort_index().rename("XXnetXX")
+
+### atlas.quant.metrics.exposure.x_group_net__mutmut_11
+-    return w.groupby(labels).sum().sort_index().rename("net")
++    return w.groupby(labels).sum().sort_index().rename("NET")
+
+### atlas.quant.metrics.exposure.x_group_gross__mutmut_8
+-    return w.abs().groupby(labels).sum().sort_index().rename("gross")
++    return w.abs().groupby(labels).sum().sort_index().rename(None)
+
+### atlas.quant.metrics.exposure.x_group_gross__mutmut_10
+-    return w.abs().groupby(labels).sum().sort_index().rename("gross")
++    return w.abs().groupby(labels).sum().sort_index().rename("XXgrossXX")
+
+### atlas.quant.metrics.exposure.x_group_gross__mutmut_11
+-    return w.abs().groupby(labels).sum().sort_index().rename("gross")
++    return w.abs().groupby(labels).sum().sort_index().rename("GROSS")
+
+### atlas.quant.metrics.exposure.x_beta_adjusted_net__mutmut_5
+-        raise ValueError("betas must be a Series by symbol")
++        raise ValueError("XXbetas must be a Series by symbolXX")
+
+### atlas.quant.metrics.exposure.x_beta_adjusted_net__mutmut_9
+-        raise ValueError("betas has duplicate symbols")
++        raise ValueError("XXbetas has duplicate symbolsXX")
+
+### atlas.quant.metrics.exposure.x_beta_adjusted_net__mutmut_12
+-    b = betas.reindex(w.index).astype("float64").to_numpy()
++    b = betas.reindex(w.index).astype(None).to_numpy()
+
+### atlas.quant.metrics.exposure.x_beta_adjusted_net__mutmut_25
+-        raise DataError(f"no beta for held names: {[str(s) for s in w.index[bad]][:10]}")
++        raise DataError(f"no beta for held names: {[str(s) for s in w.index[bad]][:11]}")
+
+### atlas.quant.metrics.exposure.x_exposure_summary__mutmut_6
+-    long_ = float(values[values > 0].sum())
++    long_ = float(values[values >= 0].sum())
+
+### atlas.quant.metrics.exposure.x_exposure_summary__mutmut_10
+-    short = float(values[values < 0].sum())
++    short = float(values[values <= 0].sum())
+
+### atlas.quant.metrics.exposure.x_exposure_summary__mutmut_52
+-        short=short + 0.0,
++        short=short - 0.0,
+
+### atlas.quant.metrics._common.x_as_series__mutmut_18
+-        out = series.astype("float64")
++        out = series.astype(None)
+
+### atlas.quant.metrics._common.x_risk_free_daily__mutmut_14
+-        aligned = risk_free.astype("float64").reindex(index)
++        aligned = risk_free.astype(None).reindex(index)
+
+### atlas.quant.metrics._common.x_risk_free_daily__mutmut_20
+-            first = list(index[missing.to_numpy()])[:5]
++            first = list(index[missing.to_numpy()])[:6]
+
+### atlas.quant.metrics._common.x_risk_free_daily__mutmut_25
+-            raise ValueError("risk_free contains infinite values")
++            raise ValueError("XXrisk_free contains infinite valuesXX")
+
+### atlas.quant.metrics._common.x_align__mutmut_4
+-    r = as_series(returns, "returns")
++    r = as_series(returns, None)
+
+### atlas.quant.metrics._common.x_align__mutmut_6
+-    r = as_series(returns, "returns")
++    r = as_series(returns, )
+
+### atlas.quant.metrics._common.x_align__mutmut_7
+-    r = as_series(returns, "returns")
++    r = as_series(returns, "XXreturnsXX")
+
+### atlas.quant.metrics._common.x_align__mutmut_8
+-    r = as_series(returns, "returns")
++    r = as_series(returns, "RETURNS")
+
+### atlas.quant.metrics._common.x_align__mutmut_11
+-    b = as_series(benchmark, "benchmark")
++    b = as_series(benchmark, None)
+
+### atlas.quant.metrics._common.x_align__mutmut_13
+-    b = as_series(benchmark, "benchmark")
++    b = as_series(benchmark, )
+
+### atlas.quant.metrics._common.x_align__mutmut_14
+-    b = as_series(benchmark, "benchmark")
++    b = as_series(benchmark, "XXbenchmarkXX")
+
+### atlas.quant.metrics._common.x_align__mutmut_15
+-    b = as_series(benchmark, "benchmark")
++    b = as_series(benchmark, "BENCHMARK")
+
+### atlas.quant.metrics._common.x_align__mutmut_22
+-        raise ValueError("returns and benchmark must both be Series (aligned by session) or arrays")
++        raise ValueError("XXreturns and benchmark must both be Series (aligned by session) or arraysXX")
+
+### atlas.quant.metrics._common.x_align__mutmut_29
+-        raise ValueError("returns and benchmark arrays must have the same length")
++        raise ValueError("XXreturns and benchmark arrays must have the same lengthXX")
+
+### atlas.quant.metrics._common.x_align__mutmut_33
+-    common = r.index.intersection(b.index, sort=False)
++    common = r.index.intersection(b.index, sort=None)
+
+### atlas.quant.metrics._common.x_align__mutmut_35
+-    common = r.index.intersection(b.index, sort=False)
++    common = r.index.intersection(b.index, )
+
+### atlas.quant.metrics._common.x_align__mutmut_36
+-    common = r.index.intersection(b.index, sort=False)
++    common = r.index.intersection(b.index, sort=True)
+
+### atlas.quant.metrics._common.x_as_weights__mutmut_7
+-        out = weights.astype("float64")
++        out = weights.astype(None)
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_6
+-            raise ValueError("cov must have the same unique labels on its index and columns")
++            raise ValueError("XXcov must have the same unique labels on its index and columnsXX")
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_11
+-        matrix = cov.to_numpy(dtype="float64")
++        matrix = cov.to_numpy(dtype=None)
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_16
+-        matrix = np.asarray(cov, dtype="float64")
++        matrix = np.asarray(cov, dtype=None)
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_18
+-        matrix = np.asarray(cov, dtype="float64")
++        matrix = np.asarray(cov, )
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_31
+-        names = list(range(matrix.shape[0]))
++        names = list(range(matrix.shape[1]))
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_33
+-        raise ValueError("cov must be a DataFrame (names x names) or a square ndarray")
++        raise ValueError("XXcov must be a DataFrame (names x names) or a square ndarrayXX")
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_36
+-    if matrix.shape[0] == 0:
++    if matrix.shape[1] == 0:
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_40
+-        raise ValueError("cov is empty")
++        raise ValueError("XXcov is emptyXX")
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_45
+-        raise ValueError("cov must be finite")
++        raise ValueError("XXcov must be finiteXX")
+
+### atlas.quant.metrics._common.x_as_covariance__mutmut_67
+-        raise ValueError("cov must be symmetric")
++        raise ValueError("XXcov must be symmetricXX")
+
+### atlas.quant.metrics._common.x_weights_on__mutmut_1
+-    name: str = "weights",
++    name: str = "XXweightsXX",
+
+### atlas.quant.metrics._common.x_weights_on__mutmut_2
+-    name: str = "weights",
++    name: str = "WEIGHTS",
+
+### atlas.quant.metrics._common.x_weights_on__mutmut_6
+-        w = as_weights(weights, name)
++        w = as_weights(weights, None)
+
+### atlas.quant.metrics._common.x_weights_on__mutmut_8
+-        w = as_weights(weights, name)
++        w = as_weights(weights, )
+
+### atlas.quant.metrics._common.x_weights_on__mutmut_19
+-            raise DataError(f"{name}: nonzero values on names without an estimate: {unknown[:10]}")
++            raise DataError(f"{name}: nonzero values on names without an estimate: {unknown[:11]}")
+
+### atlas.quant.metrics._common.x_weights_on__mutmut_20
+-        return w.reindex(names).fillna(0.0).to_numpy(dtype="float64")
++        return w.reindex(names).fillna(0.0).to_numpy(dtype=None)
+
+### atlas.quant.metrics._common.x_weights_on__mutmut_28
+-    array = np.asarray(weights, dtype="float64")
++    array = np.asarray(weights, dtype=None)
+
+### atlas.quant.metrics._common.x_weights_on__mutmut_30
+-    array = np.asarray(weights, dtype="float64")
++    array = np.asarray(weights, )
+
+### atlas.quant.metrics.var.x__levels__mutmut_13
+-    return _confidence("var_confidence", vc), _confidence("cvar_confidence", cc)
++    return _confidence("XXvar_confidenceXX", vc), _confidence("cvar_confidence", cc)
+
+### atlas.quant.metrics.var.x__levels__mutmut_15
+-    return _confidence("var_confidence", vc), _confidence("cvar_confidence", cc)
++    return _confidence("var_confidence", vc), _confidence(None, cc)
+
+### atlas.quant.metrics.var.x__levels__mutmut_19
+-    return _confidence("var_confidence", vc), _confidence("cvar_confidence", cc)
++    return _confidence("var_confidence", vc), _confidence("XXcvar_confidenceXX", cc)
+
+### atlas.quant.metrics.var.x__levels__mutmut_20
+-    return _confidence("var_confidence", vc), _confidence("cvar_confidence", cc)
++    return _confidence("var_confidence", vc), _confidence("CVAR_CONFIDENCE", cc)
+
+### atlas.quant.metrics.var.x_normal_var__mutmut_9
+-    z = _N.inv_cdf(1.0 - _confidence("confidence", confidence))
++    z = _N.inv_cdf(1.0 - _confidence("XXconfidenceXX", confidence))
+
+### atlas.quant.metrics.var.x_normal_cvar__mutmut_2
+-    conf = _confidence("confidence", confidence)
++    conf = _confidence(None, confidence)
+
+### atlas.quant.metrics.var.x_normal_cvar__mutmut_6
+-    conf = _confidence("confidence", confidence)
++    conf = _confidence("XXconfidenceXX", confidence)
+
+### atlas.quant.metrics.var.x_normal_cvar__mutmut_7
+-    conf = _confidence("confidence", confidence)
++    conf = _confidence("CONFIDENCE", confidence)
+
+### atlas.quant.metrics.var.x_cornish_fisher_var__mutmut_5
+-    z = _N.inv_cdf(1.0 - _confidence("confidence", confidence))
++    z = _N.inv_cdf(1.0 - _confidence(None, confidence))
+
+### atlas.quant.metrics.var.x_cornish_fisher_var__mutmut_9
+-    z = _N.inv_cdf(1.0 - _confidence("confidence", confidence))
++    z = _N.inv_cdf(1.0 - _confidence("XXconfidenceXX", confidence))
+
+### atlas.quant.metrics.var.x_cornish_fisher_var__mutmut_10
+-    z = _N.inv_cdf(1.0 - _confidence("confidence", confidence))
++    z = _N.inv_cdf(1.0 - _confidence("CONFIDENCE", confidence))
+
+### atlas.quant.metrics.var.x_cornish_fisher_cvar__mutmut_2
+-    conf = _confidence("confidence", confidence)
++    conf = _confidence(None, confidence)
+
+### atlas.quant.metrics.var.x_cornish_fisher_cvar__mutmut_6
+-    conf = _confidence("confidence", confidence)
++    conf = _confidence("XXconfidenceXX", confidence)
+
+### atlas.quant.metrics.var.x_cornish_fisher_cvar__mutmut_7
+-    conf = _confidence("confidence", confidence)
++    conf = _confidence("CONFIDENCE", confidence)
+
+### atlas.quant.metrics.var.x__overlapping__mutmut_9
+-    agg = x.rolling(h).sum() if pnl else (1.0 + x).rolling(h).apply(np.prod, raw=True) - 1.0
++    agg = x.rolling(h).sum() if pnl else (1.0 + x).rolling(h).apply(np.prod, ) - 1.0
+
+### atlas.quant.metrics.var.x__overlapping__mutmut_13
+-    agg = x.rolling(h).sum() if pnl else (1.0 + x).rolling(h).apply(np.prod, raw=True) - 1.0
++    agg = x.rolling(h).sum() if pnl else (1.0 + x).rolling(h).apply(np.prod, raw=False) - 1.0
+
+### atlas.quant.metrics.var.x__moments__mutmut_2
+-        return 0.0, 0.0
++        return 1.0, 0.0
+
+### atlas.quant.metrics.var.x__moments__mutmut_3
+-        return 0.0, 0.0
++        return 0.0, 1.0
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_23
+-    x = as_series(values, "pnl" if pnl else "returns", pnl=pnl)
++    x = as_series(values, None, pnl=pnl)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_26
+-    x = as_series(values, "pnl" if pnl else "returns", pnl=pnl)
++    x = as_series(values, pnl=pnl)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_28
+-    x = as_series(values, "pnl" if pnl else "returns", pnl=pnl)
++    x = as_series(values, "pnl" if (pnl) and False else "returns", pnl=pnl)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_29
+-    x = as_series(values, "pnl" if pnl else "returns", pnl=pnl)
++    x = as_series(values, "pnl" if (pnl) or True else "returns", pnl=pnl)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_30
+-    x = as_series(values, "pnl" if pnl else "returns", pnl=pnl)
++    x = as_series(values, "XXpnlXX" if pnl else "returns", pnl=pnl)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_31
+-    x = as_series(values, "pnl" if pnl else "returns", pnl=pnl)
++    x = as_series(values, "PNL" if pnl else "returns", pnl=pnl)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_32
+-    x = as_series(values, "pnl" if pnl else "returns", pnl=pnl)
++    x = as_series(values, "pnl" if pnl else "XXreturnsXX", pnl=pnl)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_33
+-    x = as_series(values, "pnl" if pnl else "returns", pnl=pnl)
++    x = as_series(values, "pnl" if pnl else "RETURNS", pnl=pnl)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_146
+-        return VaRResult(var, cvar, vc, cc, h, how, len(data), ())
++        return VaRResult(var, cvar, vc, cc, h, how, len(data), )
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_179
+-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
++        _log.warning(None, skew=skew_h, kurtosis=kurt_h)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_180
+-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
++        _log.warning("cornish_fisher_cvar_floored", skew=None, kurtosis=kurt_h)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_181
+-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
++        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=None)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_182
+-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
++        _log.warning(skew=skew_h, kurtosis=kurt_h)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_183
+-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
++        _log.warning("cornish_fisher_cvar_floored", kurtosis=kurt_h)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_184
+-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
++        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, )
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_185
+-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
++        _log.warning("XXcornish_fisher_cvar_flooredXX", skew=skew_h, kurtosis=kurt_h)
+
+### atlas.quant.metrics.var.x_var_cvar__mutmut_186
+-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
++        _log.warning("CORNISH_FISHER_CVAR_FLOORED", skew=skew_h, kurtosis=kurt_h)
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_5
+-        raise ValueError("returns must be a DataFrame (sessions x symbols)")
++        raise ValueError("XXreturns must be a DataFrame (sessions x symbols)XX")
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_10
+-        raise ValueError("returns has duplicate symbols or sessions")
++        raise ValueError("XXreturns has duplicate symbols or sessionsXX")
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_14
+-        raise ValueError("returns must be sorted by session (ascending index)")
++        raise ValueError("XXreturns must be sorted by session (ascending index)XX")
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_23
+-        raise DataError(f"no returns for held names: {missing[:10]}")
++        raise DataError(f"no returns for held names: {missing[:11]}")
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_25
+-    frame = returns.loc[:, list(held.index)].astype("float64")
++    frame = returns.loc[:, list(held.index)].astype(None)
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_32
+-    dropped = int((~complete).sum())
++    dropped = None
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_34
+-    dropped = int((~complete).sum())
++    dropped = int(complete.sum())
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_35
+-        _log.info("portfolio_returns_dropped_sessions", sessions=dropped)
++        _log.info(None, sessions=dropped)
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_36
+-        _log.info("portfolio_returns_dropped_sessions", sessions=dropped)
++        _log.info("portfolio_returns_dropped_sessions", sessions=None)
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_37
+-        _log.info("portfolio_returns_dropped_sessions", sessions=dropped)
++        _log.info(sessions=dropped)
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_38
+-        _log.info("portfolio_returns_dropped_sessions", sessions=dropped)
++        _log.info("portfolio_returns_dropped_sessions", )
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_39
+-        _log.info("portfolio_returns_dropped_sessions", sessions=dropped)
++        _log.info("XXportfolio_returns_dropped_sessionsXX", sessions=dropped)
+
+### atlas.quant.metrics.var.x_portfolio_returns__mutmut_40
+-        _log.info("portfolio_returns_dropped_sessions", sessions=dropped)
++        _log.info("PORTFOLIO_RETURNS_DROPPED_SESSIONS", sessions=dropped)
+
+### atlas.quant.metrics.var.x_simulate_portfolio_returns__mutmut_6
+-        raise ValueError("pass exactly one of seed or rng (Monte Carlo must be reproducible)")
++        raise ValueError("XXpass exactly one of seed or rng (Monte Carlo must be reproducible)XX")
+
+### atlas.quant.metrics.var.x_simulate_portfolio_returns__mutmut_7
+-        raise ValueError("pass exactly one of seed or rng (Monte Carlo must be reproducible)")
++        raise ValueError("pass exactly one of seed or rng (monte carlo must be reproducible)")
+
+### atlas.quant.metrics.var.x_simulate_portfolio_returns__mutmut_36
+-    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name=None, strict=False)
+
+### atlas.quant.metrics.var.x_simulate_portfolio_returns__mutmut_37
+-    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name="mean", strict=None)
+
+### atlas.quant.metrics.var.x_simulate_portfolio_returns__mutmut_40
+-    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, strict=False)
+
+### atlas.quant.metrics.var.x_simulate_portfolio_returns__mutmut_42
+-    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name="XXmeanXX", strict=False)
+
+### atlas.quant.metrics.var.x_simulate_portfolio_returns__mutmut_43
+-    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mu = np.zeros(len(w)) if mean is None else weights_on(names, mean, name="MEAN", strict=False)
+
+### atlas.quant.metrics.var.x_simulate_portfolio_returns__mutmut_73
+-    return float(mu @ w) * h + math.sqrt(h) * out
++    return float(mu @ w) * h - math.sqrt(h) * out
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_6
+-        raise ValueError("pass exactly one of returns (historical simulation) or cov")
++        raise ValueError("XXpass exactly one of returns (historical simulation) or covXX")
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_64
+-        mu = 0.0 if mean is None else float(weights_on(names, mean, name="mean", strict=False) @ w)
++        mu = 0.0 if mean is None else float(weights_on(names, mean, name=None, strict=False) @ w)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_65
+-        mu = 0.0 if mean is None else float(weights_on(names, mean, name="mean", strict=False) @ w)
++        mu = 0.0 if mean is None else float(weights_on(names, mean, name="mean", strict=None) @ w)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_68
+-        mu = 0.0 if mean is None else float(weights_on(names, mean, name="mean", strict=False) @ w)
++        mu = 0.0 if mean is None else float(weights_on(names, mean, strict=False) @ w)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_70
+-        mu = 0.0 if mean is None else float(weights_on(names, mean, name="mean", strict=False) @ w)
++        mu = 0.0 if mean is None else float(weights_on(names, mean, name="XXmeanXX", strict=False) @ w)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_71
+-        mu = 0.0 if mean is None else float(weights_on(names, mean, name="mean", strict=False) @ w)
++        mu = 0.0 if mean is None else float(weights_on(names, mean, name="MEAN", strict=False) @ w)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_122
+-    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mean_vec = None if mean is None else weights_on(names, mean, name=None, strict=False)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_123
+-    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=None)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_126
+-    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mean_vec = None if mean is None else weights_on(names, mean, strict=False)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_127
+-    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mean_vec = None if mean is None else weights_on(names, mean, name="mean", )
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_128
+-    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mean_vec = None if mean is None else weights_on(names, mean, name="XXmeanXX", strict=False)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_129
+-    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mean_vec = None if mean is None else weights_on(names, mean, name="MEAN", strict=False)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_130
+-    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
++    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=True)
+
+### atlas.quant.metrics.var.x_portfolio_var__mutmut_161
+-    return VaRResult(_hist_var(pnl, vc), _hist_cvar(pnl, cc), vc, cc, h, how, len(pnl), ())
++    return VaRResult(_hist_var(pnl, vc), _hist_cvar(pnl, cc), vc, cc, h, how, len(pnl), )
+
+### atlas.quant.metrics.relative.x__beta__mutmut_14
+-    cov = float(np.sum((re - re.mean()) * (be - be.mean())) / (len(re) - 1))
++    cov = float(np.sum((re + re.mean()) * (be - be.mean())) / (len(re) - 1))
+
+### atlas.quant.metrics.relative.x__beta__mutmut_15
+-    cov = float(np.sum((re - re.mean()) * (be - be.mean())) / (len(re) - 1))
++    cov = float(np.sum((re - re.mean()) * (be + be.mean())) / (len(re) - 1))
+
+### atlas.quant.metrics.relative.x_beta__mutmut_5
+-    re, be, _ = _excess(returns, benchmark, risk_free, periods, config)
++    re, be, _ = _excess(returns, benchmark, risk_free, None, config)
+
+### atlas.quant.metrics.relative.x_beta__mutmut_6
+-    re, be, _ = _excess(returns, benchmark, risk_free, periods, config)
++    re, be, _ = _excess(returns, benchmark, risk_free, periods, None)
+
+### atlas.quant.metrics.relative.x_up_down_capture__mutmut_19
+-    if math.isnan(up) or math.isnan(down):
++    if math.isnan(up) and math.isnan(down):
+
+### atlas.quant.metrics.relative.x_correlation__mutmut_32
+-    return value if math.isnan(value) else float(min(1.0, max(-1.0, value)))
++    return value if (math.isnan(value)) and False else float(min(1.0, max(-1.0, value)))
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_12
+-    p = periods_per_year(periods, config)
++    p = periods_per_year(None, config)
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_13
+-    p = periods_per_year(periods, config)
++    p = periods_per_year(periods, None)
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_15
+-    p = periods_per_year(periods, config)
++    p = periods_per_year(periods, )
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_20
+-    rf = risk_free_daily(risk_free, r.index, p, config)
++    rf = risk_free_daily(risk_free, r.index, p, None)
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_24
+-    rf = risk_free_daily(risk_free, r.index, p, config)
++    rf = risk_free_daily(risk_free, r.index, p, )
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_32
+-    cov = re.rolling(w).cov(be, ddof=1)
++    cov = re.rolling(w).cov(be, )
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_39
+-    return (cov / var.where(var > 0.0)).rename("rolling_beta")
++    return (cov / var.where(var > 0.0)).rename(None)
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_42
+-    return (cov / var.where(var > 0.0)).rename("rolling_beta")
++    return (cov / var.where(var >= 0.0)).rename("rolling_beta")
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_44
+-    return (cov / var.where(var > 0.0)).rename("rolling_beta")
++    return (cov / var.where(var > 0.0)).rename("XXrolling_betaXX")
+
+### atlas.quant.metrics.relative.x_rolling_beta__mutmut_45
+-    return (cov / var.where(var > 0.0)).rename("rolling_beta")
++    return (cov / var.where(var > 0.0)).rename("ROLLING_BETA")
+
+### atlas.quant.metrics.relative.x_rolling_correlation__mutmut_15
+-    cov = r.rolling(w).cov(b, ddof=1)
++    cov = r.rolling(w).cov(b, )
+
+### atlas.quant.metrics.relative.x_rolling_correlation__mutmut_33
+-    out = (cov / sd.where(sd > 0.0)).clip(-1.0, 1.0)
++    out = (cov / sd.where(sd >= 0.0)).clip(-1.0, 1.0)
+
+### atlas.quant.metrics.relative.x_rolling_correlation__mutmut_38
+-    return out.rename("rolling_correlation")
++    return out.rename(None)
+
+### atlas.quant.metrics.relative.x_rolling_correlation__mutmut_39
+-    return out.rename("rolling_correlation")
++    return out.rename("XXrolling_correlationXX")
+
+### atlas.quant.metrics.relative.x_rolling_correlation__mutmut_40
+-    return out.rename("rolling_correlation")
++    return out.rename("ROLLING_CORRELATION")
+
+### atlas.quant.metrics.relative.x_relative_summary__mutmut_21
+-        "beta": beta(r, b, risk_free=risk_free, config=config, **kw),
++        "beta": beta(r, b, risk_free=risk_free, config=None, **kw),
+
+### atlas.quant.metrics.relative.x_relative_summary__mutmut_25
+-        "beta": beta(r, b, risk_free=risk_free, config=config, **kw),
++        "beta": beta(r, b, risk_free=risk_free, **kw),
+
+### atlas.quant.metrics.relative.x_relative_summary__mutmut_26
+-        "beta": beta(r, b, risk_free=risk_free, config=config, **kw),
++        "beta": beta(r, b, risk_free=risk_free, config=config, ),
+
+### atlas.quant.metrics.contributions.x__result__mutmut_5
+-    percent = component / vol if vol > 0.0 else np.full(len(w), np.nan)
++    percent = component / vol if (vol > 0.0) or True else np.full(len(w), np.nan)
+
+### atlas.quant.metrics.contributions.x__result__mutmut_7
+-    percent = component / vol if vol > 0.0 else np.full(len(w), np.nan)
++    percent = component / vol if vol >= 0.0 else np.full(len(w), np.nan)
+
+### atlas.quant.metrics.contributions.x_risk_contributions__mutmut_3
+-            raise ValueError("weights must be a Series by symbol with a RiskModel")
++            raise ValueError("XXweights must be a Series by symbol with a RiskModelXX")
+
+### atlas.quant.metrics.contributions.x_risk_contributions__mutmut_12
+-        w = weights.reindex(list(cov.symbols)).fillna(0.0).to_numpy(dtype="float64")
++        w = weights.reindex(list(cov.symbols)).fillna(0.0).to_numpy(dtype=None)
+
+### atlas.quant.metrics.performance.x_downside_risk__mutmut_10
+-    shortfall = np.minimum(r - _finite("required_return", required_return), 0.0)
++    shortfall = np.minimum(r - _finite(None, required_return), 0.0)
+
+### atlas.quant.metrics.performance.x_downside_risk__mutmut_14
+-    shortfall = np.minimum(r - _finite("required_return", required_return), 0.0)
++    shortfall = np.minimum(r - _finite("XXrequired_returnXX", required_return), 0.0)
+
+### atlas.quant.metrics.performance.x_downside_risk__mutmut_15
+-    shortfall = np.minimum(r - _finite("required_return", required_return), 0.0)
++    shortfall = np.minimum(r - _finite("REQUIRED_RETURN", required_return), 0.0)
+
+### atlas.quant.metrics.performance.x_sortino_ratio__mutmut_14
+-    req = _finite("required_return", required_return)
++    req = _finite("XXrequired_returnXX", required_return)
+
+### atlas.quant.metrics.performance.x_profit_factor__mutmut_8
+-    return nan_if_zero(float(r[r > 0].sum()), float(-r[r < 0].sum()))
++    return nan_if_zero(float(r[r >= 0].sum()), float(-r[r < 0].sum()))
+
+### atlas.quant.metrics.performance.x_profit_factor__mutmut_12
+-    return nan_if_zero(float(r[r > 0].sum()), float(-r[r < 0].sum()))
++    return nan_if_zero(float(r[r > 0].sum()), float(-r[r <= 0].sum()))
+
+### atlas.quant.metrics.performance.x_rolling_vol__mutmut_19
+-    return out.rename("rolling_vol")
++    return out.rename(None)
+
+### atlas.quant.metrics.performance.x_rolling_vol__mutmut_20
+-    return out.rename("rolling_vol")
++    return out.rename("XXrolling_volXX")
+
+### atlas.quant.metrics.performance.x_rolling_vol__mutmut_21
+-    return out.rename("rolling_vol")
++    return out.rename("ROLLING_VOL")
+
+### atlas.quant.metrics.performance.x_rolling_sharpe__mutmut_36
+-    return out.rename("rolling_sharpe")
++    return out.rename(None)
+
+### atlas.quant.metrics.performance.x_rolling_sharpe__mutmut_37
+-    return out.rename("rolling_sharpe")
++    return out.rename("XXrolling_sharpeXX")
+
+### atlas.quant.metrics.performance.x_rolling_sharpe__mutmut_38
+-    return out.rename("rolling_sharpe")
++    return out.rename("ROLLING_SHARPE")
+
+### atlas.quant.metrics.performance.x_rolling_max_drawdown__mutmut_12
+-    out = r.rolling(w).apply(lambda x: float(-_drawdowns(x).min()) + 0.0, raw=True)
++    out = r.rolling(w).apply(lambda x: float(-_drawdowns(x).min()) + 0.0, )
+
+### atlas.quant.metrics.performance.x_rolling_max_drawdown__mutmut_20
+-    out = r.rolling(w).apply(lambda x: float(-_drawdowns(x).min()) + 0.0, raw=True)
++    out = r.rolling(w).apply(lambda x: float(-_drawdowns(x).min()) + 0.0, raw=False)
+
+### atlas.quant.metrics.performance.x_rolling_max_drawdown__mutmut_21
+-    return out.rename("rolling_max_drawdown")
++    return out.rename(None)
+
+### atlas.quant.metrics.performance.x_rolling_max_drawdown__mutmut_22
+-    return out.rename("rolling_max_drawdown")
++    return out.rename("XXrolling_max_drawdownXX")
+
+### atlas.quant.metrics.performance.x_rolling_max_drawdown__mutmut_23
+-    return out.rename("rolling_max_drawdown")
++    return out.rename("ROLLING_MAX_DRAWDOWN")
+
+### atlas.quant.metrics.performance.x_performance_summary__mutmut_5
+-    r = as_series(returns, min_obs=2)
++    r = as_series(returns, )

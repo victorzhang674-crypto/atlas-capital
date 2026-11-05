@@ -42,3 +42,17 @@ Owner: "can you audit the important ones for the not being fully audited things?
 
 **Result:** ALL CRITERIA VERIFIED
 
+#### Completion: generated mutation run — Stage 20 — 2026-11-05
+Owner: "can you complete this stage?" (details in the worklog).
+- Commands run (this chat, final code):
+  - mutmut 3.8.1 (throwaway overlay, scratch copy) on `src/atlas/quant/metrics/` with `tests/unit/quant/metrics/` → **2,678 mutants: 2,468 killed, 5 timeouts, 205 survived**; first run 2,201 / 476 survived. All 205 classified: 129 cosmetic, 76 equivalent (14 counted classes, each with its reason) · [artifacts/mutmut-triage.md](artifacts/mutmut-triage.md), [artifacts/mutmut-survivors.txt](artifacts/mutmut-survivors.txt), [artifacts/mutmut-results.txt](artifacts/mutmut-results.txt), [artifacts/mutmut-runs.txt](artifacts/mutmut-runs.txt)
+  - **Bug found and fixed:** Monte Carlo `portfolio_var` ignored a by-symbol `mean` (`test_portfolio_var_passes_every_argument`, fails on the old code)
+  - hand-picked mutation script → **78/78** · raw: [artifacts/mutation-checks-completion.txt](artifacts/mutation-checks-completion.txt)
+  - `make check` → exit 0: All checks passed! · 299 files already formatted · Success: no issues found in 127 source files · **2871 passed, 23 deselected** · raw: [artifacts/make-check-completion.txt](artifacts/make-check-completion.txt)
+  - brief's Verify → **197 passed**; `-W error` → 197 passed; coverage of `atlas.quant.metrics` **100%** · raw: [artifacts/verify-brief-completion.txt](artifacts/verify-brief-completion.txt), [artifacts/werror-completion.txt](artifacts/werror-completion.txt), [artifacts/coverage-completion.txt](artifacts/coverage-completion.txt)
+  - real-lake integration test → 4 passed · raw: [artifacts/integration-real-lake-completion.txt](artifacts/integration-real-lake-completion.txt)
+- Not done (owner's call): an independent reviewer (needs a separate agent).
+- Acceptance criteria: unchanged and still met.
+
+**Result:** ALL CRITERIA VERIFIED
+

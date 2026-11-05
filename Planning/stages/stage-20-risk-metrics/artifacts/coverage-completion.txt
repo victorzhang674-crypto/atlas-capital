@@ -1,0 +1,20 @@
+........................................................................ [ 34%]
+........................................................................ [ 69%]
+................................................................         [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                       Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------
+src/atlas/quant/metrics/__init__.py            7      0   100%
+src/atlas/quant/metrics/_common.py           156      0   100%
+src/atlas/quant/metrics/contributions.py      34      0   100%
+src/atlas/quant/metrics/exposure.py           58      0   100%
+src/atlas/quant/metrics/liquidity.py          73      0   100%
+src/atlas/quant/metrics/performance.py       160      0   100%
+src/atlas/quant/metrics/relative.py           87      0   100%
+src/atlas/quant/metrics/var.py               188      0   100%
+------------------------------------------------------------------------
+TOTAL                                        763      0   100%
+208 passed in 8.29s
+exit=0

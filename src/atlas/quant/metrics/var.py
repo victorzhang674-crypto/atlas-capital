@@ -412,7 +412,9 @@ def portfolio_var(
             normal_var(mu_h, sigma_h, vc), normal_cvar(mu_h, sigma_h, cc), vc, cc, h, how, 0
         )
     sims = cfg.quant.metrics.mc_simulations if n_sims is None else n_sims
+    # align a by-symbol mean to the covariance's names first: `w` and `matrix` are positional
+    mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
     pnl = simulate_portfolio_returns(
-        w, matrix, n_sims=sims, mean=mean, horizon=h, seed=seed, rng=rng
+        w, matrix, n_sims=sims, mean=mean_vec, horizon=h, seed=seed, rng=rng
     )
     return VaRResult(_hist_var(pnl, vc), _hist_cvar(pnl, cc), vc, cc, h, how, len(pnl), ())
