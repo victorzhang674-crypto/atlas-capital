@@ -51,8 +51,9 @@ Owner: "can you complete this stage?" (details in the worklog).
   - `make check` → exit 0: All checks passed! · 299 files already formatted · Success: no issues found in 127 source files · **2871 passed, 23 deselected** · raw: [artifacts/make-check-completion.txt](artifacts/make-check-completion.txt)
   - brief's Verify → **197 passed**; `-W error` → 197 passed; coverage of `atlas.quant.metrics` **100%** · raw: [artifacts/verify-brief-completion.txt](artifacts/verify-brief-completion.txt), [artifacts/werror-completion.txt](artifacts/werror-completion.txt), [artifacts/coverage-completion.txt](artifacts/coverage-completion.txt)
   - real-lake integration test → 4 passed · raw: [artifacts/integration-real-lake-completion.txt](artifacts/integration-real-lake-completion.txt)
+  - On merged `main` (`bff2509`, fast-forward of `082eae5`): `uv run pytest -q` → 2871 passed; brief's Verify → 197 passed; `make check` → exit 0; pushed · raw: [artifacts/merged-main-check-completion.txt](artifacts/merged-main-check-completion.txt)
+  - GitHub Actions CI on `bff2509`: success on `main` (42006459770) and the branch (42006459702) · raw: [artifacts/ci-runs-completion.txt](artifacts/ci-runs-completion.txt)
 - Not done (owner's call): an independent reviewer (needs a separate agent).
 - Acceptance criteria: unchanged and still met.
 
 **Result:** ALL CRITERIA VERIFIED
-

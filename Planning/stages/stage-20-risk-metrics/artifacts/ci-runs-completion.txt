@@ -1,0 +1,32 @@
+# CI of bff2509 (gh run list --commit <full sha>, then gh run view)
+42006459770 main completed success
+42006459702 claude/stage-20-completion-30d1cd completed success
+
+✓ main CI · 42006459770
+Triggered via push about 14 minutes ago
+
+JOBS
+✓ check in 8m42s (ID 127174321976)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127174321976
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/42006459770
+
+✓ claude/stage-20-completion-30d1cd CI · 42006459702
+Triggered via push about 14 minutes ago
+
+JOBS
+✓ check in 12m41s (ID 127174321729)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127174321729
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/42006459702
+CI4_DONE
