@@ -51,9 +51,11 @@ from atlas.quant.metrics._common import (
     annual_to_daily,
     as_series,
     config_or_default,
+    is_constant,
     nan_if_zero,
     periods_per_year,
     risk_free_daily,
+    sample_std,
     window_length,
 )
 
@@ -89,7 +91,7 @@ def annualised_vol(
 ) -> float:
     """Annualised volatility, `std(r, ddof=1) * sqrt(P)` (annual fraction)."""
     r = as_series(returns, min_obs=2).to_numpy()
-    return float(r.std(ddof=1) * math.sqrt(periods_per_year(periods, config)))
+    return float(sample_std(r) * math.sqrt(periods_per_year(periods, config)))
 
 
 # --- risk-adjusted ratios ---------------------------------------------------------------------
@@ -108,7 +110,7 @@ def sharpe_ratio(
     r = as_series(returns, min_obs=2)
     p = periods_per_year(periods, config)
     excess = r.to_numpy() - risk_free_daily(risk_free, r.index, p, config)
-    return nan_if_zero(float(excess.mean()) * math.sqrt(p), float(excess.std(ddof=1)))
+    return nan_if_zero(float(excess.mean()) * math.sqrt(p), sample_std(excess))
 
 
 def downside_risk(
@@ -281,6 +283,8 @@ def skewness(returns: ReturnsLike) -> float:
     """Population skewness `m3 / m2^1.5` of the returns (unitless; biased, as
     `scipy.stats.skew`); constant → NaN."""
     r = as_series(returns, min_obs=2).to_numpy()
+    if is_constant(r):
+        return math.nan
     d = r - r.mean()
     m2 = float(np.mean(d**2))
     return nan_if_zero(float(np.mean(d**3)), m2**1.5)
@@ -290,6 +294,8 @@ def excess_kurtosis(returns: ReturnsLike) -> float:
     """Population excess kurtosis `m4 / m2^2 - 3` of the returns (unitless; biased, Fisher, as
     `scipy.stats.kurtosis`); constant → NaN."""
     r = as_series(returns, min_obs=2).to_numpy()
+    if is_constant(r):
+        return math.nan
     d = r - r.mean()
     m2 = float(np.mean(d**2))
     ratio = nan_if_zero(float(np.mean(d**4)), m2**2)

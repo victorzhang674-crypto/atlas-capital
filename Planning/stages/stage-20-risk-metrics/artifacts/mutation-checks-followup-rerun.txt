@@ -1,0 +1,8 @@
+caught    audit2: constant test exact, no tolerance
+caught    audit2: sample std of a constant series not zeroed
+caught    audit2: skewness of a constant series
+caught    audit2: beta on a constant benchmark
+caught    audit2: correlation with a constant series
+caught    audit2: CF moments of a constant series
+
+6/6 mutants caught

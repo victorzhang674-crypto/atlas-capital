@@ -1,0 +1,9 @@
+sessions 1511 (2016-01-04 .. 2021-12-31); first net return 0.000000
+metric           recorded (S17)      old formula    library (S20)       diff
+ann_return        -0.0687808507    -0.0687808507    -0.0687808507   0.00e+00
+ann_vol            0.2340822400     0.2340822400     0.2340822400   0.00e+00
+sharpe            -0.2938319911    -0.2938319911    -0.2938319911   0.00e+00
+total_return      -0.4397360619    -0.4397360619    -0.4397360619   0.00e+00
+max_drawdown       0.4684380654     0.4684380654     0.4684380654   0.00e+00
+largest |library - recorded| = 0.00e+00: the Stage 17 real-lake tear sheet is unchanged
+exit=0

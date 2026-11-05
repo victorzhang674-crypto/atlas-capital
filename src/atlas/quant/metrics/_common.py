@@ -141,6 +141,28 @@ def align(
     return r.loc[common], b.loc[common]
 
 
+_CONSTANT_RTOL = 1e-12  # spread below this share of the largest |value| is rounding noise
+
+
+def is_constant(values: np.ndarray) -> bool:
+    """True when the values are equal up to floating-point rounding (or there are none): their
+    range is at most 1e-12 x the largest absolute value. A variance test is not enough:
+    `x - mean(x)` of 100 x 0.001 leaves ~1e-19, and `(b + 0.001) - b` is not exactly 0.001,
+    which would turn an undefined ratio (Sharpe, beta, IR) into a number like 1e16."""
+    if values.size == 0:
+        return True
+    spread = float(np.ptp(values))
+    return spread <= _CONSTANT_RTOL * float(np.max(np.abs(values)))
+
+
+def sample_std(values: np.ndarray) -> float:
+    """Sample standard deviation (ddof 1) in the units of `values`; exactly 0 for a constant
+    series (see `is_constant`)."""
+    if is_constant(values):
+        return 0.0
+    return float(np.std(values, ddof=1))
+
+
 def nan_if_zero(numerator: float, denominator: float) -> float:
     """`numerator / denominator`, NaN when the denominator is 0 (an undefined ratio, never
     ±inf)."""

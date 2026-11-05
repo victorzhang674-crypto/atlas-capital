@@ -1,0 +1,29 @@
+# CI of the records commit c54c69f (gh run view, owner's Terminal panel)
+
+✓ main CI · 41960545116
+Triggered via push about 11 minutes ago
+
+JOBS
+✓ check in 10m58s (ID 127025601806)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127025601806
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41960545116
+
+✓ claude/stage-20-completion-30d1cd CI · 41960545285
+Triggered via push about 11 minutes ago
+
+JOBS
+✓ check in 10m18s (ID 127025602048)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127025602048
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41960545285

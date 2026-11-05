@@ -22,3 +22,21 @@ Every output below comes from commands run in this stage's chat (Project.md Rule
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Post-DONE audit follow-up — Stage 20 — 2026-11-05
+Owner: "can you audit the important ones for the not being fully audited things?" (after "is everything for this stage being audited?"). Details in the worklog.
+- Commands run (this chat, final code):
+  - `make check` → exit 0: All checks passed! · 298 files already formatted · Success: no issues found in 127 source files · **2831 passed, 23 deselected** · raw: [artifacts/make-check-followup.txt](artifacts/make-check-followup.txt)
+  - `uv run pytest tests/unit/quant/metrics -q` (brief's Verify) → **157 passed**; `-W error` → 157 passed · raw: [artifacts/verify-brief-followup.txt](artifacts/verify-brief-followup.txt), [artifacts/werror-followup.txt](artifacts/werror-followup.txt)
+  - coverage of `atlas.quant.metrics` → **100%** (764 statements) · raw: [artifacts/coverage-followup.txt](artifacts/coverage-followup.txt)
+  - mutation checks (78 mutants incl. 6 new constant-series ones) → **78/78 caught** (first run 77/78; flat-book test added) · raw: [artifacts/mutation-checks-followup.txt](artifacts/mutation-checks-followup.txt), [artifacts/mutation-checks-followup-rerun.txt](artifacts/mutation-checks-followup-rerun.txt), [artifacts/mutation-checks-followup-final.txt](artifacts/mutation-checks-followup-final.txt)
+  - `ATLAS__DATA__LAKE_PATH=~/Projects/atlas-capital/data uv run pytest tests/integration/test_metrics_real_lake.py -m integration -v` → **4 passed** (without the lake: 4 skipped) · raw: [artifacts/integration-real-lake.txt](artifacts/integration-real-lake.txt)
+  - Stage 17 real-lake tear sheet re-check → library summary = recorded numbers (diff 0) · raw: [artifacts/stage17-recheck.txt](artifacts/stage17-recheck.txt)
+  - CI on the records commit `c54c69f`: success on `main` (41960545116) and the branch (41960545285) · raw: [artifacts/ci-runs-records.txt](artifacts/ci-runs-records.txt)
+- Bug found and fixed: constant series with rounding noise gave huge Sharpe / IR (~1e16), a finite beta on a constant benchmark and noise moments → now NaN / 0 via `is_constant` / `sample_std` (tests listed in the worklog).
+- Independent re-derivations: `test_metrics_independent.py` (Cornish-Fisher by stratified simulation, contributions by the covariance form, liquidity by a liquidation simulation, exposures by loops, normal CVaR by scipy).
+- Not done (owner's call): an independent reviewer; a generated (exhaustive) mutation run.
+- Acceptance criteria: unchanged and still met (evidence above supersedes the counts of the first block).
+
+**Result:** ALL CRITERIA VERIFIED
+

@@ -56,6 +56,8 @@ from atlas.quant.metrics._common import (
     as_series,
     as_weights,
     config_or_default,
+    is_constant,
+    sample_std,
     weights_on,
 )
 
@@ -189,10 +191,10 @@ def _overlapping(x: pd.Series, h: int, pnl: bool) -> np.ndarray:
 
 
 def _moments(x: np.ndarray) -> tuple[float, float]:
+    if is_constant(x):
+        return 0.0, 0.0
     d = x - x.mean()
     m2 = float(np.mean(d**2))
-    if m2 == 0.0:
-        return 0.0, 0.0
     return float(np.mean(d**3)) / m2**1.5, float(np.mean(d**4)) / m2**2 - 3.0
 
 
@@ -241,7 +243,7 @@ def var_cvar(
                 adjustments.append(f"sqrt-of-time scaling to {h} sessions")
         return VaRResult(var, cvar, vc, cc, h, how, len(data), tuple(adjustments))
     mu = 0.0 if mc.zero_mean else float(data.mean())
-    sigma = float(data.std(ddof=1))
+    sigma = sample_std(data)
     mu_h, sigma_h = mu * h, sigma * math.sqrt(h)
     if how == "normal":
         var, cvar = normal_var(mu_h, sigma_h, vc), normal_cvar(mu_h, sigma_h, cc)

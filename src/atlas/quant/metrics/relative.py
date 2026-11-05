@@ -33,9 +33,11 @@ from atlas.quant.metrics._common import (
     ReturnsLike,
     RiskFree,
     align,
+    is_constant,
     nan_if_zero,
     periods_per_year,
     risk_free_daily,
+    sample_std,
     window_length,
 )
 from atlas.quant.metrics.performance import annualised_return
@@ -55,6 +57,8 @@ def _excess(
 
 
 def _beta(re: np.ndarray, be: np.ndarray) -> float:
+    if is_constant(be):
+        return math.nan
     var_b = float(np.var(be, ddof=1))
     cov = float(np.sum((re - re.mean()) * (be - be.mean())) / (len(re) - 1))
     return nan_if_zero(cov, var_b)
@@ -102,7 +106,7 @@ def tracking_error(
     """Annualised tracking error, `std(r - b, ddof=1) * sqrt(P)` (annual fraction)."""
     r, b = align(returns, benchmark)
     active = r.to_numpy() - b.to_numpy()
-    return float(active.std(ddof=1) * math.sqrt(periods_per_year(periods, config)))
+    return float(sample_std(active) * math.sqrt(periods_per_year(periods, config)))
 
 
 def information_ratio(
@@ -117,7 +121,7 @@ def information_ratio(
     r, b = align(returns, benchmark)
     p = periods_per_year(periods, config)
     active = r.to_numpy() - b.to_numpy()
-    return nan_if_zero(float(active.mean()) * math.sqrt(p), float(active.std(ddof=1)))
+    return nan_if_zero(float(active.mean()) * math.sqrt(p), sample_std(active))
 
 
 def active_return(
@@ -186,6 +190,8 @@ def correlation(returns: ReturnsLike, benchmark: ReturnsLike) -> float:
     (unitless, in [-1, 1]); a constant series → NaN."""
     r, b = align(returns, benchmark)
     x, y = r.to_numpy(), b.to_numpy()
+    if is_constant(x) or is_constant(y):
+        return math.nan
     dx, dy = x - x.mean(), y - y.mean()
     denom = math.sqrt(float(np.sum(dx**2)) * float(np.sum(dy**2)))
     value = nan_if_zero(float(np.sum(dx * dy)), denom)

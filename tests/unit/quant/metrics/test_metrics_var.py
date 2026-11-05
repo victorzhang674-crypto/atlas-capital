@@ -396,3 +396,22 @@ def test_audit_historical_cvar_tail_is_never_empty(values: list[float], conf: fl
     q = np.quantile(x, 1 - conf)
     assert math.isfinite(res.cvar)
     assert res.cvar == pytest.approx(-float(x[x <= q].mean()) if (x <= q).any() else -x.min())
+
+
+def test_audit_followup_constant_series_cornish_fisher() -> None:  # post-DONE audit item 4
+    # zero variance: no skew/kurtosis adjustment, VaR = CVaR = minus the (zero) mean
+    flat = pd.Series([0.001] * 100)
+    res = var_cvar(flat, method="cornish_fisher")
+    assert res.var == 0.0 and res.cvar == 0.0 and res.adjustments == ()  # no spurious floor
+    cfg = AtlasConfig.model_validate({"quant": {"metrics": {"zero_mean": False}}})
+    res_mu = var_cvar(flat, method="cornish_fisher", config=cfg)
+    assert res_mu.var == pytest.approx(-0.001) and res_mu.cvar == pytest.approx(-0.001)
+
+
+def test_audit_followup_flat_book_has_zero_var_by_every_method() -> None:
+    # a book with no positions returns exactly 0 every session (mutation-check survivor: the
+    # Cornish-Fisher moments would divide 0 by 0 without the constant guard)
+    zeros = pd.Series([0.0] * 100)
+    for method in SERIES_METHODS:
+        res = var_cvar(zeros, method=method)
+        assert res.var == 0.0 and res.cvar == 0.0 and res.adjustments == (), method

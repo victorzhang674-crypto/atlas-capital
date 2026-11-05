@@ -15,9 +15,11 @@ from atlas.quant.metrics._common import (
     as_covariance,
     as_series,
     as_weights,
+    is_constant,
     nan_if_zero,
     periods_per_year,
     risk_free_daily,
+    sample_std,
     weights_on,
     window_length,
 )
@@ -178,3 +180,20 @@ def test_reference_fixture_loads(reference: Reference) -> None:
     assert reference.returns.index.is_monotonic_increasing
     assert reference.periods == 252 and reference.risk_free_daily == 0.0001
     assert len(reference.values) == 30
+
+
+def test_audit_followup_uncovered_input_errors() -> None:  # post-DONE audit item 4
+    with pytest.raises(ValueError, match="risk_free contains infinite"):
+        risk_free_daily(pd.Series([0.0, np.inf, 0.0], index=DAYS[:3]), DAYS[:3], 252)
+    with pytest.raises(ValueError, match="weights must be numeric"):
+        as_weights(pd.Series({"A": "five percent"}))
+
+
+def test_audit_followup_is_constant_and_sample_std() -> None:  # post-DONE audit
+    b = np.random.default_rng(1).normal(0.0, 0.01, 100)
+    assert is_constant(np.array([0.001] * 100)) and is_constant((b + 0.001) - b)
+    assert is_constant(np.array([])) and is_constant(np.zeros(5))
+    assert not is_constant(np.array([0.001, 0.001 * (1 + 1e-9)]))  # a real (tiny) spread
+    assert not is_constant(np.array([1e-20, -1e-20]))  # scale-free: tiny but genuine
+    assert sample_std(np.array([0.001] * 100)) == 0.0
+    assert sample_std(np.array([0.01, 0.03])) == pytest.approx(float(np.std([0.01, 0.03], ddof=1)))

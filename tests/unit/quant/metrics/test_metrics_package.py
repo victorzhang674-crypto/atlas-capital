@@ -106,3 +106,31 @@ def test_every_public_name_is_tested() -> None:  # audit finding 4: "every metri
     )
     untested = sorted(name for name in STAGE_20 if name not in text)
     assert untested == []
+
+
+# --- post-DONE audit: constant series whose mean does not round exactly ------------------------
+
+
+def test_audit_followup_constant_series_are_undefined_not_huge() -> None:
+    import math
+
+    import numpy as np
+    import pandas as pd
+
+    days = pd.bdate_range("2020-01-01", periods=100)
+    flat = pd.Series([0.001] * 100, index=days)  # x - mean(x) is ~1e-19, not exactly 0
+    assert float(np.std(flat.to_numpy())) > 0.0  # the rounding noise this test is about
+    b = pd.Series(np.random.default_rng(1).normal(0.0, 0.01, 100), index=days)
+    assert math.isnan(metrics.sharpe_ratio(flat))
+    assert metrics.annualised_vol(flat) == 0.0
+    assert math.isnan(metrics.skewness(flat)) and math.isnan(metrics.excess_kurtosis(flat))
+    assert math.isnan(metrics.beta(b, flat)) and math.isnan(metrics.alpha(b, flat))
+    assert math.isnan(metrics.correlation(b, flat))
+    assert metrics.tracking_error(b + 0.001, b) == 0.0
+    assert math.isnan(metrics.information_ratio(b + 0.001, b))
+    normal = metrics.var_cvar(flat, method="normal")
+    assert normal.var == 0.0 and normal.cvar == 0.0
+    cf = metrics.var_cvar(flat, method="cornish_fisher")
+    assert cf.var == 0.0 and cf.cvar == 0.0 and cf.adjustments == ()
+    rf = pd.Series(np.linspace(0.0, 0.001, 100), index=days)
+    assert not math.isnan(metrics.sharpe_ratio(flat, risk_free=rf))  # excess not constant

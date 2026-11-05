@@ -1,0 +1,81 @@
+caught    NaN not dropped
+caught    return below -1 accepted
+caught    unsorted series accepted
+caught    min_obs ignored
+caught    annual-to-daily arithmetic
+caught    risk-free series gaps filled
+caught    align is an outer join
+caught    ratio by zero gives inf
+caught    covariance symmetry unchecked
+caught    covariance PSD unchecked
+caught    unknown held name ignored
+caught    audit2: constant test exact, no tolerance
+caught    audit2: sample std of a constant series not zeroed
+caught    audit2: skewness of a constant series
+caught    audit2: beta on a constant benchmark
+caught    audit2: correlation with a constant series
+SURVIVED  audit2: CF moments of a constant series
+caught    CAGR uses n not P
+caught    vol with ddof 0
+caught    Sharpe ignores the risk-free rate
+caught    Sharpe annualised by P
+caught    downside risk over losing sessions only
+caught    Sortino not annualised in the numerator
+caught    Omega threshold annual used per session
+caught    drawdown ignores the initial NAV
+caught    max drawdown sign flipped
+caught    episode duration excludes recovery
+caught    trough is the first underwater session
+caught    ulcer index is mean absolute drawdown
+caught    kurtosis not excess
+caught    skewness with the sample std
+caught    hit rate counts zero returns
+caught    tail ratio quantiles swapped
+caught    calmar uses arithmetic mean
+caught    rolling metric window off by one
+caught    rolling Sharpe ignores the risk-free rate
+caught    rolling vol with ddof 0
+caught    summary Sortino swapped for Sharpe
+caught    beta not on excess returns
+caught    beta with mixed ddof
+caught    alpha annualised arithmetically
+caught    tracking error not annualised
+caught    up capture over benchmark >= 0
+caught    down capture inverted
+caught    rolling beta ignores the risk-free rate
+caught    historical VaR at the confidence quantile
+caught    historical CVaR excludes the quantile observation
+caught    normal CVaR without the mean
+caught    Cornish-Fisher S^2 term sign
+caught    Cornish-Fisher CVaR kurtosis term dropped
+caught    Cornish-Fisher floor removed
+caught    CF moments not aggregated over the horizon
+caught    horizon scaled linearly
+caught    overlapping returns summed
+caught    zero-mean switch ignored
+caught    VaR minimum observations ignored
+caught    VaR confidence from the CVaR limit
+caught    portfolio sessions with a missing held return kept
+caught    Monte Carlo horizon not applied
+caught    Monte Carlo loading without the square root
+caught    Monte Carlo seed not required
+caught    parametric covariance VaR without the horizon
+caught    marginal not divided by vol
+caught    component without the weight
+caught    percent of variance not vol
+caught    zero portfolio percent zero
+caught    participation ignored
+caught    shorts not by magnitude
+caught    missing ADV counted as liquid
+caught    names liquid strict inequality
+caught    gross liquid counts whole positions only
+caught    default participation from the order limit
+caught    short reported as a magnitude
+caught    gross is the net
+caught    missing beta treated as zero
+caught    unclassified names dropped from sector nets
+caught    backtest summary Sharpe with the default risk-free
+caught    backtest summary drawdown on positive returns only
+
+77/78 mutants caught
+exit=1
