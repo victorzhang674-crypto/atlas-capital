@@ -1,0 +1,29 @@
+[{"conclusion":"success","databaseId":42114690550,"event":"push","headBranch":"main","name":"CI","status":"completed"},{"conclusion":"success","databaseId":42114690323,"event":"push","headBranch":"claude/stage-21-completion-c11c2d","name":"CI","status":"completed"}]
+
+✓ main CI · 42114690550
+Triggered via push about 16 minutes ago
+
+JOBS
+✓ check in 9m50s (ID 127551096391)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127551096391
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/42114690550
+
+✓ claude/stage-21-completion-c11c2d CI · 42114690323
+Triggered via push about 16 minutes ago
+
+JOBS
+✓ check in 10m8s (ID 127551096873)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127551096873
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/42114690323

@@ -1,0 +1,190 @@
+Updating 6209064..fe260a3
+Fast-forward
+ Planning/PROGRESS.md                               |  43 ++-
+ .../artifacts/coverage.txt                         |  10 +
+ .../artifacts/gate-pytest.txt                      |  66 ++++
+ .../artifacts/integration-real-lake.txt            |   7 +
+ .../artifacts/make-check.txt                       |  82 +++++
+ .../stage-21-regime-detection/artifacts/mutate.py  | 195 +++++++++++
+ .../artifacts/mutation-checks-final.txt            |  52 +++
+ .../artifacts/mutation-checks.txt                  |  52 +++
+ .../artifacts/real-lake-check.txt                  |  65 ++++
+ .../artifacts/real_lake_check.py                   | 187 +++++++++++
+ .../artifacts/verify-brief.txt                     |  12 +
+ .../stage-21-regime-detection/artifacts/werror.txt |  12 +
+ Planning/stages/stage-21-regime-detection/plan.md  |  98 ++++++
+ .../stage-21-regime-detection/verification.md      |  30 ++
+ .../stages/stage-21-regime-detection/worklog.md    |  63 ++++
+ config/fund.yaml                                   |  61 ++++
+ pyproject.toml                                     |  12 +-
+ src/atlas/core/config.py                           | 174 ++++++++++
+ src/atlas/data/macro/__init__.py                   |   2 +
+ src/atlas/data/macro/pit.py                        |  30 ++
+ src/atlas/data/view.py                             |  39 +++
+ src/atlas/quant/regime/__init__.py                 | 100 ++++++
+ src/atlas/quant/regime/hmm.py                      | 336 ++++++++++++++++++
+ src/atlas/quant/regime/loader.py                   | 374 +++++++++++++++++++++
+ src/atlas/quant/regime/macro_quadrant.py           | 200 +++++++++++
+ src/atlas/quant/regime/state.py                    | 140 ++++++++
+ src/atlas/quant/regime/store.py                    | 250 ++++++++++++++
+ src/atlas/quant/regime/vol_trend.py                | 130 +++++++
+ tests/integration/test_regime_real_lake.py         | 127 +++++++
+ tests/unit/data/test_view_pit.py                   |  47 +++
+ tests/unit/quant/regime/regime_synthetic.py        |  44 +++
+ tests/unit/quant/regime/regime_world.py            | 256 ++++++++++++++
+ tests/unit/quant/regime/test_regime_audit.py       | 237 +++++++++++++
+ tests/unit/quant/regime/test_regime_config.py      | 118 +++++++
+ tests/unit/quant/regime/test_regime_hmm.py         | 174 ++++++++++
+ tests/unit/quant/regime/test_regime_hmm_pit.py     | 107 ++++++
+ tests/unit/quant/regime/test_regime_loader.py      | 224 ++++++++++++
+ .../quant/regime/test_regime_macro_quadrant.py     | 184 ++++++++++
+ tests/unit/quant/regime/test_regime_package.py     |  71 ++++
+ tests/unit/quant/regime/test_regime_state.py       | 147 ++++++++
+ tests/unit/quant/regime/test_regime_store.py       | 145 ++++++++
+ tests/unit/quant/regime/test_regime_vol_trend.py   | 211 ++++++++++++
+ uv.lock                                            |  73 ++++
+ 43 files changed, 4980 insertions(+), 7 deletions(-)
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/coverage.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/gate-pytest.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/integration-real-lake.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/mutate.py
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/mutation-checks-final.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/mutation-checks.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/real-lake-check.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/real_lake_check.py
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/verify-brief.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/artifacts/werror.txt
+ create mode 100644 Planning/stages/stage-21-regime-detection/plan.md
+ create mode 100644 Planning/stages/stage-21-regime-detection/verification.md
+ create mode 100644 Planning/stages/stage-21-regime-detection/worklog.md
+ create mode 100644 src/atlas/quant/regime/__init__.py
+ create mode 100644 src/atlas/quant/regime/hmm.py
+ create mode 100644 src/atlas/quant/regime/loader.py
+ create mode 100644 src/atlas/quant/regime/macro_quadrant.py
+ create mode 100644 src/atlas/quant/regime/state.py
+ create mode 100644 src/atlas/quant/regime/store.py
+ create mode 100644 src/atlas/quant/regime/vol_trend.py
+ create mode 100644 tests/integration/test_regime_real_lake.py
+ create mode 100644 tests/unit/quant/regime/regime_synthetic.py
+ create mode 100644 tests/unit/quant/regime/regime_world.py
+ create mode 100644 tests/unit/quant/regime/test_regime_audit.py
+ create mode 100644 tests/unit/quant/regime/test_regime_config.py
+ create mode 100644 tests/unit/quant/regime/test_regime_hmm.py
+ create mode 100644 tests/unit/quant/regime/test_regime_hmm_pit.py
+ create mode 100644 tests/unit/quant/regime/test_regime_loader.py
+ create mode 100644 tests/unit/quant/regime/test_regime_macro_quadrant.py
+ create mode 100644 tests/unit/quant/regime/test_regime_package.py
+ create mode 100644 tests/unit/quant/regime/test_regime_state.py
+ create mode 100644 tests/unit/quant/regime/test_regime_store.py
+ create mode 100644 tests/unit/quant/regime/test_regime_vol_trend.py
+fe260a3 stage-21: Regime detection
+6209064 stage-20: independent review merged-main and CI records
+tree main d4ebef3a7f09dc2b60ab6776eb8c9525fac0f7da branch d4ebef3a7f09dc2b60ab6776eb8c9525fac0f7da
+Resolved 100 packages in 22ms
+   Building atlas-capital @ file:///Users/zzjsmacbookair/Projects/atlas-capital
+      Built atlas-capital @ file:///Users/zzjsmacbookair/Projects/atlas-capital
+Prepared 3 packages in 5.16s
+Uninstalled 1 package in 3ms
+Installed 6 packages in 54ms
+ ~ atlas-capital==0.1.0 (from file:///Users/zzjsmacbookair/Projects/atlas-capital)
+ + cloudpickle==3.1.2
+ + hmmlearn==0.3.3
+ + joblib==1.6.0
+ + scikit-learn==1.9.1
+ + threadpoolctl==3.8.0
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+320 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 134 source files
+uv run pytest -q
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+........................................................................ [ 14%]
+........................................................................ [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 46%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+........................................................................ [ 64%]
+.............
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.20 s (limit 20 s)
+........................................................... [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 70%]
+........................................................................ [ 72%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 94%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+......................................................................   [100%]
+3598 passed, 29 deselected in 225.32s (0:03:45)
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_catalog_version"
+ - leaked function "register_filesystem"
+ - leaked function "cursor"
+ - leaked function "__getitem__"
+ - leaked function "_create_view"
+ - leaked function "dtype"
+ - leaked function "__repr__"
+ - leaked function "close"
+ - leaked function "disable_profiling"
+ - leaked function "fetch_df_chunk"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlmake check exit 0
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 32%]
+........................................................................ [ 42%]
+........................................................................ [ 53%]
+........................................................................ [ 64%]
+........................................................................ [ 74%]
+........................................................................ [ 85%]
+........................................................................ [ 96%]
+..........................                                               [100%]
+674 passed in 27.17s
+verify exit 0
++ claude/stage-21-completion-c11c2d
