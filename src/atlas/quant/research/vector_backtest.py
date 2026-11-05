@@ -26,6 +26,13 @@ import pandas as pd
 
 from atlas.core.config import AtlasConfig
 from atlas.core.pit import guard_not_label
+from atlas.quant.metrics.performance import (
+    annualised_mean,
+    annualised_vol,
+    cumulative_return,
+    max_drawdown,
+    sharpe_ratio,
+)
 from atlas.quant.research.quantiles import quantile_buckets
 
 Rebalance = Literal["signal", "weekly", "monthly", "quarterly"]
@@ -102,22 +109,22 @@ class BacktestResult:
 def _summary(
     net: np.ndarray, turnover: np.ndarray, costs: np.ndarray, periods: int
 ) -> dict[str, Any]:
+    """Backtest summary; the performance numbers come from `atlas.quant.metrics` (Stage 20, the
+    single source). NaN where the series is too short for the number (empty; one session for a
+    standard deviation)."""
     n = len(net)
-    mean = float(net.mean()) if n else float("nan")
-    std = float(net.std(ddof=1)) if n >= 2 else float("nan")
-    wealth = np.cumprod(1.0 + net)
-    peak = np.maximum.accumulate(wealth) if n else wealth
-    years = n / periods if n else float("nan")
+    nan = float("nan")
+    years = n / periods if n else nan
     return {
         "n_sessions": n,
-        "ann_return": mean * periods,
-        "ann_vol": std * np.sqrt(periods),
-        "sharpe": mean / std * np.sqrt(periods) if std > 0 else float("nan"),
-        "total_return": float(wealth[-1] - 1.0) if n else float("nan"),
-        "max_drawdown": float(-(wealth / peak - 1.0).min()) if n else float("nan"),
+        "ann_return": annualised_mean(net, periods=periods) if n else nan,
+        "ann_vol": annualised_vol(net, periods=periods) if n >= 2 else nan,
+        "sharpe": sharpe_ratio(net, risk_free=0.0, periods=periods) if n >= 2 else nan,
+        "total_return": cumulative_return(net) if n else nan,
+        "max_drawdown": max_drawdown(net) if n else nan,
         "n_rebalances": len(turnover),
-        "mean_turnover": float(turnover.mean()) if len(turnover) else float("nan"),
-        "annual_turnover": float(turnover.sum() / years) if n else float("nan"),
+        "mean_turnover": float(turnover.mean()) if len(turnover) else nan,
+        "annual_turnover": float(turnover.sum() / years) if n else nan,
         "total_cost": float(costs.sum()),
     }
 
@@ -139,9 +146,10 @@ def vector_backtest(
     on `daily` (sessions x symbols, simple daily returns; every rebalance date must be one of
     its sessions). Defaults: `quant.research.backtest` (`rebalance`, `weighting`, `cost_bps`,
     `gross`), `quant.research` (`n_quantiles`, `min_names`) and
-    `quant.features.sessions_per_year`. Summary: `ann_return` (mean x P), `ann_vol` (std x
-    sqrt P), `sharpe` (mean / std x sqrt P, risk-free 0), `total_return`, `max_drawdown`
-    (positive fraction), `n_rebalances`, `mean_turnover` (per rebalance), `annual_turnover`,
+    `quant.features.sessions_per_year`. Summary (performance numbers from `atlas.quant.metrics`):
+    `ann_return` (mean x P), `ann_vol` (std x sqrt P), `sharpe` (mean / std x sqrt P, risk-free
+    0), `total_return`, `max_drawdown` (positive fraction, from the initial NAV of 1),
+    `n_rebalances`, `mean_turnover` (per rebalance), `annual_turnover`,
     `total_cost`, `n_sessions` and the settings used. A label as `signal` raises
     `LookAheadError`."""
     guard_not_label(signal, "signal")

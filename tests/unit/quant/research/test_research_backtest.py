@@ -177,7 +177,9 @@ def test_summary_sharpe_and_drawdown() -> None:
     assert s["ann_return"] == pytest.approx(r.mean() * 252)
     assert s["ann_vol"] == pytest.approx(r.std(ddof=1) * math.sqrt(252))
     wealth = np.cumprod(1 + r)
-    assert s["max_drawdown"] == pytest.approx(-(wealth / np.maximum.accumulate(wealth) - 1).min())
+    # Stage 20: the drawdown starts from the initial NAV of 1 (the first rebalance cost is a loss)
+    path = np.concatenate(([1.0], wealth))
+    assert s["max_drawdown"] == pytest.approx(-(path / np.maximum.accumulate(path) - 1).min())
     assert s["max_drawdown"] >= 0
     assert s["total_return"] == pytest.approx(wealth[-1] - 1)
     assert s["n_rebalances"] == 15
@@ -195,3 +197,20 @@ def test_backtest_rejects_labels() -> None:
     signal = pd.DataFrame(1.0, index=[pd.Timestamp("2021-01-09")], columns=daily.columns)
     with pytest.raises(ValueError, match="not sessions of the daily returns"):
         vector_backtest(signal, daily)
+
+
+def test_summary_drawdown_counts_the_first_session() -> None:  # Stage 20 single source
+    from atlas.quant.metrics import max_drawdown, sharpe_ratio
+    from atlas.quant.research.vector_backtest import _summary
+
+    net = np.array([-0.01, -0.01, 0.03])
+    s = _summary(net, np.array([2.0]), np.array([0.001, 0.0, 0.0]), 252)
+    assert s["max_drawdown"] == pytest.approx(1 - 0.99**2)  # was 1 - 0.99 before Stage 20
+    assert s["max_drawdown"] == max_drawdown(net)
+    assert s["sharpe"] == sharpe_ratio(net, risk_free=0.0, periods=252)
+    short = _summary(np.array([0.01]), np.array([1.0]), np.array([0.0]), 252)
+    assert math.isnan(short["sharpe"]) and math.isnan(short["ann_vol"])
+    assert short["max_drawdown"] == 0.0 and short["total_return"] == pytest.approx(0.01)
+    empty = _summary(np.array([]), np.array([]), np.array([]), 252)
+    assert empty["n_sessions"] == 0
+    assert all(math.isnan(empty[k]) for k in ("ann_return", "ann_vol", "sharpe", "max_drawdown"))

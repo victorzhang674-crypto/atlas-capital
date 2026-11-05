@@ -32,6 +32,7 @@ from atlas.core.config import (
     FundConfig,
     LimitsConfig,
     MacroConfig,
+    MetricsConfig,
     NewsConfig,
     PodStops,
     QualityConfig,
@@ -1325,6 +1326,41 @@ def test_quant_risk_model_blend_weights_sum_to_one() -> None:  # Stage 18 D1
     with pytest.raises(ValidationError, match="sum to 1"):
         BlendWeights(ewma=0.5, garch=0.5, realised=0.5)
     assert BlendWeights(ewma=1.0, garch=0.0, realised=0.0).ewma == 1.0
+
+
+def test_quant_metrics_defaults() -> None:  # Stage 20 config
+    m = AtlasConfig().quant.metrics
+    assert m == MetricsConfig()
+    assert m.model_dump() == {
+        "risk_free_annual": 0.0, "rolling_window": 63, "tail_quantile": 0.05,
+        "omega_threshold_annual": 0.0, "var_method": "historical", "var_min_obs": 63,
+        "horizon_method": "sqrt", "zero_mean": True, "mc_simulations": 20_000,
+        "liquidity_horizons": (1, 3, 5),
+    }  # fmt: skip
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("risk_free_annual", -0.06),
+        ("risk_free_annual", 0.6),
+        ("risk_free_annual", float("nan")),
+        ("rolling_window", 1),
+        ("tail_quantile", 0.0),
+        ("tail_quantile", 0.5),
+        ("omega_threshold_annual", -1.0),
+        ("var_method", "monte_carlo"),
+        ("var_min_obs", 9),
+        ("horizon_method", "linear"),
+        ("mc_simulations", 999),
+        ("liquidity_horizons", ()),
+        ("liquidity_horizons", (3, 1)),
+        ("liquidity_horizons", (0, 1)),
+    ],
+)
+def test_quant_metrics_validation(field: str, value: object) -> None:  # Stage 20 config
+    with pytest.raises(ValidationError, match=field):
+        MetricsConfig(**{field: value})
 
 
 # --- Phase 0 checkpoint (Tier 4): one FrozenDict, YAML merge keys ------------------------------

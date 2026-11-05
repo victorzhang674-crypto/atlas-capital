@@ -1,0 +1,4 @@
+caught    beta not on excess returns
+caught    rolling beta ignores the risk-free rate
+
+2/2 mutants caught

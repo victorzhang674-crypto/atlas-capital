@@ -1125,6 +1125,40 @@ class RiskModelConfig(_Frozen):
     factor_model: FactorModelConfig = Field(default_factory=FactorModelConfig)
 
 
+class MetricsConfig(_Frozen):
+    """The risk and performance metrics library (`atlas.quant.metrics`, Stage 20).
+
+    Units: rates are annual fractions; windows and horizons are sessions. `risk_free_annual`
+    is the default risk-free rate of Sharpe, alpha and beta (converted geometrically to a
+    per-session rate); `rolling_window` the default window of rolling metrics;
+    `tail_quantile` the lower quantile of the tail ratio; `omega_threshold_annual` the default
+    Omega threshold. VaR / CVaR: `var_method` is the default method on a series
+    (`historical`, `normal`, `cornish_fisher`), `var_min_obs` the fewest observations for any
+    VaR (fewer raise `DataError`), `horizon_method` how a historical VaR reaches a multi-session
+    horizon (`sqrt`: square-root-of-time; `overlapping`: overlapping h-session returns),
+    `zero_mean` whether the parametric methods assume a zero mean, `mc_simulations` the Monte
+    Carlo scenarios. `liquidity_horizons` are the sessions at which the liquid shares of a book
+    are reported. Confidence levels, the ADV participation and the ADV window come from
+    `limits` (one source).
+    """
+
+    risk_free_annual: Annotated[float, Field(ge=-0.05, le=0.5)] = 0.0
+    rolling_window: Annotated[int, Field(ge=2)] = 63
+    tail_quantile: Annotated[float, Field(gt=0, lt=0.5)] = 0.05
+    omega_threshold_annual: Annotated[float, Field(gt=-1, allow_inf_nan=False)] = 0.0
+    var_method: Literal["historical", "normal", "cornish_fisher"] = "historical"
+    var_min_obs: Annotated[int, Field(ge=10)] = 63
+    horizon_method: Literal["sqrt", "overlapping"] = "sqrt"
+    zero_mean: bool = True
+    mc_simulations: Annotated[int, Field(ge=1000)] = 20_000
+    liquidity_horizons: tuple[int, ...] = (1, 3, 5)
+
+    @field_validator("liquidity_horizons")
+    @classmethod
+    def _horizons(cls, value: tuple[int, ...]) -> tuple[int, ...]:
+        return _ascending_positive("liquidity_horizons", value)
+
+
 class QuantConfig(_Frozen):
     """Quant engine settings (Phase 2)."""
 
@@ -1132,6 +1166,7 @@ class QuantConfig(_Frozen):
     factors: FactorsConfig = Field(default_factory=FactorsConfig)
     research: ResearchConfig = Field(default_factory=ResearchConfig)
     risk_model: RiskModelConfig = Field(default_factory=RiskModelConfig)
+    metrics: MetricsConfig = Field(default_factory=MetricsConfig)
 
 
 class AtlasConfig(BaseSettings):

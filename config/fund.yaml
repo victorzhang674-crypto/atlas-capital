@@ -271,6 +271,18 @@ quant:
         window: 252  # sessions of returns in each ETF regression
         min_obs: 126  # fewest observed returns to estimate an ETF (fewer drops it)
         ridge: 1.0e-3  # ridge penalty relative to the mean diagonal of F'F
+  # Risk and performance metrics library (Stage 20, atlas.quant.metrics). VaR/CVaR confidence, ADV participation and window come from limits.yaml.
+  metrics:
+    risk_free_annual: 0.0  # default risk-free rate for Sharpe, alpha and beta, annual fraction (converted geometrically per session)
+    rolling_window: 63  # default window of rolling metrics, sessions
+    tail_quantile: 0.05  # lower quantile of the tail ratio |q(1-t)| / |q(t)|
+    omega_threshold_annual: 0.0  # default Omega ratio threshold, annual fraction
+    var_method: historical  # default VaR/CVaR method on a series: historical | normal | cornish_fisher
+    var_min_obs: 63  # fewest observations for any VaR/CVaR; fewer raise DataError
+    horizon_method: sqrt  # multi-session historical VaR: sqrt (square-root-of-time) | overlapping (h-session returns)
+    zero_mean: true  # parametric VaR (normal, Cornish-Fisher) assumes a zero mean return
+    mc_simulations: 20000  # Monte Carlo VaR scenarios
+    liquidity_horizons: [1, 3, 5]  # sessions at which the liquid share of a book is reported
 
 # LLM gateway values (consumed by Stage 24).
 llm:
