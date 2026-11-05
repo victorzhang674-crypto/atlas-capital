@@ -67,6 +67,8 @@ Owner: "Yes, run reviewer". A separate agent reviewed the stage read-only; no HI
   - hand-picked mutation set → **78/78** · raw: [artifacts/mutation-checks-review.txt](artifacts/mutation-checks-review.txt)
   - mutmut 3.8.1 → **2,781 mutants, 2,552 killed, 5 timeouts, 224 survived, all classified** (134 cosmetic, 90 equivalent) · [artifacts/mutmut-triage.md](artifacts/mutmut-triage.md), [artifacts/mutmut-results-review.txt](artifacts/mutmut-results-review.txt), [artifacts/mutmut-survivors-review.txt](artifacts/mutmut-survivors-review.txt)
   - real-lake integration test → 4 passed; real-lake check → all invariants held, SPY Cornish-Fisher refused · raw: [artifacts/integration-real-lake-review.txt](artifacts/integration-real-lake-review.txt), [artifacts/real-lake-check-review.txt](artifacts/real-lake-check-review.txt)
+  - On merged `main` (`85d9489`, fast-forward of `b0096de`): `uv run pytest -q` → 2915 passed; brief's Verify → 238 passed; `make check` → exit 0; pushed · raw: [artifacts/merged-main-check-review.txt](artifacts/merged-main-check-review.txt)
+  - GitHub Actions CI on `85d9489`: success on `main` (42015552928) and the branch (42015552895) · raw: [artifacts/ci-runs-review.txt](artifacts/ci-runs-review.txt)
 - Acceptance criteria: unchanged and still met.
 
 **Result:** ALL CRITERIA VERIFIED

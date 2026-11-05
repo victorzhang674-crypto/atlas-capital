@@ -1,0 +1,196 @@
+Updating b0096de..85d9489
+Fast-forward
+ Planning/PROGRESS.md                               |   8 +-
+ .../artifacts/coverage-review.txt                  |  21 +
+ .../artifacts/integration-real-lake-review.txt     |  15 +
+ .../artifacts/make-check-review.txt                |  73 ++
+ .../artifacts/mutation-checks-review.txt           |  81 ++
+ .../artifacts/mutmut-results-review.txt            | 229 ++++++
+ .../artifacts/mutmut-run-review.txt                |   1 +
+ .../artifacts/mutmut-survivors-review.txt          | 897 +++++++++++++++++++++
+ .../artifacts/mutmut-triage.md                     |  28 +
+ .../artifacts/real-lake-check-review.txt           |  50 ++
+ .../artifacts/real_lake_check.py                   |  14 +-
+ .../artifacts/verify-brief-review.txt              |   6 +
+ .../artifacts/werror-review.txt                    |   6 +
+ .../stages/stage-20-risk-metrics/verification.md   |  14 +
+ Planning/stages/stage-20-risk-metrics/worklog.md   |  16 +
+ config/fund.yaml                                   |   2 +
+ src/atlas/core/config.py                           |   8 +-
+ src/atlas/quant/metrics/__init__.py                |   2 +
+ src/atlas/quant/metrics/liquidity.py               |  20 +-
+ src/atlas/quant/metrics/performance.py             |   7 +-
+ src/atlas/quant/metrics/var.py                     |  58 +-
+ tests/integration/test_metrics_real_lake.py        |   7 +-
+ tests/unit/core/test_config.py                     |   6 +-
+ .../quant/metrics/test_metrics_mutation_gaps.py    |   2 +-
+ tests/unit/quant/metrics/test_metrics_package.py   |   3 +-
+ tests/unit/quant/metrics/test_metrics_review.py    | 250 ++++++
+ tests/unit/quant/metrics/test_metrics_var.py       |  18 +-
+ 27 files changed, 1812 insertions(+), 30 deletions(-)
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/coverage-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/integration-real-lake-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/make-check-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/mutation-checks-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/mutmut-results-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/mutmut-run-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/mutmut-survivors-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/real-lake-check-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/verify-brief-review.txt
+ create mode 100644 Planning/stages/stage-20-risk-metrics/artifacts/werror-review.txt
+ create mode 100644 tests/unit/quant/metrics/test_metrics_review.py
+85d9489 stage-20: independent review fixes
++ claude/stage-20-completion-30d1cd
+== pytest
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  7%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+....
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.16 s (limit 20 s)
+.................................................................... [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+...................................                                      [100%]
+2915 passed, 23 deselected in 183.96s (0:03:03)
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "commit"
+ - leaked function "fetch_df"
+ - leaked function "_prepare_script"
+ - leaked function ""
+ - leaked function "query_progress"
+ - leaked function "register_filesystem"
+ - leaked function "fetchall"
+ - leaked function "sqltype"
+ - leaked function "cursor"
+ - leaked function "fetchnumpy"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlpytest_exit=0
+== verify
+........................................................................ [ 30%]
+........................................................................ [ 60%]
+........................................................................ [ 90%]
+......................                                                   [100%]
+238 passed in 3.80s
+verify_exit=0
+== make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+300 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 127 source files
+uv run pytest -q
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  7%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 44%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+....
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.49 s (limit 20 s)
+.................................................................... [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+...................................                                      [100%]
+2915 passed, 23 deselected in 184.37s (0:03:04)
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "register_filesystem"
+ - leaked function "_name_scope"
+ - leaked function "append"
+ - leaked function "close"
+ - leaked function "tf"
+ - leaked function "rollback"
+ - leaked function "register"
+ - leaked function "_catalog_version"
+ - leaked function "_bind"
+ - leaked function "fetchdf"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlmake_check_exit=0
+To https://github.com/victorzhang674-crypto/atlas-capital.git
+   b0096de..85d9489  claude/stage-20-completion-30d1cd -> claude/stage-20-completion-30d1cd
+   b0096de..85d9489  main -> main
+## main...origin/main
+REVIEW_MERGE_DONE

@@ -1,0 +1,32 @@
+# CI of 85d9489 (gh run list --commit <full sha>, then gh run view)
+42015552895 claude/stage-20-completion-30d1cd completed success
+42015552928 main completed success
+
+✓ claude/stage-20-completion-30d1cd CI · 42015552895
+Triggered via push about 22 minutes ago
+
+JOBS
+✓ check in 10m28s (ID 127205083297)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127205083297
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/42015552895
+
+✓ main CI · 42015552928
+Triggered via push about 23 minutes ago
+
+JOBS
+✓ check in 11m36s (ID 127205083364)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127205083364
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/42015552928
+CI_REVIEW_DONE
