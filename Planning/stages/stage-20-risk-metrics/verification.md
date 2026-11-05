@@ -33,6 +33,8 @@ Owner: "can you audit the important ones for the not being fully audited things?
   - `ATLAS__DATA__LAKE_PATH=~/Projects/atlas-capital/data uv run pytest tests/integration/test_metrics_real_lake.py -m integration -v` → **4 passed** (without the lake: 4 skipped) · raw: [artifacts/integration-real-lake.txt](artifacts/integration-real-lake.txt)
   - Stage 17 real-lake tear sheet re-check → library summary = recorded numbers (diff 0) · raw: [artifacts/stage17-recheck.txt](artifacts/stage17-recheck.txt)
   - CI on the records commit `c54c69f`: success on `main` (41960545116) and the branch (41960545285) · raw: [artifacts/ci-runs-records.txt](artifacts/ci-runs-records.txt)
+  - On merged `main` (`cffd7f7`, fast-forward of `c54c69f`): `uv run pytest -q` → 2831 passed; brief's Verify → 157 passed; `make check` → exit 0; pushed · raw: [artifacts/merged-main-check-followup.txt](artifacts/merged-main-check-followup.txt)
+  - GitHub Actions CI on `cffd7f7`: success on `main` (41964994717) and the branch (41964994262) · raw: [artifacts/ci-runs-followup.txt](artifacts/ci-runs-followup.txt)
 - Bug found and fixed: constant series with rounding noise gave huge Sharpe / IR (~1e16), a finite beta on a constant benchmark and noise moments → now NaN / 0 via `is_constant` / `sample_std` (tests listed in the worklog).
 - Independent re-derivations: `test_metrics_independent.py` (Cornish-Fisher by stratified simulation, contributions by the covariance form, liquidity by a liquidation simulation, exposures by loops, normal CVaR by scipy).
 - Not done (owner's call): an independent reviewer; a generated (exhaustive) mutation run.

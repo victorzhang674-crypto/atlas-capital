@@ -1,0 +1,31 @@
+# CI of cffd7f7 (gh run list --commit <full sha>, then gh run view)
+41964994717 main completed success
+41964994262 claude/stage-20-completion-30d1cd completed success
+
+✓ main CI · 41964994717
+Triggered via push about 13 minutes ago
+
+JOBS
+✓ check in 11m55s (ID 127039857705)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127039857705
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41964994717
+
+✓ claude/stage-20-completion-30d1cd CI · 41964994262
+Triggered via push about 13 minutes ago
+
+JOBS
+✓ check in 13m3s (ID 127039856575)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=127039856575
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/41964994262
