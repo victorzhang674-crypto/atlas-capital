@@ -1,0 +1,50 @@
+# Stage 20 real-lake check · decision day 2025-01-02 · lake /Users/zzjsmacbookair/Projects/atlas-capital/data
+
+## SPY: 1260 returns 2019-12-30 .. 2024-12-31 (last < decision day: ok)
+  n_sessions               1260
+  start                    2019-12-30 00:00:00
+  end                      2024-12-31 00:00:00
+  cumulative_return        0.957964
+  annualised_return        0.143829
+  annualised_mean          0.156522
+  annualised_vol           0.209779
+  sharpe                   0.746128
+  sortino                  1.042923
+  calmar                   0.426572
+  omega                    1.152302
+  max_drawdown             0.337173
+  max_drawdown_duration    489
+  ulcer_index              0.093179
+  skewness                 -0.542591
+  excess_kurtosis          11.477519
+  hit_rate                 0.547619
+  profit_factor            1.152302
+  tail_ratio               0.936817
+  cross-check (plain pandas): max_drawdown 0.337173, sharpe 0.746128: ok
+  worst drawdown episodes (peak -> trough -> recovery, depth, sessions peak->trough, duration):
+    2020-02-19 -> 2020-03-23 -> 2020-08-10  0.3372  23  120
+    2022-01-03 -> 2022-10-12 -> 2023-12-13  0.2450  195  489
+    2020-09-02 -> 2020-09-23 -> 2020-11-11  0.0944  14  49
+  rolling 252-session Sharpe: min -0.791 max 3.065 last 1.832
+  VaR / CVaR of SPY daily returns (VaR 95%, CVaR 97.5%, positive losses):
+    historical      1d VaR 1.9215% CVaR 4.1320% · 10d VaR 6.0763% CVaR 13.0665% []
+    normal          1d VaR 2.1736% CVaR 3.0894% · 10d VaR 6.8737% CVaR 9.7694% []
+    cornish_fisher  refused: the Cornish-Fisher expansion is not monotone for skewness -0.543 and excess kurtosis 11.478 (outside its domain of validity): its VaR would be unreliable; use the historical method
+
+## Book: 503 members, 496 with >= 480 of 504 returns; 30 long / 20 short at 2% NAV (8.8 s so far)
+  historical simulation: 504 sessions (0 dropped for a missing held return)
+    historical      VaR95 0.4909% CVaR97.5 0.7178% (limits: VaR <= 1.50%, CVaR <= 2.50%)
+    normal          VaR95 0.5001% CVaR97.5 0.7108% (limits: VaR <= 1.50%, CVaR <= 2.50%)
+    cornish_fisher  VaR95 0.5066% CVaR97.5 0.7532% (limits: VaR <= 1.50%, CVaR <= 2.50%)
+    normal (LW cov)  VaR95 0.4990% CVaR97.5 0.7093%
+    monte_carlo      VaR95 0.4996% CVaR97.5 0.7083% (20000 scenarios, 0.01 s; |MC/normal - 1| = 0.108%)
+  contributions: daily vol 0.3034% (annual 4.82%); sum of components = vol: ok; top 3 % of risk: ENPH 13.9%, TSLA 12.7%, TER 9.9%; most diversifying: FITB -4.8%
+  relative to SPY: n_common 504, beta 0.2575, alpha -0.0012, tracking_error 0.1016, information_ratio -1.7891, active_return -0.2027, up_capture 0.1432, down_capture 0.4543, up_down_capture 0.3153, correlation 0.6854
+  book: annualised return 6.22%, vol 4.83%, Sharpe 1.274, max drawdown 4.25%
+  liquidity ($100M NAV, 10% of 20-day ADV): max days 4.425; names liquid {1: 0.96, 3: 0.98, 5: 1.0}; gross liquid {1: 0.97185941330375, 3: 0.9935593724877501, 5: 1.0}; no ADV ()
+  cross-check (plain pandas) days to liquidate: ok
+  exposures: gross 100.00% net 20.00% long 60.00% short -40.00% (30 / 20); beta-adjusted net 0.2575; unclassified ('ENPH', 'MTCH', 'DFS', 'CPB', 'MKTX', 'EMN', 'AVB')
+  sector nets: Communication Services +2%, Consumer Discretionary +6%, Consumer Staples +0%, Financials +4%, Health Care +2%, Industrials +2%, Information Technology +6%, Materials +0%, Unclassified -6%, Utilities +4%
+
+total 8.9 s · all invariants held
+exit=0

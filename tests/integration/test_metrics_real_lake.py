@@ -18,6 +18,7 @@ import pandas as pd
 import pytest
 from scipy import stats
 
+from atlas.core.errors import DataError
 from atlas.core.storage import Lake
 from atlas.data.view import DataView
 from atlas.quant import metrics as m
@@ -73,10 +74,14 @@ def test_spy_performance_equals_plain_pandas(spy: pd.Series) -> None:
 
 
 def test_spy_var_cvar_invariants(spy: pd.Series) -> None:
-    for method in m.SERIES_METHODS:
+    for method in ("historical", "normal"):
         for h in (1, 10):
             res = m.var_cvar(spy, method=method, horizon=h)
             assert 0 < res.var <= res.cvar < 0.5, (method, h)
+    # SPY 2020-2024 (skew -0.54, excess kurtosis 11.5) is outside the Cornish-Fisher domain:
+    # refused instead of an unreliable number (independent review, 2026-11-05)
+    with pytest.raises(DataError, match="Cornish-Fisher"):
+        m.var_cvar(spy, method="cornish_fisher")
     hist = m.var_cvar(spy)
     assert hist.var == pytest.approx(-float(np.quantile(spy, 0.05)), rel=1e-12)
     q = np.quantile(spy, 0.025)

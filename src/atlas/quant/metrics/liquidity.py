@@ -6,7 +6,8 @@ close x volume over `limits.adv_window_days` sessions); `participation` is the f
 traded per session (default `limits.liquidation_adv_frac`, 0.10). Days are sessions (float).
 
 - `days_to_liquidate` = `|position| / (participation * ADV)`; 0 for a zero position. A held
-  name with no ADV (missing, NaN or <= 0) cannot be sold at any participation: `inf` days
+  name with no ADV (missing, NaN or <= 0; read from a view, also one averaged over too few
+  sessions) cannot be sold at any participation: `inf` days
   (fail safe: it never counts as liquid) and it is listed in `LiquidityProfile.no_adv`.
 - `liquidity_profile` adds, for each horizon `h` (default `quant.metrics.liquidity_horizons`,
   1/3/5 sessions): `names_liquid[h]` = share of held positions (by count) that liquidate within
@@ -139,9 +140,22 @@ def liquidity_from_view(
     lookback: int | None = None,
 ) -> LiquidityProfile:
     """`liquidity_profile` with the ADV read point-in-time from `view` (`DataView.adv`,
-    `adv_usd` over `lookback` sessions, default `limits.adv_window_days`); `positions` in USD."""
+    `adv_usd` over `lookback` sessions, default `limits.adv_window_days`); `positions` in USD.
+    An ADV averaged over fewer than `quant.metrics.adv_min_coverage` of the window's sessions
+    (a new listing, missing bars) is not trusted: the name gets `inf` days and is listed in
+    `no_adv` (fail safe for the liquidation limit)."""
     pos = as_weights(positions, "positions")
-    adv = view.adv([str(s) for s in pos.index], lookback)["adv_usd"]
+    cfg = view.config
+    window = cfg.limits.adv_window_days if lookback is None else lookback
+    frame = view.adv([str(s) for s in pos.index], lookback)
+    needed = math.ceil(cfg.quant.metrics.adv_min_coverage * window)
+    partial = frame["sessions"] < needed
+    if partial.any():
+        _log.warning(
+            "liquidity_partial_adv", names=[str(s) for s in frame.index[partial]][:10],
+            needed_sessions=needed, window=window,
+        )  # fmt: skip
+    adv = frame["adv_usd"].where(~partial)
     return liquidity_profile(
         pos, adv, participation=participation, horizons=horizons, config=view.config
     )

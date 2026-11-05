@@ -6,7 +6,7 @@ import math
 import numpy as np
 import pandas as pd
 import pytest
-from hypothesis import given, settings
+from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 from metrics_reference import Reference
 from scipy import integrate, stats
@@ -18,8 +18,10 @@ from atlas.quant.metrics.var import (
     METHODS,
     SERIES_METHODS,
     VaRResult,
+    _moments,
     conditional_value_at_risk,
     cornish_fisher_cvar,
+    cornish_fisher_monotone,
     cornish_fisher_quantile,
     cornish_fisher_var,
     normal_cvar,
@@ -159,9 +161,8 @@ def test_cornish_fisher_floor_is_applied_and_recorded() -> None:
     assert floored and cvar == var
     x = pd.Series([-0.01] * 95 + [0.2] * 5)  # skew 4.1, excess kurtosis 15: non-monotone CF
     assert float(stats.skew(x)) == pytest.approx(4.13, abs=0.01)
-    res = var_cvar(x, method="cornish_fisher", var_confidence=0.975, cvar_confidence=0.975)
-    assert res.cvar == res.var
-    assert res.adjustments == ("cornish-fisher CVaR floored at the VaR (non-monotone expansion)",)
+    with pytest.raises(DataError, match="not monotone"):  # independent review: refuse, not floor
+        var_cvar(x, method="cornish_fisher", var_confidence=0.975, cvar_confidence=0.975)
 
 
 def test_cornish_fisher_on_a_series_uses_sample_moments() -> None:
@@ -345,7 +346,12 @@ sample_lists = st.lists(
 @settings(max_examples=60, deadline=None)
 @given(sample_lists, st.floats(min_value=0.8, max_value=0.995), st.sampled_from(SERIES_METHODS))
 def test_cvar_is_never_below_var(values: list[float], conf: float, method: str) -> None:
-    res = var_cvar(pd.Series(values), method=method, var_confidence=conf, cvar_confidence=conf)
+    try:
+        res = var_cvar(pd.Series(values), method=method, var_confidence=conf, cvar_confidence=conf)
+    except DataError:  # only Cornish-Fisher refuses, and only outside its domain
+        assert method == "cornish_fisher"
+        assert not cornish_fisher_monotone(*_moments(np.asarray(values)))
+        return
     assert res.cvar >= res.var - 1e-12
 
 
@@ -362,6 +368,8 @@ def test_var_increases_with_confidence(values: list[float], method: str) -> None
 @given(sample_lists, st.floats(min_value=0.1, max_value=2.0), st.sampled_from(SERIES_METHODS))
 def test_var_is_positively_homogeneous(values: list[float], c: float, method: str) -> None:
     x = pd.Series(values)
+    if method == "cornish_fisher":
+        assume(cornish_fisher_monotone(*_moments(x.to_numpy())))  # else refused (tested above)
     a, b = var_cvar(x, method=method), var_cvar(x * c, method=method)
     assert b.var == pytest.approx(c * a.var, rel=1e-6, abs=1e-12)
     assert b.cvar == pytest.approx(c * a.cvar, rel=1e-6, abs=1e-12)

@@ -46,3 +46,31 @@ Timeouts count as caught (the mutant made the suite hang). Kill rate 82% → 92%
 | Message-only | 1 | how many missing dates an error message lists (`[:5]` vs `[:6]`) |
 
 The per-mutant list with its diff is in [mutmut-survivors.txt](mutmut-survivors.txt).
+
+## After the independent review (2026-11-05)
+
+The review fixes added code (`cornish_fisher_monotone`, the ADV coverage check, the Monte Carlo minimum, argument checks), so mutmut was run again on the final code: **2,781 mutants, 2,552 killed, 5 timeouts, 224 survived** ([mutmut-results-review.txt](mutmut-results-review.txt), diffs in [mutmut-survivors-review.txt](mutmut-survivors-review.txt)). The first run after the fixes had 247 survivors; the new code's gaps were closed with tests in `test_metrics_review.py`:
+- `cornish_fisher_monotone` survived coefficient changes (8→9, 6→7, 5→6, …): its first tests sat far from the boundary → a 400-example property test against a dense numerical minimum, designed shallow dips (minimum slope ±0.001, the minimum at several z), a dip just outside `|z| ≤ 4` (S −1.18, K 2.19: minimum at z 4.72), and a case separating `z_max` 4 from 5 through config.
+- My CVaR quantile-boundary test was not exact (`5/1000 − 0.05` is not representable, so the quantile was not exactly an observation) → values in multiples of 1/64.
+- Overlapping horizon 2 `n_obs`; a Monte Carlo mean with symbols outside the covariance (mutant `strict=True`).
+
+The 224 survivors: **134 cosmetic** (89 string literals, 33 name-only string arguments, 12 messages / logs / errstate) and **90 equivalent**, counted by rule tagging and reviewed per class:
+
+| Class | Count | Why equivalent |
+|---|---|---|
+| Name-only / non-strict arguments | 24 | as in the table above (series names in error messages, `strict=None` falsy like `False`, default `adjustments=()`) |
+| Zero-width boundaries | 11 | as above |
+| Log-only | 11 | the fields of the `liquidity_partial_adv` warning (9) and the dropped-session count (2) only feed log lines |
+| Constant risk-free rate cancels | 10 | as above |
+| Spelled-out defaults | 7 | as above |
+| Unreachable branches | 5 | as above |
+| Exact-tie boundaries | 5 | `<` vs `<=` at a point hit with probability zero: the slope minimum exactly at ±z_max, a slope of exactly 0, a CVaR exactly equal to the VaR, a drawdown of exactly −1e-12 |
+| dtype defaults | 4 | as above |
+| Sorting undone later | 3 | as above |
+| Config already carries the value | 2 | as above |
+| Square-matrix shape | 2 | as above |
+| Algebraic identity | 2 | as above |
+| Symmetric interval | 1 | the "minimum inside [−z_max, z_max]" test with the sign of the vertex flipped: the interval is symmetric |
+| Distributional symmetry | 1 | as above |
+| Equivalent minimum-data guard | 1 | as above |
+| Message-only | 1 | as above |

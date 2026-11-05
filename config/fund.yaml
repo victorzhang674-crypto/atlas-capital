@@ -283,6 +283,8 @@ quant:
     zero_mean: true  # parametric VaR (normal, Cornish-Fisher) assumes a zero mean return
     mc_simulations: 20000  # Monte Carlo VaR scenarios
     liquidity_horizons: [1, 3, 5]  # sessions at which the liquid share of a book is reported
+    adv_min_coverage: 0.9  # an ADV from the data must cover this share of its window's sessions, else no usable ADV
+    cornish_fisher_z_max: 4.0  # Cornish-Fisher VaR needs its quantile map increasing on |z| <= this (4 = 99.994% of the mass), else DataError
 
 # LLM gateway values (consumed by Stage 24).
 llm:

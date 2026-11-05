@@ -57,3 +57,17 @@ Owner: "can you complete this stage?" (details in the worklog).
 - Acceptance criteria: unchanged and still met.
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Independent review — Stage 20 — 2026-11-05
+Owner: "Yes, run reviewer". A separate agent reviewed the stage read-only; no HIGH, 2 MEDIUM, 5 LOW findings, each reproduced by me before fixing (worklog).
+- Fixed: Cornish-Fisher VaR outside its domain now refused (`DataError`; SPY 2020–2024 is outside it); ADV from a partial window not trusted; Monte Carlo minimum scenarios; drawdown recovery through rounding; covariance-only arguments with a returns history rejected; overlapping `n_obs`; Stage 17's raise on a return below −100% recorded. New config keys `quant.metrics.adv_min_coverage` (0.9), `quant.metrics.cornish_fisher_z_max` (4.0). Tests: `tests/unit/quant/metrics/test_metrics_review.py`.
+- Commands run (this chat, final code):
+  - `make check` → exit 0: All checks passed! · 300 files already formatted · Success: no issues found in 127 source files · **2915 passed, 23 deselected** · raw: [artifacts/make-check-review.txt](artifacts/make-check-review.txt)
+  - brief's Verify → **238 passed**; `-W error` → 238 passed; coverage **100%** · raw: [artifacts/verify-brief-review.txt](artifacts/verify-brief-review.txt), [artifacts/werror-review.txt](artifacts/werror-review.txt), [artifacts/coverage-review.txt](artifacts/coverage-review.txt)
+  - hand-picked mutation set → **78/78** · raw: [artifacts/mutation-checks-review.txt](artifacts/mutation-checks-review.txt)
+  - mutmut 3.8.1 → **2,781 mutants, 2,552 killed, 5 timeouts, 224 survived, all classified** (134 cosmetic, 90 equivalent) · [artifacts/mutmut-triage.md](artifacts/mutmut-triage.md), [artifacts/mutmut-results-review.txt](artifacts/mutmut-results-review.txt), [artifacts/mutmut-survivors-review.txt](artifacts/mutmut-survivors-review.txt)
+  - real-lake integration test → 4 passed; real-lake check → all invariants held, SPY Cornish-Fisher refused · raw: [artifacts/integration-real-lake-review.txt](artifacts/integration-real-lake-review.txt), [artifacts/real-lake-check-review.txt](artifacts/real-lake-check-review.txt)
+- Acceptance criteria: unchanged and still met.
+
+**Result:** ALL CRITERIA VERIFIED
+

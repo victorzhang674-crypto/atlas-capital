@@ -1138,7 +1138,11 @@ class MetricsConfig(_Frozen):
     horizon (`sqrt`: square-root-of-time; `overlapping`: overlapping h-session returns),
     `zero_mean` whether the parametric methods assume a zero mean, `mc_simulations` the Monte
     Carlo scenarios. `liquidity_horizons` are the sessions at which the liquid shares of a book
-    are reported. Confidence levels, the ADV participation and the ADV window come from
+    are reported; an ADV read from the data must cover at least `adv_min_coverage` of its
+    window's sessions to be trusted (a new listing or missing bars give no usable ADV).
+    A Cornish-Fisher VaR is refused (`DataError`) unless its quantile map is increasing over
+    `|z| <= cornish_fisher_z_max` standard deviations.
+    Confidence levels, the ADV participation and the ADV window come from
     `limits` (one source).
     """
 
@@ -1152,6 +1156,8 @@ class MetricsConfig(_Frozen):
     zero_mean: bool = True
     mc_simulations: Annotated[int, Field(ge=1000)] = 20_000
     liquidity_horizons: tuple[int, ...] = (1, 3, 5)
+    adv_min_coverage: Annotated[float, Field(gt=0, le=1)] = 0.9
+    cornish_fisher_z_max: Annotated[float, Field(ge=3, le=8)] = 4.0
 
     @field_validator("liquidity_horizons")
     @classmethod

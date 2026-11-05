@@ -59,6 +59,8 @@ from atlas.quant.metrics._common import (
     window_length,
 )
 
+_AT_PEAK_TOL = 1e-12  # a drawdown smaller than this fraction is rounding, not a loss
+
 # --- level and dispersion ---------------------------------------------------------------------
 
 
@@ -191,7 +193,10 @@ def _drawdowns(r: np.ndarray) -> np.ndarray:
     the first return), as fractions <= 0."""
     wealth = np.concatenate(([1.0], np.cumprod(1.0 + r)))
     peak = np.maximum.accumulate(wealth)  # >= 1: the path starts at 1, so never a zero peak
-    return wealth / peak - 1.0
+    dd = wealth / peak - 1.0
+    # back at the high-water mark up to rounding (-13% then +1/0.87-1 gives 0.9999999999999999)
+    dd[dd > -_AT_PEAK_TOL] = 0.0
+    return dd
 
 
 def drawdown_series(returns: ReturnsLike) -> pd.Series:

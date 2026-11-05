@@ -24,8 +24,12 @@ Methods on a series (`var_cvar`, `value_at_risk`, `conditional_value_at_risk`):
   `VaR = -(mu_h + z_cf sigma_h)`; CVaR = the expected loss of the Cornish-Fisher-transformed
   normal below the VaR quantile, in closed form
   `-mu_h + sigma_h phi(z)/(1 - a) [1 + S z/6 + K (z^2 - 1)/24 - S^2 (2 z^2 - 1)/36]`. The
-  expansion is not monotone for extreme (S, K): a CVaR below the VaR is floored at the VaR
-  (PerformanceAnalytics' convention) and recorded in `adjustments`.
+  expansion is only valid while `z -> z_cf` is increasing over `|z| <= quant.metrics.
+  cornish_fisher_z_max` (4: 99.994% of the mass; `cornish_fisher_monotone`); outside
+  that domain — common for daily equity returns with excess kurtosis above ~8 — the transformed
+  quantile is not the quantile of the transformed variable and the VaR can be understated, so
+  `var_cvar` raises `DataError` (use `historical`). The low-level `cornish_fisher_cvar` floors
+  a CVaR below the VaR (PerformanceAnalytics' convention) and says so.
 
 Portfolios (`portfolio_var`): with a returns history, the historical simulation of today's
 weights, `portfolio_returns(w, R) = R w` (a session where a held name has no return is
@@ -35,8 +39,10 @@ multivariate-normal scenarios (mean 0 or the given daily mean, scaled to the hor
 `h mu`, `h Sigma`) with an explicit `seed` or `rng` and applies the historical estimators to
 the simulated portfolio P&L. A nonzero weight on a name without data raises `DataError`.
 
-Fail safe: fewer than `quant.metrics.var_min_obs` observations raise `DataError` — never a
-VaR from too little data.
+Fail safe: fewer than `quant.metrics.var_min_obs` observations (or Monte Carlo scenarios), or a
+Cornish-Fisher expansion outside its domain, raise `DataError` — never a VaR from too little
+data or an invalid approximation. Simulation-only arguments (`mean`, `n_sims`, `seed`, `rng`)
+given with a returns history raise `ValueError` instead of being ignored.
 """
 
 import math
@@ -145,6 +151,22 @@ def normal_cvar(mu: float, sigma: float, confidence: float) -> float:
     return float(-mu + sigma * _N.pdf(z) / (1.0 - conf))
 
 
+def cornish_fisher_monotone(skew: float, kurt: float, z_max: float = 4.0) -> bool:
+    """Whether the Cornish-Fisher map `z -> z_cf` is increasing on `|z| <= z_max` for skewness
+    `skew` and excess kurtosis `kurt` (unitless): its derivative
+    `1 + S z/3 + K (z^2 - 1)/8 - S^2 (6 z^2 - 5)/36 = a z^2 + b z + c` stays positive there.
+    `z_max` 4 covers 99.994% of the normal mass (every confidence up to 99.99%). Maillard's
+    whole-line domain would also reject thin tails (K < 4 S^2 / 3), e.g. half of all normal
+    samples, whose map only turns beyond |z| ~ 5-8 and cannot move a reported VaR."""
+    a = kurt / 8.0 - skew**2 / 6.0
+    b = skew / 3.0
+    c = 1.0 - kurt / 8.0 + 5.0 * skew**2 / 36.0
+    points = [-z_max, z_max]
+    if a > 0.0 and -z_max < -b / (2.0 * a) < z_max:
+        points.append(-b / (2.0 * a))  # the minimum of the derivative
+    return all(a * z * z + b * z + c > 0.0 for z in points)
+
+
 def cornish_fisher_quantile(z: float, skew: float, kurt: float) -> float:
     """Cornish-Fisher adjusted standard quantile for skewness `skew` and excess kurtosis
     `kurt` (unitless)."""
@@ -241,7 +263,8 @@ def var_cvar(
             if h > 1:
                 var, cvar = scale_to_horizon(var, h), scale_to_horizon(cvar, h)
                 adjustments.append(f"sqrt-of-time scaling to {h} sessions")
-        return VaRResult(var, cvar, vc, cc, h, how, len(data), tuple(adjustments))
+        n_used = len(agg) if h > 1 and mc.horizon_method == "overlapping" else len(data)
+        return VaRResult(var, cvar, vc, cc, h, how, n_used, tuple(adjustments))
     mu = 0.0 if mc.zero_mean else float(data.mean())
     sigma = sample_std(data)
     mu_h, sigma_h = mu * h, sigma * math.sqrt(h)
@@ -250,12 +273,15 @@ def var_cvar(
         return VaRResult(var, cvar, vc, cc, h, how, len(data), ())
     skew, kurt = _moments(data)
     skew_h, kurt_h = skew / math.sqrt(h), kurt / h
+    if not cornish_fisher_monotone(skew_h, kurt_h, mc.cornish_fisher_z_max):
+        raise DataError(
+            f"the Cornish-Fisher expansion is not monotone for skewness {skew_h:.3f} and excess "
+            f"kurtosis {kurt_h:.3f} (outside its domain of validity): its VaR would be "
+            "unreliable; use the historical method"
+        )
     var = cornish_fisher_var(mu_h, sigma_h, skew_h, kurt_h, vc)
-    cvar, floored = cornish_fisher_cvar(mu_h, sigma_h, skew_h, kurt_h, cc)
-    if floored:
-        adjustments.append("cornish-fisher CVaR floored at the VaR (non-monotone expansion)")
-        _log.warning("cornish_fisher_cvar_floored", skew=skew_h, kurtosis=kurt_h)
-    return VaRResult(var, cvar, vc, cc, h, how, len(data), tuple(adjustments))
+    cvar, _ = cornish_fisher_cvar(mu_h, sigma_h, skew_h, kurt_h, cc)  # never floored when monotone
+    return VaRResult(var, cvar, vc, cc, h, how, len(data), ())
 
 
 def value_at_risk(
@@ -387,6 +413,10 @@ def portfolio_var(
         raise ValueError("pass exactly one of returns (historical simulation) or cov")
     cfg = config_or_default(config)
     if returns is not None:
+        unused = [k for k, v in {"mean": mean, "n_sims": n_sims, "seed": seed, "rng": rng}.items()
+                  if v is not None]  # fmt: skip
+        if unused:
+            raise ValueError(f"{unused} only apply with cov (simulation), not with returns")
         series = portfolio_returns(weights, returns)
         return var_cvar(
             series,
@@ -412,6 +442,14 @@ def portfolio_var(
             normal_var(mu_h, sigma_h, vc), normal_cvar(mu_h, sigma_h, cc), vc, cc, h, how, 0
         )
     sims = cfg.quant.metrics.mc_simulations if n_sims is None else n_sims
+    if (
+        isinstance(sims, int)
+        and not isinstance(sims, bool)
+        and sims < cfg.quant.metrics.var_min_obs
+    ):
+        raise DataError(
+            f"Monte Carlo VaR needs at least {cfg.quant.metrics.var_min_obs} scenarios, got {sims}"
+        )
     # align a by-symbol mean to the covariance's names first: `w` and `matrix` are positional
     mean_vec = None if mean is None else weights_on(names, mean, name="mean", strict=False)
     pnl = simulate_portfolio_returns(

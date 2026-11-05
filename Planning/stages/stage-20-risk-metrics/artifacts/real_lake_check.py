@@ -67,8 +67,12 @@ print(f"  rolling 252-session Sharpe: min {roll.min():.3f} max {roll.max():.3f} 
       f"last {roll.iloc[-1]:.3f}")
 print("  VaR / CVaR of SPY daily returns (VaR 95%, CVaR 97.5%, positive losses):")
 for method in m.SERIES_METHODS:
-    res = m.var_cvar(spy, method=method)
-    res10 = m.var_cvar(spy, method=method, horizon=10)
+    try:
+        res = m.var_cvar(spy, method=method)
+        res10 = m.var_cvar(spy, method=method, horizon=10)
+    except DataError as exc:  # Cornish-Fisher outside its domain (since the 2026-11-05 review)
+        print(f"    {method:<15} refused: {exc}")
+        continue
     assert res.cvar >= res.var and res10.cvar >= res10.var
     print(f"    {method:<15} 1d VaR {res.var:.4%} CVaR {res.cvar:.4%} · 10d VaR {res10.var:.4%} "
           f"CVaR {res10.cvar:.4%} {list(res.adjustments)}")
@@ -88,7 +92,11 @@ hist = m.portfolio_returns(weights, rets)
 print(f"  historical simulation: {len(hist)} sessions ({504 - len(hist)} dropped for a missing "
       f"held return)")
 for method in m.SERIES_METHODS:
-    res = m.portfolio_var(weights, returns=rets, method=method)
+    try:
+        res = m.portfolio_var(weights, returns=rets, method=method)
+    except DataError as exc:
+        print(f"    {method:<15} refused: {exc}")
+        continue
     assert res.cvar >= res.var
     print(f"    {method:<15} VaR95 {res.var:.4%} CVaR97.5 {res.cvar:.4%} "
           f"(limits: VaR <= 1.50%, CVaR <= 2.50%)")

@@ -1,0 +1,15 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-20-completion-30d1cd/.venv/bin/python
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-20-completion-30d1cd
+configfile: pyproject.toml
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 4 items
+
+tests/integration/test_metrics_real_lake.py::test_spy_performance_equals_plain_pandas PASSED [ 25%]
+tests/integration/test_metrics_real_lake.py::test_spy_var_cvar_invariants PASSED [ 50%]
+tests/integration/test_metrics_real_lake.py::test_book_var_contributions_and_relative PASSED [ 75%]
+tests/integration/test_metrics_real_lake.py::test_book_liquidity_equals_plain_pandas PASSED [100%]
+
+============================== 4 passed in 9.43s ===============================
+exit=0

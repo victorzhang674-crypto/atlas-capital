@@ -254,7 +254,7 @@ def test_horizon_boundaries() -> None:
     exact = AtlasConfig.model_validate(
         {"quant": {"metrics": {"horizon_method": "overlapping", "var_min_obs": 63}}}
     )
-    assert m.var_cvar(x.iloc[:67], horizon=5, config=exact).n_obs == 67  # 63 overlapping sums
+    assert m.var_cvar(x.iloc[:67], horizon=5, config=exact).n_obs == 63  # overlapping sums used
     with pytest.raises(DataError, match="got 62"):
         m.var_cvar(x.iloc[:66], horizon=5, config=exact)
 

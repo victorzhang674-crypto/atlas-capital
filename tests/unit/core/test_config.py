@@ -1335,7 +1335,8 @@ def test_quant_metrics_defaults() -> None:  # Stage 20 config
         "risk_free_annual": 0.0, "rolling_window": 63, "tail_quantile": 0.05,
         "omega_threshold_annual": 0.0, "var_method": "historical", "var_min_obs": 63,
         "horizon_method": "sqrt", "zero_mean": True, "mc_simulations": 20_000,
-        "liquidity_horizons": (1, 3, 5),
+        "liquidity_horizons": (1, 3, 5), "adv_min_coverage": 0.9,
+        "cornish_fisher_z_max": 4.0,
     }  # fmt: skip
 
 
@@ -1356,6 +1357,9 @@ def test_quant_metrics_defaults() -> None:  # Stage 20 config
         ("liquidity_horizons", ()),
         ("liquidity_horizons", (3, 1)),
         ("liquidity_horizons", (0, 1)),
+        ("adv_min_coverage", 0.0),
+        ("adv_min_coverage", 1.5),
+        ("cornish_fisher_z_max", 2.0),
     ],
 )
 def test_quant_metrics_validation(field: str, value: object) -> None:  # Stage 20 config
