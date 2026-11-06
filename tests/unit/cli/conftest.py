@@ -11,3 +11,7 @@ if str(_DATA_TESTS) not in sys.path:
 _RESEARCH_TESTS = Path(__file__).resolve().parents[1] / "quant" / "research"
 if str(_RESEARCH_TESTS) not in sys.path:
     sys.path.insert(0, str(_RESEARCH_TESTS))
+
+_REGIME_TESTS = Path(__file__).resolve().parents[1] / "quant" / "regime"
+if str(_REGIME_TESTS) not in sys.path:
+    sys.path.insert(0, str(_REGIME_TESTS))

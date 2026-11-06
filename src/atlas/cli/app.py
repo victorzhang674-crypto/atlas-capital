@@ -1,5 +1,5 @@
-"""The `atlas` command (Typer). Stage 14 adds the `data` group, Stage 17 `research`; later
-stages add theirs."""
+"""The `atlas` command (Typer). Stage 14 adds the `data` group, Stage 17 `research`, Stage 21
+`regime`; later stages add theirs."""
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -8,6 +8,7 @@ from typing import Annotated
 import typer
 
 from atlas.cli.data_cmd import data_app
+from atlas.cli.regime_cmd import regime_app
 from atlas.cli.research_cmd import research_app
 
 app = typer.Typer(
@@ -19,6 +20,7 @@ app = typer.Typer(
 )
 app.add_typer(data_app, name="data")
 app.add_typer(research_app, name="research")
+app.add_typer(regime_app, name="regime")
 
 
 @dataclass(frozen=True)

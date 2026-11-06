@@ -26,7 +26,12 @@ Output from commands run in this stage's chat (Project.md Rule 1); raw outputs u
 - Reported, not hidden:
   - The plan's own **calm control** (2017: scalar < 1 on ≤ 25% of days) **failed**: 35.9%, all from the macro-quadrant multiplier (0.0% without it; vol, trend, stress and HMM never cut in 2017). Not a brief criterion; the multipliers were not retuned after seeing the data. Owner decision (2026-11-05): keep today's table as the default; Stage 43 runs a walk-forward comparison of four rules (fully invested, current table, table without the quadrant, learned model) and adopts the out-of-sample winner after costs (Decisions log, Backlog).
   - `regime_history` and a one-day `regime_at` agree on labels, stress and scalar but not bit-for-bit on real data: dividends known later back-adjust earlier prices (~1e-15 relative) and the history uses the reading view's quality block list (2020-03-16 breadth 0.1189 vs 0.1195; EOG, HP blocked that day only). Documented in `loader.py`; tested on synthetic data (`test_a_dividend_inside_the_range_changes_only_rounding`).
-  - The real-lake history was written to a scratch store lake (the main checkout's `data/` is not writable from the sandbox); no history is persisted in the main lake yet.
+  - Gap fix (2026-11-05): `atlas regime build` persists the history; see the section below for the main-lake run.
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Gap fix — persisting the history (2026-11-05)
+- `tests/unit/cli/test_regime_cmd.py` → 7 passed (`-W error`); CLI mutants 2/2 caught
+- Dry run (sandbox, main lake read only → scratch store): 2,724 decision days 2016-01-04 .. 2026-11-02, exit 0 · raw: [artifacts/cli-dry-run-scratch.txt](artifacts/cli-dry-run-scratch.txt)
+- CI on records commit `9c349a6`: success (main 42142157780, branch 42142157168) · raw: [artifacts/ci-runs-records.txt](artifacts/ci-runs-records.txt)

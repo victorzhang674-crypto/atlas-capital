@@ -27,6 +27,7 @@ VT, HMM, PIT, MQ, ST, LD, SO, AU = (
     T + "test_regime_audit.py",
 )
 VIEW = "tests/unit/data/test_view_pit.py"
+CLI = "tests/unit/cli/test_regime_cmd.py"
 
 MUTANTS: list[tuple[str, str, str, str, list[str]]] = [
     # (name, file, old, new, tests)
@@ -153,6 +154,11 @@ MUTANTS: list[tuple[str, str, str, str, list[str]]] = [
     ("macro_vintages not point in time", "src/atlas/data/macro/pit.py",
      '    known = pit_filter(observations[observations["series_id"].isin(ids)], as_of)',
      '    known = observations[observations["series_id"].isin(ids)]', [VIEW, LD, AU]),
+    # --- CLI (gap fix: persist the history) -------------------------------------------------------
+    ("CLI end not clipped to the data", "src/atlas/cli/regime_cmd.py",
+     '    return min(day, cal.next_session(max(bars["date"])))', "    return day", [CLI]),
+    ("CLI ignores --store", "src/atlas/cli/regime_cmd.py",
+     "    target = Lake(store) if store is not None else lake", "    target = lake", [CLI]),
     ("members_on accepts a later day", "src/atlas/data/view.py",
      "        if day > self.day:\n            raise ValueError", "        if False:\n            raise ValueError", [VIEW, AU]),
 ]  # fmt: skip
