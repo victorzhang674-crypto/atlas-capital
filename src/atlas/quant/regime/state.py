@@ -15,7 +15,7 @@ computed at that day's decision time from data through `data_date` (the previous
 | macro quadrant | Goldilocks 1.0 · Reflation 1.0 · Stagflation 0.85 · Deflation 0.9 |
 
 A missing component multiplies by 1; the product is clipped to [`floor` 0.25, `cap` 1.0].
-Vol-targeting (Stage 43) scales `limits.target_vol_annual` by it.
+Vol-targeting (Stage 42 optimiser) scales the target vol by it.
 """
 
 import math

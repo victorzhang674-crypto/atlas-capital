@@ -326,7 +326,7 @@ quant:
       claims_short_weeks: 4  # claims trend: mean of the last 4 weekly initial claims ...
       claims_long_weeks: 26  # ... minus the mean of the last 26
       lookback_days: 800  # calendar days of FRED release history read for the quadrant
-    # risk_scalar = product of the multipliers below, clipped to [floor, cap]; Stage 43 multiplies target_vol_annual by it.
+    # risk_scalar = product of the multipliers below, clipped to [floor, cap]; Stage 42 vol-targeting scales target vol by it.
     risk_scalar:  # deterministic risk scalar mapping
       floor: 0.25  # lowest risk scalar (fraction of normal risk)
       cap: 1.0  # highest risk scalar
