@@ -35,3 +35,6 @@ Output from commands run in this stage's chat (Project.md Rule 1); raw outputs u
 - `tests/unit/cli/test_regime_cmd.py` → 7 passed (`-W error`); CLI mutants 2/2 caught
 - Dry run (sandbox, main lake read only → scratch store): 2,724 decision days 2016-01-04 .. 2026-11-02, exit 0 · raw: [artifacts/cli-dry-run-scratch.txt](artifacts/cli-dry-run-scratch.txt)
 - CI on records commit `9c349a6`: success (main 42142157780, branch 42142157168) · raw: [artifacts/ci-runs-records.txt](artifacts/ci-runs-records.txt)
+- Commit `2b59c61`: `make check` exit 0, 3605 passed (before the commit and on merged `main`); pushed · raw: [artifacts/make-check-gapfix.txt](artifacts/make-check-gapfix.txt), [artifacts/persist-main-lake.txt](artifacts/persist-main-lake.txt)
+- **Persisted in the main lake:** `atlas regime build --from 2016-01-04 --to 2026-11-05` → 2,724 rows of `regime_history` (2016-01-04 .. 2026-11-02); read back: PIT reads correct, equal to the dry run · raw: [artifacts/persist-readback.txt](artifacts/persist-readback.txt)
+- CI on `2b59c61`: success (main 42148293255, branch 42148293175) · raw: [artifacts/ci-runs-gapfix.txt](artifacts/ci-runs-gapfix.txt), [artifacts/ci-runs-gapfix-main.txt](artifacts/ci-runs-gapfix-main.txt)

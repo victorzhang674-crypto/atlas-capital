@@ -1,0 +1,4 @@
+rows 2724 2016-01-04 2026-11-02 config_hash 013d1b22ee30
+latest(2020-03-16): 2020-03-16 CRISIS DOWN True 0.25
+read as_of 2026-11-02 last: 2026-11-02
+main lake == sandbox dry run: True

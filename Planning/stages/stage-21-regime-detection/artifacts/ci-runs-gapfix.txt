@@ -1,0 +1,2 @@
+[{"conclusion":"","databaseId":42148293255,"headBranch":"main","name":"CI","status":"in_progress"},{"conclusion":"success","databaseId":42148293175,"headBranch":"claude/stage-21-completion-c11c2d","name":"CI","status":"completed"}]
+zsh: no matches found: .claude/worktrees/s21-*.txt
