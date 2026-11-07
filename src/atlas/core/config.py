@@ -1352,12 +1352,16 @@ class AlphaComponentConfig(_Frozen):
 
 
 def _default_alpha_components() -> dict[str, AlphaComponentConfig]:
+    """The five Stage 22 components. Weights: an **in-sample fit** (owner decision 2026-11-07,
+    Stage 22): weight proportional to max(component's mean Spearman IC at 21 sessions over the
+    2016-2021 in-sample window, 0), rounded; the pre-registered equal weights (0.2 each) gave a
+    negative composite IC. A weight of 0 leaves the component out of the composite."""
     return {
-        "momentum": AlphaComponentConfig(kind="feature", source="momentum_12_1", weight=0.2),
-        "value": AlphaComponentConfig(kind="style", source="value", weight=0.2),
-        "quality": AlphaComponentConfig(kind="style", source="quality", weight=0.2),
-        "low_vol": AlphaComponentConfig(kind="feature", source="vol_63d", sign=-1, weight=0.2),
-        "reversal": AlphaComponentConfig(kind="feature", source="ret_21d", sign=-1, weight=0.2),
+        "momentum": AlphaComponentConfig(kind="feature", source="momentum_12_1", weight=0.0),
+        "value": AlphaComponentConfig(kind="style", source="value", weight=0.0),
+        "quality": AlphaComponentConfig(kind="style", source="quality", weight=0.62),
+        "low_vol": AlphaComponentConfig(kind="feature", source="vol_63d", sign=-1, weight=0.0),
+        "reversal": AlphaComponentConfig(kind="feature", source="ret_21d", sign=-1, weight=0.38),
     }
 
 

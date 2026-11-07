@@ -350,12 +350,15 @@ quant:
   alpha:
     multifactor:  # cross-sectional multi-factor equity alpha (sector-neutral composite, Grinold calibration)
       universe: sp500  # names scored: the members of this universe at the as-of
-      components:  # kind feature = Stage 15 feature, style = Stage 16 style composite; sign -1 = low is good; weights pre-registered (equal)
-        momentum: {kind: feature, source: momentum_12_1, sign: 1, weight: 0.2}  # 12-1 month momentum
-        value: {kind: style, source: value, sign: 1, weight: 0.2}  # value style composite
-        quality: {kind: style, source: quality, sign: 1, weight: 0.2}  # quality style composite
-        low_vol: {kind: feature, source: vol_63d, sign: -1, weight: 0.2}  # low 63-session realised vol
-        reversal: {kind: feature, source: ret_21d, sign: -1, weight: 0.2}  # 1-month short-term reversal
+      # kind feature = Stage 15 feature, style = Stage 16 style composite; sign -1 = low is good; weight 0 = left out.
+      # Weights are an IN-SAMPLE FIT (owner decision 2026-11-07, Stage 22): weight ~ max(2016-2021 mean IC at
+      # 21 sessions, 0), rounded. The pre-registered equal weights (0.2 each) had a negative composite IC.
+      components:
+        momentum: {kind: feature, source: momentum_12_1, sign: 1, weight: 0.0}  # 12-1 month momentum (in-sample IC -0.023)
+        value: {kind: style, source: value, sign: 1, weight: 0.0}  # value style composite (in-sample IC -0.016)
+        quality: {kind: style, source: quality, sign: 1, weight: 0.62}  # quality style composite (in-sample IC +0.017)
+        low_vol: {kind: feature, source: vol_63d, sign: -1, weight: 0.0}  # low 63-session realised vol (in-sample IC -0.006)
+        reversal: {kind: feature, source: ret_21d, sign: -1, weight: 0.38}  # 1-month short-term reversal (in-sample IC +0.010)
       min_names: 20  # fewest valid values for a component (and names for a cross-section) on a date
       min_coverage: 0.6  # a name needs components covering this share of the absolute weight
       weighting: fixed  # fixed (component weights above) | ic (positive trailing known ICs)

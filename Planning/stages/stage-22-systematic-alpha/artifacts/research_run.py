@@ -14,7 +14,10 @@ of the composite score (IC, NW t, quantiles, decay, L/S backtest, by sector and 
 regime), the components' ICs, the point-in-time IC-weighted composite, PEAD's IC, TSMOM's
 time-series Sharpe and hit rate, and the calibration slope of each model's expected returns
 against realised (annualised) returns. Writes `summary.json`, `report.txt` and the tear sheet
-under <out dir>; a per-date cache (`signals.pkl`) lets the evaluation be re-run.
+under <out dir>; a per-date cache (`signals.pkl`) lets the evaluation be re-run. On a cache
+hit the multi-factor predictions are **re-scored** from the cached component panels under the
+current config (`MultiFactorModel.predict_components`), so a changed weighting is never
+reported with the cached scores of an older one (the panels do not depend on the weights).
 """
 
 import json
@@ -35,6 +38,7 @@ from atlas.core.storage import Lake
 from atlas.data.view import DataView
 from atlas.quant.alpha import (
     COMPOSITE,
+    ComponentPanel,
     MultiFactorModel,
     PEADModel,
     TSMOMModel,
@@ -73,7 +77,20 @@ def compute(cfg: AtlasConfig, lake: Lake, days: list[date]) -> dict[str, Any]:
     cache = OUT / "signals.pkl"
     if cache.exists():
         with cache.open("rb") as fh:
-            return pickle.load(fh)  # noqa: S301 - our own file
+            cached: dict[str, Any] = pickle.load(fh)  # noqa: S301 - our own file
+        assert sorted(cached["components"]) == days, "cache holds other decision days"
+        base = DataView(lake, days[0], cfg)
+        mf = MultiFactorModel()
+        for i, day in enumerate(days):
+            view = base if i == 0 else base.advance(day)
+            panel = ComponentPanel(
+                values=cached["components"][day],
+                sectors=cached["sectors"][day],
+                resid_vol=cached["resid_vol"][day],
+            )
+            cached["mf"][day] = mf.predict_components(view, panel)
+        print("cache hit: multi-factor re-scored under the current config", flush=True)
+        return cached
     base = DataView(lake, days[0], cfg)
     mf, pead, tsmom = MultiFactorModel(), PEADModel(), TSMOMModel()
     out: dict[str, Any] = {

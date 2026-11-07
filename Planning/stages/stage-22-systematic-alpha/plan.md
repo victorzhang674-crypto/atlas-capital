@@ -1,7 +1,7 @@
 # Stage 22 — Systematic alpha models · Plan
 
 - **Brief:** [brief.md](brief.md)
-- **Status:** BLOCKED (2026-11-07): the pre-registered composite's in-sample IC is negative (−0.0062, t −0.42); owner decision needed — see [verification.md](verification.md)
+- **Status:** DONE (2026-11-07): the pre-registered composite's in-sample IC was negative (−0.0062, t −0.42); owner decision "Re-specify in-sample" → weights refitted in-sample (quality 0.62, reversal 0.38, others 0), composite IC +0.0256 (t +1.91) — see [verification.md](verification.md)
 - **Gate check:** Stage 21 is DONE (its [verification.md](../stage-21-regime-detection/verification.md) says **ALL CRITERIA VERIFIED**); `uv run pytest -q` → 3605 passed, 29 deselected, exit 0 (2026-11-07, fresh worktree; raw: [artifacts/gate-pytest.txt](artifacts/gate-pytest.txt))
 - **Execution:** written and executed in one go, inline TDD, no subagents (kick-off: "plan, execute, audit and fully complete it"; the owner's standing preference: plan.md first, then execute, no review pause). `worklog.md` is the ledger. Owner decision of 2026-11-05 respected: the Stage 21 `risk_scalar` table is not touched.
 
@@ -29,7 +29,7 @@ Interpretations and design choices (also logged in `PROGRESS.md › Decisions lo
 6. **TSMOM** (universe `macro_etfs`): for each lookback L in `lookbacks` (21, 63, 126, 252 sessions ≈ 1/3/6/12 months), the sign of the Stage 15 total return `ret_Ld` (0 when exactly flat); blend `b` = weighted mean of the available signs (equal weights; renormalised; needs `min_lookbacks` = 2) ∈ [−1, 1]. Vol `σ` = Stage 15 `vol_63d` (annualised). `score = b × vol_target / σ` (the inverse-vol-scaled position, NAV fraction per asset at `vol_target` = 0.10; capped at ±`max_position` 2.0); `exp_return_ann = sharpe_prior × σ × b` (an asset held along a full trend earns `sharpe_prior` (0.3) × σ a year; a zero blend expects 0); `confidence = |b|` (agreement of the lookbacks). Direction = sign(b).
 7. **PEAD** (universe sp500 members): the latest earnings reaction known at `t` (`DataView.earnings_reactions(symbol, 1)`; Stage 12 `car` = window abnormal return vs the benchmark). Age `k` = sessions after the reaction window end up to `t − 1` (k = 0 at the first decision that knows it). `decay = max(0, 1 − k / decay_sessions)` (linear, `decay_sessions` 60); `k ≥ 60` → no prediction. `score = sign(car) × decay`; `exp_return_ann = drift_ann × score` (`drift_ann` 0.06: the annualised abnormal drift right after an event); `confidence = decay × min(|car| / car_full, 1)` (`car_full` 0.05). A name without a known reaction gets no prediction; a reaction with `car` = 0 has score 0.
 8. **Research run (Task 5, in-sample only).** Decision days = first session of each month from 2016-01-01 whose longest label (63 sessions) ends on or before `backtest.in_sample_end` (2021-12-31): **no 2022 bar is read** (the label view is at the session after the last label close). Signals through `model.predict(view)` at each decision day on views made with `DataView.advance` (shared cache); labels by Stage 17 `forward_returns`; composite evaluated with Stage 17 `build_tearsheet` (IC Spearman/Pearson, NW t, quantiles, decay, L/S backtest Sharpe) saved under `artifacts/`; plus the components' ICs, the PIT IC-weighted variant, PEAD's IC, TSMOM's time-series hit rate / Sharpe, and the realised calibration slope of each model. Real lake read only (`ATLAS__DATA__LAKE_PATH=~/Projects/atlas-capital/data`).
-9. **Acceptance — "in-sample IC of the composite is positive".** Defined before the run: the **fixed-weight composite** (config weights as pre-registered in 4) has a positive mean Spearman IC at the headline horizon (21 sessions, monthly dates), with its Newey-West t-stat recorded. If it is not positive the result is reported as is and the stage is `BLOCKED` for the owner's decision (weights are not tuned to pass).
+9. **Acceptance — "in-sample IC of the composite is positive".** Defined before the run: the **fixed-weight composite** (config weights as pre-registered in 4) has a positive mean Spearman IC at the headline horizon (21 sessions, monthly dates), with its Newey-West t-stat recorded. If it is not positive the result is reported as is and the stage is `BLOCKED` for the owner's decision (weights are not tuned to pass). **Outcome (2026-11-07):** IC −0.0062 (t −0.42) → `BLOCKED`; owner chose "Re-specify in-sample": fixed weights ∝ max(full-sample component IC_h21, 0) (quality 0.62, reversal 0.38, momentum / value / low-vol 0), declared an in-sample fit before re-scoring, one candidate; the criterion is then checked on that composite.
 10. **Config** `cfg.quant.alpha` (`AlphaConfig` with `multifactor`, `tsmom`, `pead`; YAML `config/fund.yaml › quant.alpha`), every threshold above.
 
 ## Design decisions
@@ -37,6 +37,28 @@ Interpretations and design choices (also logged in `PROGRESS.md › Decisions lo
 - **D2 Types.** The protocol is a `typing.Protocol` (`runtime_checkable`); models are frozen dataclasses holding config; outputs are DataFrames (the brief's contract), validated by `check_alpha_frame`.
 - **D3 PIT.** Models read only through the `DataView` they get; the IC history passed to the IC-weighted model is filtered by `known_ic` against the view's day; labels never reach a model (`guard_not_label` on every frame input).
 - **D4 Logging.** structlog `get_logger(__name__)`: names dropped for coverage / residual vol, IC-weight fallbacks.
+
+## Re-specification after the failed criterion (owner decision 2026-11-07)
+
+**Owner's decision:** "Re-specify in-sample" (answer in this chat), relayed by the parent session as "Re-specify and re-run" (chosen over waiving the criterion and over a bug audit first).
+
+**Chosen after seeing the in-sample ICs — said plainly.** The pre-registered equal-weight composite (interpretation 4) failed interpretation 9 (IC −0.0062, t −0.42). The new weights were picked **after** the 2016–2021 component ICs were seen, from those same ICs, so the composite's in-sample IC below is selected on the data it is measured on and **overstates the real edge**. It is not evidence of out-of-sample skill; that test belongs to Stage 58 (walk-forward, 2022+ hold-out) — Backlog.
+
+**Specification.** Fixed weight_k ∝ max(component k's full-sample mean Spearman IC at 21 sessions, 0), rounded to 2 decimals: quality 0.62, reversal 0.38, momentum 0, value 0, low-vol 0. **Reason:** it is the model's own IC-weighting rule (interpretation 4) with hindsight over the whole window — the simplest rule that follows from the measured ICs, with no free parameter to search; a component with a negative IC gets no weight rather than a flipped sign (no short-momentum / short-quality bets invented from one sample). All five components stay in config (the brief's composite of the five named factors with weights from config; weight 0 leaves one out of the composite and of the coverage). Everything else (cleaning, coverage 0.6, Grinold, confidence) unchanged.
+
+**Order of events (honest record).** The rule and weights were written in `worklog.md` before any re-scored result was seen; the re-score from run 1's cached panels came next; this `plan.md` section was written after that re-score, with the parent's instructions, and before the fresh run 3. The sign / label check (below) ran after the re-score (the pre-decision audit had checked signs and timing by reasoning only).
+
+**Before accepting: signs and label alignment** ([artifacts/sign_label_check.py](artifacts/sign_label_check.py), real lake, 2018-06-01): feature components vs raw features — momentum +0.95, low-vol −0.85, reversal −0.92 (expected signs); the decision view's last bar is t−1; `ret_21d` = close(t−1)/close(t−22)−1 exactly; the h21 label = close(t+21)/close(t)−1 (max diff 1e−15); the composite IC recomputed independently equals the evaluation's row. No bug. (Value / quality signs rest on Stage 16's tested style composites.)
+
+**Every variant scored** (composite, Spearman IC at 21 sessions, NW t, 2016–2021 monthly):
+| Variant | Weights | IC | t | Status |
+|---|---|---|---|---|
+| V1 pre-registered | equal 0.2 × 5 | −0.0062 | −0.42 | failed interpretation 9 |
+| V2 in-sample fit | quality 0.62, reversal 0.38 | +0.0256 | +1.91 | adopted (in-sample) |
+| PIT IC-weighted (`weighting: ic`), run 1 | trailing known ICs, fallback V1 | −0.024 | −1.30 | diagnostic only |
+| PIT IC-weighted, run 2 | trailing known ICs, fallback V2 | −0.017 | −0.96 | diagnostic only |
+
+No other weighting or component set was scored. Had V2 not been positive, the plan was to report back rather than search further.
 
 ## Tasks (execute in order; tick only after the task's tests have run and passed in this chat)
 
@@ -76,4 +98,8 @@ Commands run as `UV_CACHE_DIR=$TMPDIR/uv-cache-s22 UV_NO_SYNC=1 LOKY_MAX_CPU_COU
 - [x] `atlas.quant.alpha.__init__` exports; package test (every export importable, no `datetime.now`, no network)
 - [x] Self-audit of the diff (PIT, units, errors, config), fixes test-first
 - [x] `make check` + `uv run pytest tests/unit/quant/alpha -q`; `verification.md`, PROGRESS (BLOCKED note)
-- [ ] Owner decision on the failed IC criterion; then DONE records, merge into `main`, re-verify, push, CI
+- [x] Owner decision on the failed IC criterion: "Re-specify in-sample" (2026-11-07)
+- [x] Test first (`test_defaults` new weights: red; `test_combine_leaves_out_zero_weight_components`), config weights in `config.py` + `fund.yaml`; `research_run.py` re-scores from cache under the current config
+- [x] Re-score from the cached panels (IC +0.0256, t +1.91); `make check`, Verify, mutation check re-run
+- [x] Fresh full research run 3 with the new config (identical to the re-score); sign / label check; DONE records
+- [ ] Merge into `main`, re-verify on the merged result, push, CI; record the hashes

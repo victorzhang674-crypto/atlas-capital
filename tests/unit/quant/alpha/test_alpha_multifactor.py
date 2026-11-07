@@ -139,6 +139,21 @@ def test_combine_renormalises_and_drops_low_coverage() -> None:
     assert res.z.iloc[20:].notna().all()
 
 
+def test_combine_leaves_out_zero_weight_components() -> None:
+    """A component with weight 0 changes neither the score nor the coverage: a name missing
+    only that component keeps full coverage and the same z as without the column."""
+    p = planted_components(n_names=100)
+    weights = {**p.weights, "momentum": 0.0}
+    comps = p.components.copy()
+    comps.loc[comps.index[:10], "momentum"] = np.nan
+    res = combine(comps, p.sectors, weights, min_coverage=0.6, min_names=20)
+    without = {k: w for k, w in weights.items() if k != "momentum"}
+    rest = comps.drop(columns="momentum")
+    ref = combine(rest, p.sectors, without, min_coverage=0.6, min_names=20)
+    assert np.allclose(res.coverage, 1.0)
+    pd.testing.assert_series_equal(res.z, ref.z)
+
+
 def test_combine_too_few_names_is_empty() -> None:
     p = planted_components(n_names=12)
     res = combine(p.components, p.sectors, p.weights, min_coverage=0.6, min_names=20)

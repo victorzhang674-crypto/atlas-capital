@@ -1,0 +1,9 @@
+(1) momentum  vs raw momentum_12_1 : spearman +0.946 (expected sign +1) OK
+(1) low_vol   vs raw vol_63d       : spearman -0.850 (expected sign -1) OK
+(1) reversal  vs raw ret_21d       : spearman -0.924 (expected sign -1) OK
+(2) decision view at 2018-06-01: last bar 2018-05-31 (t-1 = 2018-05-31) OK
+(2) ret_21d == close(t-1)/close(t-22)-1 on 431 names: max |diff| 0.00e+00 OK
+(3) label h21 of 2018-06-01 == close(2018-07-02)/close(2018-06-01)-1 on 431 names: max |diff| 1.33e-15 OK
+(4) composite (current weights) Spearman IC h21 at 2018-06-01: +0.0659 on 420 names
+ALL CHECKS OK
+exit 0

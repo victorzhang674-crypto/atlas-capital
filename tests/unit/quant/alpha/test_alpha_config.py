@@ -26,13 +26,14 @@ def test_defaults() -> None:
         "multifactor": {
             "universe": "sp500",
             "components": {
+                # In-sample fit (owner decision 2026-11-07): weight ~ max(2016-2021 IC_h21, 0).
                 "momentum": {
-                    "kind": "feature", "source": "momentum_12_1", "sign": 1, "weight": 0.2
+                    "kind": "feature", "source": "momentum_12_1", "sign": 1, "weight": 0.0
                 },
-                "value": {"kind": "style", "source": "value", "sign": 1, "weight": 0.2},
-                "quality": {"kind": "style", "source": "quality", "sign": 1, "weight": 0.2},
-                "low_vol": {"kind": "feature", "source": "vol_63d", "sign": -1, "weight": 0.2},
-                "reversal": {"kind": "feature", "source": "ret_21d", "sign": -1, "weight": 0.2},
+                "value": {"kind": "style", "source": "value", "sign": 1, "weight": 0.0},
+                "quality": {"kind": "style", "source": "quality", "sign": 1, "weight": 0.62},
+                "low_vol": {"kind": "feature", "source": "vol_63d", "sign": -1, "weight": 0.0},
+                "reversal": {"kind": "feature", "source": "ret_21d", "sign": -1, "weight": 0.38},
             },
             "min_names": 20,
             "min_coverage": 0.6,
