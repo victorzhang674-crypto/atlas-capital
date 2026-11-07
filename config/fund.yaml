@@ -346,6 +346,41 @@ quant:
         reflation: 1.0  # growth up, inflation rising
         stagflation: 0.85  # growth down, inflation rising
         deflation: 0.9  # growth down, inflation falling
+  # Systematic alpha models (Stage 22, atlas.quant.alpha); expected returns are annualised fractions.
+  alpha:
+    multifactor:  # cross-sectional multi-factor equity alpha (sector-neutral composite, Grinold calibration)
+      universe: sp500  # names scored: the members of this universe at the as-of
+      components:  # kind feature = Stage 15 feature, style = Stage 16 style composite; sign -1 = low is good; weights pre-registered (equal)
+        momentum: {kind: feature, source: momentum_12_1, sign: 1, weight: 0.2}  # 12-1 month momentum
+        value: {kind: style, source: value, sign: 1, weight: 0.2}  # value style composite
+        quality: {kind: style, source: quality, sign: 1, weight: 0.2}  # quality style composite
+        low_vol: {kind: feature, source: vol_63d, sign: -1, weight: 0.2}  # low 63-session realised vol
+        reversal: {kind: feature, source: ret_21d, sign: -1, weight: 0.2}  # 1-month short-term reversal
+      min_names: 20  # fewest valid values for a component (and names for a cross-section) on a date
+      min_coverage: 0.6  # a name needs components covering this share of the absolute weight
+      weighting: fixed  # fixed (component weights above) | ic (positive trailing known ICs)
+      horizon: 21  # sessions the IC and the forecast refer to
+      ic_prior: 0.03  # composite IC used in the Grinold calibration without an IC history
+      ic_window_months: 36  # trailing window of known ICs for IC weights and the trailing IC (months)
+      ic_min_obs: 12  # fewest known IC dates to use the trailing IC (else prior / fixed weights)
+      prior_confidence: 0.5  # reliability part of the confidence without an IC history
+      t_full: 2.0  # trailing IC t-stat at which reliability reaches 1
+      resid_vol_feature: idio_vol_252d  # Stage 15 feature giving the annualised residual vol (sigma)
+    tsmom:  # time-series momentum for ETFs
+      universe: macro_etfs  # ETFs scored
+      lookbacks: [21, 63, 126, 252]  # trend lookbacks in sessions (about 1, 3, 6 and 12 months)
+      min_lookbacks: 2  # fewest lookbacks with a return for a signal
+      vol_feature: vol_63d  # Stage 15 feature giving the annualised vol for inverse-vol scaling
+      vol_target: 0.10  # annualised vol of a full-trend position (score = blend x vol_target / vol)
+      max_position: 2.0  # cap on |score| (NAV fraction per ETF)
+      sharpe_prior: 0.3  # annualised Sharpe of holding an asset along a full trend (exp return = sharpe x vol x blend)
+      horizon: 21  # sessions the forecast refers to
+    pead:  # post-earnings-announcement drift from Stage 12 earnings reactions
+      universe: sp500  # names scored: the members of this universe at the as-of
+      decay_sessions: 60  # the signal decays linearly to 0 over this many sessions after the reaction window
+      drift_ann: 0.06  # annualised abnormal drift of a fresh full-strength signal (fraction)
+      car_full: 0.05  # |car| (fraction) at which the confidence's strength part reaches 1
+      horizon: 21  # sessions the forecast refers to
 
 # LLM gateway values (consumed by Stage 24).
 llm:

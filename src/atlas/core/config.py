@@ -1338,6 +1338,125 @@ class RegimeConfig(_Frozen):
     risk_scalar: RegimeScalarConfig = Field(default_factory=RegimeScalarConfig)
 
 
+class AlphaComponentConfig(_Frozen):
+    """One component of the multi-factor alpha (Stage 22): `kind` `feature` (a Stage 15
+    technical feature named `source`, its latest value) or `style` (a Stage 16 style composite
+    named `source`, e.g. `value`, `quality`), multiplied by `sign` (+1 or -1: -1 when a low
+    value is attractive, as for volatility) and weighted by `weight` (a non-negative relative
+    weight in the fixed-weight composite)."""
+
+    kind: Literal["feature", "style"]
+    source: Annotated[str, Field(min_length=1)]
+    sign: Literal[1, -1] = 1
+    weight: _NonNeg = 0.0
+
+
+def _default_alpha_components() -> dict[str, AlphaComponentConfig]:
+    return {
+        "momentum": AlphaComponentConfig(kind="feature", source="momentum_12_1", weight=0.2),
+        "value": AlphaComponentConfig(kind="style", source="value", weight=0.2),
+        "quality": AlphaComponentConfig(kind="style", source="quality", weight=0.2),
+        "low_vol": AlphaComponentConfig(kind="feature", source="vol_63d", sign=-1, weight=0.2),
+        "reversal": AlphaComponentConfig(kind="feature", source="ret_21d", sign=-1, weight=0.2),
+    }
+
+
+class AlphaMultiFactorConfig(_Frozen):
+    """The cross-sectional multi-factor equity alpha (`atlas.quant.alpha.multifactor`).
+
+    The members of `universe` at the as-of are scored on each of `components` (winsorised at
+    `quant.factors.winsor_lower/upper`, sector-neutral, z-scored; a component with fewer than
+    `min_names` values is dropped); the composite weights are the components' `weight`
+    (`weighting: fixed`) or proportional to their positive trailing ICs (`weighting: ic`: the
+    ICs known at the as-of within the last `ic_window_months` months, at least `ic_min_obs`
+    of them, else the fixed weights). A name needs components covering `min_coverage` of the
+    absolute weight. Expected return (Grinold): `IC * sigma * z * sqrt(P / horizon)`, annualised
+    fraction, with `IC` the trailing composite IC (floored at 0) or the prior `ic_prior` at
+    `horizon` sessions, and `sigma` the annualised residual vol (`resid_vol_feature`).
+    Confidence = coverage x reliability, reliability = clip(t_IC / `t_full`, 0, 1) or
+    `prior_confidence` without an IC history.
+    """
+
+    universe: Annotated[str, Field(min_length=1)] = "sp500"
+    components: dict[str, AlphaComponentConfig] = Field(default_factory=_default_alpha_components)
+    min_names: Annotated[int, Field(ge=3)] = 20
+    min_coverage: _Frac = 0.6
+    weighting: Literal["fixed", "ic"] = "fixed"
+    horizon: Annotated[int, Field(ge=1)] = 21
+    ic_prior: Annotated[float, Field(ge=0, lt=1)] = 0.03
+    ic_window_months: Annotated[int, Field(ge=1)] = 36
+    ic_min_obs: Annotated[int, Field(ge=2)] = 12
+    prior_confidence: Annotated[float, Field(ge=0, le=1)] = 0.5
+    t_full: Annotated[float, Field(gt=0)] = 2.0
+    resid_vol_feature: Annotated[str, Field(min_length=1)] = "idio_vol_252d"
+
+    @model_validator(mode="after")
+    def _weights(self) -> Self:
+        if not self.components:
+            raise ValueError("components must name at least one component")
+        if all(c.weight == 0 for c in self.components.values()):
+            raise ValueError("component weights must not all be zero")
+        return self
+
+
+class AlphaTSMOMConfig(_Frozen):
+    """Time-series momentum for ETFs (`atlas.quant.alpha.tsmom`).
+
+    For each of `lookbacks` (sessions, ascending: about 1/3/6/12 months) the sign of the
+    total return; the blend `b` is their mean over the available ones (at least
+    `min_lookbacks`). With the annualised vol `vol_feature`: score = `b * vol_target / vol`
+    (the inverse-vol position, NAV fraction, clipped to +-`max_position`); expected return =
+    `sharpe_prior * vol * b` (annualised fraction); the forecast `horizon` is in sessions.
+    """
+
+    universe: Annotated[str, Field(min_length=1)] = "macro_etfs"
+    lookbacks: tuple[int, ...] = (21, 63, 126, 252)
+    min_lookbacks: Annotated[int, Field(ge=1)] = 2
+    vol_feature: Annotated[str, Field(min_length=1)] = "vol_63d"
+    vol_target: _Frac = 0.10
+    max_position: Annotated[float, Field(gt=0)] = 2.0
+    sharpe_prior: Annotated[float, Field(ge=0, le=3)] = 0.3
+    horizon: Annotated[int, Field(ge=1)] = 21
+
+    @field_validator("lookbacks")
+    @classmethod
+    def _lookbacks(cls, value: tuple[int, ...]) -> tuple[int, ...]:
+        return _ascending_positive("lookbacks", value)
+
+    @model_validator(mode="after")
+    def _enough(self) -> Self:
+        if self.min_lookbacks > len(self.lookbacks):
+            raise ValueError(
+                f"min_lookbacks ({self.min_lookbacks}) exceeds the {len(self.lookbacks)} lookbacks"
+            )
+        return self
+
+
+class AlphaPEADConfig(_Frozen):
+    """Post-earnings-announcement drift (`atlas.quant.alpha.pead`).
+
+    For the members of `universe`, the latest known earnings reaction (Stage 12 `car`): score
+    = sign(car) x decay, decay = 1 - k / `decay_sessions` (k = sessions since the reaction
+    window closed; none from `decay_sessions` on); expected return = `drift_ann` x score
+    (annualised fraction); confidence = decay x min(|car| / `car_full`, 1); the forecast
+    `horizon` is in sessions.
+    """
+
+    universe: Annotated[str, Field(min_length=1)] = "sp500"
+    decay_sessions: Annotated[int, Field(ge=1)] = 60
+    drift_ann: Annotated[float, Field(ge=0, le=1)] = 0.06
+    car_full: Annotated[float, Field(gt=0, le=1)] = 0.05
+    horizon: Annotated[int, Field(ge=1)] = 21
+
+
+class AlphaConfig(_Frozen):
+    """Systematic alpha models (`atlas.quant.alpha`, Stage 22)."""
+
+    multifactor: AlphaMultiFactorConfig = Field(default_factory=AlphaMultiFactorConfig)
+    tsmom: AlphaTSMOMConfig = Field(default_factory=AlphaTSMOMConfig)
+    pead: AlphaPEADConfig = Field(default_factory=AlphaPEADConfig)
+
+
 class QuantConfig(_Frozen):
     """Quant engine settings (Phase 2)."""
 
@@ -1347,6 +1466,7 @@ class QuantConfig(_Frozen):
     risk_model: RiskModelConfig = Field(default_factory=RiskModelConfig)
     metrics: MetricsConfig = Field(default_factory=MetricsConfig)
     regime: RegimeConfig = Field(default_factory=RegimeConfig)
+    alpha: AlphaConfig = Field(default_factory=AlphaConfig)
 
 
 class AtlasConfig(BaseSettings):

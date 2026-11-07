@@ -1,0 +1,14 @@
+KILLED  calibration.py: IC known on its label day -> 1 failed, 23 passed in 12.50s
+KILLED  calibration.py: no annualisation -> 1 failed, 14 passed in 12.30s
+KILLED  calibration.py: negative ICs weighted -> 1 failed, 25 passed in 12.84s
+KILLED  multifactor.py: no coverage filter -> 1 failed, 39 passed in 12.97s
+KILLED  multifactor.py: component not sector-neutral -> 1 failed, 34 passed in 12.78s
+KILLED  multifactor.py: negative trailing IC flips book -> 1 failed, 48 passed in 48.50s
+KILLED  multifactor.py: Stage 16 fills kept -> 1 failed, 36 passed in 12.85s
+KILLED  tsmom.py: no inverse-vol scaling -> 1 failed, 64 passed in 56.67s
+KILLED  tsmom.py: min_lookbacks ignored -> 1 failed, 62 passed in 55.42s
+KILLED  pead.py: slower decay -> 1 failed, 55 passed in 55.33s
+KILLED  pead.py: age off by one -> 1 failed, 57 passed in 55.58s
+KILLED  base.py: confidence unchecked -> 1 failed, 3 passed in 12.37s
+12/12 killed
+exit 0

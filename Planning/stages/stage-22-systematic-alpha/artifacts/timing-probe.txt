@@ -1,0 +1,7 @@
+universe 503 65.6
+factor_panel (503, 17) 140.9
+features 1.5
+reactions 421 2.0
+adv universe 13.6
+adv factor_panel 17.2
+first SPY bar 2015-01-02
