@@ -1103,4 +1103,4 @@ Full block and raw output: [verification.md](stages/stage-22-systematic-alpha/ve
   - [x] The in-sample IC of the composite is positive with a t-stat recorded — evidence: re-specified composite (owner decision) Spearman IC h21 +0.0256, NW t +1.91, 69 dates (`research-respec/summary.json`); declared an in-sample fit that overstates the edge
 - In-sample results: L/S quintile Sharpe +0.28 (pre-registered −0.28); TSMOM book Sharpe +0.67; PEAD IC −0.016 (t −1.86)
 - Waivers: none (criterion met through an owner-authorised in-sample re-specification: "Re-specify in-sample", 2026-11-07)
-- Merge into `main`: PENDING
+- Merge into `main`: fast-forward 3697f46 → **fc15255** (2026-11-07); merged result `uv run pytest -q` → 3673 passed, 29 deselected; `make check` → exit 0 (lint, format, mypy clean, 3673 passed); `git branch --merged main` lists the stage branch; pushed `main` + branch; CI ✓ `main` run 42507797643 (15m35s), branch run 42507797402 (11m14s). Records commit fast-forwarded on top

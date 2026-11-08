@@ -1,0 +1,138 @@
+Updating 3697f46..fc15255
+Fast-forward
+ Planning/PROGRESS.md                               |   45 +-
+ .../artifacts/gate-pytest.txt                      |   76 +
+ .../artifacts/make-check-respec.txt                |   84 ++
+ .../artifacts/make-check-worktree.txt              |   83 ++
+ .../artifacts/mutate-respec.txt                    |   14 +
+ .../stage-22-systematic-alpha/artifacts/mutate.py  |   65 +
+ .../stage-22-systematic-alpha/artifacts/mutate.txt |   14 +
+ .../artifacts/research-respec/ic_history_h21.csv   |   71 +
+ .../research-respec/research-run-cached.log        |  450 ++++++
+ .../artifacts/research-respec/research-run.log     |  519 +++++++
+ .../artifacts/research-respec/summary.json         |  446 ++++++
+ .../tearsheet-multifactor/backtest.png             |  Bin 0 -> 64759 bytes
+ .../tearsheet-multifactor/backtest_returns.csv     | 1470 ++++++++++++++++++++
+ .../tearsheet-multifactor/cumulative_spread.png    |  Bin 0 -> 47587 bytes
+ .../tearsheet-multifactor/decay.png                |  Bin 0 -> 40054 bytes
+ .../research-respec/tearsheet-multifactor/ic.png   |  Bin 0 -> 32415 bytes
+ .../tearsheet-multifactor/ic_series.csv            |   71 +
+ .../tearsheet-multifactor/quantile_returns.csv     |  281 ++++
+ .../tearsheet-multifactor/quantiles.png            |  Bin 0 -> 26730 bytes
+ .../tearsheet-multifactor/tearsheet.json           |  875 ++++++++++++
+ .../artifacts/research/ic_history_h21.csv          |   71 +
+ .../artifacts/research/research-run.log            |  519 +++++++
+ .../artifacts/research/summary.json                |  446 ++++++
+ .../research/tearsheet-multifactor/backtest.png    |  Bin 0 -> 65376 bytes
+ .../tearsheet-multifactor/backtest_returns.csv     | 1470 ++++++++++++++++++++
+ .../tearsheet-multifactor/cumulative_spread.png    |  Bin 0 -> 47681 bytes
+ .../research/tearsheet-multifactor/decay.png       |  Bin 0 -> 45933 bytes
+ .../research/tearsheet-multifactor/ic.png          |  Bin 0 -> 33088 bytes
+ .../research/tearsheet-multifactor/ic_series.csv   |   71 +
+ .../tearsheet-multifactor/quantile_returns.csv     |  281 ++++
+ .../research/tearsheet-multifactor/quantiles.png   |  Bin 0 -> 25861 bytes
+ .../research/tearsheet-multifactor/tearsheet.json  |  875 ++++++++++++
+ .../artifacts/research_run.py                      |  288 ++++
+ .../artifacts/sign-label-check.txt                 |    9 +
+ .../artifacts/sign_label_check.py                  |   96 ++
+ .../artifacts/timing-probe.txt                     |    7 +
+ .../artifacts/verify-alpha-tests-respec.txt        |    3 +
+ .../artifacts/verify-alpha-tests.txt               |    3 +
+ Planning/stages/stage-22-systematic-alpha/plan.md  |  105 ++
+ .../stage-22-systematic-alpha/verification.md      |   30 +
+ .../stages/stage-22-systematic-alpha/worklog.md    |   66 +
+ config/fund.yaml                                   |   38 +
+ src/atlas/core/config.py                           |  124 ++
+ src/atlas/quant/alpha/__init__.py                  |   73 +
+ src/atlas/quant/alpha/base.py                      |  103 ++
+ src/atlas/quant/alpha/calibration.py               |  184 +++
+ src/atlas/quant/alpha/multifactor.py               |  331 +++++
+ src/atlas/quant/alpha/pead.py                      |   95 ++
+ src/atlas/quant/alpha/tsmom.py                     |   85 ++
+ tests/unit/quant/alpha/alpha_world.py              |   93 ++
+ tests/unit/quant/alpha/conftest.py                 |    8 +
+ tests/unit/quant/alpha/test_alpha_base.py          |   92 ++
+ tests/unit/quant/alpha/test_alpha_calibration.py   |  160 +++
+ tests/unit/quant/alpha/test_alpha_config.py        |  125 ++
+ tests/unit/quant/alpha/test_alpha_multifactor.py   |  335 +++++
+ tests/unit/quant/alpha/test_alpha_package.py       |   38 +
+ tests/unit/quant/alpha/test_alpha_pead.py          |  116 ++
+ tests/unit/quant/alpha/test_alpha_tsmom.py         |  115 ++
+ 58 files changed, 11015 insertions(+), 4 deletions(-)
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/gate-pytest.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/make-check-respec.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/make-check-worktree.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/mutate-respec.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/mutate.py
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/mutate.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/ic_history_h21.csv
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/research-run-cached.log
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/research-run.log
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/summary.json
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/backtest.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/backtest_returns.csv
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/cumulative_spread.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/decay.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/ic.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/ic_series.csv
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/quantile_returns.csv
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/quantiles.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research-respec/tearsheet-multifactor/tearsheet.json
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/ic_history_h21.csv
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/research-run.log
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/summary.json
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/backtest.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/backtest_returns.csv
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/cumulative_spread.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/decay.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/ic.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/ic_series.csv
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/quantile_returns.csv
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/quantiles.png
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research/tearsheet-multifactor/tearsheet.json
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/research_run.py
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/sign-label-check.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/sign_label_check.py
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/timing-probe.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/verify-alpha-tests-respec.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/artifacts/verify-alpha-tests.txt
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/plan.md
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/verification.md
+ create mode 100644 Planning/stages/stage-22-systematic-alpha/worklog.md
+ create mode 100644 src/atlas/quant/alpha/__init__.py
+ create mode 100644 src/atlas/quant/alpha/base.py
+ create mode 100644 src/atlas/quant/alpha/calibration.py
+ create mode 100644 src/atlas/quant/alpha/multifactor.py
+ create mode 100644 src/atlas/quant/alpha/pead.py
+ create mode 100644 src/atlas/quant/alpha/tsmom.py
+ create mode 100644 tests/unit/quant/alpha/alpha_world.py
+ create mode 100644 tests/unit/quant/alpha/conftest.py
+ create mode 100644 tests/unit/quant/alpha/test_alpha_base.py
+ create mode 100644 tests/unit/quant/alpha/test_alpha_calibration.py
+ create mode 100644 tests/unit/quant/alpha/test_alpha_config.py
+ create mode 100644 tests/unit/quant/alpha/test_alpha_multifactor.py
+ create mode 100644 tests/unit/quant/alpha/test_alpha_package.py
+ create mode 100644 tests/unit/quant/alpha/test_alpha_pead.py
+ create mode 100644 tests/unit/quant/alpha/test_alpha_tsmom.py
+merge exit 0
+fc15255 stage-22: Systematic alpha models
+3e792ec stage-22: Systematic alpha models (BLOCKED: in-sample composite IC negative)
+3697f46 stage-21: gap fix merged-main, persist and CI records
++ claude/agitated-driscoll-166517
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
++ claude/stage-17-signal-research-905219
++ claude/stage-18-covariance-vol-0d3e46
++ claude/stage-19-planning-execution-76a5e5
++ claude/stage-20-completion-30d1cd
++ claude/stage-21-completion-c11c2d
++ claude/stage-22-systematic-alpha-b15459
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment

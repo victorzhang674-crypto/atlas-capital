@@ -1,0 +1,15 @@
+
+✓ main CI · 42507797643
+Triggered via push about 20 minutes ago
+
+JOBS
+✓ check in 15m35s (ID 128814109207)
+
+ANNOTATIONS
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=128814109207
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/42507797643
+exit 0

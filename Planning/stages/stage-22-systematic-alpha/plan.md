@@ -102,4 +102,4 @@ Commands run as `UV_CACHE_DIR=$TMPDIR/uv-cache-s22 UV_NO_SYNC=1 LOKY_MAX_CPU_COU
 - [x] Test first (`test_defaults` new weights: red; `test_combine_leaves_out_zero_weight_components`), config weights in `config.py` + `fund.yaml`; `research_run.py` re-scores from cache under the current config
 - [x] Re-score from the cached panels (IC +0.0256, t +1.91); `make check`, Verify, mutation check re-run
 - [x] Fresh full research run 3 with the new config (identical to the re-score); sign / label check; DONE records
-- [ ] Merge into `main`, re-verify on the merged result, push, CI; record the hashes
+- [x] Merge into `main` (fc15255), re-verify on the merged result (pytest 3673 passed; make check exit 0), push, CI green (runs 42507797643, 42507797402); hashes recorded
