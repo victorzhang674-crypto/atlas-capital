@@ -12,3 +12,7 @@ A multi-agent hedge fund simulator: LLM analysts and PMs, with a deterministic q
 6. Before any work, read [`Project.md`](Project.md) (governing rules).
 7. Then [`Planning/README.md`](Planning/README.md) for the design, roadmap and stage process.
 8. Current status lives in [`Planning/PROGRESS.md`](Planning/PROGRESS.md).
+
+## License
+
+MIT, see [`LICENSE`](LICENSE). Research and paper trading only; not investment advice.
