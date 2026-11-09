@@ -98,4 +98,4 @@ Commands run as `UV_CACHE_DIR=$TMPDIR/uv-cache-s23 UV_NO_SYNC=1 LOKY_MAX_CPU_COU
 - [x] Self-audit of the diff (PIT, units, errors, config, timing) and a mutation check `artifacts/mutate.py` over `selection.py` / `signals.py` / `backtest.py`; fixes test-first
 - [x] `make check` + `uv run pytest tests/unit/quant/statarb -q`; `verification.md`, PROGRESS (DONE only if every criterion is evidenced)
 - [x] Commit `stage-23: Statistical arbitrage (pairs)` (103f352); fast-forward `main` (owner's terminal panel, Rule 6A / sandbox note); merged-main `uv run pytest -q` + `make check` green; records commit
-- [ ] Push `main` + the stage branch and check CI — awaiting the owner's go-ahead (public remote)
+- [x] Push `main` + the stage branch (owner: "Yes, push"); CI ✓ runs 42650795782, 42650796626
