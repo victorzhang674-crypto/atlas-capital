@@ -1141,3 +1141,4 @@ Full block and raw output: [verification.md](stages/stage-23-stat-arb/verificati
   - [x] False positives are under 5% on random walks — evidence: `test_false_positives_on_random_walks_under_five_percent` (3.90%, rate + 2 s.e. < 5%); clustered probe 3.70%; first (dependent-pair) design 5.7% redesigned, threshold unchanged
   - [x] The signal state machine is fully tested — evidence: `test_statarb_signals.py` (every transition and boundary), all 21 non-equivalent `signals.py` mutants killed
 - Waivers: none
+- Merge into `main`: fast-forward 16defe5 → **103f352** (2026-11-09); merged result `uv run pytest -q` → 3807 passed, 29 deselected; `make check` → exit 0 (lint, format, mypy clean, 3807 passed); `git branch --merged main` lists the stage branch. Records commit fast-forwarded on top. Push pending the owner's go-ahead
