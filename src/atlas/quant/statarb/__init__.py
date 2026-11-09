@@ -1,0 +1,93 @@
+"""Statistical arbitrage: pairs (Stage 23).
+
+`selection` finds cointegrated same-sector pairs point in time (correlation prefilter,
+order-free Engle-Granger test, OLS hedge ratio, half-life, Hurst; caps per name and in all);
+`signals` turns a pair's spread z-score into positions through a state machine (entry, exit,
+stop loss, time stop, breakdown), `PairSignal` and dollar-neutral target weights;
+`backtest` runs the monthly-reselected pairs book on the Stage 17 weights engine with costs.
+`atlas research pairs --as-of` lists the current pairs.
+"""
+
+from atlas.quant.statarb.backtest import (
+    DAILY_COLUMNS,
+    SELECTION_COLUMNS,
+    TRADE_COLUMNS,
+    PairsBacktestResult,
+    pairs_backtest,
+)
+from atlas.quant.statarb.selection import (
+    FILTERS,
+    PAIR_SEP,
+    Pair,
+    PairStats,
+    coint_pvalue,
+    evaluate_pair,
+    half_life,
+    hedge_ratio,
+    hurst_exponent,
+    log_price_panel,
+    pair_id,
+    select_pairs,
+    select_pairs_at,
+)
+from atlas.quant.statarb.signals import (
+    SNAPSHOT_COLUMNS,
+    Event,
+    PairSignal,
+    PairsSnapshot,
+    PairState,
+    SpreadState,
+    confidence,
+    expected_return,
+    latest_zscore,
+    pairs_snapshot,
+    rolling_coint_pvalue,
+    rolling_std,
+    run_pair,
+    spread,
+    step,
+    target_weights,
+    to_signal,
+    zscore,
+    zscore_lookback,
+)
+
+__all__ = [
+    "DAILY_COLUMNS",
+    "FILTERS",
+    "PAIR_SEP",
+    "SELECTION_COLUMNS",
+    "SNAPSHOT_COLUMNS",
+    "TRADE_COLUMNS",
+    "Event",
+    "Pair",
+    "PairSignal",
+    "PairState",
+    "PairStats",
+    "PairsBacktestResult",
+    "PairsSnapshot",
+    "SpreadState",
+    "coint_pvalue",
+    "confidence",
+    "evaluate_pair",
+    "expected_return",
+    "half_life",
+    "hedge_ratio",
+    "hurst_exponent",
+    "latest_zscore",
+    "log_price_panel",
+    "pair_id",
+    "pairs_backtest",
+    "pairs_snapshot",
+    "rolling_coint_pvalue",
+    "rolling_std",
+    "run_pair",
+    "select_pairs",
+    "select_pairs_at",
+    "spread",
+    "step",
+    "target_weights",
+    "to_signal",
+    "zscore",
+    "zscore_lookback",
+]

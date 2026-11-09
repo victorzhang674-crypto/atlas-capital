@@ -1,0 +1,42 @@
+KILLED  signals.py: long entry at exactly -entry_z -> 1 failed, 7 passed in 2.46s
+KILLED  signals.py: short entry beyond the stop -> 1 failed, 11 passed in 2.27s
+KILLED  signals.py: long entry beyond the stop -> 1 failed, 10 passed in 2.27s
+KILLED  signals.py: long exit at -exit_z -> 1 failed, 16 passed in 2.33s
+KILLED  signals.py: no overshoot exit for shorts -> 1 failed, 24 passed in 2.28s
+KILLED  signals.py: stop at exactly stop_z -> 1 failed, 20 passed in 2.29s
+KILLED  signals.py: no lock after a stop loss -> 1 failed, 21 passed in 2.34s
+KILLED  signals.py: lock after a normal exit -> 1 failed, 15 passed in 2.33s
+KILLED  signals.py: time stop one session late -> 1 failed, 28 passed in 2.35s
+KILLED  signals.py: held not counted -> 1 failed, 16 passed in 2.34s
+KILLED  signals.py: no breakdown exit in a position -> 1 failed, 27 passed in 2.29s
+KILLED  signals.py: locked pair re-enters -> 1 failed, 13 passed in 2.28s
+KILLED  signals.py: broken flat pair not locked -> 1 failed, 14 passed in 2.28s
+EQUIV.   signals.py: NaN z treated as a number -> 126 passed in 113.65s (0:01:53)
+KILLED  signals.py: zscore ddof 0 -> 1 failed, 1 passed in 2.42s
+KILLED  signals.py: latest_zscore ddof 0 -> 1 failed, 2 passed in 2.27s
+KILLED  signals.py: lookback rounds down -> 1 failed in 2.26s
+KILLED  signals.py: exp return per leg, not per gross -> 1 failed, 35 passed in 2.49s
+KILLED  signals.py: confidence scale -> 1 failed, 36 passed in 2.56s
+KILLED  signals.py: beta-weighted short -> 1 failed, 39 passed in 2.54s
+KILLED  signals.py: short spread legs not swapped -> 1 failed, 38 passed in 2.58s
+KILLED  signals.py: breakdown re-tested every session -> 1 failed, 34 passed in 3.59s
+KILLED  selection.py: no prefilter -> 1 failed, 95 passed in 4.08s
+KILLED  selection.py: order-dependent EG (min p) -> 1 failed, 100 passed in 49.84s
+KILLED  selection.py: negative hedge ratio kept -> 1 failed, 96 passed in 4.25s
+KILLED  selection.py: no half-life lower bound -> 1 failed, 95 passed in 4.09s
+KILLED  selection.py: no Hurst filter -> 1 failed, 95 passed in 4.00s
+KILLED  selection.py: per-name cap off by one -> 1 failed, 103 passed in 52.62s
+KILLED  selection.py: ranking by id -> 1 failed, 98 passed in 21.15s
+KILLED  selection.py: half-life linearised -> 1 failed, 42 passed in 4.01s
+KILLED  selection.py: Hurst from lag 1 -> 1 failed, 55 passed in 3.94s
+KILLED  selection.py: whole history as the window -> 1 failed, 105 passed in 55.75s
+KILLED  selection.py: pairs across sectors -> 1 failed, 98 passed in 4.79s
+KILLED  backtest.py: z uses today's close (look-ahead) -> 1 failed, 117 passed in 66.79s (0:01:06)
+KILLED  backtest.py: selection uses today's close (look-ahead) -> 1 failed, 120 passed in 87.43s (0:01:27)
+KILLED  backtest.py: deselected pairs kept -> 112 passed, 1 error in 61.26s (0:01:01)
+KILLED  backtest.py: open pair takes new parameters at once -> 1 failed, 117 passed in 66.85s (0:01:06)
+KILLED  backtest.py: no costs -> 1 failed, 113 passed in 66.79s (0:01:06)
+KILLED  backtest.py: trade return sign -> 1 failed, 116 passed in 67.45s (0:01:07)
+KILLED  backtest.py: breakdown window includes today -> 112 passed, 1 error in 59.07s
+39/39 non-equivalent mutants killed; 1/1 equivalent mutant(s) survived as expected
+exit 0

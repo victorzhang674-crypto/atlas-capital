@@ -1,0 +1,4 @@
+half-life  5.0: recovered 119/120 = 99.2%
+half-life 10.0: recovered 117/120 = 97.5%
+cross-sector planted pair selected: 0/40
+other (non-planted) pairs selected: 144 over 40 universes (3.60 per universe)

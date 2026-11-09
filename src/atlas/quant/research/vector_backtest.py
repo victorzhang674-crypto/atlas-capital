@@ -167,12 +167,6 @@ def vector_backtest(
     if bps < 0 or not grs > 0:
         raise ValueError(f"cost_bps must be >= 0 and gross > 0, got {bps}, {grs}")
     dates = rebalance_dates(list(signal.index), reb)
-    sessions = pd.DatetimeIndex(daily.index)
-    positions = sessions.get_indexer(dates)
-    if (positions < 0).any():
-        missing = [str(d.date()) for d, p in zip(dates, positions, strict=True) if p < 0]
-        raise ValueError(f"rebalance dates {missing} are not sessions of the daily returns")
-    symbols = signal.columns
     rows = pd.DatetimeIndex(signal.index).get_indexer(dates)
     targets = np.vstack(
         [
@@ -182,6 +176,45 @@ def vector_backtest(
             for i in rows
         ]
     )
+    result = weights_backtest(
+        pd.DataFrame(targets, index=dates, columns=signal.columns),
+        daily,
+        cost_bps=bps,
+        sessions_per_year=periods,
+    )
+    result.summary.update({"rebalance": reb, "weighting": wgt, "cost_bps": bps, "gross": grs})
+    return result
+
+
+def weights_backtest(
+    targets: pd.DataFrame,
+    daily: pd.DataFrame,
+    *,
+    cost_bps: float,
+    sessions_per_year: int,
+) -> BacktestResult:
+    """Backtest given target weights (Stage 23, extracted from `vector_backtest`): `targets`
+    (rebalance dates x symbols, fractions of NAV, shorts negative; dates increasing, each a
+    session of `daily`) on `daily` (sessions x symbols, simple daily returns). Timing, drift,
+    turnover and costs as in the module docstring; the summary is `vector_backtest`'s
+    without the quantile-book settings, plus `cost_bps`. A label as `targets` raises
+    `LookAheadError`."""
+    guard_not_label(targets, "targets")
+    bps = cost_bps
+    if bps < 0:
+        raise ValueError(f"cost_bps must be >= 0, got {bps}")
+    dates = pd.DatetimeIndex(pd.to_datetime(list(targets.index)), name="date")
+    if len(dates) == 0:
+        raise ValueError("no rebalance dates: targets is empty")
+    if not dates.is_monotonic_increasing or not dates.is_unique:
+        raise ValueError("rebalance dates must be strictly increasing")
+    sessions = pd.DatetimeIndex(daily.index)
+    positions = sessions.get_indexer(dates)
+    if (positions < 0).any():
+        missing = [str(d.date()) for d, p in zip(dates, positions, strict=True) if p < 0]
+        raise ValueError(f"rebalance dates {missing} are not sessions of the daily returns")
+    symbols = targets.columns
+    weights = targets.to_numpy(dtype="float64")
     r = np.nan_to_num(daily.reindex(columns=symbols).to_numpy(dtype="float64"), nan=0.0)
     first = int(positions[0])
     span = sessions[first:]
@@ -197,17 +230,17 @@ def vector_backtest(
             w = w * (1.0 + r[session]) / (1.0 + day_ret)
         if session in target_at:
             i = target_at[session]
-            turnover[i] = float(np.abs(targets[i] - w).sum())
+            turnover[i] = float(np.abs(weights[i] - w).sum())
             cost[j] = turnover[i] * bps / 1e4
-            w = targets[i].copy()
+            w = weights[i].copy()
     net = gross_ret - cost
-    summary = _summary(net, turnover, cost, periods)
-    summary.update({"rebalance": reb, "weighting": wgt, "cost_bps": bps, "gross": grs})
+    summary = _summary(net, turnover, cost, sessions_per_year)
+    summary["cost_bps"] = bps
     return BacktestResult(
         returns=pd.Series(net, index=span, name="net_return"),
         gross_returns=pd.Series(gross_ret, index=span, name="gross_return"),
         costs=pd.Series(cost, index=span, name="cost"),
         turnover=pd.Series(turnover, index=dates, name="turnover"),
-        weights=pd.DataFrame(targets, index=dates, columns=symbols),
+        weights=pd.DataFrame(weights, index=dates, columns=symbols),
         summary=summary,
     )

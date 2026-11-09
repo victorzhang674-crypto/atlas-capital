@@ -1461,6 +1461,70 @@ class AlphaConfig(_Frozen):
     pead: AlphaPEADConfig = Field(default_factory=AlphaPEADConfig)
 
 
+class StatArbConfig(_Frozen):
+    """Statistical arbitrage (pairs) (`atlas.quant.statarb`, Stage 23).
+
+    Selection (monthly, point in time; members of `universe`, same GICS sector): daily log
+    return correlation over the last `corr_window` sessions > `min_corr`; over the last
+    `formation` sessions an order-free Engle-Granger p-value < `max_pvalue`, an OLS hedge
+    ratio > 0, a spread half-life in [`min_half_life`, `max_half_life`] sessions and a Hurst
+    exponent (lags 2..`hurst_max_lag`) < `max_hurst`; at most `max_pairs_per_name` pairs per
+    name and `max_pairs` in all. Signals: spread z-score over `max(round(lookback_mult x
+    half-life), min_lookback)` sessions; enter beyond `entry_z`, exit inside `exit_z`, stop
+    beyond `stop_z` or after `time_stop_mult` x half-life sessions held, or on breakdown (the
+    rolling Engle-Granger p-value, re-tested every `breakdown_every` sessions, above
+    `breakdown_pvalue`). Each active pair holds `pair_gross` of NAV (half per leg,
+    dollar-neutral); turnover costs `cost_bps` basis points.
+    """
+
+    universe: Annotated[str, Field(min_length=1)] = "sp500"
+    corr_window: Annotated[int, Field(ge=20)] = 252
+    formation: Annotated[int, Field(ge=60)] = 504
+    min_corr: _OpenFrac = 0.7
+    max_pvalue: _OpenFrac = 0.05
+    min_half_life: Annotated[float, Field(gt=0)] = 2.0
+    max_half_life: Annotated[float, Field(gt=0)] = 60.0
+    max_hurst: _OpenFrac = 0.5
+    hurst_max_lag: Annotated[int, Field(ge=3)] = 50
+    max_pairs_per_name: Annotated[int, Field(ge=1)] = 2
+    max_pairs: Annotated[int, Field(ge=1)] = 40
+    entry_z: Annotated[float, Field(gt=0)] = 2.0
+    exit_z: Annotated[float, Field(gt=0)] = 0.5
+    stop_z: Annotated[float, Field(gt=0)] = 4.0
+    lookback_mult: Annotated[float, Field(gt=0)] = 2.0
+    min_lookback: Annotated[int, Field(ge=3)] = 5
+    time_stop_mult: Annotated[float, Field(gt=0)] = 3.0
+    breakdown_pvalue: _OpenFrac = 0.20
+    breakdown_every: Annotated[int, Field(ge=1)] = 5
+    pair_gross: Annotated[float, Field(gt=0, le=2)] = 0.05
+    cost_bps: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 5.0
+
+    @model_validator(mode="after")
+    def _consistent(self) -> Self:
+        if not self.exit_z < self.entry_z:
+            raise ValueError(f"exit_z ({self.exit_z}) must be below entry_z ({self.entry_z})")
+        if not self.entry_z < self.stop_z:
+            raise ValueError(f"entry_z ({self.entry_z}) must be below stop_z ({self.stop_z})")
+        if not self.min_half_life < self.max_half_life:
+            raise ValueError(
+                f"min_half_life ({self.min_half_life}) must be below max_half_life "
+                f"({self.max_half_life})"
+            )
+        if self.corr_window >= self.formation:
+            raise ValueError(
+                f"corr_window ({self.corr_window}) must be below formation ({self.formation}): "
+                "its returns need corr_window + 1 prices of the formation window"
+            )
+        if self.hurst_max_lag >= self.formation // 2:
+            raise ValueError(f"hurst_max_lag ({self.hurst_max_lag}) must be below formation / 2")
+        if self.max_pvalue >= self.breakdown_pvalue:
+            raise ValueError(
+                f"max_pvalue ({self.max_pvalue}) must be below breakdown_pvalue "
+                f"({self.breakdown_pvalue})"
+            )
+        return self
+
+
 class QuantConfig(_Frozen):
     """Quant engine settings (Phase 2)."""
 
@@ -1471,6 +1535,7 @@ class QuantConfig(_Frozen):
     metrics: MetricsConfig = Field(default_factory=MetricsConfig)
     regime: RegimeConfig = Field(default_factory=RegimeConfig)
     alpha: AlphaConfig = Field(default_factory=AlphaConfig)
+    statarb: StatArbConfig = Field(default_factory=StatArbConfig)
 
 
 class AtlasConfig(BaseSettings):

@@ -1,0 +1,85 @@
+[12s] 60 formations, 607 names
+[20s] returns (1799, 564), first 2014-11-10, 43 names without bars dropped
+[20s] formation 2017-01-03: 0 pairs
+[31s] formation 2017-02-01: 30 pairs
+[42s] formation 2017-03-01: 28 pairs
+[64s] formation 2017-04-03: 29 pairs
+[84s] formation 2017-05-01: 31 pairs
+[103s] formation 2017-06-01: 27 pairs
+[114s] formation 2017-07-03: 28 pairs
+[126s] formation 2017-08-01: 27 pairs
+[138s] formation 2017-09-01: 30 pairs
+[148s] formation 2017-10-02: 31 pairs
+[159s] formation 2017-11-01: 30 pairs
+[168s] formation 2017-12-01: 28 pairs
+[175s] formation 2018-01-02: 25 pairs
+[182s] formation 2018-02-01: 20 pairs
+[192s] formation 2018-03-01: 21 pairs
+[202s] formation 2018-04-02: 27 pairs
+[213s] formation 2018-05-01: 22 pairs
+[222s] formation 2018-06-01: 21 pairs
+[232s] formation 2018-07-02: 35 pairs
+[243s] formation 2018-08-01: 30 pairs
+[255s] formation 2018-09-04: 18 pairs
+[265s] formation 2018-10-01: 19 pairs
+[277s] formation 2018-11-01: 24 pairs
+[288s] formation 2018-12-03: 20 pairs
+[303s] formation 2019-01-02: 27 pairs
+[320s] formation 2019-02-01: 29 pairs
+[335s] formation 2019-03-01: 20 pairs
+[347s] formation 2019-04-01: 23 pairs
+[357s] formation 2019-05-01: 22 pairs
+[367s] formation 2019-06-03: 16 pairs
+[375s] formation 2019-07-01: 22 pairs
+[384s] formation 2019-08-01: 19 pairs
+[394s] formation 2019-09-03: 20 pairs
+[405s] formation 2019-10-01: 23 pairs
+[415s] formation 2019-11-01: 26 pairs
+[425s] formation 2019-12-02: 33 pairs
+[434s] formation 2020-01-02: 30 pairs
+[445s] formation 2020-02-03: 27 pairs
+[457s] formation 2020-03-02: 30 pairs
+[501s] formation 2020-04-01: 40 pairs
+[549s] formation 2020-05-01: 40 pairs
+[593s] formation 2020-06-01: 40 pairs
+[650s] formation 2020-07-01: 40 pairs
+[704s] formation 2020-08-03: 40 pairs
+[752s] formation 2020-09-01: 40 pairs
+[806s] formation 2020-10-01: 40 pairs
+[865s] formation 2020-11-02: 40 pairs
+[918s] formation 2020-12-01: 40 pairs
+[978s] formation 2021-01-04: 40 pairs
+[1046s] formation 2021-02-01: 40 pairs
+[1099s] formation 2021-03-01: 40 pairs
+[1144s] formation 2021-04-01: 40 pairs
+[1168s] formation 2021-05-03: 40 pairs
+[1185s] formation 2021-06-01: 40 pairs
+[1200s] formation 2021-07-01: 40 pairs
+[1220s] formation 2021-08-02: 40 pairs
+[1239s] formation 2021-09-01: 40 pairs
+[1264s] formation 2021-10-01: 40 pairs
+[1280s] formation 2021-11-01: 39 pairs
+[1298s] formation 2021-12-01: 40 pairs
+Traceback (most recent call last):
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/Planning/stages/stage-23-stat-arb/artifacts/insample_run.py", line 137, in <module>
+    sys.exit(main(Path(sys.argv[1]).expanduser(), Path(sys.argv[2])))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/Planning/stages/stage-23-stat-arb/artifacts/insample_run.py", line 113, in main
+    ).join(result.daily)
+      ^^^^^^^^^^^^^^^^^^
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/.venv/lib/python3.12/site-packages/pandas/core/frame.py", line 15900, in join
+    return merge(
+           ^^^^^^
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/.venv/lib/python3.12/site-packages/pandas/core/reshape/merge.py", line 405, in merge
+    return op.get_result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/.venv/lib/python3.12/site-packages/pandas/core/reshape/merge.py", line 1139, in get_result
+    result = self._reindex_and_concat(join_index, left_indexer, right_indexer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/.venv/lib/python3.12/site-packages/pandas/core/reshape/merge.py", line 1090, in _reindex_and_concat
+    llabels, rlabels = _items_overlap_with_suffix(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/.venv/lib/python3.12/site-packages/pandas/core/reshape/merge.py", line 3347, in _items_overlap_with_suffix
+    raise ValueError(f"columns overlap but no suffix specified: {to_rename}")
+ValueError: columns overlap but no suffix specified: Index(['gross'], dtype='str')
+exit 1

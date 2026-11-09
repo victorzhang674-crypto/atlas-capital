@@ -10,8 +10,15 @@ records the run and the config fingerprint; the log goes to `research.log` (JSON
 output directory, the console shows warnings and errors only. A bare year
 means 1 January (`--from`) or 31 December (`--to`). Exit codes: 0 ok, 1 the run failed,
 2 bad arguments.
+
+`atlas research pairs --as-of 2021-12-01` (Stage 23) selects the cointegrated same-sector
+pairs at the as-of (point in time: the universe's members on that day, closes through the
+session before) and lists them with their current spread z-score and the signal a flat pair
+would take now (a stateless snapshot), writing `pairs.csv` and `pairs.json` to
+`<lake>/<quant.research.out_dir>/pairs/<as-of>/` or `--out`. It only reads the lake.
 """
 
+import json
 import re
 from datetime import date
 from pathlib import Path
@@ -37,6 +44,7 @@ from atlas.quant.research import (
     research_signal,
     signal_kind,
 )
+from atlas.quant.statarb import PairsSnapshot, pairs_snapshot
 
 research_app = typer.Typer(
     help="Signal research: information coefficients, quantiles, decay, long-short backtest.",
@@ -210,4 +218,107 @@ def signal_cmd(
     console.print(f"Run {run.run_id}. Tear sheet: {target} ({len(written)} files)")
 
 
-__all__ = ["parse_bound", "research_app", "signal_cmd"]
+def _pairs_table(snap: PairsSnapshot) -> Table:
+    table = Table(title=f"Pairs at {snap.as_of.isoformat()}: {len(snap.pairs)} pairs")
+    for name in (
+        "pair",
+        "sector",
+        "beta",
+        "half-life",
+        "hurst",
+        "p-value",
+        "corr",
+        "z",
+        "signal",
+        "exp return",
+        "confidence",
+    ):
+        table.add_column(name, justify="left" if name in ("pair", "sector", "signal") else "right")
+    for row in snap.table.itertuples():
+        table.add_row(
+            str(row.pair_id),
+            str(row.sector),
+            _fmt(row.hedge_ratio, ".3f"),
+            _fmt(row.half_life, ".1f"),
+            _fmt(row.hurst, ".2f"),
+            _fmt(row.pvalue, ".4f"),
+            _fmt(row.corr, ".2f"),
+            _fmt(row.z, "+.2f"),
+            str(row.signal),
+            _fmt(row.exp_return, ".1%"),
+            _fmt(row.confidence, ".2f"),
+        )
+    return table
+
+
+@research_app.command("pairs")
+def pairs_cmd(
+    ctx: typer.Context,
+    as_of: Annotated[str, typer.Option("--as-of", help="The as-of date: YYYY-MM-DD.")],
+    universe: Annotated[
+        str | None, typer.Option(help="Universe whose members are paired (default: config).")
+    ] = None,
+    out: Annotated[
+        Path | None,
+        typer.Option(
+            help="Output directory (default: <lake>/<quant.research.out_dir>/pairs/<as-of>)."
+        ),
+    ] = None,
+) -> None:
+    """List the cointegrated pairs selected at the as-of with their current z-scores."""
+    console = _console()
+    try:
+        day = date.fromisoformat(as_of.strip())
+    except ValueError:
+        raise typer.BadParameter(f"{as_of!r} is not a date (YYYY-MM-DD)") from None
+    config = _config(ctx, console)
+    cfg = config.quant.statarb
+    if universe is not None:
+        if universe not in config.data.universes:
+            known = ", ".join(sorted(config.data.universes))
+            raise typer.BadParameter(f"unknown universe (known: {known})", param_hint="--universe")
+        cfg = cfg.model_copy(update={"universe": universe})
+    target = (
+        out
+        if out is not None
+        else Path(config.data.lake_path) / config.quant.research.out_dir / "pairs" / day.isoformat()
+    )
+    try:
+        with run_context(config=config, stage="research.pairs") as run:
+            configure_logging(
+                level="INFO", log_file=target / "research.log", console_level="WARNING"
+            )
+            snap = pairs_snapshot(DataView(Lake(config.data.lake_path), day, config), cfg)
+            target.mkdir(parents=True, exist_ok=True)
+            snap.table.to_csv(target / "pairs.csv", index=False)
+            summary = {
+                "as_of": day.isoformat(),
+                "universe": cfg.universe,
+                "n_pairs": len(snap.pairs),
+                "run": {
+                    "run_id": run.run_id,
+                    "stage": run.stage,
+                    "mode": run.mode,
+                    "config_fingerprint": run.config_fingerprint,
+                },
+                "signals": [s.model_dump() for s in snap.signals],
+                "config": cfg.model_dump(),
+            }
+            (target / "pairs.json").write_text(json.dumps(summary, indent=2) + "\n")
+    except AtlasError as exc:
+        console.print(f"[red]Pairs failed:[/red] {type(exc).__name__}: {exc}")
+        raise typer.Exit(1) from None
+    finally:
+        reset_logging()
+    if snap.pairs:
+        console.print(_pairs_table(snap))
+        console.print(
+            f"{len(snap.signals)} of {len(snap.pairs)} pairs would enter now "
+            f"(|z| > {cfg.entry_z}, stateless snapshot)."
+        )
+    else:
+        console.print(f"No pairs selected at {day.isoformat()} (universe {cfg.universe}).")
+    console.print(f"Run {run.run_id}. Output: {target}")
+
+
+__all__ = ["pairs_cmd", "parse_bound", "research_app", "signal_cmd"]

@@ -1,0 +1,2 @@
+pass every filter: 111/3000 = 0.0370 (cluster s.e. 0.0046)
+selected after caps: 106/3000 = 0.0353 (cluster s.e. 0.0038)

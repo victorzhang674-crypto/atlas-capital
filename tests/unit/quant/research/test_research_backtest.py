@@ -214,3 +214,57 @@ def test_summary_drawdown_counts_the_first_session() -> None:  # Stage 20 single
     empty = _summary(np.array([]), np.array([]), np.array([]), 252)
     assert empty["n_sessions"] == 0
     assert all(math.isnan(empty[k]) for k in ("ann_return", "ann_vol", "sharpe", "max_drawdown"))
+
+
+# --- Stage 23: the weights-based engine extracted from `vector_backtest` ---------------------
+
+
+def test_weights_backtest_reproduces_vector_backtest() -> None:  # Stage 23 refactor
+    from atlas.quant.research import weights_backtest
+
+    daily = _random(400, 60, seed=21)
+    rng = np.random.default_rng(22)
+    dates = daily.index[5::7]
+    signal = pd.DataFrame(rng.standard_normal((len(dates), 60)), index=dates, columns=daily.columns)
+    ref = vector_backtest(signal, daily, rebalance="weekly", cost_bps=7.0, weighting="signal")
+    out = weights_backtest(ref.weights, daily, cost_bps=7.0, sessions_per_year=252)
+    pd.testing.assert_series_equal(out.returns, ref.returns)
+    pd.testing.assert_series_equal(out.gross_returns, ref.gross_returns)
+    pd.testing.assert_series_equal(out.costs, ref.costs)
+    pd.testing.assert_series_equal(out.turnover, ref.turnover)
+    pd.testing.assert_frame_equal(out.weights, ref.weights)
+    for key, value in out.summary.items():
+        assert ref.summary[key] == value or (math.isnan(value) and math.isnan(ref.summary[key]))
+
+
+def test_weights_backtest_known_values_and_checks() -> None:  # Stage 23
+    from atlas.quant.research import weights_backtest
+
+    idx = DAYS[:4]
+    daily = pd.DataFrame({"A": [0.0, 0.10, -0.05, 0.02], "B": [0.0, 0.0, 0.0, 0.0]}, index=idx)
+    targets = pd.DataFrame({"A": [0.5, 0.5], "B": [-0.5, -0.5]}, index=idx[[0, 2]])
+    out = weights_backtest(targets, daily, cost_bps=10.0, sessions_per_year=252)
+    # Session 1 earns 0.5 x 0.10 = 0.05; weights drift to A 0.55/1.05, B -0.5/1.05.
+    assert out.gross_returns.iloc[1] == pytest.approx(0.05)
+    wa, wb = 0.55 / 1.05, -0.5 / 1.05
+    assert out.gross_returns.iloc[2] == pytest.approx(wa * -0.05)
+    day2 = wa * -0.05
+    wa2, wb2 = wa * 0.95 / (1 + day2), wb / (1 + day2)
+    assert out.turnover.iloc[1] == pytest.approx(abs(0.5 - wa2) + abs(-0.5 - wb2))
+    assert out.costs.iloc[0] == pytest.approx(1.0 * 10 / 1e4)  # first book from cash
+    assert out.summary["cost_bps"] == 10.0
+    with pytest.raises(ValueError, match="cost_bps"):
+        weights_backtest(targets, daily, cost_bps=-1.0, sessions_per_year=252)
+    with pytest.raises(ValueError, match="not sessions"):
+        weights_backtest(
+            targets.set_axis([pd.Timestamp("2021-01-02"), idx[2]]),
+            daily,
+            cost_bps=0.0,
+            sessions_per_year=252,
+        )
+    with pytest.raises(ValueError, match="increasing"):
+        weights_backtest(targets.iloc[::-1], daily, cost_bps=0.0, sessions_per_year=252)
+    with pytest.raises(ValueError, match="no rebalance"):
+        weights_backtest(targets.iloc[:0], daily, cost_bps=0.0, sessions_per_year=252)
+    with pytest.raises(LookAheadError):
+        weights_backtest(tag_label(targets), daily, cost_bps=0.0, sessions_per_year=252)

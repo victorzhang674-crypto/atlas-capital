@@ -1,0 +1,48 @@
+KILLED  signals.py: long entry at exactly -entry_z -> 1 failed, 7 passed in 10.36s
+KILLED  signals.py: short entry beyond the stop -> 1 failed, 11 passed in 7.04s
+KILLED  signals.py: long entry beyond the stop -> 1 failed, 10 passed in 9.12s
+KILLED  signals.py: long exit at -exit_z -> 1 failed, 16 passed in 11.49s
+KILLED  signals.py: no overshoot exit for shorts -> 1 failed, 24 passed in 7.17s
+KILLED  signals.py: stop at exactly stop_z -> 1 failed, 20 passed in 5.63s
+KILLED  signals.py: no lock after a stop loss -> 1 failed, 21 passed in 8.85s
+KILLED  signals.py: lock after a normal exit -> 1 failed, 15 passed in 5.48s
+KILLED  signals.py: time stop one session late -> 1 failed, 28 passed in 6.66s
+KILLED  signals.py: held not counted -> 1 failed, 16 passed in 5.21s
+KILLED  signals.py: no breakdown exit in a position -> 1 failed, 27 passed in 12.98s
+KILLED  signals.py: locked pair re-enters -> 1 failed, 13 passed in 6.17s
+KILLED  signals.py: broken flat pair not locked -> 1 failed, 14 passed in 5.74s
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 2115, in _communicate
+    ready = selector.select(timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/selectors.py", line 415, in select
+    fd_event_list = self._selector.poll(timeout)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/Planning/stages/stage-23-stat-arb/artifacts/mutate.py", line 109, in _terminate
+    raise KeyboardInterrupt  # runs the `finally` that restores the mutated file
+    ^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/Planning/stages/stage-23-stat-arb/artifacts/mutate.py", line 141, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/Planning/stages/stage-23-stat-arb/artifacts/mutate.py", line 124, in main
+    run = subprocess.run(
+          ^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 1220, in communicate
+    self._wait(timeout=sigint_timeout)
+  File "/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/subprocess.py", line 2047, in _wait
+    time.sleep(delay)
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-23-planning-audit-6b531a/Planning/stages/stage-23-stat-arb/artifacts/mutate.py", line 109, in _terminate
+    raise KeyboardInterrupt  # runs the `finally` that restores the mutated file
+    ^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

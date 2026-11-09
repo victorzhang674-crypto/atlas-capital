@@ -125,9 +125,11 @@ warn_return_any = true
 no_implicit_reexport = true
 strict_equality = true
 
-# exchange_calendars, hmmlearn, pyarrow, threadpoolctl and yfinance ship no type information.
+# exchange_calendars, hmmlearn, pyarrow, statsmodels (Stage 23), threadpoolctl and yfinance ship
+# no type information.
 [[tool.mypy.overrides]]
 module = [
-    "exchange_calendars", "hmmlearn.*", "pyarrow", "pyarrow.*", "threadpoolctl", "yfinance",
+    "exchange_calendars", "hmmlearn.*", "pyarrow", "pyarrow.*", "statsmodels.*", "threadpoolctl",
+    "yfinance",
 ]
 ignore_missing_imports = true

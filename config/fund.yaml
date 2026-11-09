@@ -384,6 +384,28 @@ quant:
       drift_ann: 0.06  # annualised abnormal drift of a fresh full-strength signal (fraction)
       car_full: 0.05  # |car| (fraction) at which the confidence's strength part reaches 1
       horizon: 21  # sessions the forecast refers to
+  statarb:  # pairs trading (Stage 23): same-sector cointegrated pairs, spread z-score mean reversion
+    universe: sp500  # candidates: the members of this universe at each monthly formation date
+    corr_window: 252  # sessions of daily log returns for the correlation prefilter
+    formation: 504  # sessions for the Engle-Granger test, hedge ratio, half-life and Hurst (2 years)
+    min_corr: 0.7  # prefilter: return correlation must exceed this
+    max_pvalue: 0.05  # Engle-Granger p-value (max of both orientations) must be below this
+    min_half_life: 2.0  # spread half-life of mean reversion, in sessions: lower bound
+    max_half_life: 60.0  # upper bound (sessions)
+    max_hurst: 0.5  # Hurst exponent of the spread must be below this (mean reverting)
+    hurst_max_lag: 50  # Hurst estimated on lags 2..hurst_max_lag sessions
+    max_pairs_per_name: 2  # a name is in at most this many selected pairs
+    max_pairs: 40  # at most this many pairs in all (best Engle-Granger p-values first)
+    entry_z: 2.0  # enter when |z| exceeds this
+    exit_z: 0.5  # exit when |z| is back inside this band (or overshoots through it)
+    stop_z: 4.0  # stop loss when |z| exceeds this (no entry beyond it)
+    lookback_mult: 2.0  # z-score lookback = lookback_mult x half-life (sessions)
+    min_lookback: 5  # shortest z-score lookback (sessions)
+    time_stop_mult: 3.0  # time stop after time_stop_mult x half-life sessions held
+    breakdown_pvalue: 0.20  # breakdown when the rolling Engle-Granger p-value exceeds this
+    breakdown_every: 5  # sessions between rolling Engle-Granger re-tests
+    pair_gross: 0.05  # gross NAV fraction per active pair, half long / half short (dollar-neutral)
+    cost_bps: 5.0  # transaction cost per unit of turnover, basis points
 
 # LLM gateway values (consumed by Stage 24).
 llm:

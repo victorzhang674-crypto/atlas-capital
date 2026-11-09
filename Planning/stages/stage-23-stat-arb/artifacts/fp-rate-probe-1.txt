@@ -1,0 +1,6 @@
+/Users/zzjsmacbookair/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/claude-501/matplotlib-ikhya0sj because there was an issue with the default path (/Users/zzjsmacbookair/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Matplotlib is building the font cache; this may take a moment.
+pairs 3000; outcome counts {'coint': 2880, 'PASSED': 117, 'hurst': 3}
+EG p < 0.05: 0.0400
+pass all filters: 0.0390 (s.e. 0.0035)

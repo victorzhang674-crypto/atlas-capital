@@ -5,6 +5,7 @@ import re
 from datetime import date
 from pathlib import Path
 
+import pandas as pd
 import pytest
 import typer
 from research_world import ResearchWorld, build_research_world
@@ -134,3 +135,89 @@ def test_research_signal_empty_lake_exit_1(tmp_path: Path) -> None:
     )
     assert result.exit_code == 1
     assert "Research failed" in _plain(result.output)
+
+
+# --- Stage 23: `atlas research pairs --as-of` -------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def pairs_lake(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, object]:
+    from statarb_world import build_pairs_lake, planted_universe
+
+    root = tmp_path_factory.mktemp("cli_pairs") / "lake"
+    universe = planted_universe(101)
+    build_pairs_lake(Lake(root, registry=DEFAULT_REGISTRY.copy()), universe)
+    return root, universe
+
+
+def test_research_pairs_help() -> None:
+    result = CliRunner().invoke(app, ["research", "pairs", "--help"], env=BASE_ENV)
+    text = _plain(result.output)
+    assert result.exit_code == 0
+    for option in ("--as-of", "--universe", "--out"):
+        assert option in text
+
+
+def test_research_pairs_lists_current_pairs(pairs_lake: tuple[Path, object]) -> None:
+    from statarb_world import AS_OF
+
+    from atlas.core.config import AtlasConfig
+    from atlas.data.view import DataView
+    from atlas.quant.statarb import pairs_snapshot
+
+    root, universe = pairs_lake
+    result = invoke(root, "pairs", "--as-of", AS_OF.isoformat())
+    assert result.exit_code == 0, result.output
+    text = _plain(result.output)
+    snap = pairs_snapshot(DataView(Lake(root), AS_OF, AtlasConfig()))
+    assert snap.pairs
+    for pid in snap.table["pair_id"]:
+        assert pid in text
+    for header in ("pair", "sector", "beta", "half-life", "p-value", "z", "signal"):
+        assert header in text
+    assert f"{len(snap.pairs)} pairs" in text
+    out = root / "runs" / "research" / "pairs" / AS_OF.isoformat()
+    table = pd.read_csv(out / "pairs.csv")
+    assert list(table["pair_id"]) == list(snap.table["pair_id"])
+    summary = json.loads((out / "pairs.json").read_text())
+    assert summary["as_of"] == AS_OF.isoformat() and summary["n_pairs"] == len(snap.pairs)
+    assert summary["universe"] == "sp500"
+    assert summary["run"]["stage"] == "research.pairs" and len(summary["run"]["run_id"]) == 26
+    assert summary["signals"] == [s.model_dump() for s in snap.signals]
+    assert summary["config"]["formation"] == 504
+    assert set(universe.planted) <= set(table["pair_id"])  # type: ignore[attr-defined]
+
+
+def test_research_pairs_out_option(pairs_lake: tuple[Path, object], tmp_path: Path) -> None:
+    root, _ = pairs_lake
+    target = tmp_path / "mine"
+    result = invoke(root, "pairs", "--as-of", "2024-03-01", "--out", str(target))
+    assert result.exit_code == 0, result.output
+    assert (target / "pairs.csv").is_file() and (target / "pairs.json").is_file()
+
+
+def test_research_pairs_bad_arguments_exit_2(pairs_lake: tuple[Path, object]) -> None:
+    root, _ = pairs_lake
+    assert invoke(root, "pairs", "--as-of", "2024-13-01").exit_code == 2
+    assert invoke(root, "pairs").exit_code == 2
+    assert invoke(root, "pairs", "--as-of", "2024-03-01", "--universe", "nope").exit_code == 2
+
+
+def test_research_pairs_empty_lake_exit_1(tmp_path: Path) -> None:
+    result = invoke(tmp_path / "empty", "pairs", "--as-of", "2024-03-01")
+    assert result.exit_code == 1
+    assert "Pairs failed" in _plain(result.output)
+
+
+def test_research_pairs_no_members_says_so(tmp_path: Path) -> None:
+    from statarb_world import build_pairs_lake, planted_universe
+
+    root = tmp_path / "lake"
+    build_pairs_lake(
+        Lake(root, registry=DEFAULT_REGISTRY.copy()),
+        planted_universe(102),
+        end_date=date(2015, 1, 2),
+    )
+    result = invoke(root, "pairs", "--as-of", "2024-03-01")
+    assert result.exit_code == 0, result.output
+    assert "No pairs selected at 2024-03-01" in _plain(result.output)

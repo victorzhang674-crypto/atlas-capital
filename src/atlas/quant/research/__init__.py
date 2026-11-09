@@ -3,7 +3,8 @@
 `labels` builds forward-return labels (evaluation only, guarded against use as features);
 `signals` builds a point-in-time signal panel from a Stage 15 feature or a Stage 16 factor;
 `ic` measures information coefficients and decay; `quantiles` the quantile spreads;
-`vector_backtest` runs a simple long-short backtest with costs; `tearsheet` puts it together
+`vector_backtest` runs a simple long-short backtest with costs (its engine,
+`weights_backtest`, takes target weights: Stage 23); `tearsheet` puts it together
 (`SignalTearSheet`, saved by `atlas research signal`).
 """
 
@@ -65,6 +66,7 @@ from atlas.quant.research.vector_backtest import (
     long_short_weights,
     rebalance_dates,
     vector_backtest,
+    weights_backtest,
 )
 
 __all__ = [
@@ -115,4 +117,5 @@ __all__ = [
     "signal_panel",
     "summarize_ic",
     "vector_backtest",
+    "weights_backtest",
 ]
