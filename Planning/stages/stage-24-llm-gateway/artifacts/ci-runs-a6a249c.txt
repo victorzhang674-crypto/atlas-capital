@@ -1,0 +1,11 @@
+[{"conclusion":"success","createdAt":"2026-11-10T08:14:31Z","databaseId":42781081786,"event":"push","headBranch":"claude/stage-24-planning-audit-9b2e7f","status":"completed","updatedAt":"2026-11-10T08:26:14Z","workflowName":"CI"},{"conclusion":"success","createdAt":"2026-11-10T08:14:31Z","databaseId":42781082033,"event":"push","headBranch":"main","status":"completed","updatedAt":"2026-11-10T08:35:33Z","workflowName":"CI"}]
+Set up job	success	2026-11-10T08:14:35Z	2026-11-10T08:14:35Z
+Run actions/checkout@v7.0.1	success	2026-11-10T08:14:35Z	2026-11-10T08:14:37Z
+Run astral-sh/setup-uv@v10.3.3	success	2026-11-10T08:14:37Z	2026-11-10T08:14:38Z
+Run uv sync --locked --group dev	success	2026-11-10T08:14:38Z	2026-11-10T08:14:39Z
+Run make check	success	2026-11-10T08:14:39Z	2026-11-10T08:35:19Z
+Run make test-integration	success	2026-11-10T08:35:19Z	2026-11-10T08:35:27Z
+Post Run astral-sh/setup-uv@v10.3.3	success	2026-11-10T08:35:27Z	2026-11-10T08:35:31Z
+Post Run actions/checkout@v7.0.1	success	2026-11-10T08:35:31Z	2026-11-10T08:35:31Z
+Complete job	success	2026-11-10T08:35:31Z	2026-11-10T08:35:31Z
+CI-DONE-3
