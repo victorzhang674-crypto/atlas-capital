@@ -30,5 +30,6 @@ Output of commands run in this stage's chat (Project.md Rule 1). Raw output is u
   - [x] Budgets `daily_usd`, `per_run_usd`, `per_agent_call_max_tokens` → `BudgetExceeded` — `test_llm_budget.py`
   - [x] Prompt-injection hygiene — `test_llm_hygiene.py`, `test_every_call_carries_the_data_policy_once`; live test (the instruction planted in the data block was ignored)
 - Waivers: none
+- Merge into `main`: fast-forward 862ff46 → **47767b6** (2026-11-10, run in the owner's Terminal panel: the sandbox cannot write the main checkout). Merged result: `uv run pytest -q` → 4037 passed, 31 deselected, exit 0 · `make check` → exit 0 (lint, format, mypy clean, 4037 passed) · raw: [merged-main-pytest.txt](artifacts/merged-main-pytest.txt), [merged-main-check.txt](artifacts/merged-main-check.txt), [merged-main-merge.txt](artifacts/merged-main-merge.txt). Not pushed to `origin` yet (owner asked first)
 
 **Result:** ALL CRITERIA VERIFIED

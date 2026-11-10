@@ -1180,3 +1180,4 @@ Full block and raw output: [verification.md](stages/stage-24-llm-gateway/verific
   - [x] Budgets are enforced — evidence: `test_llm_budget.py` (token cap, daily, per run, estimate, in-flight reservations), `test_budget_sees_spend_from_an_earlier_session`
   - [x] Agents can be unit-tested with FakeLLM only — evidence: `test_fake_llm_fixture_is_shared`, `test_llm_fake.py`; the 198 default LLM tests run offline
 - Waivers: none
+- Merge into `main`: fast-forward 862ff46 → **47767b6** (2026-11-10); merged result `uv run pytest -q` → 4037 passed, 31 deselected; `make check` → exit 0 (lint, format, mypy clean, 4037 passed). Not pushed to `origin` yet (the owner is asked first)

@@ -1,0 +1,136 @@
+Updating 862ff46..47767b6
+Fast-forward
+ .env.example                                       |   4 +-
+ Planning/PROGRESS.md                               |  46 +-
+ .../artifacts/coverage-llm.txt                     |  21 +
+ .../stage-24-llm-gateway/artifacts/gate-pytest.txt |   1 +
+ .../artifacts/live-deepseek.txt                    |   8 +
+ .../stage-24-llm-gateway/artifacts/make-check.txt  |  89 ++++
+ .../artifacts/mutation-summary.txt                 |   9 +
+ .../artifacts/mutation-survivors-run1.txt          | 412 ++++++++++++++++++
+ .../artifacts/mutation-survivors-run2.txt          | 178 ++++++++
+ .../artifacts/mutmut-setup.cfg                     |   8 +
+ .../stage-24-llm-gateway/artifacts/verify-llm.txt  |   6 +
+ Planning/stages/stage-24-llm-gateway/plan.md       | 115 +++++
+ .../stages/stage-24-llm-gateway/verification.md    |  34 ++
+ Planning/stages/stage-24-llm-gateway/worklog.md    |  63 +++
+ config/fund.yaml                                   |  72 +++-
+ pyproject.toml                                     |   5 +-
+ src/atlas/core/config.py                           | 181 +++++++-
+ src/atlas/core/errors.py                           |  29 +-
+ src/atlas/core/storage/db.py                       | 108 ++++-
+ src/atlas/core/storage/schema.py                   |   2 +-
+ src/atlas/llm/__init__.py                          |  43 ++
+ src/atlas/llm/budget.py                            |  95 ++++
+ src/atlas/llm/cost.py                              | 166 +++++++
+ src/atlas/llm/gateway.py                           | 333 ++++++++++++++
+ src/atlas/llm/hygiene.py                           |  43 ++
+ src/atlas/llm/providers/__init__.py                |   1 +
+ src/atlas/llm/providers/anthropic.py               | 170 ++++++++
+ src/atlas/llm/providers/fake.py                    | 117 +++++
+ src/atlas/llm/providers/openai_compat.py           | 217 ++++++++++
+ src/atlas/llm/schemas.py                           | 196 +++++++++
+ tests/conftest.py                                  |   8 +
+ tests/unit/core/storage/test_storage_db.py         |   2 +-
+ tests/unit/core/storage/test_storage_llm_usage.py  | 130 ++++++
+ tests/unit/core/storage/test_storage_schema.py     |   1 +
+ tests/unit/core/test_config.py                     | 153 ++++++-
+ tests/unit/core/test_errors.py                     |  18 +
+ tests/unit/llm/conftest.py                         |  52 +++
+ tests/unit/llm/llm_helpers.py                      |  34 ++
+ tests/unit/llm/test_llm_anthropic.py               | 375 ++++++++++++++++
+ tests/unit/llm/test_llm_budget.py                  | 332 ++++++++++++++
+ tests/unit/llm/test_llm_build.py                   |  48 +++
+ tests/unit/llm/test_llm_cost.py                    | 128 ++++++
+ tests/unit/llm/test_llm_fake.py                    | 118 +++++
+ tests/unit/llm/test_llm_gateway.py                 | 165 +++++++
+ tests/unit/llm/test_llm_hygiene.py                 |  56 +++
+ tests/unit/llm/test_llm_ledger.py                  | 162 +++++++
+ tests/unit/llm/test_llm_live_deepseek.py           |  58 +++
+ tests/unit/llm/test_llm_logging.py                 |  97 +++++
+ tests/unit/llm/test_llm_openai_compat.py           | 479 +++++++++++++++++++++
+ tests/unit/llm/test_llm_retry.py                   | 112 +++++
+ tests/unit/llm/test_llm_schemas.py                 |  77 ++++
+ tests/unit/llm/test_llm_structured.py              | 157 +++++++
+ uv.lock                                            | 130 +++++-
+ 53 files changed, 5627 insertions(+), 37 deletions(-)
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/coverage-llm.txt
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/gate-pytest.txt
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/live-deepseek.txt
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/mutation-summary.txt
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/mutation-survivors-run1.txt
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/mutation-survivors-run2.txt
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/mutmut-setup.cfg
+ create mode 100644 Planning/stages/stage-24-llm-gateway/artifacts/verify-llm.txt
+ create mode 100644 Planning/stages/stage-24-llm-gateway/plan.md
+ create mode 100644 Planning/stages/stage-24-llm-gateway/verification.md
+ create mode 100644 Planning/stages/stage-24-llm-gateway/worklog.md
+ create mode 100644 src/atlas/llm/budget.py
+ create mode 100644 src/atlas/llm/cost.py
+ create mode 100644 src/atlas/llm/gateway.py
+ create mode 100644 src/atlas/llm/hygiene.py
+ create mode 100644 src/atlas/llm/providers/__init__.py
+ create mode 100644 src/atlas/llm/providers/anthropic.py
+ create mode 100644 src/atlas/llm/providers/fake.py
+ create mode 100644 src/atlas/llm/providers/openai_compat.py
+ create mode 100644 src/atlas/llm/schemas.py
+ create mode 100644 tests/unit/core/storage/test_storage_llm_usage.py
+ create mode 100644 tests/unit/llm/conftest.py
+ create mode 100644 tests/unit/llm/llm_helpers.py
+ create mode 100644 tests/unit/llm/test_llm_anthropic.py
+ create mode 100644 tests/unit/llm/test_llm_budget.py
+ create mode 100644 tests/unit/llm/test_llm_build.py
+ create mode 100644 tests/unit/llm/test_llm_cost.py
+ create mode 100644 tests/unit/llm/test_llm_fake.py
+ create mode 100644 tests/unit/llm/test_llm_gateway.py
+ create mode 100644 tests/unit/llm/test_llm_hygiene.py
+ create mode 100644 tests/unit/llm/test_llm_ledger.py
+ create mode 100644 tests/unit/llm/test_llm_live_deepseek.py
+ create mode 100644 tests/unit/llm/test_llm_logging.py
+ create mode 100644 tests/unit/llm/test_llm_openai_compat.py
+ create mode 100644 tests/unit/llm/test_llm_retry.py
+ create mode 100644 tests/unit/llm/test_llm_schemas.py
+ create mode 100644 tests/unit/llm/test_llm_structured.py
+uv sync --group dev
+Resolved 109 packages in 15ms
+   Building atlas-capital @ file:///Users/zzjsmacbookair/Projects/atlas-capital
+Downloading anthropic (2.3MiB)
+      Built atlas-capital @ file:///Users/zzjsmacbookair/Projects/atlas-capital
+ Downloaded anthropic
+Prepared 5 packages in 16.80s
+Uninstalled 1 package in 2ms
+Installed 9 packages in 33ms
+ + anthropic==2.7.0
+ ~ atlas-capital==0.1.0 (from file:///Users/zzjsmacbookair/Projects/atlas-capital)
+ + docstring-parser==0.18.0
+ + httpcore2==2.16.0
+ + httpx2==2.16.0
+ + jiter==0.19.0
+ + opentelemetry-api==1.45.2
+ + sniffio==1.3.1
+ + truststore==0.10.5
+47767b6 stage-24: LLM gateway, model tiers & cost budget
+862ff46 stage-23: push and CI records
++ claude/agitated-driscoll-166517
++ claude/phase-one-checkpoint-28fcd7
++ claude/phase-one-checkpoint-stages-80625b
++ claude/public-repo-conversion-60dd86
++ claude/stage-13-plan-implement-834617
++ claude/stage-14-plan-implementation-e12c9f
++ claude/stage-15-plan-implement-faa041
++ claude/stage-17-signal-research-905219
++ claude/stage-18-covariance-vol-0d3e46
++ claude/stage-19-planning-execution-76a5e5
++ claude/stage-20-completion-30d1cd
++ claude/stage-21-completion-c11c2d
++ claude/stage-22-systematic-alpha-b15459
++ claude/stage-23-planning-audit-6b531a
++ claude/stage-24-planning-audit-9b2e7f
+* main
+  plan/deepseek-default
+  stage-10-followup
+  stage-11-audit
+  stage-11-news
+  stage-12-events-sentiment
+MERGED-MAIN-DONE
