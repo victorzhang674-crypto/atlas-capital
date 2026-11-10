@@ -18,7 +18,9 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # `make check` takes 15-20+ minutes on a hosted runner since Stage 24 (4,037 tests): the
+    # first run on main for 13f8a02 was cancelled at the old 20-minute limit.
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: astral-sh/setup-uv@v10.3.3

@@ -1,0 +1,10 @@
+Set up job	success	2026-11-10T07:50:29Z	2026-11-10T07:50:30Z
+Run actions/checkout@v7.0.1	success	2026-11-10T07:50:30Z	2026-11-10T07:50:32Z
+Run astral-sh/setup-uv@v10.3.3	success	2026-11-10T07:50:32Z	2026-11-10T07:50:33Z
+Run uv sync --locked --group dev	success	2026-11-10T07:50:33Z	2026-11-10T07:50:35Z
+Run make check	success	2026-11-10T07:50:35Z	2026-11-10T08:05:38Z
+Run make test-integration	success	2026-11-10T08:05:38Z	2026-11-10T08:05:44Z
+Post Run astral-sh/setup-uv@v10.3.3	success	2026-11-10T08:05:44Z	2026-11-10T08:05:48Z
+Post Run actions/checkout@v7.0.1	success	2026-11-10T08:05:48Z	2026-11-10T08:05:49Z
+Complete job	success	2026-11-10T08:05:49Z	2026-11-10T08:05:49Z
+CI-VIEW-DONE

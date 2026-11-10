@@ -1,0 +1,29 @@
+
+X main CI · 42778103411
+Triggered via push about 23 minutes ago
+
+JOBS
+X check in 20m16s (ID 129701291317)
+
+ANNOTATIONS
+X The job has exceeded the maximum execution time of 20m0s
+check: .github#1
+
+X The operation was canceled.
+check: .github#71
+
+- "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+check: .github#1
+
+
+For more information about the job, try: gh run view --job=129701291317
+View this run on GitHub: https://github.com/victorzhang674-crypto/atlas-capital/actions/runs/42778103411
+Set up job	success	2026-11-10T07:50:30Z	2026-11-10T07:50:31Z
+Run actions/checkout@v7.0.1	success	2026-11-10T07:50:31Z	2026-11-10T07:50:33Z
+Run astral-sh/setup-uv@v10.3.3	success	2026-11-10T07:50:33Z	2026-11-10T07:50:34Z
+Run uv sync --locked --group dev	success	2026-11-10T07:50:34Z	2026-11-10T07:50:36Z
+Run make check	cancelled	2026-11-10T07:50:36Z	2026-11-10T08:10:42Z
+Run make test-integration	skipped	2026-11-10T08:10:42Z	2026-11-10T08:10:42Z
+Post Run astral-sh/setup-uv@v10.3.3	skipped	2026-11-10T08:10:42Z	2026-11-10T08:10:42Z
+Post Run actions/checkout@v7.0.1	success	2026-11-10T08:10:42Z	2026-11-10T08:10:42Z
+Complete job	success	2026-11-10T08:10:42Z	2026-11-10T08:10:42Z
