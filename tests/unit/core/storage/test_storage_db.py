@@ -139,7 +139,7 @@ def test_views_are_not_persisted(lake: Lake, prices_frame: PricesFrame) -> None:
     finally:
         con.close()
     assert views == []
-    assert tables == [("audit_events",)]
+    assert sorted(tables) == [("audit_events",), ("llm_usage",)]  # the native tables only
 
 
 def test_get_database_is_one_per_process(lake: Lake) -> None:

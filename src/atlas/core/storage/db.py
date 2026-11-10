@@ -1,12 +1,13 @@
 """DuckDB over the lake: session-only views of the curated tables and read-only queries.
 
-The database file is `<lake root>/atlas.duckdb`. It stores only native tables (today the
-append-only `audit_events` mirror). Curated Parquet tables are exposed as views registered on
-this connection alone, never stored in the file, so moving the lake or opening the file
-read-only (the dashboard) never meets stale paths. The connection runs with `TimeZone = 'UTC'`
-and can touch no file outside the lake root: `enable_external_access = false` with the lake as
-the only allowed directory, and the configuration locked, so a query cannot read
-`read_csv('/any/path')` or turn the setting back on.
+The database file is `<lake root>/atlas.duckdb`. It stores only native tables (the
+append-only `audit_events` mirror and `llm_usage`, one row per billed LLM response). Curated
+Parquet tables are exposed as views registered on this connection alone, never stored in the
+file, so moving the lake or opening the file read-only (the dashboard) never meets stale
+paths. The connection runs with `TimeZone = 'UTC'` and can touch no file outside the lake
+root: `enable_external_access = false` with the lake as the only allowed directory, and the
+configuration locked, so a query cannot read `read_csv('/any/path')` or turn the setting back
+on.
 
 No SQL is built by formatting values into text: values are bound as `?` / `$name`
 parameters, and views are created through the relation API.
@@ -48,6 +49,60 @@ CREATE TABLE IF NOT EXISTS audit_events (
 _INSERT_AUDIT = "INSERT INTO audit_events VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 _STORED_AUDIT = "SELECT event_id, hash FROM audit_events WHERE run_id = ? ORDER BY seq"
 
+LLM_USAGE_TABLE = "llm_usage"
+
+LLM_USAGE_COLUMNS = (
+    "call_id",
+    "ts",
+    "day",
+    "run_id",
+    "agent",
+    "step",
+    "tier",
+    "provider",
+    "model",
+    "input_tokens",
+    "cached_input_tokens",
+    "cache_write_tokens",
+    "output_tokens",
+    "reasoning_tokens",
+    "cost_usd",
+    "latency_ms",
+    "cache_hit",
+    "attempt",
+    "status",
+)
+"""Columns of `llm_usage`, in table order (see `Database.insert_llm_usage`)."""
+
+_LLM_USAGE_DDL = """
+CREATE TABLE IF NOT EXISTS llm_usage (
+    call_id             VARCHAR PRIMARY KEY,
+    ts                  TIMESTAMPTZ NOT NULL,
+    day                 DATE NOT NULL,
+    run_id              VARCHAR,
+    agent               VARCHAR,
+    step                VARCHAR,
+    tier                VARCHAR NOT NULL,
+    provider            VARCHAR NOT NULL,
+    model               VARCHAR NOT NULL,
+    input_tokens        BIGINT NOT NULL,
+    cached_input_tokens BIGINT NOT NULL,
+    cache_write_tokens  BIGINT NOT NULL,
+    output_tokens       BIGINT NOT NULL,
+    reasoning_tokens    BIGINT NOT NULL,
+    cost_usd            DOUBLE NOT NULL,
+    latency_ms          DOUBLE NOT NULL,
+    cache_hit           BOOLEAN NOT NULL,
+    attempt             INTEGER NOT NULL,
+    status              VARCHAR NOT NULL
+)
+"""
+
+_INSERT_LLM_USAGE = (
+    f"INSERT INTO llm_usage ({', '.join(LLM_USAGE_COLUMNS)}) "
+    f"VALUES ({', '.join('?' for _ in LLM_USAGE_COLUMNS)})"
+)
+
 _Params = Sequence[object] | Mapping[str, object] | None
 
 _log = get_logger(__name__)
@@ -64,7 +119,7 @@ class Database:
 
     def __init__(self, lake: Lake, *, read_only: bool = False) -> None:
         """Open (creating if needed, unless `read_only`) the lake's database file and create
-        `audit_events` if missing. `read_only` needs an existing file."""
+        `audit_events` and `llm_usage` if missing. `read_only` needs an existing file."""
         self._lake = lake
         self._path = lake.root / DB_FILENAME
         self._read_only = read_only
@@ -77,6 +132,7 @@ class Database:
             self._con.execute("SET TimeZone = 'UTC'")
             if not read_only:
                 self._con.execute(_AUDIT_DDL)
+                self._con.execute(_LLM_USAGE_DDL)
             self._confine_to_lake()
             self.refresh()
         except BaseException:
@@ -219,6 +275,42 @@ class Database:
                 raise
         _log.info("audit.mirror", mirrored_run_id=run_id, inserted=len(rows), total=len(events))
         return len(rows)
+
+    def insert_llm_usage(self, rows: Sequence[Mapping[str, object]]) -> int:
+        """Append rows to `llm_usage` (one per billed LLM response) and return how many.
+
+        Each row maps exactly `LLM_USAGE_COLUMNS` to values: `call_id` (unique), `ts`
+        (tz-aware UTC instant the response was costed), `day` (its UTC date), `run_id`,
+        `agent`, `step` (nullable labels), `tier`, `provider`, `model`, the token counts
+        (whole tokens; `reasoning_tokens` are part of `output_tokens`), `cost_usd` (USD),
+        `latency_ms` (milliseconds), `cache_hit`, `attempt` (1, or 2 for a repair retry) and
+        `status`. The batch is one transaction: a duplicate `call_id` or a null in a required
+        column raises `DataError` and stores nothing. Raises `ValueError` for a row with
+        missing or unknown columns and on a read-only database.
+        """
+        if self._read_only:
+            raise ValueError(f"cannot insert LLM usage into read-only database {self._path}")
+        expected = set(LLM_USAGE_COLUMNS)
+        for row in rows:
+            if set(row) != expected:
+                odd = sorted(expected.symmetric_difference(row))
+                raise ValueError(f"llm_usage row has missing or unknown columns: {odd}")
+        values = [[row[column] for column in LLM_USAGE_COLUMNS] for row in rows]
+        if not values:
+            return 0
+        with self._lock:
+            con = self._connection()
+            con.execute("BEGIN TRANSACTION")
+            try:
+                con.executemany(_INSERT_LLM_USAGE, values)
+                con.execute("COMMIT")
+            except duckdb.ConstraintException as exc:
+                con.execute("ROLLBACK")
+                raise DataError(f"llm_usage rejected {len(values)} row(s): {exc}") from exc
+            except BaseException:
+                con.execute("ROLLBACK")
+                raise
+        return len(values)
 
     def close(self) -> None:
         """Close the connection (idempotent) and forget it as the process-wide instance."""

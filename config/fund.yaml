@@ -407,18 +407,72 @@ quant:
     pair_gross: 0.05  # gross NAV fraction per active pair, half long / half short (dollar-neutral)
     cost_bps: 5.0  # transaction cost per unit of turnover, basis points
 
-# LLM gateway values (consumed by Stage 24).
+# LLM gateway (Stage 24, atlas.llm). Keys come from DEEPSEEK_API_KEY / ANTHROPIC_API_KEY (.env).
 llm:
-  provider: anthropic  # anthropic | openai_compatible (spec A2)
-  # Model id per tier (spec §11).
+  provider: openai_compatible  # openai_compatible (DeepSeek, the default; spec A2) | anthropic (optional)
+  base_url: https://api.deepseek.com  # OpenAI-compatible API base URL (chat completions at <base_url>/chat/completions)
+  # Model id per tier for the openai_compatible provider (spec §11).
   tiers:
-    deep: claude-opus-5-5  # long-form reasoning: research, debate, IC
-    quick: claude-haiku-5-5  # cheap, fast calls: extraction, summaries
-  # Spend caps; exceeding one raises BudgetExceeded and callers fail safe (Stage 24).
+    deep: deepseek-v4-pro  # long-form reasoning: research, debate, IC
+    quick: deepseek-flash  # cheap, fast calls: extraction, summaries
+  # Model id per tier when provider is anthropic.
+  anthropic_tiers:
+    deep: claude-opus-5-5  # long-form reasoning
+    quick: claude-haiku-5-5  # cheap, fast calls
+  # Reasoning mode per tier, sent by the openai_compatible provider: enabled | disabled | omit (send nothing).
+  thinking:
+    quick: disabled  # no reasoning tokens on the cheap tier
+    deep: enabled  # DeepSeek's default mode
+  request_timeout_seconds: 120  # timeout of one LLM HTTP call, in seconds
+  # Retries after a rate limit (429), a 5xx, a timeout or a dropped connection.
+  retry:
+    max_retries: 3  # retries after the first failed attempt
+    backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
+    max_backoff_seconds: 30.0  # longest wait between attempts, in seconds (a longer Retry-After still wins)
+  # Spend caps; exceeding one raises BudgetExceeded and callers fail safe (no new research).
   budgets:
-    daily_usd: 5.0  # USD per day, live/paper (spec A8)
-    per_run_usd: 25.0  # USD per backtest run; provisional, revisit in Stage 24/56
-    per_agent_call_max_tokens: 8000  # output token cap per call; provisional, revisit in Stage 24
+    daily_usd: 5.0  # USD per UTC calendar day, live/paper (spec A8)
+    per_run_usd: 25.0  # USD per run_id (one backtest run); provisional, revisit in Stage 56
+    per_agent_call_max_tokens: 8000  # output token cap of one call (reasoning tokens included)
+    estimate_chars_per_token: 3.0  # prompt characters per token in the pre-call cost estimate (lower = more cautious)
+  # USD per 1M tokens, checked 2026-11-09 (api-docs.deepseek.com/quick_start/pricing; Claude: platform.claude.com pricing).
+  # input = uncached prompt, cached_input = prompt read from the provider cache, cache_write = prompt written to it
+  # (null = charged as input), output = generated tokens incl. reasoning. windows = rates during those UTC hours.
+  prices:
+    # Base rates are DeepSeek's off-peak rates; peak is 01:00-04:00 and 06:00-10:00 UTC, Monday to Friday.
+    deepseek-flash:
+      input: 0.15  # cache miss, off-peak
+      cached_input: 0.003  # cache hit, off-peak
+      cache_write: null  # DeepSeek has no cache-write price
+      output: 0.6  # off-peak
+      # Peak hours (Chinese public holidays are off-peak at DeepSeek but priced as peak here: never under-estimated).
+      windows:
+        - {days: [mon, tue, wed, thu, fri], start: "01:00", end: "04:00", input: 0.3, cached_input: 0.006, output: 1.2}  # peak
+        - {days: [mon, tue, wed, thu, fri], start: "06:00", end: "10:00", input: 0.3, cached_input: 0.006, output: 1.2}  # peak
+    # DeepSeek-V4-Pro; same peak hours.
+    deepseek-v4-pro:
+      input: 0.66  # cache miss, off-peak
+      cached_input: 0.022  # cache hit, off-peak
+      cache_write: null  # DeepSeek has no cache-write price
+      output: 1.98  # off-peak
+      # Peak hours.
+      windows:
+        - {days: [mon, tue, wed, thu, fri], start: "01:00", end: "04:00", input: 1.32, cached_input: 0.044, output: 3.96}  # peak
+        - {days: [mon, tue, wed, thu, fri], start: "06:00", end: "10:00", input: 1.32, cached_input: 0.044, output: 3.96}  # peak
+    # Claude Opus 5.5 (optional provider).
+    claude-opus-5-5:
+      input: 4.0  # uncached prompt
+      cached_input: 0.2  # cache read
+      cache_write: 5.0  # 5-minute cache write (1.25x input)
+      output: 20.0  # generated tokens
+      windows: []  # no time-of-day pricing
+    # Claude Haiku 5.5 (optional provider); prompts above 100K tokens cost 0.50 / 2.50 and are not modelled.
+    claude-haiku-5-5:
+      input: 0.1  # uncached prompt, up to 100K prompt tokens
+      cached_input: 0.01  # cache read (0.1x input)
+      cache_write: 0.125  # 5-minute cache write (1.25x input)
+      output: 0.5  # generated tokens
+      windows: []  # no time-of-day pricing
 
 # Backtest window and simulated costs.
 backtest:

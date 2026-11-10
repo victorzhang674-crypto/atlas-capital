@@ -8,6 +8,7 @@ import pytest
 
 from atlas.core.clock import SimClock, use_clock
 from atlas.core.storage import DEFAULT_REGISTRY, Lake
+from atlas.llm import FakeLLM
 from tiny_universe import TinyUniverse, build_tiny_universe
 
 
@@ -23,6 +24,13 @@ def sim_clock() -> Iterator[SimClock]:
     clock = SimClock(start=date(2024, 3, 1))
     with use_clock(clock):
         yield clock
+
+
+@pytest.fixture
+def fake_llm() -> FakeLLM:
+    """An empty scripted LLM provider (Stage 24): script it with `fake_llm.add(agent, step,
+    *replies)` and pass it to `LLMGateway(fake_llm, config)`; no network, no key."""
+    return FakeLLM()
 
 
 @pytest.fixture

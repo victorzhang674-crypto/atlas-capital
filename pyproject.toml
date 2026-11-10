@@ -56,10 +56,13 @@ dev = [
     "types-pyyaml>=6.0",
     "pandas-stubs>=3.0",
     "respx>=0.21",
+    {include-group = "llm"},
 ]
 # Heavy groups are declared now and filled by the stage that first needs them.
 quant = []
-llm = []
+# Stage 24: the official Anthropic SDK for the optional `anthropic` LLM provider (imported
+# lazily; the default DeepSeek provider needs only httpx). `dev` includes it so CI tests it.
+llm = ["anthropic>=2.7"]
 ui = []
 
 [tool.pytest.ini_options]

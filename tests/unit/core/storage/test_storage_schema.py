@@ -75,6 +75,7 @@ def test_static_schema_may_omit_available_at() -> None:
         {"year_column": "symbol", "partition_by": ("year",)},  # year from a string column
         {"name": "Bad-Name"},
         {"name": "audit_events"},  # reserved for the DuckDB audit mirror
+        {"name": "llm_usage"},  # reserved for the native LLM usage table (Stage 24)
         {"version": 0},
     ],
 )

@@ -31,6 +31,8 @@ from atlas.core.config import (
     FundamentalsConfig,
     FundConfig,
     LimitsConfig,
+    LLMConfig,
+    LLMTiers,
     MacroConfig,
     MetricsConfig,
     NewsConfig,
@@ -66,6 +68,7 @@ SECRET_VARS = (
     "ALPACA_API_SECRET_KEY",
     "FRED_API_KEY",
     "SEC_USER_AGENT",
+    "DEEPSEEK_API_KEY",
 )
 
 MACRO_ETFS = [
@@ -138,14 +141,19 @@ def test_defaults_without_files() -> None:
         initial_capital=Decimal("10000000"),
         benchmark="SPY",
     )
-    assert cfg.llm.tiers.deep == "claude-opus-5-5"
-    assert cfg.llm.tiers.quick == "claude-haiku-5-5"
+    assert cfg.llm.provider == "openai_compatible"  # spec A2 (2026-10-30): DeepSeek by default
+    assert cfg.llm.base_url == "https://api.deepseek.com"
+    assert cfg.llm.tiers.deep == "deepseek-v4-pro"
+    assert cfg.llm.tiers.quick == "deepseek-flash"
+    assert cfg.llm.anthropic_tiers.deep == "claude-opus-5-5"
+    assert cfg.llm.anthropic_tiers.quick == "claude-haiku-5-5"
     assert cfg.llm.budgets.daily_usd == 5.0
     assert cfg.backtest.start == date(2018, 1, 1)
     assert cfg.backtest.in_sample_end == date(2021, 12, 31)
     assert cfg.backtest.end is None
     assert cfg.backtest.costs.impact_k == 0.1
     assert cfg.secrets.anthropic_api_key is None
+    assert cfg.secrets.deepseek_api_key is None
 
 
 SPEC_9 = {
@@ -1475,3 +1483,144 @@ def test_quant_factor_model_cross_field_validation() -> None:  # Stage 19 D1
         FactorModelConfig(style_winsor_lower=0.6, style_winsor_upper=0.5)
     with pytest.raises(ValidationError, match="min_obs"):
         EtfConfig(window=60, min_obs=61)
+
+
+# --- Stage 24: LLM gateway config ---------------------------------------------------------
+
+
+def test_llm_defaults() -> None:  # Stage 24 D6
+    llm = LLMConfig()
+    assert llm.request_timeout_seconds == 120.0
+    assert (llm.retry.max_retries, llm.retry.backoff_seconds, llm.retry.max_backoff_seconds) == (
+        3,
+        1.0,
+        30.0,
+    )
+    assert (llm.thinking.quick, llm.thinking.deep) == ("disabled", "enabled")
+    assert llm.budgets.per_run_usd == 25.0
+    assert llm.budgets.per_agent_call_max_tokens == 8000
+    assert llm.budgets.estimate_chars_per_token == 3.0
+
+
+def test_llm_model_for_follows_the_provider() -> None:  # Stage 24 D6
+    assert LLMConfig().model_for("deep") == "deepseek-v4-pro"
+    assert LLMConfig().model_for("quick") == "deepseek-flash"
+    claude = LLMConfig(provider="anthropic")
+    assert claude.model_for("deep") == "claude-opus-5-5"
+    assert claude.model_for("quick") == "claude-haiku-5-5"
+    with pytest.raises(ValueError, match="tier"):
+        LLMConfig().model_for("medium")  # type: ignore[arg-type]
+
+
+def test_llm_default_prices_are_the_checked_ones() -> None:  # prices checked 2026-11-09
+    prices = LLMConfig().prices
+    flash, pro = prices["deepseek-flash"], prices["deepseek-v4-pro"]
+    assert (flash.input, flash.cached_input, flash.cache_write, flash.output) == (
+        0.15,
+        0.003,
+        None,
+        0.6,
+    )
+    assert (pro.input, pro.cached_input, pro.output) == (0.66, 0.022, 1.98)
+    for price, peak in ((flash, (0.3, 0.006, 1.2)), (pro, (1.32, 0.044, 3.96))):
+        assert [(w.start, w.end) for w in price.windows] == [
+            (time(1, 0), time(4, 0)),
+            (time(6, 0), time(10, 0)),
+        ]
+        for window in price.windows:
+            assert window.days == ("mon", "tue", "wed", "thu", "fri")
+            assert (window.input, window.cached_input, window.output) == peak
+    opus, haiku = prices["claude-opus-5-5"], prices["claude-haiku-5-5"]
+    assert (opus.input, opus.cached_input, opus.cache_write, opus.output) == (4.0, 0.2, 5.0, 20.0)
+    assert (haiku.input, haiku.cached_input, haiku.cache_write, haiku.output) == (
+        0.1,
+        0.01,
+        0.125,
+        0.5,
+    )
+    assert opus.windows == haiku.windows == ()
+
+
+@pytest.mark.parametrize("provider", ["openai_compatible", "anthropic"])
+def test_llm_every_tier_model_has_a_price(provider: str) -> None:
+    llm = LLMConfig(provider=provider)  # type: ignore[arg-type]
+    assert {llm.model_for("deep"), llm.model_for("quick")} <= set(llm.prices)
+
+
+def test_llm_tier_model_without_a_price_is_rejected() -> None:
+    with pytest.raises(ValidationError, match="no price"):
+        LLMConfig(tiers=LLMTiers(deep="some-new-model"))
+
+
+def test_repo_yaml_llm_equals_defaults(repo_root: Path, tmp_path: Path) -> None:
+    cfg = load_config("backtest", config_dir=_repo_config_copy(repo_root, tmp_path))
+    assert cfg.llm == LLMConfig()
+
+
+@pytest.mark.parametrize(
+    ("overrides", "pattern"),
+    [
+        ({"llm": {"prices": {"deepseek-flash": {"input": -0.1, "output": 1.0}}}}, "input"),
+        (
+            {
+                "llm": {
+                    "prices": {
+                        "deepseek-flash": {
+                            "input": 0.1,
+                            "output": 1.0,
+                            "windows": [
+                                {
+                                    "days": ["mon"],
+                                    "start": "04:00",
+                                    "end": "01:00",
+                                    "input": 0.2,
+                                    "output": 2.0,
+                                }
+                            ],
+                        }
+                    }
+                }
+            },
+            "start",
+        ),
+        (
+            {
+                "llm": {
+                    "prices": {
+                        "deepseek-flash": {
+                            "input": 0.1,
+                            "output": 1.0,
+                            "windows": [
+                                {
+                                    "days": ["funday"],
+                                    "start": "01:00",
+                                    "end": "04:00",
+                                    "input": 0.2,
+                                    "output": 2.0,
+                                }
+                            ],
+                        }
+                    }
+                }
+            },
+            "days",
+        ),
+        ({"llm": {"retry": {"max_retries": -1}}}, "max_retries"),
+        ({"llm": {"retry": {"backoff_seconds": 5.0, "max_backoff_seconds": 1.0}}}, "max_backoff"),
+        ({"llm": {"request_timeout_seconds": 0}}, "request_timeout_seconds"),
+        ({"llm": {"base_url": "ftp://example.com"}}, "base_url"),
+        ({"llm": {"thinking": {"quick": "maybe"}}}, "thinking"),
+        ({"llm": {"budgets": {"estimate_chars_per_token": 0}}}, "estimate_chars_per_token"),
+    ],
+)
+def test_llm_validation(tmp_path: Path, overrides: dict[str, object], pattern: str) -> None:
+    with pytest.raises(ConfigError, match=pattern):
+        load_config(config_dir=write_config(tmp_path, {}), overrides=overrides)
+
+
+def test_deepseek_key_from_env_and_dotenv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    d = write_config(tmp_path, {})
+    (tmp_path / ".env").write_text("DEEPSEEK_API_KEY=from-file\n")
+    assert _secret(load_config(config_dir=d).secrets.deepseek_api_key) == "from-file"
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "from-env")
+    assert _secret(load_config(config_dir=d).secrets.deepseek_api_key) == "from-env"

@@ -1,0 +1,178 @@
+## atlas.llm.gateway.x__error_text__mutmut_8
+-        f"{'.'.join(str(part) for part in error['loc']) or '<root>'}: {error['msg']}"
++        f"{'.'.join(str(part) for part in error['loc']) or 'XX<root>XX'}: {error['msg']}"
+## atlas.llm.gateway.x__error_text__mutmut_9
+-        f"{'.'.join(str(part) for part in error['loc']) or '<root>'}: {error['msg']}"
++        f"{'.'.join(str(part) for part in error['loc']) or '<ROOT>'}: {error['msg']}"
+## atlas.llm.gateway.x__error_text__mutmut_14
+-        for error in exc.errors(include_url=False, include_input=False)
++        for error in exc.errors(include_input=False)
+## atlas.llm.gateway.x__error_text__mutmut_15
+-        for error in exc.errors(include_url=False, include_input=False)
++        for error in exc.errors(include_url=False, )
+## atlas.llm.gateway.x__error_text__mutmut_16
+-        for error in exc.errors(include_url=False, include_input=False)
++        for error in exc.errors(include_url=True, include_input=False)
+## atlas.llm.gateway.x__error_text__mutmut_17
+-        for error in exc.errors(include_url=False, include_input=False)
++        for error in exc.errors(include_url=False, include_input=True)
+## atlas.llm.gateway.xǁLLMGatewayǁcomplete__mutmut_6
+-        raise ValueError("messages must not be empty")
++        raise ValueError("XXmessages must not be emptyXX")
+## atlas.llm.gateway.xǁLLMGatewayǁ_send__mutmut_11
+-    for attempt in range(1, tries + 1):
++    for attempt in range(1, tries + 2):
+## atlas.llm.gateway.xǁLLMGatewayǁ_send__mutmut_55
+-    raise AssertionError("unreachable: the loop returns or raises")  # pragma: no cover
++    raise AssertionError(None)  # pragma: no cover
+## atlas.llm.gateway.xǁLLMGatewayǁ_send__mutmut_56
+-    raise AssertionError("unreachable: the loop returns or raises")  # pragma: no cover
++    raise AssertionError("XXunreachable: the loop returns or raisesXX")  # pragma: no cover
+## atlas.llm.gateway.xǁLLMGatewayǁ_send__mutmut_57
+-    raise AssertionError("unreachable: the loop returns or raises")  # pragma: no cover
++    raise AssertionError("UNREACHABLE: THE LOOP RETURNS OR RAISES")  # pragma: no cover
+## atlas.llm.gateway.x_build_provider__mutmut_6
+-                "llm.provider is 'anthropic' but ANTHROPIC_API_KEY is not set (env var or .env)"
++                "XXllm.provider is 'anthropic' but ANTHROPIC_API_KEY is not set (env var or .env)XX"
+## atlas.llm.gateway.x_build_provider__mutmut_8
+-                "llm.provider is 'anthropic' but ANTHROPIC_API_KEY is not set (env var or .env)"
++                "LLM.PROVIDER IS 'ANTHROPIC' BUT ANTHROPIC_API_KEY IS NOT SET (ENV VAR OR .ENV)"
+## atlas.llm.gateway.x_build_provider__mutmut_12
+-            "llm.provider is 'openai_compatible' but DEEPSEEK_API_KEY is not set (env var or .env)"
++            "XXllm.provider is 'openai_compatible' but DEEPSEEK_API_KEY is not set (env var or .env)XX"
+## atlas.llm.gateway.x_build_provider__mutmut_14
+-            "llm.provider is 'openai_compatible' but DEEPSEEK_API_KEY is not set (env var or .env)"
++            "LLM.PROVIDER IS 'OPENAI_COMPATIBLE' BUT DEEPSEEK_API_KEY IS NOT SET (ENV VAR OR .ENV)"
+## atlas.llm.budget.xǁBudgetGuardǁ_release__mutmut_3
+-    if pending[key] <= 1e-12:
++    if pending[key] < 1e-12:
+## atlas.llm.cost.x_rates_at__mutmut_1
+-    if ts.tzinfo is None or ts.utcoffset() is None:
++    if ts.tzinfo is None and ts.utcoffset() is None:
+## atlas.llm.cost.xǁCostLedgerǁrecords__mutmut_6
+-    frame = self._database.query("SELECT * FROM llm_usage ORDER BY rowid")
++    frame = self._database.query("select * from llm_usage order by rowid")
+## atlas.llm.cost.xǁCostLedgerǁrecords__mutmut_7
+-    frame = self._database.query("SELECT * FROM llm_usage ORDER BY rowid")
++    frame = self._database.query("SELECT * FROM LLM_USAGE ORDER BY ROWID")
+## atlas.llm.cost.xǁCostLedgerǁrecords__mutmut_15
+-    rows = frame.astype(object).where(frame.notna(), None).to_dict(orient="records")
++    rows = frame.astype(object).where(frame.notna(), None).to_dict(orient="RECORDS")
+## atlas.llm.cost.xǁCostLedgerǁspent_on__mutmut_7
+-        return self._total("day = ?", [day])
++        return self._total("DAY = ?", [day])
+## atlas.llm.cost.xǁCostLedgerǁspent_in_run__mutmut_4
+-            return self._total("run_id IS NULL", [])
++            return self._total("run_id IS NULL", None)
+## atlas.llm.cost.xǁCostLedgerǁspent_in_run__mutmut_8
+-            return self._total("run_id IS NULL", [])
++            return self._total("run_id is null", [])
+## atlas.llm.cost.xǁCostLedgerǁspent_in_run__mutmut_9
+-            return self._total("run_id IS NULL", [])
++            return self._total("RUN_ID IS NULL", [])
+## atlas.llm.cost.xǁCostLedgerǁspent_in_run__mutmut_15
+-        return self._total("run_id = ?", [run_id])
++        return self._total("RUN_ID = ?", [run_id])
+## atlas.llm.cost.xǁCostLedgerǁspent_by_agent__mutmut_8
+-            return self._total("agent = ?", [agent])
++            return self._total("AGENT = ?", [agent])
+## atlas.llm.cost.xǁCostLedgerǁspent_by_agent__mutmut_14
+-        return self._total("agent = ? AND day = ?", [agent, day])
++        return self._total("agent = ? and day = ?", [agent, day])
+## atlas.llm.cost.xǁCostLedgerǁspent_by_agent__mutmut_15
+-        return self._total("agent = ? AND day = ?", [agent, day])
++        return self._total("AGENT = ? AND DAY = ?", [agent, day])
+## atlas.llm.providers.fake.xǁFakeLLMǁadd__mutmut_3
+-        raise ValueError("add() needs at least one reply")
++        raise ValueError("XXadd() needs at least one replyXX")
+## atlas.llm.providers.openai_compat.x__plain__mutmut_3
+-    return json.loads(json.dumps(value, default=dict))
++    return json.loads(json.dumps(value, default=None))
+## atlas.llm.providers.openai_compat.x__plain__mutmut_5
+-    return json.loads(json.dumps(value, default=dict))
++    return json.loads(json.dumps(value, ))
+## atlas.llm.providers.openai_compat.x__wire_message__mutmut_26
+-                    "arguments": json.dumps(dict(call.arguments), default=dict),
++                    "arguments": json.dumps(dict(call.arguments), default=None),
+## atlas.llm.providers.openai_compat.x__wire_message__mutmut_28
+-                    "arguments": json.dumps(dict(call.arguments), default=dict),
++                    "arguments": json.dumps(dict(call.arguments), ),
+## atlas.llm.providers.openai_compat.x__usage__mutmut_2
+-        raise ValueError("no usage object")
++        raise ValueError(None)
+## atlas.llm.providers.openai_compat.x__usage__mutmut_3
+-        raise ValueError("no usage object")
++        raise ValueError("XXno usage objectXX")
+## atlas.llm.providers.openai_compat.x__usage__mutmut_4
+-        raise ValueError("no usage object")
++        raise ValueError("NO USAGE OBJECT")
+## atlas.llm.providers.openai_compat.x__tool_calls__mutmut_16
+-            raise ValueError("tool call arguments are not a JSON object")
++            raise ValueError("XXtool call arguments are not a JSON objectXX")
+## atlas.llm.providers.openai_compat.x__retry_after__mutmut_8
+-        seconds = float(response.headers.get("retry-after", ""))
++        seconds = float(response.headers.get("RETRY-AFTER", ""))
+## atlas.llm.providers.openai_compat.x__retry_after__mutmut_9
+-        seconds = float(response.headers.get("retry-after", ""))
++        seconds = float(response.headers.get("retry-after", "XXXX"))
+## atlas.llm.providers.openai_compat.xǁOpenAICompatibleProviderǁ__init____mutmut_9
+-    self._url = f"{base_url.rstrip('/')}/chat/completions"
++    self._url = f"{base_url.rstrip('XX/XX')}/chat/completions"
+## atlas.llm.providers.openai_compat.xǁOpenAICompatibleProviderǁ_scrub__mutmut_5
+-    return text.replace(self._api_key.get_secret_value(), "***")[:MAX_ERROR_BODY_CHARS]
++    return text.replace(self._api_key.get_secret_value(), "XX***XX")[:MAX_ERROR_BODY_CHARS]
+## atlas.llm.providers.openai_compat.xǁOpenAICompatibleProviderǁcomplete__mutmut_3
+-        "Authorization": f"Bearer {self._api_key.get_secret_value()}",
++        "authorization": f"Bearer {self._api_key.get_secret_value()}",
+## atlas.llm.providers.openai_compat.xǁOpenAICompatibleProviderǁcomplete__mutmut_4
+-        "Authorization": f"Bearer {self._api_key.get_secret_value()}",
++        "AUTHORIZATION": f"Bearer {self._api_key.get_secret_value()}",
+## atlas.llm.providers.openai_compat.xǁOpenAICompatibleProviderǁcomplete__mutmut_5
+-        "Content-Type": "application/json",
++        "XXContent-TypeXX": "application/json",
+## atlas.llm.providers.openai_compat.xǁOpenAICompatibleProviderǁcomplete__mutmut_6
+-        "Content-Type": "application/json",
++        "content-type": "application/json",
+## atlas.llm.providers.openai_compat.xǁOpenAICompatibleProviderǁcomplete__mutmut_7
+-        "Content-Type": "application/json",
++        "CONTENT-TYPE": "application/json",
+## atlas.llm.providers.anthropic.x__sdk__mutmut_1
+-            "llm.provider is 'anthropic' but the anthropic SDK is not installed; "
+-            "run `uv sync --group llm`"
++            None
+## atlas.llm.providers.anthropic.x__sdk__mutmut_2
+-            "llm.provider is 'anthropic' but the anthropic SDK is not installed; "
++            "XXllm.provider is 'anthropic' but the anthropic SDK is not installed; XX"
+## atlas.llm.providers.anthropic.x__sdk__mutmut_3
+-            "llm.provider is 'anthropic' but the anthropic SDK is not installed; "
++            "llm.provider is 'anthropic' but the anthropic sdk is not installed; "
+## atlas.llm.providers.anthropic.x__sdk__mutmut_4
+-            "llm.provider is 'anthropic' but the anthropic SDK is not installed; "
++            "LLM.PROVIDER IS 'ANTHROPIC' BUT THE ANTHROPIC SDK IS NOT INSTALLED; "
+## atlas.llm.providers.anthropic.x__sdk__mutmut_5
+-            "run `uv sync --group llm`"
++            "XXrun `uv sync --group llm`XX"
+## atlas.llm.providers.anthropic.x__sdk__mutmut_6
+-            "run `uv sync --group llm`"
++            "RUN `UV SYNC --GROUP LLM`"
+## atlas.llm.providers.anthropic.x__plain__mutmut_3
+-    return json.loads(json.dumps(value, default=dict))
++    return json.loads(json.dumps(value, default=None))
+## atlas.llm.providers.anthropic.x__plain__mutmut_5
+-    return json.loads(json.dumps(value, default=dict))
++    return json.loads(json.dumps(value, ))
+## atlas.llm.providers.anthropic.x__retry_after__mutmut_4
+-        seconds = float(exc.response.headers.get("retry-after", ""))
++        seconds = float(exc.response.headers.get("retry-after", None))
+## atlas.llm.providers.anthropic.x__retry_after__mutmut_6
+-        seconds = float(exc.response.headers.get("retry-after", ""))
++        seconds = float(exc.response.headers.get("retry-after", ))
+## atlas.llm.providers.anthropic.x__retry_after__mutmut_8
+-        seconds = float(exc.response.headers.get("retry-after", ""))
++        seconds = float(exc.response.headers.get("RETRY-AFTER", ""))
+## atlas.llm.providers.anthropic.x__retry_after__mutmut_9
+-        seconds = float(exc.response.headers.get("retry-after", ""))
++        seconds = float(exc.response.headers.get("retry-after", "XXXX"))
+## atlas.llm.providers.anthropic.xǁAnthropicProviderǁ__init____mutmut_4
+-        key = api_key.get_secret_value() if api_key is not None else None
++        key = api_key.get_secret_value() if (api_key is not None) or True else None

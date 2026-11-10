@@ -763,26 +763,194 @@ class DataConfig(_Frozen):
 
 
 class LLMTiers(_Frozen):
-    """Model id per tier (spec §11)."""
+    """Model id per tier for the default, OpenAI-compatible provider (DeepSeek; spec §11)."""
 
-    deep: str = "claude-opus-5-5"
-    quick: str = "claude-haiku-5-5"
+    deep: Annotated[str, Field(min_length=1)] = "deepseek-v4-pro"
+    quick: Annotated[str, Field(min_length=1)] = "deepseek-flash"
+
+
+class AnthropicTiers(_Frozen):
+    """Model id per tier when `llm.provider` is `anthropic` (the optional provider; spec §11)."""
+
+    deep: Annotated[str, Field(min_length=1)] = "claude-opus-5-5"
+    quick: Annotated[str, Field(min_length=1)] = "claude-haiku-5-5"
+
+
+LLMTier = Literal["quick", "deep"]
+"""The two model tiers: `quick` (cheap, fast) and `deep` (long-form reasoning)."""
+
+_ThinkingMode = Literal["enabled", "disabled", "omit"]
+
+
+class LLMThinking(_Frozen):
+    """Reasoning mode per tier, sent by the OpenAI-compatible provider as `thinking: {type}`;
+    `omit` sends nothing (for servers without the field). The Anthropic provider ignores it:
+    current Claude models always reason."""
+
+    quick: _ThinkingMode = "disabled"
+    deep: _ThinkingMode = "enabled"
+
+
+class LLMRetry(_Frozen):
+    """Retries of a rate-limited, 5xx, timed-out or dropped LLM call. The wait before retry
+    `n` (1-based) is `backoff_seconds * 2**(n-1)` seconds, at most `max_backoff_seconds`, and
+    never less than the server's `Retry-After`."""
+
+    max_retries: Annotated[int, Field(ge=0)] = 3
+    backoff_seconds: _NonNeg = 1.0
+    max_backoff_seconds: _NonNeg = 30.0
+
+    @model_validator(mode="after")
+    def _cap_not_below_base(self) -> Self:
+        if self.max_backoff_seconds < self.backoff_seconds:
+            raise ValueError(
+                f"max_backoff_seconds ({self.max_backoff_seconds}) must not be below "
+                f"backoff_seconds ({self.backoff_seconds})"
+            )
+        return self
+
+
+_Weekday = Literal["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+
+
+class PriceWindow(_Frozen):
+    """Rates that replace a model's base rates from `start` (inclusive) to `end` (exclusive),
+    naive times read in UTC, on the listed weekdays. Rates are USD per 1M tokens."""
+
+    days: Annotated[tuple[_Weekday, ...], Field(min_length=1)]
+    start: time
+    end: time
+    input: _NonNeg
+    cached_input: _NonNeg | None = None
+    cache_write: _NonNeg | None = None
+    output: _NonNeg
+
+    @model_validator(mode="after")
+    def _start_before_end(self) -> Self:
+        if self.start.tzinfo is not None or self.end.tzinfo is not None:
+            raise ValueError("start and end must be naive times (they are read in UTC)")
+        if self.start >= self.end:
+            raise ValueError(f"start ({self.start}) must be before end ({self.end})")
+        return self
+
+
+class ModelPrice(_Frozen):
+    """Price of one model in USD per 1M tokens.
+
+    `input` is uncached prompt tokens, `cached_input` prompt tokens read from the provider's
+    cache, `cache_write` prompt tokens written to it, `output` generated tokens (reasoning
+    included). A missing `cached_input` or `cache_write` is charged at `input`. `windows`
+    override all four rates during their UTC hours (the first matching window wins); outside
+    them the base rates apply.
+    """
+
+    input: _NonNeg
+    cached_input: _NonNeg | None = None
+    cache_write: _NonNeg | None = None
+    output: _NonNeg
+    windows: tuple[PriceWindow, ...] = ()
+
+
+_WEEKDAYS: tuple[_Weekday, ...] = ("mon", "tue", "wed", "thu", "fri")
+
+
+def _deepseek_peak(input: float, cached_input: float, output: float) -> tuple[PriceWindow, ...]:
+    """DeepSeek's peak hours (01:00-04:00 and 06:00-10:00 UTC, Monday to Friday)."""
+    return tuple(
+        PriceWindow(
+            days=_WEEKDAYS,
+            start=start,
+            end=end,
+            input=input,
+            cached_input=cached_input,
+            output=output,
+        )
+        for start, end in ((time(1, 0), time(4, 0)), (time(6, 0), time(10, 0)))
+    )
+
+
+def _default_prices() -> FrozenDict[str, ModelPrice]:
+    """Prices checked on 2026-11-09 (DeepSeek pricing page; Claude via the claude-api skill)."""
+    return FrozenDict(
+        {
+            "deepseek-flash": ModelPrice(
+                input=0.15,
+                cached_input=0.003,
+                output=0.6,
+                windows=_deepseek_peak(0.3, 0.006, 1.2),
+            ),
+            "deepseek-v4-pro": ModelPrice(
+                input=0.66,
+                cached_input=0.022,
+                output=1.98,
+                windows=_deepseek_peak(1.32, 0.044, 3.96),
+            ),
+            "claude-opus-5-5": ModelPrice(
+                input=4.0, cached_input=0.2, cache_write=5.0, output=20.0
+            ),
+            "claude-haiku-5-5": ModelPrice(
+                input=0.1, cached_input=0.01, cache_write=0.125, output=0.5
+            ),
+        }
+    )
+
+
+_PriceMap = FrozenMap[str, ModelPrice]
 
 
 class LLMBudgets(_Frozen):
-    """LLM spend caps in USD (spec A8) and a per-call output token cap."""
+    """LLM spend caps in USD (spec A8) and a per-call output token cap.
+
+    `daily_usd` is per UTC calendar day of the wall clock, `per_run_usd` per `run_id`.
+    `estimate_chars_per_token` turns a prompt's characters into a token estimate (a lower
+    value estimates more tokens) for the pre-call budget check.
+    """
 
     daily_usd: Annotated[float, Field(gt=0)] = 5.0
     per_run_usd: Annotated[float, Field(gt=0)] = 25.0
     per_agent_call_max_tokens: Annotated[int, Field(gt=0)] = 8000
+    estimate_chars_per_token: Annotated[float, Field(gt=0)] = 3.0
 
 
 class LLMConfig(_Frozen):
-    """LLM gateway values; consumed by Stage 24."""
+    """LLM gateway values (Stage 24).
 
-    provider: Literal["anthropic", "openai_compatible"] = "anthropic"
+    `provider` picks the client: `openai_compatible` posts to `base_url` (DeepSeek by default,
+    spec A2) with the models in `tiers`; `anthropic` uses the official SDK with
+    `anthropic_tiers`. `request_timeout_seconds` bounds one HTTP call. `prices` maps a model
+    id to its price; every tier model of both providers must have one.
+    """
+
+    provider: Literal["anthropic", "openai_compatible"] = "openai_compatible"
+    base_url: Annotated[str, Field(pattern=r"^https?://\S+$")] = "https://api.deepseek.com"
     tiers: LLMTiers = Field(default_factory=LLMTiers)
+    anthropic_tiers: AnthropicTiers = Field(default_factory=AnthropicTiers)
+    thinking: LLMThinking = Field(default_factory=LLMThinking)
+    request_timeout_seconds: Annotated[float, Field(gt=0)] = 120.0
+    retry: LLMRetry = Field(default_factory=LLMRetry)
     budgets: LLMBudgets = Field(default_factory=LLMBudgets)
+    prices: _PriceMap = Field(default_factory=_default_prices)
+
+    @model_validator(mode="after")
+    def _tier_models_are_priced(self) -> Self:
+        tiers: LLMTiers | AnthropicTiers = (
+            self.anthropic_tiers if self.provider == "anthropic" else self.tiers
+        )
+        for model in (tiers.deep, tiers.quick):
+            if model not in self.prices:
+                raise ValueError(
+                    f"model {model!r} has no price in llm.prices; every call must be costed"
+                )
+        return self
+
+    def model_for(self, tier: LLMTier) -> str:
+        """The model id of `tier` for the configured provider."""
+        if tier not in ("quick", "deep"):
+            raise ValueError(f"unknown tier {tier!r}; use 'quick' or 'deep'")
+        tiers: LLMTiers | AnthropicTiers = (
+            self.anthropic_tiers if self.provider == "anthropic" else self.tiers
+        )
+        return tiers.deep if tier == "deep" else tiers.quick
 
 
 class CostConfig(_Frozen):
@@ -841,6 +1009,7 @@ class CalendarConfig(_Frozen):
 class Secrets(_Frozen):
     """API credentials, read only from the environment or `.env`. Never logged or hashed."""
 
+    deepseek_api_key: SecretStr | None = None
     anthropic_api_key: SecretStr | None = None
     alpaca_api_key_id: SecretStr | None = None
     alpaca_api_secret_key: SecretStr | None = None

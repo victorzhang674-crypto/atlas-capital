@@ -1,0 +1,21 @@
+........................................................................ [ 34%]
+........................................................................ [ 68%]
+...................................................................      [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                       Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------
+src/atlas/llm/__init__.py                      7      0   100%
+src/atlas/llm/budget.py                       49      0   100%
+src/atlas/llm/cost.py                         91      0   100%
+src/atlas/llm/gateway.py                     134      0   100%
+src/atlas/llm/hygiene.py                      19      0   100%
+src/atlas/llm/providers/__init__.py            0      0   100%
+src/atlas/llm/providers/anthropic.py          81      0   100%
+src/atlas/llm/providers/fake.py               64      0   100%
+src/atlas/llm/providers/openai_compat.py     105      0   100%
+src/atlas/llm/schemas.py                      96      0   100%
+------------------------------------------------------------------------
+TOTAL                                        646      0   100%
+211 passed, 2 deselected in 4.14s

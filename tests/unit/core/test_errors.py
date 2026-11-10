@@ -6,10 +6,12 @@ import pytest
 
 from atlas.core.errors import (
     AtlasError,
+    BudgetExceeded,
     ComplianceError,
     ConfigError,
     DataError,
     LLMError,
+    LLMTransientError,
     LookAheadError,
     RiskLimitError,
 )
@@ -38,3 +40,19 @@ def test_errors_have_docstrings(cls: type[AtlasError]) -> None:
 
 def test_error_keeps_message() -> None:
     assert str(RiskLimitError("gross 2.1 > 2.0")) == "gross 2.1 > 2.0"
+
+
+def test_llm_refinements_are_llm_errors() -> None:  # Stage 24 D2
+    # A caller that fails safe on LLMError also holds on a budget stop or an exhausted retry.
+    budget = BudgetExceeded("daily budget", scope="daily_usd", limit=5.0, spent=5.01)
+    assert isinstance(budget, LLMError)
+    assert (budget.scope, budget.limit, budget.spent) == ("daily_usd", 5.0, 5.01)
+    assert str(budget) == "daily budget"
+    transient = LLMTransientError("429", retry_after=2.5)
+    assert isinstance(transient, LLMError)
+    assert transient.retry_after == 2.5
+    assert LLMTransientError("timeout").retry_after is None
+    assert not issubclass(BudgetExceeded, LLMTransientError)
+    assert not issubclass(LLMTransientError, BudgetExceeded)
+    for cls in (BudgetExceeded, LLMTransientError):
+        assert cls.__doc__ and cls.__doc__.strip()
