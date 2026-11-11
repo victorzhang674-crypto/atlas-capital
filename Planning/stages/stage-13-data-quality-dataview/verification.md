@@ -50,3 +50,11 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 
 **Result:** ALL CRITERIA VERIFIED
 - On merged `main` (`daf3645`, fast-forward from `7e18998`; owner's Terminal panel): full suite 2146 passed; integration 1 passed; ruff, format, mypy clean; Verify runs passed; `make check` exit 0; checkout clean · raw: [artifacts/phase1-checkpoint-2026-11-02-panel-cache-merged-main-check.txt](artifacts/phase1-checkpoint-2026-11-02-panel-cache-merged-main-check.txt)
+
+#### Phase 2 checkpoint follow-up (Tier 1: block list from the blocking checks only) — 2026-11-11
+- Red first (11 report tests, then the view test) — recorded in [worklog.md](worklog.md).
+- Real lake (read only), six days 2016–2026: `quality_report(blocking_only=True)` 0.8–1.2 s vs 38–52 s for the full report; critical rows, block list and `DataView.blocked` equal on every day → `ALL EQUAL` · raw: [artifacts/phase2-checkpoint-2026-11-11-blocked-check.txt](artifacts/phase2-checkpoint-2026-11-11-blocked-check.txt)
+- `uv run pytest tests/unit/data -q` (brief's Verify) → 1025 passed, 13 deselected; `make check` → exit 0 (ruff, format 379 files, mypy 156 files, 4068 passed, 38 deselected) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt)
+- Acceptance criteria still evidenced: the leak suite (`blocked`, `quality_issues` included) and `test_blocked_symbol_absent[*]` / `test_blocked_symbol_raises[*]` passed in the brief's Verify.
+
+**Result:** ALL CRITERIA VERIFIED

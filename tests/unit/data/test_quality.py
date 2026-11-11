@@ -662,3 +662,116 @@ def test_report_empty_lake(tmp_lake: Lake) -> None:
     report = _report(tmp_lake)
     assert report.empty and list(report.columns) == list(ISSUE_COLUMNS)
     assert read_quality_issues(tmp_lake, AS_OF).empty
+
+
+# --- Phase 2 checkpoint (Tier 1): only the checks that can block -------------------------------
+
+
+def _mixed_lake(lake: Lake) -> None:
+    """Critical price issues (BAD, STL), a warning outlier (JMP), a fundamentals jump (AAA) and
+    a macro gap (CPIAUCSL): every table of the report has an issue."""
+    zero = walk(90, seed=2)
+    zero[-2] = 0.0
+    jump = walk(90, seed=4)
+    jump = jump[:87] + [c * 1.3 for c in jump[87:]]
+    bars = pd.concat(
+        [
+            make_bars("AAA", walk(90, seed=1), end=END),
+            make_bars("BAD", zero, end=END),
+            make_bars("STL", walk(84, seed=3) + [50.0] * 6, end=END),
+            make_bars("JMP", jump, end=END),
+        ],
+        ignore_index=True,
+    )
+    _write(lake, "prices_daily", bars)
+    _write(lake, "corporate_actions", no_actions())
+    _write(lake, "fundamentals_facts", quarterly_facts("AAA", "Revenues", [1e8, 1e8, 1e8, 2e9]))
+    _write(
+        lake,
+        "macro_observations",
+        macro_rows("CPIAUCSL", month_starts(date(2023, 1, 1), date(2023, 10, 1))),
+    )
+
+
+_SEVERITY_VARIANTS = [
+    {},
+    {"return_outlier": "critical"},
+    {"fundamentals_jump": "critical"},
+    {"macro_gap": "critical"},
+    {"stale_price": "warning", "nonpositive_price": "info"},
+    {"missing_sessions": "critical", "vendor_mix": "critical"},
+]
+
+
+@pytest.mark.parametrize("severity", _SEVERITY_VARIANTS)
+def test_blocking_only_is_the_critical_part_of_the_full_report(
+    tmp_lake: Lake, severity: dict[str, str]
+) -> None:
+    _mixed_lake(tmp_lake)
+    cfg = AtlasConfig.model_validate({"data": {"quality": {"severity": severity}}})
+    full = _report(tmp_lake, config=cfg)
+    critical = full[full["severity"] == "critical"].reset_index(drop=True)
+    only = _report(tmp_lake, config=cfg, blocking_only=True)
+    pd.testing.assert_frame_equal(only, critical)
+    assert blocked_symbols(only) == blocked_symbols(full)
+
+
+def test_blocking_only_default_blocks_the_price_names(tmp_lake: Lake) -> None:
+    _mixed_lake(tmp_lake)
+    only = _report(tmp_lake, blocking_only=True)
+    assert blocked_symbols(only) == frozenset({"BAD", "STL"})
+    assert set(only["severity"]) == {"critical"}
+
+
+def test_blocking_only_skips_checks_that_cannot_block(
+    tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """With the default severities the fundamentals and macro checks are warnings: the
+    blocking report must not run them (they are 97% of a report's time on the real lake)."""
+    _mixed_lake(tmp_lake)
+
+    def boom(*args: object, **kwargs: object) -> list[QualityIssue]:
+        raise AssertionError("a check that cannot block was run")
+
+    for name in (
+        "check_fundamentals_jumps",
+        "check_fundamentals_period_after_filing",
+        "check_macro_gaps",
+        "check_missing_sessions",
+        "check_vendor_mix",
+    ):
+        monkeypatch.setattr(f"atlas.data.quality.{name}", boom)
+    assert blocked_symbols(_report(tmp_lake, blocking_only=True)) == frozenset({"BAD", "STL"})
+    with pytest.raises(AssertionError, match="cannot block"):
+        _report(tmp_lake)
+
+
+def test_blocking_only_runs_a_check_made_critical(tmp_lake: Lake) -> None:
+    _mixed_lake(tmp_lake)
+    cfg = AtlasConfig.model_validate(
+        {"data": {"quality": {"severity": {"fundamentals_jump": "critical"}}}}
+    )
+    assert "AAA" in blocked_symbols(_report(tmp_lake, config=cfg, blocking_only=True))
+
+
+def test_blocking_only_does_not_read_tables_it_does_not_check(
+    tmp_lake: Lake, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _mixed_lake(tmp_lake)
+    read: list[str] = []
+    original = Lake.read_table
+
+    def spy(self: Lake, table: str, *args: object, **kwargs: object) -> pd.DataFrame:
+        read.append(table)
+        return original(self, table, *args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(Lake, "read_table", spy)
+    _report(tmp_lake, blocking_only=True)
+    assert set(read) == {"prices_daily", "corporate_actions"}
+
+
+def test_blocking_only_cannot_be_persisted(tmp_lake: Lake) -> None:
+    _mixed_lake(tmp_lake)
+    with pytest.raises(ValueError, match="blocking_only"):
+        _report(tmp_lake, blocking_only=True, persist=True)
+    assert not tmp_lake.has_table("data_quality_issues")

@@ -1,0 +1,32 @@
+=== uv run pytest -m integration -v -rs (real lake, read only)
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- .venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 4068 items / 4052 deselected / 16 selected
+
+tests/integration/test_metrics_real_lake.py::test_spy_performance_equals_plain_pandas PASSED [  6%]
+tests/integration/test_metrics_real_lake.py::test_spy_var_cvar_invariants PASSED [ 12%]
+tests/integration/test_metrics_real_lake.py::test_book_var_contributions_and_relative PASSED [ 18%]
+tests/integration/test_metrics_real_lake.py::test_book_liquidity_equals_plain_pandas PASSED [ 25%]
+tests/integration/test_phase0_run.py::test_seeded_backtest_run_is_reproducible PASSED [ 31%]
+tests/integration/test_regime_real_lake.py::test_history_is_point_in_time_and_complete PASSED [ 37%]
+tests/integration/test_regime_real_lake.py::test_march_2020_is_crisis_and_stress PASSED [ 43%]
+tests/integration/test_regime_real_lake.py::test_2022_bear_market_is_flagged PASSED [ 50%]
+tests/integration/test_regime_real_lake.py::test_calm_2017_is_not_flagged_by_the_market_components PASSED [ 56%]
+tests/integration/test_regime_real_lake.py::test_one_day_view_agrees_with_the_history PASSED [ 62%]
+tests/integration/test_regime_real_lake.py::test_history_persists PASSED [ 68%]
+tests/integration/test_risk_model_real_lake.py::test_daily_regressions_are_sane PASSED [ 75%]
+tests/integration/test_risk_model_real_lake.py::test_model_at_year_end_is_valid_and_adds_up PASSED [ 81%]
+tests/integration/test_risk_model_real_lake.py::test_persisted_model_round_trips PASSED [ 87%]
+tests/integration/test_risk_model_real_lake.py::test_etf_exposures_on_real_data PASSED [ 93%]
+tests/integration/test_risk_model_real_lake.py::test_bias_statistics_2018_2024 SKIPPED [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:143: set ATLAS_RISK_MODEL_FULL=1 for the 2018-2024 calibration
+========== 15 passed, 1 skipped, 4052 deselected in 833.72s (0:13:53) ==========
+exit 0

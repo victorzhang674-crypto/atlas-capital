@@ -1,0 +1,79 @@
+2020-03-16 seconds 96.8 issues 281
+         298535210 function calls (291107301 primitive calls) in 96.838 seconds
+
+   Ordered by: cumulative time
+   List reduced from 2023 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.010    0.010   96.841   96.841 src/atlas/data/quality.py:757(quality_report)
+        1    0.532    0.532   94.071   94.071 src/atlas/data/quality.py:559(check_fundamentals_jumps)
+     3115    0.224    0.000   45.631    0.015 src/atlas/data/fundamentals/pit.py:163(quarterly_values)
+     5476    0.200    0.000   45.014    0.008 src/atlas/data/fundamentals/mapping.py:272(resolve_concept)
+   479677    0.841    0.000   35.712    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:4283(__getitem__)
+     5830    0.129    0.000   29.241    0.005 src/atlas/data/fundamentals/mapping.py:263(_part)
+    13326    0.133    0.000   20.015    0.002 src/atlas/data/fundamentals/mapping.py:253(_alternative)
+     3115    0.157    0.000   19.160    0.006 src/atlas/data/fundamentals/pit.py:129(_q4_from_three_quarters)
+   112015    0.148    0.000   14.650    0.000 .venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:1069(take)
+   131265    0.841    0.000   14.369    0.000 .venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:817(reindex_indexer)
+   102668    0.246    0.000   13.606    0.000 .venv/lib/python3.12/site-packages/pandas/core/generic.py:4048(take)
+    69874    0.124    0.000   11.840    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:4358(_getitem_bool_array)
+     3115    0.074    0.000   10.948    0.004 src/atlas/data/fundamentals/pit.py:107(_chain_differences)
+    56455    0.201    0.000    9.456    0.000 .venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:6539(_get_indexer_strict)
+    30270    0.173    0.000    9.418    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:9086(sort_values)
+   585974    0.567    0.000    9.238    0.000 .venv/lib/python3.12/site-packages/pandas/core/internals/blocks.py:1054(take_nd)
+     1325    0.031    0.000    9.144    0.007 src/atlas/data/fundamentals/mapping.py:226(_combine)
+    10855    0.025    0.000    9.114    0.001 .venv/lib/python3.12/site-packages/pandas/core/frame.py:15963(merge)
+    10855    0.030    0.000    9.088    0.001 .venv/lib/python3.12/site-packages/pandas/core/reshape/merge.py:151(merge)
+955142/749877    0.921    0.000    8.660    0.000 .venv/lib/python3.12/site-packages/pandas/core/array_algos/take.py:60(take_nd)
+67486794/66287342    5.443    0.000    8.492    0.000 {built-in method builtins.isinstance}
+208782/151204    0.138    0.000    8.305    0.000 .venv/lib/python3.12/site-packages/pandas/core/ops/common.py:122(new_method)
+    19296    0.070    0.000    7.827    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:8792(drop_duplicates)
+246880/244230    0.961    0.000    7.616    0.000 .venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:484(__new__)
+81483/80158    0.255    0.000    7.236    0.000 .venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:3831(get_indexer)
+   566335    1.845    0.000    7.029    0.000 .venv/lib/python3.12/site-packages/pandas/core/construction.py:580(sanitize_array)
+    10855    0.052    0.000    6.678    0.001 .venv/lib/python3.12/site-packages/pandas/core/reshape/merge.py:1130(get_result)
+   476353    0.475    0.000    6.592    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:4239(_ixs)
+    74772    0.071    0.000    6.269    0.000 .venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:6477(get_indexer_for)
+     5910    0.021    0.000    6.153    0.001 src/atlas/data/fundamentals/mapping.py:198(latest_filings)
+
+
+2024-06-03 seconds 70.7 issues 166
+         216138293 function calls (210757099 primitive calls) in 70.684 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1731 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.009    0.009   70.685   70.685 src/atlas/data/quality.py:757(quality_report)
+        1    0.430    0.430   67.923   67.923 src/atlas/data/quality.py:559(check_fundamentals_jumps)
+     2210    0.159    0.000   32.866    0.015 src/atlas/data/fundamentals/pit.py:163(quarterly_values)
+     3907    0.146    0.000   32.488    0.008 src/atlas/data/fundamentals/mapping.py:272(resolve_concept)
+   348709    0.617    0.000   25.856    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:4283(__getitem__)
+     4150    0.091    0.000   20.912    0.005 src/atlas/data/fundamentals/mapping.py:263(_part)
+     9469    0.093    0.000   14.272    0.002 src/atlas/data/fundamentals/mapping.py:253(_alternative)
+     2210    0.111    0.000   13.633    0.006 src/atlas/data/fundamentals/pit.py:129(_q4_from_three_quarters)
+    80751    0.109    0.000   10.647    0.000 .venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:1069(take)
+    94696    0.608    0.000   10.413    0.000 .venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:817(reindex_indexer)
+    74165    0.180    0.000    9.852    0.000 .venv/lib/python3.12/site-packages/pandas/core/generic.py:4048(take)
+    50982    0.092    0.000    8.618    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:4358(_getitem_bool_array)
+     2210    0.052    0.000    7.707    0.003 src/atlas/data/fundamentals/pit.py:107(_chain_differences)
+    21575    0.125    0.000    6.875    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:9086(sort_values)
+   424924    0.414    0.000    6.762    0.000 .venv/lib/python3.12/site-packages/pandas/core/internals/blocks.py:1054(take_nd)
+    40098    0.146    0.000    6.734    0.000 .venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:6539(_get_indexer_strict)
+      941    0.022    0.000    6.732    0.007 src/atlas/data/fundamentals/mapping.py:226(_combine)
+     7714    0.017    0.000    6.527    0.001 .venv/lib/python3.12/site-packages/pandas/core/frame.py:15963(merge)
+     7714    0.022    0.000    6.509    0.001 .venv/lib/python3.12/site-packages/pandas/core/reshape/merge.py:151(merge)
+693712/543420    0.673    0.000    6.367    0.000 .venv/lib/python3.12/site-packages/pandas/core/array_algos/take.py:60(take_nd)
+48840139/47972715    3.936    0.000    6.114    0.000 {built-in method builtins.isinstance}
+151228/109283    0.100    0.000    6.048    0.000 .venv/lib/python3.12/site-packages/pandas/core/ops/common.py:122(new_method)
+    13733    0.050    0.000    5.710    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:8792(drop_duplicates)
+179499/177617    0.702    0.000    5.508    0.000 .venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:484(__new__)
+59699/58758    0.186    0.000    5.251    0.000 .venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:3831(get_indexer)
+   411250    1.368    0.000    5.087    0.000 .venv/lib/python3.12/site-packages/pandas/core/construction.py:580(sanitize_array)
+   345881    0.352    0.000    4.850    0.000 .venv/lib/python3.12/site-packages/pandas/core/frame.py:4239(_ixs)
+     7714    0.037    0.000    4.788    0.001 .venv/lib/python3.12/site-packages/pandas/core/reshape/merge.py:1130(get_result)
+    53133    0.051    0.000    4.477    0.000 .venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:6477(get_indexer_for)
+     4221    0.014    0.000    4.475    0.001 src/atlas/data/fundamentals/mapping.py:198(latest_filings)
+
+
+exit 0

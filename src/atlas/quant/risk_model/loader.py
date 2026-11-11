@@ -277,23 +277,35 @@ def build_and_store(
     """Fit the daily factor returns over [`start`, `end`] from `lake`, store them in `store`,
     and store a model snapshot on each month-end (data date) that has at least
     `quant.risk_model.min_history` sessions of factor returns. With `etfs`, each snapshot also
-    carries their time-series exposures. Returns the history and the snapshot dates."""
+    carries their time-series exposures; a month-end where none of them has enough history
+    yet (`etf.min_obs`) is stored without ETFs and logged (`risk_model.etfs_skipped`). Returns
+    the history and the snapshot dates."""
     cfg = config if config is not None else AtlasConfig()
     cal = TradingCalendar(config=cfg.calendar)
     history = build_factor_history(lake, start, end, cfg, symbols=symbols)
     store.write_factor_returns(history)
     index = history.factor_returns.index
     written: list[date] = []
+    view: DataView | None = None
     for day in monthly_rebalance_dates(start, end, cal):
         stamp = pd.Timestamp(day)
         if stamp not in index or int((index <= stamp).sum()) < cfg.quant.risk_model.min_history:
             continue
-        view = DataView(lake, cal.next_session(day), cfg)
+        decision = cal.next_session(day)
+        # one view advanced month by month: the same data as a fresh view per month, while the
+        # per-symbol fundamentals cache is shared (a fresh view re-resolves every symbol)
+        view = DataView(lake, decision, cfg) if view is None else view.advance(decision)
         upto = history.up_to(day)
         model = build_model_from_view(view, upto, symbols)
         if etfs:
-            model = extend_model(model, etf_exposures_from_view(view, upto, etfs))
+            try:
+                model = extend_model(model, etf_exposures_from_view(view, upto, etfs))
+            except DataError as exc:
+                # early month-ends: enough history for a model, not yet for ETF betas
+                # (`etf.min_obs`). The snapshot is stored without ETFs (outside the model).
+                _log.warning("risk_model.etfs_skipped", date=day.isoformat(), reason=str(exc))
         store.write_snapshot(model)
         written.append(day)
+        _log.info("risk_model.snapshot_stored", date=day.isoformat(), names=len(model.symbols))
     _log.info("risk_model.built_and_stored", sessions=len(index), snapshots=len(written))
     return history, tuple(written)

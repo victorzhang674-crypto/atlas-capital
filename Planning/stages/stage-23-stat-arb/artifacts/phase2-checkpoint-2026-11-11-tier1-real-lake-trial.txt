@@ -1,0 +1,21 @@
+=== atlas factors build --from 2023-10-01 --to 2024-03-31 --store <scratch>  (main lake read only)
+                 Factor cache by year                 
+┏━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ year ┃ month-ends ┃ mean names ┃ mean filled share ┃
+┡━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ 2023 │          3 │        502 │             0.195 │
+│ 2024 │          3 │        502 │             0.191 │
+└──────┴────────────┴────────────┴───────────────────┘
+Factor cache: 6 month-ends from 2023-10-31 to 2024-03-28; 6 written, 0 already 
+stored; table factor_exposures in <scratch> (settings 
+ea0279da348c). Run 01M763HF7GECG595PF3BMYVV2N.
+exit 0; seconds 923
+=== atlas risk-model build --from 2023-03-01 --to 2024-03-28 --store <scratch>
+2026-11-11T20:41:08.668335Z [warning  ] risk_model.etfs_skipped        [atlas.quant.risk_model.loader] date=2023-05-31 mode=dev reason="no ETF has 126 observations in the last 252 sessions: dropped {'BIL': 'history', 'DBC': 'history', 'EEM': 'history', 'EFA': 'history', 'FXE': 'history'} (every ETF)" run_id=01M764DNHAKB1YR74MP191N20G stage=risk_model.build
+2026-11-11T20:41:27.571000Z [warning  ] risk_model.etfs_skipped        [atlas.quant.risk_model.loader] date=2023-06-30 mode=dev reason="no ETF has 126 observations in the last 252 sessions: dropped {'BIL': 'history', 'DBC': 'history', 'EEM': 'history', 'EFA': 'history', 'FXE': 'history'} (every ETF)" run_id=01M764DNHAKB1YR74MP191N20G stage=risk_model.build
+2026-11-11T20:42:19.691532Z [warning  ] risk_model.etfs_skipped        [atlas.quant.risk_model.loader] date=2023-07-31 mode=dev reason="no ETF has 126 observations in the last 252 sessions: dropped {'BIL': 'history', 'DBC': 'history', 'EEM': 'history', 'EFA': 'history', 'FXE': 'history'} (every ETF)" run_id=01M764DNHAKB1YR74MP191N20G stage=risk_model.build
+Risk model: 271 sessions fitted from 2023-03-01 to 2024-03-27, 0 skipped (too 
+few names), mean R2 0.322, mean names 416; 10 snapshots from 2023-05-31 to 
+2024-02-29 with 30 ETFs; tables factor_returns and risk_model_snapshots in 
+<scratch> (settings 4bbbb5a135ea). Run 01M764DNHAKB1YR74MP191N20G.
+exit 0; seconds 1565

@@ -762,6 +762,7 @@ def quality_report(
     calendar: TradingCalendar | None = None,
     concept_map: ConceptMap | None = None,
     persist: bool = False,
+    blocking_only: bool = False,
 ) -> pd.DataFrame:
     """Every quality check on the data known at `as_of`, as a frame of `ISSUE_COLUMNS`.
 
@@ -775,7 +776,15 @@ def quality_report(
     `data_quality_issues` (an empty report clears them). `config` defaults to `AtlasConfig()`,
     `calendar` to `TradingCalendar(config=config.calendar)`, `concept_map` to
     `config.data.fundamentals.xbrl_map_file` (loaded only when fundamentals are checked).
+
+    `blocking_only=True` gives exactly the `critical` rows of the full report (the rows
+    `blocked_symbols` reads) and runs only the checks that can produce one: a check whose
+    configured severity is below `critical` is skipped and a table none of the remaining checks
+    needs is not read. It cannot be combined with `persist` (`ValueError`): the stored table
+    holds full reports.
     """
+    if blocking_only and persist:
+        raise ValueError("a blocking_only report cannot be persisted: it is not the full report")
     cfg = config if config is not None else AtlasConfig()
     cal = calendar if calendar is not None else TradingCalendar(config=cfg.calendar)
     if isinstance(as_of, datetime):
@@ -790,34 +799,54 @@ def quality_report(
     )
     issues: list[QualityIssue] = []
 
-    if lake.has_table(PRICES_DAILY.name):
+    def runs(*checks: str) -> bool:
+        """Whether a check emitting these issue names is run: always for a full report, for a
+        blocking report only if one of them is configured `critical`."""
+        return not blocking_only or any(
+            Severity(getattr(sev, name)) is Severity.CRITICAL for name in checks
+        )
+
+    outliers = runs("return_outlier", "split_mismatch")
+    price_checks = ("missing_sessions", "ohlc_inconsistent", "nonpositive_price", "stale_price")
+    if lake.has_table(PRICES_DAILY.name) and (runs(*price_checks, "vendor_mix") or outliers):
         bars = _known(
             lake, PRICES_DAILY.name, point, [("date", ">=", history), ("date", "<=", last)]
         )
-        actions = _known(
-            lake,
-            CORPORATE_ACTIONS.name,
-            point,
-            [("ex_date", ">=", history), ("ex_date", "<=", last)],
-        )
-        issues += check_missing_sessions(
-            bars, cal, since=since, severity=Severity(sev.missing_sessions)
-        )
-        issues += check_ohlc(bars, since=since, severity=Severity(sev.ohlc_inconsistent))
-        issues += check_nonpositive_prices(
-            bars, since=since, severity=Severity(sev.nonpositive_price)
-        )
-        issues += check_stale_prices(
-            bars, since=since, min_sessions=q.stale_min_sessions, severity=Severity(sev.stale_price)
-        )
-        issues += check_vendor_mix(bars, since=since, severity=Severity(sev.vendor_mix))
-        issues += check_return_outliers(bars, actions, since=since, config=q)
+        if runs("missing_sessions"):
+            issues += check_missing_sessions(
+                bars, cal, since=since, severity=Severity(sev.missing_sessions)
+            )
+        if runs("ohlc_inconsistent"):
+            issues += check_ohlc(bars, since=since, severity=Severity(sev.ohlc_inconsistent))
+        if runs("nonpositive_price"):
+            issues += check_nonpositive_prices(
+                bars, since=since, severity=Severity(sev.nonpositive_price)
+            )
+        if runs("stale_price"):
+            issues += check_stale_prices(
+                bars,
+                since=since,
+                min_sessions=q.stale_min_sessions,
+                severity=Severity(sev.stale_price),
+            )
+        if runs("vendor_mix"):
+            issues += check_vendor_mix(bars, since=since, severity=Severity(sev.vendor_mix))
+        if outliers:
+            actions = _known(
+                lake,
+                CORPORATE_ACTIONS.name,
+                point,
+                [("ex_date", ">=", history), ("ex_date", "<=", last)],
+            )
+            issues += check_return_outliers(bars, actions, since=since, config=q)
 
-    if lake.has_table(FUNDAMENTALS_FACTS.name):
+    jumps = runs("fundamentals_jump")
+    after_filing = runs("fundamentals_period_after_filing")
+    if lake.has_table(FUNDAMENTALS_FACTS.name) and (jumps or after_filing):
         start = datetime.combine(since, time(0), tzinfo=MARKET_TZ)
         recent = _known(lake, FUNDAMENTALS_FACTS.name, point, [(AVAILABLE_AT, ">=", start)])
         symbols = sorted(set(recent["symbol"]))
-        if symbols:
+        if symbols and jumps:
             facts = _known(lake, FUNDAMENTALS_FACTS.name, point, [("symbol", "in", symbols)])
             cmap = (
                 concept_map
@@ -833,6 +862,7 @@ def quality_report(
                 jump_ratio=q.fundamentals_jump_ratio,
                 severity=Severity(sev.fundamentals_jump),
             )
+        if symbols and after_filing:
             issues += check_fundamentals_period_after_filing(
                 recent,
                 point,
@@ -840,7 +870,7 @@ def quality_report(
                 severity=Severity(sev.fundamentals_period_after_filing),
             )
 
-    if lake.has_table(MACRO_OBSERVATIONS.name):
+    if lake.has_table(MACRO_OBSERVATIONS.name) and runs("macro_gap"):
         observations = _known(lake, MACRO_OBSERVATIONS.name, point, [])
         issues += check_macro_gaps(
             observations,
@@ -852,6 +882,8 @@ def quality_report(
         )
 
     report = merge_issues(issues_frame(issues))
+    if blocking_only:
+        report = report[report["severity"] == "critical"].reset_index(drop=True)
     assert_no_lookahead(report, point)
     if persist:
         _persist(lake, point.day, report)
@@ -864,6 +896,7 @@ def quality_report(
         critical=int((report["severity"] == "critical").sum()),
         blocked=len(blocked_symbols(report)),
         persisted=persist,
+        blocking_only=blocking_only,
     )
     return report
 

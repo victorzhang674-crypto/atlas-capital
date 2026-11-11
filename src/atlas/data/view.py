@@ -284,7 +284,7 @@ class DataView:
         """The day's quality report (`quality_report` at `as_of`, not persisted)."""
         return self._cached("quality_issues", (), self._quality)
 
-    def _quality(self) -> pd.DataFrame:
+    def _quality(self, *, blocking_only: bool = False) -> pd.DataFrame:
         shared = self._shared
         return guard_frame(
             quality_report(
@@ -293,18 +293,25 @@ class DataView:
                 config=shared.config,
                 calendar=shared.calendar,
                 concept_map=shared.concept_map,
+                blocking_only=blocking_only,
             ),
             self._as_of,
         )
 
+    def _blocking_issues(self) -> pd.DataFrame:
+        """The `critical` rows of the day's quality report, from the checks that can block
+        only (`quality_report(blocking_only=True)`): the same rows as
+        `quality_issues()` filtered to `critical`, without running the other checks."""
+        return self._cached("blocking_issues", (), lambda: self._quality(blocking_only=True))
+
     @property
     def blocked(self) -> frozenset[str]:
         """Symbols and macro series ids with a `critical` issue in the day's quality report."""
-        return self._cached("blocked", (), lambda: blocked_symbols(self.quality_issues()))
+        return self._cached("blocked", (), lambda: blocked_symbols(self._blocking_issues()))
 
     def _require_unblocked(self, symbol: str) -> None:
         if symbol in self.blocked:
-            report = self.quality_issues()
+            report = self._blocking_issues()
             rows = report[(report["symbol"] == symbol) & (report["severity"] == "critical")]
             reasons = "; ".join(
                 f"{c} on {d}" for c, d in zip(rows["check"], rows["date"], strict=True)

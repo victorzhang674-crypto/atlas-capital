@@ -27,3 +27,12 @@ Every output below comes from commands run by the AI in this stage's chat (Proje
 **Known gaps (not criteria; in `PROGRESS.md › Backlog`):** net debt / EBIT instead of EBITDA; former members have no sector in `instruments` (scored against the market since the audit; full fix = sector backfill, Stage 08); thin raw coverage of gross profitability and margin stability (~37%) and of EV-based factors (~60%) on the real lake, filled with sector medians and flagged; 41 names without a market cap (not investigated); multi-class share counts; one panel takes about 2–3 minutes on the real lake and there is no CLI to fill the cache; the test suite now takes about 3 minutes (was 40 s).
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 2 checkpoint follow-up (Tier 1: `atlas factors build`) — 2026-11-11
+- Red first (the command's tests could not import it); details in [worklog.md](worklog.md).
+- `uv run pytest tests/unit/quant/factors -q` (brief's Verify) → 116 passed; `tests/unit/cli` → 58 passed · raw: [artifacts/phase2-checkpoint-2026-11-11-verify.txt](artifacts/phase2-checkpoint-2026-11-11-verify.txt); `make check` → exit 0 (ruff, format 379 files, mypy 156 files, 4068 passed, 38 deselected) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt); offline integration → 8 passed, 15 skipped (no lake) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-integration-offline.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-integration-offline.txt)
+- Real-lake trial (read only, scratch store): 6 month-ends, 502 names each, exit 0 · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-real-lake-trial.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-real-lake-trial.txt)
+- Acceptance criteria still evidenced (`test_factor_pit.py`, `test_factor_cleaning.py`, `test_exposures_invariants` passed in the brief's Verify).
+- Not done: the cache on the main lake itself (Tier 1 item 4; a long run from the owner's Terminal panel).
+
+**Result:** ALL CRITERIA VERIFIED

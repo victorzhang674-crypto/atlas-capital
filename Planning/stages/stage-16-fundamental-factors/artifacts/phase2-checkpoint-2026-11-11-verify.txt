@@ -1,0 +1,4 @@
+=== uv run pytest tests/unit/quant/factors -q
+116 passed in 83.43s (0:01:23)
+=== uv run pytest tests/unit/cli -q
+58 passed in 24.38s

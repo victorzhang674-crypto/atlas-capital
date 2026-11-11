@@ -1,0 +1,102 @@
+=== uv run pytest tests/unit/quant/features -q --durations=5
+........................................................................ [ 21%]
+........................................................................ [ 42%]
+........................................................................ [ 63%]
+........................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.33 s (limit 20 s)
+................................ [ 84%]
+...................................................                      [100%]
+============================= slowest 5 durations ==============================
+2.35s call     tests/unit/quant/features/test_feature_performance.py::test_all_features_500x2000_under_20s
+0.63s setup    tests/unit/quant/features/test_feature_performance.py::test_all_features_500x2000_under_20s
+0.16s call     tests/unit/quant/features/test_feature_lookahead.py::test_view_future_rows_never_leak
+0.12s call     tests/unit/quant/features/test_feature_snapshot.py::test_snapshot_no_lookahead
+0.09s setup    tests/unit/quant/features/test_feature_compute.py::test_compute_features_wide
+339 passed in 5.92s
+exit 0
+=== uv run pytest tests/unit/quant/factors -q --durations=5
+........................................................................ [ 62%]
+...........................................                              [100%]
+============================= slowest 5 durations ==============================
+13.13s call     tests/unit/quant/factors/test_factor_store.py::test_build_factor_cache
+10.16s call     tests/unit/quant/factors/test_factor_pit.py::test_later_rows_change_nothing_at_the_as_of
+7.93s call     tests/unit/quant/factors/test_factor_pit.py::test_panel_equals_the_panel_of_the_truncated_lake[day1]
+7.79s call     tests/unit/quant/factors/test_factor_pit.py::test_panel_equals_the_panel_of_the_truncated_lake[day2]
+7.64s call     tests/unit/quant/factors/test_factor_pit.py::test_restatement_used_only_once_public
+115 passed in 98.27s (0:01:38)
+exit 0
+=== uv run pytest tests/unit/quant/research -q --durations=5
+...............................................................          [100%]
+============================= slowest 5 durations ==============================
+11.90s call     tests/unit/quant/research/test_research_signals.py::test_signal_panel_fundamental_uses_factor_exposures
+1.27s call     tests/unit/quant/research/test_research_tearsheet.py::test_research_signal_end_to_end
+1.04s call     tests/unit/quant/research/test_research_ic.py::test_planted_ic_end_to_end_through_the_lake
+0.59s call     tests/unit/quant/research/test_research_signals.py::test_signal_panel_ignores_future_rows
+0.31s setup    tests/unit/quant/research/test_research_tearsheet.py::test_build_tearsheet_summary_sections
+63 passed in 18.74s
+exit 0
+=== uv run pytest tests/unit/quant/risk_model -q --durations=5
+........................................................................ [ 37%]
+........................................................................ [ 74%]
+.................................................                        [100%]
+============================= slowest 5 durations ==============================
+10.79s call     tests/unit/quant/risk_model/test_factor_risk_loader.py::test_anchor_months_holds_fundamental_styles_longer
+7.43s setup    tests/unit/quant/risk_model/test_factor_risk_loader.py::test_cross_sections_one_per_session
+7.26s call     tests/unit/quant/risk_model/test_factor_risk_loader.py::test_exposures_never_see_the_session_being_regressed
+3.82s setup    tests/unit/quant/risk_model/test_factor_risk_model.py::test_cov_equals_xfxt_plus_d
+3.47s call     tests/unit/quant/risk_model/test_factor_risk_loader.py::test_style_inputs_shapes_and_timing
+193 passed in 45.49s
+exit 0
+=== uv run pytest tests/unit/quant/metrics -q --durations=5
+........................................................................ [ 30%]
+........................................................................ [ 60%]
+........................................................................ [ 90%]
+......................                                                   [100%]
+============================= slowest 5 durations ==============================
+0.50s call     tests/unit/quant/metrics/test_metrics_review.py::test_cornish_fisher_monotone_matches_the_numerical_minimum
+0.22s call     tests/unit/quant/metrics/test_metrics_independent.py::test_cornish_fisher_matches_simulation[0.99--0.3-5.0]
+0.20s call     tests/unit/quant/metrics/test_metrics_exposure.py::test_exposure_identities
+0.20s call     tests/unit/quant/metrics/test_metrics_relative.py::test_rolling_equals_scalar_per_window
+0.19s call     tests/unit/quant/metrics/test_metrics_package.py::test_no_other_module_defines_a_library_metric
+238 passed in 6.44s
+exit 0
+=== uv run pytest tests/unit/quant/regime -q --durations=5
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 32%]
+........................................................................ [ 42%]
+........................................................................ [ 53%]
+........................................................................ [ 64%]
+........................................................................ [ 74%]
+........................................................................ [ 85%]
+........................................................................ [ 96%]
+..........................                                               [100%]
+============================= slowest 5 durations ==============================
+7.42s call     tests/unit/quant/regime/test_regime_loader.py::test_history_equals_regime_at_day_by_day
+4.53s call     tests/unit/quant/regime/test_regime_audit.py::test_a_long_history_logs_progress
+3.13s call     tests/unit/quant/regime/test_regime_loader.py::test_future_rows_and_a_later_split_change_nothing
+1.92s call     tests/unit/quant/regime/test_regime_audit.py::test_hmm_fit_uses_the_slope_known_at_the_month_start
+1.82s call     tests/unit/quant/regime/test_regime_loader.py::test_a_dividend_inside_the_range_changes_only_rounding
+674 passed in 38.12s
+exit 0
+=== uv run pytest tests/unit/quant/alpha -q --durations=5
+....................................................................     [100%]
+============================= slowest 5 durations ==============================
+8.16s call     tests/unit/quant/alpha/test_alpha_multifactor.py::test_predict_is_point_in_time
+4.40s call     tests/unit/quant/alpha/test_alpha_multifactor.py::test_explicit_config_overrides_view
+4.37s call     tests/unit/quant/alpha/test_alpha_multifactor.py::test_predict_equals_grinold_on_components
+4.19s call     tests/unit/quant/alpha/test_alpha_multifactor.py::test_model_is_an_alpha_model_and_meets_contract
+4.17s call     tests/unit/quant/alpha/test_alpha_multifactor.py::test_resid_vol_override_and_missing_names
+68 passed in 42.92s
+exit 0
+=== uv run pytest tests/unit/quant/statarb -q --durations=5
+........................................................................ [ 57%]
+......................................................                   [100%]
+============================= slowest 5 durations ==============================
+29.30s call     tests/unit/quant/statarb/test_statarb_selection.py::test_false_positives_on_random_walks_under_five_percent
+17.71s call     tests/unit/quant/statarb/test_statarb_backtest.py::test_deselected_pairs_are_closed
+17.57s call     tests/unit/quant/statarb/test_statarb_selection.py::test_planted_pairs_are_recovered
+9.64s setup    tests/unit/quant/statarb/test_statarb_backtest.py::test_planted_pairs_make_money_gross
+8.97s call     tests/unit/quant/statarb/test_statarb_backtest.py::test_breakdown_timing
+126 passed in 121.75s (0:02:01)
+exit 0

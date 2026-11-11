@@ -20,3 +20,12 @@ Every output below comes from commands run in this stage's chat (Project.md Rule
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 2 checkpoint follow-up (Tier 1: `atlas risk-model build`) — 2026-11-11
+- Red first: the command's tests could not import it; `test_build_and_store_keeps_a_snapshot_whose_etfs_lack_history` failed with the `DataError` that used to end a build; `test_to_is_the_last_session_regressed_when_the_lake_has_it` failed by one session. Details in [worklog.md](worklog.md).
+- `uv run pytest tests/unit/quant/risk_model -q` (brief's Verify) → 195 passed; `tests/unit/cli` → 58 passed · raw: [artifacts/phase2-checkpoint-2026-11-11-verify.txt](artifacts/phase2-checkpoint-2026-11-11-verify.txt); `make check` → exit 0 (ruff, format 379 files, mypy 156 files, 4068 passed, 38 deselected) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt); offline integration (`test_phase2_run.py`: build, store, point-in-time read, PSD, decomposition) → 8 passed, 15 skipped (no lake) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-integration-offline.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-integration-offline.txt)
+- Real-lake trial (read only, scratch store; before the `--to` fix): 271 sessions fitted, mean R² 0.322, 10 snapshots, 30 ETFs, exit 0 · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-real-lake-trial.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-real-lake-trial.txt)
+- Acceptance criteria still evidenced (`test_synthetic_recovery_correlation`, `test_calibration_bias_statistic_near_one`, `test_decomposition_sums_to_total`, `test_build_time_500_names_under_2s` passed in the brief's Verify).
+- Not done: the stored history on the main lake itself (Tier 1 item 4; a long run from the owner's Terminal panel).
+
+**Result:** ALL CRITERIA VERIFIED

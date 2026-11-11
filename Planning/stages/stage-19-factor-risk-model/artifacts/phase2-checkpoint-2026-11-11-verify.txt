@@ -1,0 +1,4 @@
+=== uv run pytest tests/unit/quant/risk_model -q
+195 passed in 36.56s
+=== uv run pytest tests/unit/cli -q
+58 passed in 26.18s

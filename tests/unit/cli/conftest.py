@@ -19,3 +19,7 @@ if str(_REGIME_TESTS) not in sys.path:
 _STATARB_TESTS = Path(__file__).resolve().parents[1] / "quant" / "statarb"
 if str(_STATARB_TESTS) not in sys.path:
     sys.path.insert(0, str(_STATARB_TESTS))
+
+_FACTORS_TESTS = Path(__file__).resolve().parents[1] / "quant" / "factors"
+if str(_FACTORS_TESTS) not in sys.path:
+    sys.path.insert(0, str(_FACTORS_TESTS))

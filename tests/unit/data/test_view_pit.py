@@ -262,6 +262,37 @@ def test_quality_issues_and_blocked(world: World) -> None:
     assert (report["available_at"] < pd.Timestamp(AS_OF.cutoff)).all()
 
 
+def test_blocked_runs_only_the_checks_that_can_block(
+    world: World, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Phase 2 checkpoint: the block list must not pay for the warning-only checks (the
+    fundamentals jump check is 97% of a report on the real lake)."""
+
+    def boom(*args: object, **kwargs: object) -> list[object]:
+        raise AssertionError("a check that cannot block was run")
+
+    for name in ("check_fundamentals_jumps", "check_macro_gaps", "check_missing_sessions"):
+        monkeypatch.setattr(f"atlas.data.quality.{name}", boom)
+    view = world.view(world.clean, fresh=True)
+    assert view.blocked == frozenset({"BAD"})
+    assert list(view.prices(["AAA", "BAD"], 5)["symbol"].unique()) == ["AAA"]
+    with pytest.raises(DataError, match=r"BAD is blocked .* nonpositive_price on"):
+        view.fundamentals("BAD")
+    with pytest.raises(AssertionError, match="cannot block"):
+        view.quality_issues()  # the full report still runs every check, on request
+
+
+def test_blocked_equals_the_full_reports_critical_symbols(world: World) -> None:
+    for lake in (world.clean, world.dirty):
+        for severity in ({}, {"return_outlier": "critical", "macro_gap": "critical"}):
+            cfg = AtlasConfig.model_validate({"data": {"quality": {"severity": severity}}})
+            view = world.view(lake, fresh=True, config=cfg)
+            full = view.quality_issues()
+            expected = frozenset(full.loc[full["severity"] == "critical", "symbol"])
+            assert view.blocked == expected
+            assert expected  # the world always blocks something
+
+
 def test_fundamentals_matches_reader(world: World) -> None:
     view = world.view(world.clean)
     expected = Fundamentals(world.clean, concept_map=world.concept_map).pit("AAA", AS_OF)

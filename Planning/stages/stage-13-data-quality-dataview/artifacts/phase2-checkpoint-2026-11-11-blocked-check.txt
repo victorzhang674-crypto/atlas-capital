@@ -1,0 +1,8 @@
+2016-06-01 blocking_only    0.9 s | full   40.6 s | DataView.blocked    0.8 s | full issues  184 critical   0 blocked   0 | rows equal True block list equal True view equal True
+2018-03-01 blocking_only    0.8 s | full   52.5 s | DataView.blocked    0.8 s | full issues  264 critical   0 blocked   0 | rows equal True block list equal True view equal True
+2020-03-16 blocking_only    0.8 s | full   45.5 s | DataView.blocked    0.9 s | full issues  281 critical   2 blocked   2 | rows equal True block list equal True view equal True
+2022-06-01 blocking_only    0.9 s | full   40.9 s | DataView.blocked    1.0 s | full issues  166 critical   0 blocked   0 | rows equal True block list equal True view equal True
+2024-06-03 blocking_only    1.0 s | full   38.4 s | DataView.blocked    1.1 s | full issues  166 critical   0 blocked   0 | rows equal True block list equal True view equal True
+2026-10-01 blocking_only    1.2 s | full    7.1 s | DataView.blocked    0.8 s | full issues   22 critical   0 blocked   0 | rows equal True block list equal True view equal True
+ALL EQUAL
+exit 0

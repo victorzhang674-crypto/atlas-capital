@@ -1,6 +1,7 @@
 """The DataView -> cross-section loader (Stage 19 Task 9), on the Stage 16 synthetic lake."""
 
 import ast
+import dataclasses
 import inspect
 from datetime import date
 
@@ -269,3 +270,98 @@ def test_build_and_store_writes_returns_and_month_end_snapshots(
     assert built == [cal.next_session(d) for d in dates]
     assert store.snapshot_dates() == dates
     assert store.read_factor_returns(date(2024, 1, 2)) is not None
+
+
+def test_build_and_store_advances_one_view_for_the_snapshots(
+    monkeypatch: pytest.MonkeyPatch, tmp_lake: Lake
+) -> None:
+    """Phase 2 checkpoint: a fresh `DataView` per month-end re-resolves every symbol's
+    fundamentals; one view advanced month by month shares the cache and reads the same data."""
+    cal = TradingCalendar()
+    days = list(cal.sessions(date(2023, 6, 1), date(2023, 12, 29)))
+    hist = _random_history(days)
+    monkeypatch.setattr(loader, "build_factor_history", lambda *a, **k: hist)
+    opened: list[date] = []
+    seen: list[tuple[date, int]] = []
+    real_view = loader.DataView
+
+    def counting_view(lake: Lake, day: date, config: AtlasConfig) -> DataView:
+        opened.append(day)
+        return real_view(lake, day, config)
+
+    def fake_model(view: DataView, upto: FactorHistory, symbols: object = None) -> RiskModel:
+        seen.append((view.day, id(view._shared)))
+        return RiskModel(
+            as_of=upto.factor_returns.index[-1].date(),
+            symbols=("A",),
+            factors=hist.factors.names,
+            x=np.ones((1, 20)),
+            f=np.eye(20) * 1e-4,
+            d=np.ones(1) * 1e-4,
+            n_days=len(upto.factor_returns),
+        )
+
+    monkeypatch.setattr(loader, "DataView", counting_view)
+    monkeypatch.setattr(loader, "build_model_from_view", fake_model)
+    store = RiskModelStore(tmp_lake, SMALL)
+    _, dates = build_and_store(tmp_lake, store, date(2023, 6, 1), date(2023, 12, 29), SMALL)
+    assert len(dates) == 5
+    assert opened == [cal.next_session(dates[0])]  # one view opened, then advanced
+    assert [d for d, _ in seen] == [cal.next_session(d) for d in dates]
+    assert len({shared for _, shared in seen}) == 1  # every month shares one cache
+
+
+def test_build_and_store_keeps_a_snapshot_whose_etfs_lack_history(
+    monkeypatch: pytest.MonkeyPatch, tmp_lake: Lake
+) -> None:
+    """Phase 2 checkpoint: early month-ends have enough history for a model (`min_history`)
+    but not for ETF betas (`etf.min_obs`). Such a snapshot is stored without ETFs (they are
+    then outside the model, never guessed) instead of failing the whole build."""
+    cal = TradingCalendar()
+    days = list(cal.sessions(date(2023, 6, 1), date(2023, 12, 29)))
+    hist = _random_history(days)
+    monkeypatch.setattr(loader, "build_factor_history", lambda *a, **k: hist)
+
+    def fake_model(view: DataView, upto: FactorHistory, symbols: object = None) -> RiskModel:
+        return RiskModel(
+            as_of=upto.factor_returns.index[-1].date(),
+            symbols=("A",),
+            factors=hist.factors.names,
+            x=np.ones((1, 20)),
+            f=np.eye(20) * 1e-4,
+            d=np.ones(1) * 1e-4,
+            n_days=len(upto.factor_returns),
+        )
+
+    asked: list[date] = []
+
+    def fake_etfs(view: DataView, upto: FactorHistory, etfs: object = None) -> object:
+        asked.append(view.day)
+        if len(upto.factor_returns) < 126:
+            raise DataError("no ETF has 126 observations")
+        return "betas"
+
+    def fake_extend(model: RiskModel, exposures: object) -> RiskModel:
+        assert exposures == "betas"
+        return dataclasses.replace(model, etfs=("SPY",))
+
+    stored: list[tuple[date, tuple[str, ...]]] = []
+    monkeypatch.setattr(loader, "build_model_from_view", fake_model)
+    monkeypatch.setattr(loader, "etf_exposures_from_view", fake_etfs)
+    monkeypatch.setattr(loader, "extend_model", fake_extend)
+    store = RiskModelStore(tmp_lake, SMALL)
+    monkeypatch.setattr(
+        store, "write_snapshot", lambda model: stored.append((model.as_of, model.etfs)) or 1
+    )
+    _, dates = build_and_store(
+        tmp_lake, store, date(2023, 6, 1), date(2023, 12, 29), SMALL, etfs=["SPY"]
+    )
+    assert len(dates) == 5 and len(asked) == 5
+    # 2023-08-31 (64 sessions), 09-29 (84) and 10-31 (106) are short of 126; 11-30 has 127
+    assert stored == [
+        (date(2023, 8, 31), ()),
+        (date(2023, 9, 29), ()),
+        (date(2023, 10, 31), ()),
+        (date(2023, 11, 30), ("SPY",)),
+        (date(2023, 12, 29), ("SPY",)),
+    ]

@@ -27,3 +27,12 @@ Filled only with output from commands run in this stage's chat (Project.md Rule 
 - Merge into `main`: fast-forward 16defe5 → **103f352** (2026-11-09); merged result `uv run pytest -q` → 3807 passed, 29 deselected; `make check` → exit 0 (lint, format, mypy clean, 3807 passed); `git branch --merged main` lists the stage branch · raw: [artifacts/merged-main-pytest.txt](artifacts/merged-main-pytest.txt), [artifacts/merged-main-make-check.txt](artifacts/merged-main-make-check.txt). Pushed `main` + the stage branch on the owner's go-ahead ("Yes, push"); CI ✓ `main` run 42650795782 (10m10s), branch run 42650796626 (10m47s) · raw: [artifacts/ci-1-main.txt](artifacts/ci-1-main.txt), [artifacts/ci-1-branch.txt](artifacts/ci-1-branch.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 2 checkpoint (Stages 15–23, M2) — 2026-11-11
+- Checks re-run on `f0b4d01`: `make check` → exit 0, 4037 passed (run 1 had one failure caused by a folder the assistant's shell left; kept as a record); the eight Verify commands → all exit 0; integration on the main lake → 15 passed, 1 skipped · raw: [artifacts/phase2-checkpoint-2026-11-11-make-check.txt](artifacts/phase2-checkpoint-2026-11-11-make-check.txt), [-make-check-run1-failed.txt](artifacts/phase2-checkpoint-2026-11-11-make-check-run1-failed.txt), [-verify.txt](artifacts/phase2-checkpoint-2026-11-11-verify.txt), [-integration.txt](artifacts/phase2-checkpoint-2026-11-11-integration.txt)
+- No stage reopens; report: [artifacts/phase2-checkpoint-2026-11-11-report.md](artifacts/phase2-checkpoint-2026-11-11-report.md)
+- Tier 1 (items 1–3, 5, 6): `make check` → exit 0 (ruff, format 379 files, mypy 156 files, 4068 passed, 38 deselected); offline integration → 8 passed, 15 skipped; brief's Verify `uv run pytest tests/unit/quant/statarb -q` → 126 passed (in the checkpoint run; Stage 23 code unchanged) · raw: [artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt](artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt), [-tier1-integration-offline.txt](artifacts/phase2-checkpoint-2026-11-11-tier1-integration-offline.txt), [-tier1-real-lake-trial.txt](artifacts/phase2-checkpoint-2026-11-11-tier1-real-lake-trial.txt)
+- Acceptance criteria still evidenced: `test_planted_pairs_are_recovered`, `test_false_positives_on_random_walks_under_five_percent`, `test_statarb_signals.py` passed.
+- Not done: Tier 1 item 4 (the main-lake builds) and Tiers 2–4.
+
+**Result:** ALL CRITERIA VERIFIED

@@ -1,0 +1,53 @@
+=== make test-integration (no lake: the real-lake tests skip, as in CI)
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- .venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb
+configfile: pyproject.toml
+testpaths: tests
+plugins: cov-7.1.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 4106 items / 4083 deselected / 23 selected
+
+tests/integration/test_metrics_real_lake.py::test_spy_performance_equals_plain_pandas SKIPPED [  4%]
+tests/integration/test_metrics_real_lake.py::test_spy_var_cvar_invariants SKIPPED [  8%]
+tests/integration/test_metrics_real_lake.py::test_book_var_contributions_and_relative SKIPPED [ 13%]
+tests/integration/test_metrics_real_lake.py::test_book_liquidity_equals_plain_pandas SKIPPED [ 17%]
+tests/integration/test_phase0_run.py::test_seeded_backtest_run_is_reproducible PASSED [ 21%]
+tests/integration/test_phase2_run.py::test_features_feed_every_member PASSED [ 26%]
+tests/integration/test_phase2_run.py::test_factors_build_filled_the_cache_point_in_time PASSED [ 30%]
+tests/integration/test_phase2_run.py::test_risk_model_build_stored_returns_and_snapshots PASSED [ 34%]
+tests/integration/test_phase2_run.py::test_stored_model_is_point_in_time_and_valid PASSED [ 39%]
+tests/integration/test_phase2_run.py::test_alpha_frame_meets_the_contract PASSED [ 43%]
+tests/integration/test_phase2_run.py::test_book_risk_agrees_between_the_model_and_the_metrics_library PASSED [ 47%]
+tests/integration/test_phase2_run.py::test_signal_tearsheet_is_scored_by_the_metrics_library PASSED [ 52%]
+tests/integration/test_regime_real_lake.py::test_history_is_point_in_time_and_complete SKIPPED [ 56%]
+tests/integration/test_regime_real_lake.py::test_march_2020_is_crisis_and_stress SKIPPED [ 60%]
+tests/integration/test_regime_real_lake.py::test_2022_bear_market_is_flagged SKIPPED [ 65%]
+tests/integration/test_regime_real_lake.py::test_calm_2017_is_not_flagged_by_the_market_components SKIPPED [ 69%]
+tests/integration/test_regime_real_lake.py::test_one_day_view_agrees_with_the_history SKIPPED [ 73%]
+tests/integration/test_regime_real_lake.py::test_history_persists SKIPPED [ 78%]
+tests/integration/test_risk_model_real_lake.py::test_daily_regressions_are_sane SKIPPED [ 82%]
+tests/integration/test_risk_model_real_lake.py::test_model_at_year_end_is_valid_and_adds_up SKIPPED [ 86%]
+tests/integration/test_risk_model_real_lake.py::test_persisted_model_round_trips SKIPPED [ 91%]
+tests/integration/test_risk_model_real_lake.py::test_etf_exposures_on_real_data SKIPPED [ 95%]
+tests/integration/test_risk_model_real_lake.py::test_bias_statistics_2018_2024 SKIPPED [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:61: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:76: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:91: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:119: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:59: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:65: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:75: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:82: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:110: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:123: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:86: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:96: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:116: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:129: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:143: set ATLAS_RISK_MODEL_FULL=1 for the 2018-2024 calibration
+========== 8 passed, 15 skipped, 4083 deselected in 140.94s (0:02:20) ==========
+exit 0

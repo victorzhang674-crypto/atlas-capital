@@ -164,3 +164,17 @@ def test_build_factor_cache(tmp_path: Path) -> None:
     # stored dates are skipped unless refresh=True
     assert build_factor_cache(lake, days, config=CFG) == ()
     assert build_factor_cache(lake, days[1:], config=CFG, refresh=True) == days[1:]
+
+
+def test_build_factor_cache_into_another_lake(tmp_path: Path) -> None:
+    """Phase 2 checkpoint: the cache can be written to a second lake, the source stays
+    read-only (`atlas factors build --store`)."""
+    lake = Lake(tmp_path / "lake", registry=DEFAULT_REGISTRY.copy())
+    build_factor_world(lake)
+    target = FactorStore(Lake(tmp_path / "store", registry=DEFAULT_REGISTRY.copy()), CFG)
+    assert target.lake.root == tmp_path / "store"
+    day = date(2024, 2, 29)
+    assert build_factor_cache(lake, [day], config=CFG, store=target) == (day,)
+    assert target.dates() == (day,)
+    assert not lake.has_table(FACTOR_EXPOSURES.name)
+    assert build_factor_cache(lake, [day], config=CFG, store=target) == ()

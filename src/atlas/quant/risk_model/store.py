@@ -117,6 +117,11 @@ class RiskModelStore:
         self._factors = FactorSet.from_config(self._cfg.quant.risk_model.factor_model)
         self._calendar = TradingCalendar(config=self._cfg.calendar)
 
+    @property
+    def lake(self) -> Lake:
+        """The lake this store reads and writes."""
+        return self._lake
+
     # --- helpers
 
     def _available(self, day: date) -> pd.Timestamp:

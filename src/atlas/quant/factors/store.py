@@ -101,6 +101,11 @@ class FactorStore:
         self._cfg = config if config is not None else AtlasConfig()
         self.config_hash = factor_config_hash(self._cfg)
 
+    @property
+    def lake(self) -> Lake:
+        """The lake this store reads and writes."""
+        return self._lake
+
     def write(self, panel: FactorPanel) -> int:
         """Store `panel` under its as-of day, replacing every stored row of that day; return
         the number of rows written."""
@@ -196,19 +201,31 @@ def build_factor_cache(
     config: AtlasConfig | None = None,
     symbols: Sequence[str] | None = None,
     refresh: bool = False,
+    store: FactorStore | None = None,
 ) -> tuple[date, ...]:
-    """Compute `factor_panel` at each of `dates` (ascending; one `DataView` advanced date by
-    date) and store it; dates already stored with the current settings are skipped unless
-    `refresh`. Returns the dates written."""
+    """Compute `factor_panel` at each of `dates` (ascending; one `DataView` of `lake` advanced
+    date by date) and store it in `store` (default: a `FactorStore` on `lake` itself; pass
+    one on another lake to leave `lake` read-only); dates already stored with the current
+    settings are skipped unless `refresh`. Each date is logged (`factors.cache_written`).
+    Returns the dates written."""
     cfg = config if config is not None else AtlasConfig()
-    store = FactorStore(lake, cfg)
+    target = store if store is not None else FactorStore(lake, cfg)
     days = sorted(set(dates))
-    stored = set() if refresh else set(store.dates())
+    stored = set() if refresh else set(target.dates())
     todo = [d for d in days if d not in stored]
     written: list[date] = []
     view: DataView | None = None
     for day in todo:
         view = DataView(lake, day, cfg) if view is None else view.advance(day)
-        store.write(factor_panel(view, symbols))
+        panel = factor_panel(view, symbols)
+        rows = target.write(panel)
         written.append(day)
+        _log.info(
+            "factors.cache_written",
+            date=day.isoformat(),
+            names=len(panel.exposures),
+            rows=rows,
+            done=len(written),
+            todo=len(todo),
+        )
     return tuple(written)
