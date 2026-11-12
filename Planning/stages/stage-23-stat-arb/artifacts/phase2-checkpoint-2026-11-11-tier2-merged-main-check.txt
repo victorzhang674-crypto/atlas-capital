@@ -1,0 +1,159 @@
+=== before: main a45c544
+=== git merge --ff-only claude/phase-two-checkpoint-stages-a4dbeb
+Updating a45c544..e0c8471
+Fast-forward
+ Planning/PROGRESS.md                               |  26 +-
+ Planning/stages/stage-03-logging-audit/worklog.md  |   5 +
+ .../stage-17-signal-research/verification.md       |  13 +
+ .../stages/stage-17-signal-research/worklog.md     |  19 ++
+ .../stage-21-regime-detection/verification.md      |   5 +
+ .../stages/stage-21-regime-detection/worklog.md    |   8 +
+ .../stage-22-systematic-alpha/verification.md      |   4 +
+ .../stages/stage-22-systematic-alpha/worklog.md    |   8 +
+ .../phase2-checkpoint-2026-11-11-report.md         |  19 +-
+ ...se2-checkpoint-2026-11-11-tier2-gate-pytest.txt |  61 +++++
+ ...int-2026-11-11-tier2-make-check-run1-failed.txt |  82 +++++++
+ ...ase2-checkpoint-2026-11-11-tier2-make-check.txt |  68 ++++++
+ ...checkpoint-2026-11-11-tier2-real-lake-guard.txt |  15 ++
+ ...2026-11-11-tier2-real-lake-regimes-summary.json | 265 +++++++++++++++++++++
+ ...eckpoint-2026-11-11-tier2-real-lake-regimes.txt |  23 ++
+ .../phase2-checkpoint-2026-11-11-tier2-red.txt     |  47 ++++
+ .../phase2-checkpoint-2026-11-11-tier2-verify.txt  |  43 ++++
+ Planning/stages/stage-23-stat-arb/verification.md  |   9 +-
+ Planning/stages/stage-23-stat-arb/worklog.md       |   9 +
+ src/atlas/cli/research_cmd.py                      | 119 ++++++++-
+ src/atlas/core/errors.py                           |   5 +
+ src/atlas/quant/alpha/__init__.py                  |   2 +
+ src/atlas/quant/alpha/base.py                      |  14 ++
+ src/atlas/quant/alpha/multifactor.py               |   7 +-
+ src/atlas/quant/alpha/pead.py                      |   6 +-
+ src/atlas/quant/alpha/tsmom.py                     |   6 +-
+ src/atlas/quant/regime/__init__.py                 |   2 +
+ src/atlas/quant/regime/store.py                    |  24 ++
+ src/atlas/quant/research/__init__.py               |   6 +-
+ src/atlas/quant/research/holdout.py                |  69 ++++++
+ src/atlas/quant/research/ic.py                     |  31 ++-
+ src/atlas/quant/research/labels.py                 |  72 +++++-
+ src/atlas/quant/research/tearsheet.py              |  16 +-
+ src/atlas/quant/research/vector_backtest.py        |  12 +-
+ tests/unit/cli/test_research_cmd.py                | 188 ++++++++++++++-
+ tests/unit/core/test_errors.py                     |  11 +-
+ tests/unit/quant/alpha/test_alpha_multifactor.py   |  11 +-
+ tests/unit/quant/alpha/test_alpha_pead.py          |  12 +
+ tests/unit/quant/alpha/test_alpha_tsmom.py         |  10 +
+ tests/unit/quant/regime/test_regime_package.py     |   3 +-
+ tests/unit/quant/regime/test_regime_store.py       |  26 ++
+ .../unit/quant/research/test_research_backtest.py  |  27 ++-
+ tests/unit/quant/research/test_research_holdout.py |  63 +++++
+ tests/unit/quant/research/test_research_ic.py      |  34 +++
+ tests/unit/quant/research/test_research_labels.py  |  46 +++-
+ .../unit/quant/research/test_research_tearsheet.py |  39 +++
+ 46 files changed, 1531 insertions(+), 59 deletions(-)
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-gate-pytest.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-make-check-run1-failed.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-make-check.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-real-lake-guard.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-real-lake-regimes-summary.json
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-real-lake-regimes.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-red.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-verify.txt
+ create mode 100644 src/atlas/quant/research/holdout.py
+ create mode 100644 tests/unit/quant/research/test_research_holdout.py
+merge exit 0
+e0c8471 phase-2 checkpoint: Tier 2 items 1-6 (hold-out guard, audit D-H, model horizons)
+a45c544 phase-2 checkpoint: push and CI records (item 4)
+f009e14 phase-2 checkpoint: merged-main check records (item 4)
+tree main: ff55d41dc9ff9fe974b577d05f79ff1563603612  tree branch: ff55d41dc9ff9fe974b577d05f79ff1563603612
+=== make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+381 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 157 source files
+uv run pytest -q
+........................................................................ [  1%]
+........................................................................ [  3%]
+........................................................................ [  5%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 43%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+......
+compute_features: 40 features x 500 symbols x 2000 sessions in 3.20 s (limit 20 s)
+.................................................................. [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 70%]
+........................................................................ [ 72%]
+........................................................................ [ 73%]
+........................................................................ [ 75%]
+........................................................................ [ 77%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+...................................................................      [100%]
+4099 passed, 38 deselected in 425.66s (0:07:05)
+make check exit 0
+=== uv run pytest -m integration -q -rs (main lake)
+ssss........sssssssssss                                                  [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:61: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:76: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:91: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:119: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:59: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:65: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:75: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:82: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:110: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:123: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:86: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:96: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:116: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:129: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:143: set ATLAS_RISK_MODEL_FULL=1 for the 2018-2024 calibration
+8 passed, 15 skipped, 4114 deselected in 103.17s (0:01:43)
+integration exit 0
+=== git branch --merged main
++ claude/phase-two-checkpoint-stages-a4dbeb
+=== after
+## main...origin/main [ahead 2]
