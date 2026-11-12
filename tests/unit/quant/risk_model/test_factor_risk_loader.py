@@ -63,6 +63,27 @@ def test_cross_sections_one_per_session(sections: list[CrossSection]) -> None:
     assert cs.returns.abs().max() < 0.2 and cs.returns.notna().all()
 
 
+def _backing_bytes(values: np.ndarray) -> int:
+    """Bytes of the buffer that backs `values`: its own, or the array it is a view of."""
+    root = values
+    while isinstance(root.base, np.ndarray):
+        root = root.base
+    return int(root.nbytes)
+
+
+def test_cross_sections_own_their_numbers(sections: list[CrossSection]) -> None:
+    # A row view into a (sessions x names) slice of the price panel keeps that whole slice
+    # alive in every cross-section: memory grows with sessions^2 x names, and the ten-year
+    # main-lake build was killed by the system for it (2026-11-12).
+    for cs in sections:
+        names = len(cs.raw_styles)
+        own = 8 * names * len(STYLE_NAMES)  # the cross-section's own float64 block
+        for style in STYLE_NAMES:
+            assert _backing_bytes(cs.raw_styles[style].to_numpy()) <= own, (cs.day, style)
+        assert _backing_bytes(cs.returns.to_numpy()) <= own, (cs.day, "returns")
+        assert _backing_bytes(cs.caps.to_numpy()) <= own, (cs.day, "caps")
+
+
 def test_size_follows_the_previous_close(sections: list[CrossSection]) -> None:
     for cs in sections[:6]:
         np.testing.assert_allclose(cs.raw_styles["size"], np.log(cs.caps), rtol=1e-12)

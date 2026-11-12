@@ -1,0 +1,25 @@
+=== start 2026-11-12T00:50:40Z on main 673d8c5
+=== uv run atlas factors build --from 2015 --to 2026
+                 Factor cache by year                 
+┏━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ year ┃ month-ends ┃ mean names ┃ mean filled share ┃
+┡━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ 2015 │         12 │        498 │             0.307 │
+│ 2016 │         12 │        500 │             0.287 │
+│ 2017 │         12 │        502 │             0.275 │
+│ 2018 │         12 │        503 │             0.265 │
+│ 2019 │         12 │        503 │             0.239 │
+│ 2020 │         12 │        504 │             0.213 │
+│ 2021 │         12 │        504 │             0.194 │
+│ 2022 │         12 │        502 │             0.197 │
+│ 2023 │         12 │        502 │             0.194 │
+│ 2024 │         12 │        502 │             0.193 │
+│ 2025 │         12 │        503 │             0.193 │
+│ 2026 │         10 │        503 │             0.194 │
+└──────┴────────────┴────────────┴───────────────────┘
+Factor cache: 142 month-ends from 2015-01-30 to 2026-10-30; 142 written, 0 already stored; table factor_exposures in data (settings ea0279da348c). Run 
+01M76KRP48ARVQAMGR9DV1D4G3.
+factors exit 0; seconds 25495
+=== uv run atlas risk-model build --from 2017 --to 2026
+risk-model exit 137; seconds 5576
+=== end 2026-11-12T09:28:31Z

@@ -28,4 +28,12 @@ Every output below comes from commands run in this stage's chat (Project.md Rule
 - Acceptance criteria still evidenced (`test_synthetic_recovery_correlation`, `test_calibration_bias_statistic_near_one`, `test_decomposition_sums_to_total`, `test_build_time_500_names_under_2s` passed in the brief's Verify).
 - Not done: the stored history on the main lake itself (Tier 1 item 4; a long run from the owner's Terminal panel).
 
+#### Phase 2 checkpoint follow-up (Tier 1 item 4: memory fix in `load_cross_sections`) — 2026-11-12
+- Why: the ten-year main-lake build was killed by the system (exit 137) after the anchors; each cross-section kept a slice of the whole price panel alive. Details in [worklog.md](worklog.md).
+- Red first: `test_cross_sections_own_their_numbers` → `assert 32544 <= 768`. After the fix: `tests/unit/quant/risk_model/test_factor_risk_loader.py` → 14 passed.
+- `make check` → exit 0 (ruff clean, 379 files formatted, mypy 156 files clean, 4069 passed, 38 deselected) · raw: [artifacts/phase2-checkpoint-2026-11-11-riskfix-make-check.txt](artifacts/phase2-checkpoint-2026-11-11-riskfix-make-check.txt); the brief's Verify (`tests/unit/quant/risk_model`) is part of that run.
+- Offline end-to-end `tests/integration/test_phase2_run.py` (both build commands unmocked) → 7 passed · raw: [artifacts/phase2-checkpoint-2026-11-11-riskfix-integration.txt](artifacts/phase2-checkpoint-2026-11-11-riskfix-integration.txt)
+- Main lake, read only, ten-year window with stand-in fundamentals: before → killed (exit 137); after → exit 0 in 361 s, 2,471 sessions, 115 snapshots, peak resident memory 3.20 GB · raw: [artifacts/phase2-checkpoint-2026-11-11-risk-build-profile.txt](artifacts/phase2-checkpoint-2026-11-11-risk-build-profile.txt)
+- Not done: the stored history on the main lake itself (the real build is re-run from the owner's Terminal panel after the merge).
+
 **Result:** ALL CRITERIA VERIFIED

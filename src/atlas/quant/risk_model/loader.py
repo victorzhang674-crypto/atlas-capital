@@ -121,6 +121,14 @@ def build_model_from_view(
     )
 
 
+def _row(frame: pd.DataFrame, stamp: pd.Timestamp, columns: Sequence[str]) -> pd.Series:
+    """Row `stamp` of `frame` for `columns`, as a Series that owns its values (NaN for a column
+    the frame lacks). `frame.loc[stamp, columns]` slices `columns` over every row first and
+    returns a view of one row: kept in a cross-section, it holds that whole slice alive, one
+    per session (memory ~ sessions^2 x names)."""
+    return cast(pd.Series, frame.loc[stamp]).reindex(list(columns)).copy()
+
+
 @dataclass(frozen=True)
 class _Anchor:
     """The fundamental inputs at one monthly anchor (a view at `day`, data through the
@@ -207,16 +215,16 @@ def load_cross_sections(
             raise DataError(f"no price panel rows for {day} (previous close {prev.date()})")
         with np.errstate(invalid="ignore", divide="ignore"):
             caps = anchor.caps.reindex(members) * (
-                close.loc[prev, members] / close.loc[base, members]
+                _row(close, prev, members) / _row(close, base, members)
             )
         raw = anchor.styles.reindex(members).copy()
         raw["size"] = _log_cap(caps)
         for style, feature in TECHNICAL_FEATURES.items():
-            raw[style] = tech[feature].loc[prev, members]
+            raw[style] = _row(tech[feature], prev, members)
         out.append(
             CrossSection(
                 day=day,
-                returns=cast(pd.Series, returns.loc[pd.Timestamp(day)]).reindex(members),
+                returns=_row(returns, pd.Timestamp(day), members),
                 raw_styles=raw[list(STYLE_NAMES)],
                 sectors=anchor.sectors.reindex(members),
                 caps=caps,

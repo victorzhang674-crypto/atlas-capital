@@ -1,0 +1,36 @@
+Phase 2 checkpoint, Tier 1 item 4: profile of the risk-model build after the anchors (main lake, read only).
+Script: phase2-checkpoint-2026-11-11-risk-build-profile.py (stand-in fundamentals from the stored factor cache).
+
+=== BEFORE the fix (loader at 673d8c5), 2017-01-03 .. 2026-10-30, run 2026-11-12 ~09:50 UTC: killed, exit 137
+[      0 s] peak rss  0.18 GB  start: load_cross_sections 2017-01-03 .. 2026-10-30
+[    109 s] peak rss  1.88 GB  -> DataView.prices (693 symbols x 2787 sessions)
+[    115 s] peak rss  2.15 GB  <- DataView.prices (1633833 rows, 0.19 GB)
+[    115 s] peak rss  2.15 GB  -> PricePanel.from_bars
+[    116 s] peak rss  2.37 GB  <- PricePanel.from_bars
+[    116 s] peak rss  2.37 GB  -> compute_panel
+[    117 s] peak rss  2.40 GB  <- compute_panel
+(no further line: the process was killed inside the cross-section loop of load_cross_sections)
+
+=== BEFORE the fix, six months 2017-01-03 .. 2017-06-30 with TRACE=1 (transcribed from the run in chat)
+[    147 s] peak rss  0.53 GB  <- compute_panel
+[    159 s] peak rss  0.94 GB  load_cross_sections done: 125 cross-sections
+traced: 429 MB live, 481 MB peak; largest live allocations:
+     421.7 MB in 500 blocks   pandas take_nd (blk.take_nd(taker, axis=0, new_mgr_locs=mgr_locs)): column slices of the
+                              price panel (441 sessions x the members), kept alive by the row views in each cross-section
+  = 3.4 MB per session for a 441-session panel; the ten-year panel has 2,787 sessions and 2,471 cross-sections
+    (about 21 MB x 2,471 = 50+ GB).
+
+=== AFTER the fix (_row: row first, then the members, as an owned copy), 2017-01-03 .. 2026-10-30, whole build_and_store
+[      1 s] peak rss  0.23 GB  start: build_and_store 2017-01-03 .. 2026-10-30 with 30 ETFs into /tmp/claude-501/risk-build-profile-62660
+[    110 s] peak rss  1.93 GB  -> DataView.prices (693 symbols x 2787 sessions)
+[    117 s] peak rss  2.15 GB  <- DataView.prices (1633833 rows, 0.19 GB)
+[    117 s] peak rss  2.15 GB  -> PricePanel.from_bars
+[    117 s] peak rss  2.37 GB  <- PricePanel.from_bars
+[    117 s] peak rss  2.37 GB  -> compute_panel
+[    118 s] peak rss  2.39 GB  <- compute_panel
+[    123 s] peak rss  2.54 GB  -> fit_factor_history
+[    136 s] peak rss  2.90 GB  <- fit_factor_history
+[    361 s] peak rss  3.20 GB  build_and_store done: 2471 sessions, 0 skipped, mean R2 0.307 (made-up caps), 115 snapshots 2017-04-28 .. 2026-10-30
+peak resident memory 3.20 GB; PROFILE OK
+snapshot_stored events: 115 (log lines go to the run log, not stdout); etfs_skipped warnings: 3
+exit 0
