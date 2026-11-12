@@ -36,3 +36,4 @@ Filled only with output from commands run in this stage's chat (Project.md Rule 
 - Not done: Tier 1 item 4 (the main-lake builds) and Tiers 2–4.
 
 **Result:** ALL CRITERIA VERIFIED
+- On merged `main` (`2f81f0e`, fast-forward from `f0b4d01`; owner's Terminal panel): `make check` → exit 0, 4068 passed, 38 deselected; integration → 8 passed, 15 skipped; branch merged; checkout clean · raw: [artifacts/phase2-checkpoint-2026-11-11-merged-main-check.txt](artifacts/phase2-checkpoint-2026-11-11-merged-main-check.txt)

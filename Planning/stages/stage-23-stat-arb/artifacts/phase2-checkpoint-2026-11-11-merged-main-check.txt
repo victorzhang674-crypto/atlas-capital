@@ -1,0 +1,165 @@
+=== before: main f0b4d01
+=== git merge --ff-only claude/phase-two-checkpoint-stages-a4dbeb
+Updating f0b4d01..2f81f0e
+Fast-forward
+ Planning/PROGRESS.md                               |  18 +-
+ .../phase2-checkpoint-2026-11-11-blocked-check.py  |  49 ++++
+ .../phase2-checkpoint-2026-11-11-blocked-check.txt |   8 +
+ .../phase2-checkpoint-2026-11-11-verify.txt        |   1 +
+ .../stage-13-data-quality-dataview/verification.md |   8 +
+ .../stage-13-data-quality-dataview/worklog.md      |  12 +
+ .../phase2-checkpoint-2026-11-11-verify.txt        |   4 +
+ .../stage-16-fundamental-factors/verification.md   |   9 +
+ .../stages/stage-16-fundamental-factors/worklog.md |  10 +
+ .../phase2-checkpoint-2026-11-11-verify.txt        |   4 +
+ .../stage-19-factor-risk-model/verification.md     |   9 +
+ .../stages/stage-19-factor-risk-model/worklog.md   |  13 +
+ .../phase2-checkpoint-2026-11-11-checks.sh         |  20 ++
+ .../phase2-checkpoint-2026-11-11-integration.txt   |  32 +++
+ ...heckpoint-2026-11-11-make-check-run1-failed.txt | 109 ++++++++
+ .../phase2-checkpoint-2026-11-11-make-check.txt    |  90 +++++++
+ ...phase2-checkpoint-2026-11-11-profile-quality.py |  26 ++
+ ...hase2-checkpoint-2026-11-11-profile-quality.txt |  79 ++++++
+ .../phase2-checkpoint-2026-11-11-report.md         | 180 ++++++++++++++
+ ...kpoint-2026-11-11-tier1-integration-offline.txt |  53 ++++
+ ...ase2-checkpoint-2026-11-11-tier1-make-check.txt |  90 +++++++
+ ...checkpoint-2026-11-11-tier1-real-lake-trial.txt |  21 ++
+ .../phase2-checkpoint-2026-11-11-verify.txt        | 102 ++++++++
+ Planning/stages/stage-23-stat-arb/verification.md  |   9 +
+ Planning/stages/stage-23-stat-arb/worklog.md       |  21 ++
+ src/atlas/cli/app.py                               |   7 +-
+ src/atlas/cli/factors_cmd.py                       | 133 ++++++++++
+ src/atlas/cli/risk_model_cmd.py                    | 128 ++++++++++
+ src/atlas/data/quality.py                          |  77 ++++--
+ src/atlas/data/view.py                             |  13 +-
+ src/atlas/quant/factors/store.py                   |  29 ++-
+ src/atlas/quant/risk_model/loader.py               |  18 +-
+ src/atlas/quant/risk_model/store.py                |   5 +
+ tests/integration/test_phase2_run.py               | 275 +++++++++++++++++++++
+ tests/unit/cli/conftest.py                         |   4 +
+ tests/unit/cli/test_factors_cmd.py                 | 137 ++++++++++
+ tests/unit/cli/test_risk_model_cmd.py              | 163 ++++++++++++
+ tests/unit/data/test_quality.py                    | 113 +++++++++
+ tests/unit/data/test_view_pit.py                   |  31 +++
+ tests/unit/quant/factors/test_factor_store.py      |  14 ++
+ .../quant/risk_model/test_factor_risk_loader.py    |  96 +++++++
+ 41 files changed, 2181 insertions(+), 39 deletions(-)
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase2-checkpoint-2026-11-11-blocked-check.py
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase2-checkpoint-2026-11-11-blocked-check.txt
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase2-checkpoint-2026-11-11-verify.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/phase2-checkpoint-2026-11-11-verify.txt
+ create mode 100644 Planning/stages/stage-19-factor-risk-model/artifacts/phase2-checkpoint-2026-11-11-verify.txt
+ create mode 100755 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-checks.sh
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-integration.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-make-check-run1-failed.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-make-check.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-profile-quality.py
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-profile-quality.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-report.md
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-integration-offline.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-make-check.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier1-real-lake-trial.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-verify.txt
+ create mode 100644 src/atlas/cli/factors_cmd.py
+ create mode 100644 src/atlas/cli/risk_model_cmd.py
+ create mode 100644 tests/integration/test_phase2_run.py
+ create mode 100644 tests/unit/cli/test_factors_cmd.py
+ create mode 100644 tests/unit/cli/test_risk_model_cmd.py
+merge exit 0
+2f81f0e phase-2 checkpoint: report and Tier 1 follow-ups (stages 13, 16, 19, 23)
+f0b4d01 stage-24: CI result records
+a6a249c stage-24: push and CI records
+tree main: 09ab8072b6e64ef7083dfc224130373daafd868c  tree branch: 09ab8072b6e64ef7083dfc224130373daafd868c
+=== make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+379 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 156 source files
+uv run pytest -q
+........................................................................ [  1%]
+........................................................................ [  3%]
+........................................................................ [  5%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+........................................................................ [ 14%]
+........................................................................ [ 15%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 35%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+.................................................................
+compute_features: 40 features x 500 symbols x 2000 sessions in 2.51 s (limit 20 s)
+....... [ 65%]
+........................................................................ [ 67%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 72%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 77%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+........................................................................ [ 99%]
+....................................                                     [100%]
+4068 passed, 38 deselected in 413.48s (0:06:53)
+make check exit 0
+=== uv run pytest -m integration -q -rs (main lake)
+ssss........sssssssssss                                                  [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:61: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:76: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:91: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:119: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:59: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:65: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:75: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:82: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:110: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:123: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:86: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:96: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:116: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:129: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:143: set ATLAS_RISK_MODEL_FULL=1 for the 2018-2024 calibration
+8 passed, 15 skipped, 4083 deselected in 126.35s (0:02:06)
+integration exit 0
+=== git branch --merged main
++ claude/phase-two-checkpoint-stages-a4dbeb
+=== after
+## main...origin/main [ahead 1]
