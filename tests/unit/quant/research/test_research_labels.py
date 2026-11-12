@@ -10,7 +10,7 @@ import pytest
 from research_world import CAL, ResearchWorld, build_research_world
 
 from atlas.core.errors import LookAheadError
-from atlas.core.pit import guard_not_label, is_label
+from atlas.core.pit import AsOf, guard_not_label, is_label
 from atlas.core.storage import DEFAULT_REGISTRY, Lake
 from atlas.quant.research import ForwardReturns, compound_forward, forward_returns
 
@@ -182,3 +182,47 @@ def test_forward_returns_validates_dates(world: ResearchWorld) -> None:
         forward_returns(world.factory, [world.day(5)], [])
     with pytest.raises(ValueError, match="horizons"):
         forward_returns(world.factory, [world.day(5)], syms, horizons=(5, 1))
+
+
+# --- Phase 2 checkpoint, Tier 2 (Stage 17 audit F): `daily` and `labels` are copies ------------
+
+
+def test_daily_is_handed_out_as_a_copy(labels: ForwardReturns) -> None:
+    before = labels.daily.copy()
+    handed = labels.daily
+    handed.iloc[1, 0] = 99.0
+    pd.testing.assert_frame_equal(labels.daily, before)
+    assert is_label(labels.daily)
+
+
+def test_label_frames_are_handed_out_as_copies(labels: ForwardReturns) -> None:
+    before = labels.horizon(1)
+    handed = labels.labels[1]
+    assert is_label(handed)
+    handed.iloc[0, 0] = 99.0
+    pd.testing.assert_frame_equal(labels.labels[1], before)
+    pd.testing.assert_frame_equal(labels.horizon(1), before)
+    assert sorted(labels.labels) == [1, 5]
+    with pytest.raises(TypeError):
+        labels.labels[21] = before  # type: ignore[index]
+
+
+def test_forward_returns_keeps_its_own_copy_of_the_frames_it_is_given() -> None:
+    daily = _daily()
+    dates = [daily.index[0], daily.index[1]]
+    frames = {1: compound_forward(daily, dates, 1)}
+    lab = ForwardReturns(
+        dates=tuple(d.date() for d in dates),
+        symbols=("A", "B"),
+        horizons=(1,),
+        daily=daily,
+        known_at=AsOf.for_session(date(2024, 1, 9)),
+        blocked=(),
+        labels=frames,
+    )
+    daily.iloc[1, 0] = 99.0
+    frames[1].iloc[0, 0] = 99.0
+    assert lab.daily.iloc[1, 0] == pytest.approx(0.10)
+    assert lab.horizon(1).iloc[0, 0] == pytest.approx(0.10)
+    with pytest.raises(AttributeError):
+        lab.blocked = ("A",)  # type: ignore[misc]

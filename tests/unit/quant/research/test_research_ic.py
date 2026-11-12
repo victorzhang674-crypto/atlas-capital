@@ -244,6 +244,40 @@ def test_ic_by_regime_groups_dates() -> None:
     assert out.loc["bull", "n_dates"] == 2
 
 
+def test_newey_west_keep_gaps_pairs_only_true_neighbours() -> None:  # Tier 2, audit D
+    x = pd.Series([1.0, 2.0, np.nan, 4.0, 6.0])
+    d = np.array([1.0, 2.0, 4.0, 6.0]) - 3.25
+    gamma0 = float(d @ d) / 4
+    # lag 1 pairs positions (0, 1) and (3, 4); positions 1 and 3 are two steps apart
+    gapped = gamma0 + 2 * 0.5 * (d[0] * d[1] + d[2] * d[3]) / 4
+    assert newey_west_tstat(x, 1, keep_gaps=True) == pytest.approx(3.25 / math.sqrt(gapped / 4))
+    squeezed = gamma0 + 2 * 0.5 * (d[0] * d[1] + d[1] * d[2] + d[2] * d[3]) / 4
+    assert newey_west_tstat(x, 1) == pytest.approx(3.25 / math.sqrt(squeezed / 4))
+    # two steps apart is a lag-2 pair
+    lag2 = gamma0 + 2 * (2 / 3) * (d[0] * d[1] + d[2] * d[3]) / 4 + 2 * (1 / 3) * (d[1] * d[2]) / 4
+    assert newey_west_tstat(x, 2, keep_gaps=True) == pytest.approx(3.25 / math.sqrt(lag2 / 4))
+    full = pd.Series([1.0, 2.0, 3.0, 4.0, 6.0])
+    assert newey_west_tstat(full, 2, keep_gaps=True) == pytest.approx(newey_west_tstat(full, 2))
+    assert newey_west_tstat(x, 0, keep_gaps=True) == pytest.approx(newey_west_tstat(x, 0))
+    assert math.isnan(newey_west_tstat(pd.Series([np.nan, 0.1, np.nan]), 1, keep_gaps=True))
+    edges = pd.Series([np.nan, 1.0, 2.0, 4.0, 6.0, np.nan])
+    assert newey_west_tstat(edges, 2, keep_gaps=True) == pytest.approx(newey_west_tstat(edges, 2))
+
+
+def test_ic_by_regime_t_stat_respects_the_gaps() -> None:  # Tier 2, audit D
+    series = pd.Series([0.30, 0.10, -0.20, 0.25, 0.05, -0.10, 0.20, 0.15], index=DAYS[:8])
+    regimes = pd.Series(["a", "a", "b", "a", "a", "b", "a", "a"], index=DAYS[:8], dtype="object")
+    out = ic_by_regime(series, regimes, lags=1)
+    in_a = regimes == "a"
+    assert out.loc["a", "t_stat"] == pytest.approx(
+        newey_west_tstat(series.where(in_a), 1, keep_gaps=True)
+    )
+    assert out.loc["a", "t_stat"] != pytest.approx(newey_west_tstat(series[in_a], 1))
+    # "b" has two dates three steps apart: no lag-1 pair, so the plain t-statistic
+    assert out.loc["b", "t_stat"] == pytest.approx(newey_west_tstat(series[~in_a], 0))
+    assert out.loc["a", "n_dates"] == 6 and out.loc["a", "mean"] == pytest.approx(1.05 / 6)
+
+
 # --- decay ---------------------------------------------------------------------------------------
 
 

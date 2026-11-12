@@ -2,6 +2,7 @@
 
 import json
 import math
+from datetime import date
 from pathlib import Path
 
 import numpy as np
@@ -209,3 +210,41 @@ def test_turnover_proxy_uses_lag_one(inputs: tuple[pd.DataFrame, ForwardReturns]
     lag1 = rank_autocorrelation(signal, (1,), config=cfg).loc[1]
     assert decay["turnover_proxy"] == pytest.approx(1 - lag1)
     assert decay["turnover_proxy"] != pytest.approx(1 - decay["rank_autocorrelation"]["3"])
+
+
+# --- Phase 2 checkpoint, Tier 2 ---------------------------------------------------------------
+
+
+def test_tearsheet_says_whether_its_labels_read_the_holdout(
+    sheet: SignalTearSheet, inputs: tuple[pd.DataFrame, ForwardReturns]
+) -> None:
+    signal, labels = inputs
+    last = str(labels.daily.index[-1].date())  # the world is in 2023-2024
+    got = sheet.summary["labels"]
+    assert got["last_session"] == last
+    assert got["in_sample_end"] == "2021-12-31" and got["reads_holdout"] is True
+    later = CFG.model_copy(
+        update={"backtest": CFG.backtest.model_copy(update={"in_sample_end": date(2030, 12, 31)})}
+    )
+    inside = build_tearsheet("planted", signal, labels, config=later).summary["labels"]
+    assert inside["in_sample_end"] == "2030-12-31" and inside["reads_holdout"] is False
+    assert inside["last_session"] == last
+
+
+def test_tearsheet_records_where_the_regimes_came_from(
+    inputs: tuple[pd.DataFrame, ForwardReturns],
+) -> None:
+    signal, labels = inputs
+    regimes = pd.Series(
+        np.where(np.arange(len(signal)) % 2 == 0, "LOW", "HIGH"), index=signal.index
+    ).rename("vol_regime")
+    by_regime = build_tearsheet("planted", signal, labels, regimes=regimes, config=CFG).summary[
+        "by_regime"
+    ]
+    assert by_regime["source"] == "vol_regime"
+    assert by_regime["dates_without_regime"] == 0
+    partial = regimes.iloc[3:]
+    by_regime = build_tearsheet("planted", signal, labels, regimes=partial, config=CFG).summary[
+        "by_regime"
+    ]
+    assert by_regime["dates_without_regime"] == 3

@@ -23,7 +23,7 @@ import pandas as pd
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AlphaPEADConfig
 from atlas.data.view import DataView
-from atlas.quant.alpha.base import alpha_frame, empty_alpha_frame
+from atlas.quant.alpha.base import alpha_frame, check_horizon, empty_alpha_frame
 
 
 def pead_decay(age: int, decay_sessions: int) -> float:
@@ -69,12 +69,14 @@ class PEADModel:
 
     @property
     def horizon(self) -> int:
-        """The forecast horizon in sessions (`config.horizon`; default 21)."""
+        """The forecast horizon in sessions (`config.horizon`; default 21). `predict`
+        raises `ConfigError` when the view's config says otherwise (`check_horizon`)."""
         return (self.config or AlphaPEADConfig()).horizon
 
     def predict(self, view: DataView) -> pd.DataFrame:
         """The alpha frame of the universe members with a live reaction at `view.as_of`."""
         cfg = self.config or view.config.quant.alpha.pead
+        check_horizon(self, cfg.horizon)
         calendar = TradingCalendar(config=view.config.calendar)
         rows: dict[str, dict[str, float]] = {}
         for symbol in view.universe(cfg.universe):

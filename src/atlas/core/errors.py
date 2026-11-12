@@ -49,6 +49,11 @@ class LLMTransientError(LLMError):
         self.retry_after = retry_after
 
 
+class BacktestError(AtlasError):
+    """A backtest reached a state it cannot continue from (for example the book lost its
+    whole NAV in one session)."""
+
+
 class RiskLimitError(AtlasError):
     """An action would breach a hard risk limit; the action must not go ahead."""
 

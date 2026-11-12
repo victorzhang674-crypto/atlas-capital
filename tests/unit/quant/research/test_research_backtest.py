@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 from atlas.core.calendar import TradingCalendar
-from atlas.core.errors import LookAheadError
+from atlas.core.errors import BacktestError, LookAheadError
 from atlas.core.pit import tag_label
 from atlas.quant.research import (
     BacktestResult,
@@ -268,3 +268,28 @@ def test_weights_backtest_known_values_and_checks() -> None:  # Stage 23
         weights_backtest(targets.iloc[:0], daily, cost_bps=0.0, sessions_per_year=252)
     with pytest.raises(LookAheadError):
         weights_backtest(tag_label(targets), daily, cost_bps=0.0, sessions_per_year=252)
+
+
+# --- Phase 2 checkpoint, Tier 2 (Stage 17 audit E): a wiped-out book stops the backtest -------
+
+
+@pytest.mark.parametrize("loss", [-0.5, -0.6], ids=["exactly-all", "more-than-all"])
+def test_weights_backtest_raises_when_the_book_loses_everything(loss: float) -> None:
+    from atlas.quant.research import weights_backtest
+
+    idx = DAYS[:4]
+    daily = pd.DataFrame({"A": [0.0, 0.0, loss, 0.1], "B": [0.0, 0.0, 0.0, 0.0]}, index=idx)
+    targets = pd.DataFrame({"A": [2.0], "B": [-1.0]}, index=idx[:1])  # 2 x -50% = -100%
+    with pytest.raises(BacktestError, match=str(idx[2].date())):
+        weights_backtest(targets, daily, cost_bps=0.0, sessions_per_year=252)
+
+
+def test_weights_backtest_runs_just_above_a_total_loss() -> None:
+    from atlas.quant.research import weights_backtest
+
+    idx = DAYS[:4]
+    daily = pd.DataFrame({"A": [0.0, 0.0, -0.49, 0.1], "B": [0.0, 0.0, 0.0, 0.0]}, index=idx)
+    targets = pd.DataFrame({"A": [2.0], "B": [-1.0]}, index=idx[:1])
+    out = weights_backtest(targets, daily, cost_bps=0.0, sessions_per_year=252)
+    assert out.gross_returns.iloc[2] == pytest.approx(-0.98)
+    assert np.isfinite(out.returns.to_numpy()).all()

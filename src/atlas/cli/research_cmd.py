@@ -11,6 +11,14 @@ output directory, the console shows warnings and errors only. A bare year
 means 1 January (`--from`) or 31 December (`--to`). Exit codes: 0 ok, 1 the run failed,
 2 bad arguments.
 
+Hold-out guard (spec A7): the labels of the last date reach `max(quant.research.horizons)`
+sessions past it, and a window whose labels close after `backtest.in_sample_end` is refused
+(exit 2, with the last `--to` that fits: 2021-10-01 for the default 63-session horizon)
+unless `--allow-holdout` is given. The override is written to the run's audit log
+(`<lake>/runs/<run_id>/audit.jsonl`, an `OVERRIDE` event) before any data is read; if it
+cannot be written, the run stops (exit 1). `--regimes vol|trend|quadrant` adds the IC by
+regime from the stored `regime_history` (`atlas regime build`).
+
 `atlas research pairs --as-of 2021-12-01` (Stage 23) selects the cointegrated same-sector
 pairs at the as-of (point in time: the universe's members on that day, closes through the
 session before) and lists them with their current spread z-score and the signal a flat pair
@@ -29,18 +37,22 @@ from rich.console import Console
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TextColumn, TimeElapsedColumn
 from rich.table import Table
 
+from atlas.core.audit import AuditLog, EventType, audit_path
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig, load_config
-from atlas.core.errors import AtlasError, ConfigError
+from atlas.core.errors import AtlasError, ConfigError, DataError
 from atlas.core.logging import configure_logging, reset_logging
 from atlas.core.run_context import run_context
 from atlas.core.storage import Lake
 from atlas.data.view import DataView
+from atlas.quant.regime import REGIME_KINDS, RegimeStore
 from atlas.quant.research import (
     FREQUENCIES,
     Frequency,
+    HoldoutCheck,
     SignalTearSheet,
     evaluation_dates,
+    holdout_check,
     research_signal,
     signal_kind,
 )
@@ -54,6 +66,7 @@ research_app = typer.Typer(
 )
 
 CONSOLE_MIN_WIDTH = 160
+AUDIT_ACTOR = "cli"
 _YEAR = re.compile(r"^\d{4}$")
 
 
@@ -93,9 +106,11 @@ def _fmt(value: Any, spec: str) -> str:
 
 def _summary_table(sheet: SignalTearSheet) -> Table:
     s = sheet.summary
-    table = Table(
-        title=f"{s['signal']} ({s['kind']}): {s['start']} .. {s['end']}, {s['n_dates']} dates"
-    )
+    with_ic = s["ic"][f"h{s['headline_horizon']}"]["spearman"]["n_dates"]
+    counted = f"{with_ic} dates with an IC"
+    if with_ic != s["n_dates"]:
+        counted += f" ({s['n_dates']} requested)"
+    table = Table(title=f"{s['signal']} ({s['kind']}): {s['start']} .. {s['end']}, {counted}")
     for name in (
         "horizon",
         "IC pearson",
@@ -123,6 +138,34 @@ def _summary_table(sheet: SignalTearSheet) -> Table:
     return table
 
 
+def _regime_table(sheet: SignalTearSheet) -> Table:
+    """The by-regime IC of the headline horizon (Spearman; the t-statistic keeps the gaps)."""
+    s = sheet.summary
+    h = s["headline_horizon"]
+    table = Table(title=f"IC by {s['by_regime']['source']}, {h}-session forward return")
+    for name in ("regime", "IC spearman", "NW t", "hit rate", "dates"):
+        table.add_column(name, justify="left" if name == "regime" else "right")
+    for regime, row in s["by_regime"][f"h{h}"].items():
+        table.add_row(
+            regime,
+            _fmt(row["mean"], ".4f"),
+            _fmt(row["t_stat"], ".2f"),
+            _fmt(row["hit_rate"], ".2f"),
+            str(row["n_dates"]),
+        )
+    return table
+
+
+def _refuse_holdout(check: HoldoutCheck) -> typer.BadParameter:
+    return typer.BadParameter(
+        f"the labels of {check.last_decision} close on {check.last_label_session}, after "
+        f"backtest.in_sample_end ({check.in_sample_end}): this window reads the hold-out "
+        f"(spec A7). The last --to that stays in sample is {check.latest_decision_in_sample}. "
+        "Pass --allow-holdout to run anyway; the override is written to the audit log.",
+        param_hint="--to",
+    )
+
+
 @research_app.command("signal")
 def signal_cmd(
     ctx: typer.Context,
@@ -140,6 +183,17 @@ def signal_cmd(
         Path | None,
         typer.Option(help="Output directory (default: <lake>/<quant.research.out_dir>/<name>)."),
     ] = None,
+    regimes: Annotated[
+        str | None,
+        typer.Option(help="Add the IC by stored regime: vol, trend or quadrant."),
+    ] = None,
+    allow_holdout: Annotated[
+        bool,
+        typer.Option(
+            "--allow-holdout",
+            help="Run although the labels close after backtest.in_sample_end (audited).",
+        ),
+    ] = False,
 ) -> None:
     """Evaluate a signal (IC, quantiles, decay, long-short backtest) and save its tear sheet."""
     console = _console()
@@ -152,6 +206,10 @@ def signal_cmd(
         raise typer.BadParameter(
             f"must be one of {', '.join(FREQUENCIES)}", param_hint="--frequency"
         )
+    if regimes is not None and regimes not in REGIME_KINDS:
+        raise typer.BadParameter(
+            f"must be one of {', '.join(REGIME_KINDS)}", param_hint="--regimes"
+        )
     if first > last:
         raise typer.BadParameter(f"--from {first} is after --to {last}", param_hint="--from")
     config = _config(ctx, console)
@@ -161,6 +219,9 @@ def signal_cmd(
         raise typer.BadParameter(
             f"no trading session between {first} and {last}", param_hint="--from"
         )
+    check = holdout_check(dates, config=config)
+    if check.reads_holdout and not allow_holdout:
+        raise _refuse_holdout(check)
     lake = Lake(config.data.lake_path)
     target = (
         out
@@ -187,6 +248,16 @@ def signal_cmd(
             configure_logging(
                 level="INFO", log_file=target / "research.log", console_level="WARNING"
             )
+            if check.reads_holdout:
+                _record_holdout_override(config, run.run_id, name, first, last, check)
+            labels = None
+            if regimes is not None:
+                labels = RegimeStore(lake, config).labels(regimes, first, last)
+                if labels.empty:
+                    raise DataError(
+                        f"no stored {REGIME_KINDS[regimes]} between {first} and {last}: run "
+                        f"`atlas regime build --from {first} --to {last}` first"
+                    )
             task = progress.add_task(f"{name}: signal dates", total=len(dates))
             sheet = research_signal(
                 name,
@@ -196,6 +267,7 @@ def signal_cmd(
                 config=config,
                 frequency=freq,
                 universe=universe,
+                regimes=labels,
                 progress=lambda _day: progress.advance(task),
             )
             written = sheet.save(target)
@@ -204,7 +276,20 @@ def signal_cmd(
         raise typer.Exit(1) from None
     finally:
         reset_logging()
+    if check.reads_holdout:
+        console.print(
+            f"[yellow]Hold-out:[/yellow] this run read returns to {check.last_label_session}, "
+            f"after backtest.in_sample_end ({check.in_sample_end}); the override is in the "
+            f"audit log of run {run.run_id}."
+        )
     console.print(_summary_table(sheet))
+    if regimes is not None:
+        console.print(_regime_table(sheet))
+        missing = sheet.summary["by_regime"]["dates_without_regime"]
+        if missing:
+            console.print(
+                f"[yellow]Note:[/yellow] {missing} of {len(dates)} dates have no stored regime."
+            )
     bt = sheet.summary["backtest"]
     console.print(
         f"Long-short backtest ({bt['weighting']}, {bt['rebalance']}, {bt['cost_bps']} bps): "
@@ -216,6 +301,32 @@ def signal_cmd(
     if blocked:
         console.print(f"[yellow]Note:[/yellow] {len(blocked)} name(s) had no labels (blocked).")
     console.print(f"Run {run.run_id}. Tear sheet: {target} ({len(written)} files)")
+
+
+def _record_holdout_override(
+    config: AtlasConfig, run_id: str, name: str, first: date, last: date, check: HoldoutCheck
+) -> None:
+    """Write the `--allow-holdout` override to the run's audit log (needs the run context).
+    `AtlasError` when the log cannot be written: an override that leaves no record must not
+    run."""
+    try:
+        AuditLog(audit_path(config.data.lake_path, run_id)).record(
+            EventType.OVERRIDE,
+            AUDIT_ACTOR,
+            {
+                "command": "research signal",
+                "override": "allow_holdout",
+                "signal": name,
+                "from": first,
+                "to": last,
+                "in_sample_end": check.in_sample_end,
+                "last_label_session": check.last_label_session,
+            },
+        )
+    except OSError as exc:
+        raise AtlasError(
+            f"cannot write the hold-out override to the audit log ({exc}); not running"
+        ) from exc
 
 
 def _pairs_table(snap: PairsSnapshot) -> Table:

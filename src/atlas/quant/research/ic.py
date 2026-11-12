@@ -101,21 +101,29 @@ def ic_series(
     return pd.Series(out, index=signal.index, name=f"ic_{method}", dtype="float64")
 
 
-def newey_west_tstat(series: pd.Series, lags: int) -> float:
+def newey_west_tstat(series: pd.Series, lags: int, *, keep_gaps: bool = False) -> float:
     """t-statistic of the mean of `series` (NaNs dropped) with the Newey-West (Bartlett)
     long-run variance: `gamma_0 + 2 * sum_{l=1..L} (1 - l/(L+1)) gamma_l`, autocovariances
     divided by n. `lags=0` gives `mean / (std_pop / sqrt(n))`. NaN with fewer than 2 values, a
-    constant series or a non-positive variance."""
+    constant series or a non-positive variance.
+
+    `keep_gaps`: the rows of `series` are equally spaced and a NaN is a missing observation
+    that keeps its place, so `gamma_l` sums only the pairs of values exactly `l` rows apart
+    (the estimator for series with missing observations: deviations from the mean, zero where
+    missing, then the usual formula with n = the number of values). Without it the NaNs are
+    squeezed out first and values on either side of a gap count as neighbours. The two agree
+    when the values are consecutive."""
     if isinstance(lags, bool) or not isinstance(lags, int) or lags < 0:
         raise ValueError(f"lags must be a non-negative int, got {lags!r}")
-    x = series.dropna().to_numpy(dtype="float64")
+    raw = series.to_numpy(dtype="float64")
+    x = raw[~np.isnan(raw)]
     n = len(x)
     if n < 2 or x.max() == x.min():  # constant: rounding in the mean would fake a variance
         return math.nan
     mean = float(x.mean())
-    d = x - mean
+    d = np.where(np.isnan(raw), 0.0, raw - mean) if keep_gaps else x - mean
     variance = float(d @ d) / n
-    for lag in range(1, min(lags, n - 1) + 1):
+    for lag in range(1, min(lags, len(d) - 1) + 1):
         weight = 1.0 - lag / (lags + 1)
         variance += 2.0 * weight * float(d[lag:] @ d[:-lag]) / n
     if not variance > 0:
@@ -166,8 +174,9 @@ class ICSummary:
         return {name: getattr(self, name) for name in SUMMARY_FIELDS}
 
 
-def summarize_ic(series: pd.Series, lags: int) -> ICSummary:
-    """`ICSummary` of `series` (NaNs dropped) with `lags` Newey-West lags."""
+def summarize_ic(series: pd.Series, lags: int, *, keep_gaps: bool = False) -> ICSummary:
+    """`ICSummary` of `series` (NaNs dropped) with `lags` Newey-West lags; `keep_gaps` as in
+    `newey_west_tstat` (it changes the t-statistic only)."""
     valid = series.dropna().to_numpy(dtype="float64")
     n = len(valid)
     mean = float(valid.mean()) if n else math.nan
@@ -177,7 +186,7 @@ def summarize_ic(series: pd.Series, lags: int) -> ICSummary:
         mean=mean,
         std=std,
         ir=ir,
-        t_stat=newey_west_tstat(series, lags),
+        t_stat=newey_west_tstat(series, lags, keep_gaps=keep_gaps),
         lags=lags,
         hit_rate=float((valid > 0).mean()) if n else math.nan,
         n_dates=n,
@@ -215,11 +224,13 @@ def ic_by_group(
 def ic_by_regime(series: pd.Series, regimes: pd.Series, *, lags: int) -> pd.DataFrame:
     """The IC summary of the dates of each regime (`regimes`: date -> label, aligned with the
     IC `series`' index; dates without a regime are left out). One row per regime (sorted),
-    columns `SUMMARY_FIELDS`."""
+    columns `SUMMARY_FIELDS`. A regime's dates are not consecutive, so its t-statistic keeps
+    the gaps (`newey_west_tstat(keep_gaps=True)`): only ICs that are really `l` evaluation
+    dates apart enter the lag-`l` autocovariance."""
     mapped = regimes.reindex(series.index)
     rows = {}
     for regime in sorted({r for r in mapped if isinstance(r, str)}):
-        rows[regime] = summarize_ic(series[mapped == regime], lags).to_dict()
+        rows[regime] = summarize_ic(series.where(mapped == regime), lags, keep_gaps=True).to_dict()
     return pd.DataFrame.from_dict(rows, orient="index", columns=list(SUMMARY_FIELDS)).rename_axis(
         "regime"
     )

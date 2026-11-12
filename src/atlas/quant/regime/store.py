@@ -59,6 +59,13 @@ READINGS: tuple[str, ...] = (
 MAX_STATES = 3
 """HMM probability columns (`hmm_p0..hmm_p2`)."""
 
+REGIME_KINDS: dict[str, str] = {
+    "vol": "vol_regime",
+    "trend": "trend_regime",
+    "quadrant": "macro_quadrant",
+}
+"""Regime kinds `RegimeStore.labels` reads -> the `RegimeState` field (and column) of each."""
+
 _F, _S = ColumnType.FLOAT64, ColumnType.STRING
 
 REGIME_HISTORY = DEFAULT_REGISTRY.register(
@@ -229,6 +236,23 @@ class RegimeStore:
         if known.empty:
             return None
         return self._state(known.sort_values("date").iloc[-1])
+
+    def labels(self, kind: str, start: date, end: date) -> pd.Series:
+        """The stored labels of one regime `kind` (`REGIME_KINDS`: `vol`, `trend`, `quadrant`)
+        on the decision days in [`start`, `end`]: a Series named after the column
+        (`vol_regime`, `trend_regime`, `macro_quadrant`), index `date` (`DatetimeIndex`,
+        ascending). Days without that label (no stored state, or a missing quadrant) are
+        left out. For conditioning research results on the regime (`ic_by_regime`)."""
+        if kind not in REGIME_KINDS:
+            raise ValueError(f"kind must be one of {', '.join(REGIME_KINDS)}, got {kind!r}")
+        column = REGIME_KINDS[kind]
+        found = {
+            pd.Timestamp(s.as_of): getattr(s, column)
+            for s in self.read(start, end)
+            if getattr(s, column) is not None
+        }
+        index = pd.DatetimeIndex(list(found), name="date")
+        return pd.Series(list(found.values()), index=index, name=column, dtype="object")
 
     def dates(self) -> tuple[date, ...]:
         """The stored decision days with the current settings, ascending."""

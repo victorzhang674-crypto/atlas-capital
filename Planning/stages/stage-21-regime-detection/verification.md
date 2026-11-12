@@ -38,3 +38,8 @@ Output from commands run in this stage's chat (Project.md Rule 1); raw outputs u
 - Commit `2b59c61`: `make check` exit 0, 3605 passed (before the commit and on merged `main`); pushed · raw: [artifacts/make-check-gapfix.txt](artifacts/make-check-gapfix.txt), [artifacts/persist-main-lake.txt](artifacts/persist-main-lake.txt)
 - **Persisted in the main lake:** `atlas regime build --from 2016-01-04 --to 2026-11-05` → 2,724 rows of `regime_history` (2016-01-04 .. 2026-11-02); read back: PIT reads correct, equal to the dry run · raw: [artifacts/persist-readback.txt](artifacts/persist-readback.txt)
 - CI on `2b59c61`: success (main 42148293255, branch 42148293175) · raw: [artifacts/ci-runs-gapfix.txt](artifacts/ci-runs-gapfix.txt), [artifacts/ci-runs-gapfix-main.txt](artifacts/ci-runs-gapfix-main.txt)
+
+#### Phase 2 checkpoint follow-up (Tier 2: `RegimeStore.labels`) — 2026-11-12
+- Red first, then `test_labels_by_kind` passes; brief's Verify `uv run pytest tests/unit/quant/regime -q` → 675 passed · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-verify.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-verify.txt); `make check` → exit 0 (ruff clean, 381 files formatted, mypy clean on 157 files, 4099 passed, 38 deselected) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-make-check.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-make-check.txt)
+- Main lake (read only): 1,448 labelled decision days per kind, 2016-01-04 .. 2021-10-01. Details in [worklog.md](worklog.md).
+- Acceptance criteria unchanged and still evidenced (in the brief's Verify).

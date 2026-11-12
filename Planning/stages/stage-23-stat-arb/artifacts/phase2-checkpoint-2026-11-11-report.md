@@ -193,4 +193,21 @@ PCA risk model (briefs' Out of scope).
     - Seen, not changed (Backlog): `BIL` is absent from three snapshots because the Stage 13
       stale-price rule blocked it (a T-bill ETF's close can stay unchanged for days), with no
       log line; the snapshot loop rebuilds its inputs at about 103 s per month-end.
-- Tiers 2–4: not started; each waits for the owner's word, as in Phase 1.
+- Tier 2 (owner's word 2026-11-12: "Start Tier 2"): items 1–6 done 2026-11-12; item 7 not started.
+  - Item 1: `atlas research signal` refuses a window whose labels close after
+    `backtest.in_sample_end` (exit 2, with the last `--to` that fits); `--allow-holdout` runs
+    it and writes an `OVERRIDE` event to the run's audit log first; no record, no run. Every
+    tear sheet says whether its labels read the hold-out. The default example
+    `--from 2016 --to 2021` is now refused: its last labels close in March 2022.
+  - Item 2: a session on which the book returns −100% or worse raises `BacktestError`.
+  - Item 3: `ForwardReturns` hands out copies and keeps its own.
+  - Item 4: the by-regime t-statistic keeps the gaps between a regime's dates;
+    `--regimes vol|trend|quadrant` reads the stored `regime_history`.
+  - Item 5: the header counts the dates with an IC.
+  - Item 6: a model whose stated horizon differs from the config `predict` uses raises
+    `ConfigError` (multi-factor, TSMOM and PEAD).
+  - `make check` → exit 0, 4099 passed; offline integration 8 passed, 15 skipped (no lake in the sandbox run).
+  - **Item 7 waits for the owner's decision.** It needs no download (the raw filings are
+    kept), but it changes the leverage factor, so `factor_exposures`, `factor_returns` and
+    `risk_model_snapshots` on the main lake would be rebuilt (about 9 h).
+- Tiers 3–4: not started; each waits for the owner's word, as in Phase 1.

@@ -21,7 +21,7 @@ import pandas as pd
 
 from atlas.core.config import AlphaTSMOMConfig
 from atlas.data.view import DataView
-from atlas.quant.alpha.base import alpha_frame, empty_alpha_frame
+from atlas.quant.alpha.base import alpha_frame, check_horizon, empty_alpha_frame
 from atlas.quant.features import REGISTRY, compute_features
 
 
@@ -62,13 +62,15 @@ class TSMOMModel:
 
     @property
     def horizon(self) -> int:
-        """The forecast horizon in sessions (`config.horizon`; default 21)."""
+        """The forecast horizon in sessions (`config.horizon`; default 21). `predict`
+        raises `ConfigError` when the view's config says otherwise (`check_horizon`)."""
         return (self.config or AlphaTSMOMConfig()).horizon
 
     def predict(self, view: DataView) -> pd.DataFrame:
         """The alpha frame of the universe's ETFs at `view.as_of`; an ETF without enough
         lookbacks or without a positive vol is absent."""
         cfg = self.config or view.config.quant.alpha.tsmom
+        check_horizon(self, cfg.horizon)
         names = _feature_names(cfg)
         members = view.universe(cfg.universe)
         if not members:

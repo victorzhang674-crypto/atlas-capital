@@ -16,7 +16,7 @@ from alpha_world import (
 )
 from factor_world import FactorWorld
 
-from atlas.core.errors import LookAheadError
+from atlas.core.errors import ConfigError, LookAheadError
 from atlas.core.pit import AsOf, bar_available_at, tag_label
 from atlas.core.storage import Lake
 from atlas.data.view import DataView
@@ -333,3 +333,12 @@ def test_explicit_config_overrides_view(world: FactorWorld) -> None:
     b = MultiFactorModel().predict(view)
     assert np.allclose(a["exp_return_ann"], 2 * b["exp_return_ann"])
     assert MultiFactorModel(config=cfg).horizon == 21
+
+
+def test_horizon_must_be_the_one_predict_uses(world: FactorWorld) -> None:  # Phase 2 checkpoint
+    view = _view(world, horizon=42)
+    with pytest.raises(ConfigError, match=r"horizon.*21.*42"):
+        MultiFactorModel().predict(view)  # the model would say 21 and forecast for 42
+    model = MultiFactorModel(config=view.config.quant.alpha.multifactor)
+    assert model.horizon == 42
+    check_alpha_frame(model.predict(view))

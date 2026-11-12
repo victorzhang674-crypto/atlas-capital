@@ -10,6 +10,7 @@ from atlas.quant.alpha.base import (
     AlphaModel,
     alpha_frame,
     check_alpha_frame,
+    check_horizon,
     direction,
     empty_alpha_frame,
 )
@@ -53,6 +54,7 @@ __all__ = [
     "alpha_frame",
     "calibration_slope",
     "check_alpha_frame",
+    "check_horizon",
     "clean_component",
     "combine",
     "component_frame",

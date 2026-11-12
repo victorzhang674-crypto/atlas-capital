@@ -1,0 +1,47 @@
+# New Tier 2 tests run against the source of HEAD a45c544 (PYTHONPATH=<git archive HEAD>/src): red
+## tests/unit/quant/research/test_research_holdout.py
+E   ImportError: cannot import name 'HoldoutCheck' from 'atlas.quant.research' ($TMPDIR/t2/head/src/atlas/quant/research/__init__.py)
+ERROR tests/unit/quant/research/test_research_holdout.py
+## tests/unit/quant/research/test_research_tearsheet.py
+FAILED tests/unit/quant/research/test_research_tearsheet.py::test_tearsheet_says_whether_its_labels_read_the_holdout
+FAILED tests/unit/quant/research/test_research_tearsheet.py::test_tearsheet_records_where_the_regimes_came_from
+2 failed, 8 passed in 3.27s
+## tests/unit/quant/regime/test_regime_store.py
+FAILED tests/unit/quant/regime/test_regime_store.py::test_labels_by_kind - At...
+1 failed, 8 passed in 3.06s
+## tests/unit/cli/test_research_cmd.py
+FAILED tests/unit/cli/test_research_cmd.py::test_research_signal_help - Asser...
+FAILED tests/unit/cli/test_research_cmd.py::test_research_signal_refuses_a_window_that_reads_the_holdout
+FAILED tests/unit/cli/test_research_cmd.py::test_allow_holdout_runs_and_records_the_override
+FAILED tests/unit/cli/test_research_cmd.py::test_allow_holdout_inside_the_sample_records_nothing
+FAILED tests/unit/cli/test_research_cmd.py::test_an_override_that_cannot_be_recorded_stops_the_run
+FAILED tests/unit/cli/test_research_cmd.py::test_regimes_option_reads_the_stored_history
+FAILED tests/unit/cli/test_research_cmd.py::test_regimes_option_other_kinds_and_errors
+FAILED tests/unit/cli/test_research_cmd.py::test_header_counts_the_dates_with_an_ic
+FAILED tests/unit/cli/test_research_cmd.py::test_header_is_plain_when_every_date_has_an_ic
+9 failed, 15 passed in 12.64s
+## tests/unit/quant/research/test_research_backtest.py
+E   ImportError: cannot import name 'BacktestError' from 'atlas.core.errors' ($TMPDIR/t2/head/src/atlas/core/errors.py)
+ERROR tests/unit/quant/research/test_research_backtest.py
+## tests/unit/quant/research/test_research_labels.py
+E         comparison failed
+FAILED tests/unit/quant/research/test_research_labels.py::test_daily_is_handed_out_as_a_copy
+FAILED tests/unit/quant/research/test_research_labels.py::test_label_frames_are_handed_out_as_copies
+FAILED tests/unit/quant/research/test_research_labels.py::test_forward_returns_keeps_its_own_copy_of_the_frames_it_is_given
+3 failed, 11 passed in 1.69s
+## tests/unit/quant/research/test_research_ic.py
+FAILED tests/unit/quant/research/test_research_ic.py::test_newey_west_keep_gaps_pairs_only_true_neighbours
+FAILED tests/unit/quant/research/test_research_ic.py::test_ic_by_regime_t_stat_respects_the_gaps
+2 failed, 15 passed in 2.26s
+## tests/unit/quant/alpha/test_alpha_multifactor.py
+FAILED tests/unit/quant/alpha/test_alpha_multifactor.py::test_horizon_must_be_the_one_predict_uses
+1 failed, 19 passed in 28.85s
+## tests/unit/quant/alpha/test_alpha_tsmom.py
+FAILED tests/unit/quant/alpha/test_alpha_tsmom.py::test_horizon_must_be_the_one_the_view_configures
+1 failed, 5 passed in 1.19s
+## tests/unit/quant/alpha/test_alpha_pead.py
+FAILED tests/unit/quant/alpha/test_alpha_pead.py::test_horizon_must_be_the_one_the_view_configures
+1 failed, 7 passed in 1.43s
+## tests/unit/core/test_errors.py
+E   ImportError: cannot import name 'BacktestError' from 'atlas.core.errors' ($TMPDIR/t2/head/src/atlas/core/errors.py)
+ERROR tests/unit/core/test_errors.py

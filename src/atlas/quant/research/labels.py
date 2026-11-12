@@ -20,7 +20,6 @@ Labels are for evaluation only: every frame here is tagged (`atlas.core.pit.tag_
 """
 
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
 from datetime import date
 from itertools import pairwise
 from types import MappingProxyType
@@ -86,32 +85,80 @@ def compound_forward(
     return pd.DataFrame(out, index=wanted, columns=daily.columns)
 
 
-@dataclass(frozen=True, eq=False)
 class ForwardReturns:
     """Realised forward returns of `symbols` on decision `dates`, for evaluation only.
 
     `daily` (tagged): the simple daily total returns on the session grid from the first date
-    to the last label session (first row NaN); `horizon(h)` (tagged copy): dates x symbols,
-    the `h`-session label of each date (module docstring); `known_at`: the `AsOf` of the
-    view that read them; `blocked`: names left NaN because that day's quality report blocks
-    them. Units: simple returns as fractions (0.05 = 5%).
+    to the last label session (first row NaN); `labels`: horizon -> dates x symbols, the
+    `h`-session label of each date (module docstring), also `horizon(h)`; `known_at`: the
+    `AsOf` of the view that read them; `blocked`: names left NaN because that day's quality
+    report blocks them. Units: simple returns as fractions (0.05 = 5%).
+
+    Immutable: the frames given to the constructor are copied, and `daily`, `labels` and
+    `horizon(h)` hand out tagged copies, so a caller that edits a frame changes nothing here.
     """
 
     __atlas_label__: ClassVar[bool] = True
+    __slots__ = ("_daily", "_labels", "blocked", "dates", "horizons", "known_at", "symbols")
 
     dates: tuple[date, ...]
     symbols: tuple[str, ...]
     horizons: tuple[int, ...]
-    daily: pd.DataFrame
     known_at: AsOf
     blocked: tuple[str, ...]
-    labels: Mapping[int, pd.DataFrame]
+    _daily: pd.DataFrame
+    _labels: dict[int, pd.DataFrame]
+
+    def __init__(
+        self,
+        *,
+        dates: tuple[date, ...],
+        symbols: tuple[str, ...],
+        horizons: tuple[int, ...],
+        daily: pd.DataFrame,
+        known_at: AsOf,
+        blocked: tuple[str, ...],
+        labels: Mapping[int, pd.DataFrame],
+    ) -> None:
+        fields = {
+            "dates": tuple(dates),
+            "symbols": tuple(symbols),
+            "horizons": tuple(horizons),
+            "known_at": known_at,
+            "blocked": tuple(blocked),
+            "_daily": tag_label(daily),
+            "_labels": {int(h): tag_label(frame) for h, frame in labels.items()},
+        }
+        for name, value in fields.items():
+            object.__setattr__(self, name, value)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError(f"ForwardReturns is immutable: cannot set {name!r}")
+
+    def __delattr__(self, name: str) -> None:
+        raise AttributeError(f"ForwardReturns is immutable: cannot delete {name!r}")
+
+    def __repr__(self) -> str:
+        return (
+            f"ForwardReturns(dates={len(self.dates)}, symbols={len(self.symbols)}, "
+            f"horizons={self.horizons}, known_at={self.known_at!r})"
+        )
+
+    @property
+    def daily(self) -> pd.DataFrame:
+        """The daily returns (a tagged copy)."""
+        return tag_label(self._daily)
+
+    @property
+    def labels(self) -> Mapping[int, pd.DataFrame]:
+        """Horizon -> label frame (tagged copies in a read-only mapping)."""
+        return MappingProxyType({h: tag_label(frame) for h, frame in self._labels.items()})
 
     def horizon(self, h: int) -> pd.DataFrame:
         """The labels of horizon `h` (a tagged copy; `ValueError` if `h` was not computed)."""
-        if h not in self.labels:
+        if h not in self._labels:
             raise ValueError(f"horizon {h} was not computed; horizons: {self.horizons}")
-        return tag_label(self.labels[h])
+        return tag_label(self._labels[h])
 
 
 def check_dates(dates: Sequence[date], calendar: TradingCalendar) -> tuple[date, ...]:
@@ -165,13 +212,12 @@ def forward_returns(
     blocked = tuple(s for s in wanted if s not in rets.columns)
     if blocked:
         _log.warning("research.labels_blocked", day=view.day.isoformat(), symbols=list(blocked))
-    labels = {h: tag_label(compound_forward(daily, days, h)) for h in hs}
     return ForwardReturns(
         dates=days,
         symbols=tuple(wanted),
         horizons=hs,
-        daily=tag_label(daily),
+        daily=daily,
         known_at=view.as_of,
         blocked=blocked,
-        labels=MappingProxyType(labels),
+        labels={h: compound_forward(daily, days, h) for h in hs},
     )

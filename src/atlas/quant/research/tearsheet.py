@@ -235,7 +235,10 @@ def build_tearsheet(
 ) -> SignalTearSheet:
     """The tear sheet of `signal` (evaluation dates x symbols) against `labels` (module
     docstring). `sectors`: symbol -> sector (`None` unknown, never pooled); `regimes`: date ->
-    regime label (Stage 21; without it the by-regime section says it is not available).
+    regime label (Stage 21; without it the by-regime section says it is not available; its
+    name is recorded as the section's `source`, with the number of dates that have no regime).
+    `summary["labels"]` says how far the labels read (`last_session`) and whether that is past
+    `backtest.in_sample_end` (`reads_holdout`).
     `kind`, `frequency` and `universe` are recorded in the summary, and so is the active run
     (`run_id`, `mode`, `config_fingerprint`, `stage`; `None` outside a `run_context`). The
     turnover proxy is 1 - the lag-1 rank autocorrelation, whatever lags are configured."""
@@ -275,10 +278,16 @@ def build_tearsheet(
         by_sector = {"available": False, "note": "no sectors supplied"}
     if regimes is None:
         by_regime["note"] = "no regimes supplied (regime detection is Stage 21)"
+    else:
+        known = regimes.reindex(signal.index)
+        by_regime["source"] = None if regimes.name is None else str(regimes.name)
+        by_regime["dates_without_regime"] = int(known.map(lambda v: not isinstance(v, str)).sum())
     ac = rank_autocorrelation(signal, rc.autocorr_lags, config=cfg)
     lag1 = ac.loc[1] if 1 in ac.index else rank_autocorrelation(signal, (1,), config=cfg).loc[1]
     backtest_end = calendar.offset(pd.Timestamp(dates[-1]).date(), step)
-    backtest = vector_backtest(signal, labels.daily.loc[: pd.Timestamp(backtest_end)], config=cfg)
+    daily = labels.daily
+    last_session = pd.Timestamp(daily.index[-1]).date()
+    backtest = vector_backtest(signal, daily.loc[: pd.Timestamp(backtest_end)], config=cfg)
     decay = {
         "ic_by_horizon": {
             method: {str(h): ic_summary[f"h{h}"][method]["mean"] for h in labels.horizons}
@@ -314,6 +323,9 @@ def build_tearsheet(
             "horizons": list(labels.horizons),
             "known_at": labels.known_at.cutoff.isoformat(),
             "blocked": list(labels.blocked),
+            "last_session": str(last_session),
+            "in_sample_end": str(cfg.backtest.in_sample_end),
+            "reads_holdout": last_session > cfg.backtest.in_sample_end,
         },
         "ic": ic_summary,
         "decay": decay,

@@ -18,7 +18,8 @@ EXPECTED = {
     "classify_quadrant", "credit_proxy", "trailing_zscore", "credit_zscore", "stress_flag",
     "RegimeState", "risk_scalar", "MIN_RISK_SCALAR", "MAX_RISK_SCALAR",
     "regime_at", "regime_history",
-    "REGIME_HISTORY", "RegimeStore", "build_and_store", "regime_config_hash",
+    "REGIME_HISTORY",
+    "REGIME_KINDS", "RegimeStore", "build_and_store", "regime_config_hash",
 }  # fmt: skip
 
 

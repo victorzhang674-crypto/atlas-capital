@@ -6,6 +6,7 @@ import pytest
 
 from atlas.core.errors import (
     AtlasError,
+    BacktestError,
     BudgetExceeded,
     ComplianceError,
     ConfigError,
@@ -16,7 +17,15 @@ from atlas.core.errors import (
     RiskLimitError,
 )
 
-SUBCLASSES = [ConfigError, LookAheadError, DataError, LLMError, RiskLimitError, ComplianceError]
+SUBCLASSES = [
+    ConfigError,
+    LookAheadError,
+    DataError,
+    LLMError,
+    BacktestError,
+    RiskLimitError,
+    ComplianceError,
+]
 
 
 @pytest.mark.parametrize("cls", SUBCLASSES, ids=lambda c: c.__name__)

@@ -32,7 +32,7 @@ from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.core.pit import guard_not_label
 from atlas.data.view import DataView
-from atlas.quant.alpha.base import alpha_frame, empty_alpha_frame
+from atlas.quant.alpha.base import alpha_frame, check_horizon, empty_alpha_frame
 from atlas.quant.alpha.calibration import grinold_alpha, ic_weights, trailing_ic
 from atlas.quant.factors import (
     FactorPanel,
@@ -250,7 +250,8 @@ class MultiFactorModel:
 
     @property
     def horizon(self) -> int:
-        """The forecast horizon in sessions (`config.horizon`; default 21)."""
+        """The forecast horizon in sessions (`config.horizon`; default 21). `predict`
+        raises `ConfigError` when the view's config says otherwise (`check_horizon`)."""
         return (self.config or AlphaMultiFactorConfig()).horizon
 
     def _trailing(self, view: DataView, cfg: AlphaMultiFactorConfig) -> pd.DataFrame | None:
@@ -286,6 +287,7 @@ class MultiFactorModel:
     def predict(self, view: DataView) -> pd.DataFrame:
         """The alpha frame of the universe members at `view.as_of` (module docstring)."""
         cfg = self.config or view.config.quant.alpha.multifactor
+        check_horizon(self, cfg.horizon)
         return self.predict_components(view, component_frame(view, config=cfg))
 
     def predict_components(self, view: DataView, panel: ComponentPanel) -> pd.DataFrame:
@@ -293,6 +295,7 @@ class MultiFactorModel:
         view and config): `predict(view)` is `predict_components(view, component_frame(view))`.
         Lets a research run score several weightings on one panel."""
         cfg = self.config or view.config.quant.alpha.multifactor
+        check_horizon(self, cfg.horizon)
         if panel.values.empty:
             return empty_alpha_frame()
         weights, _ = self.weights(view, cfg)

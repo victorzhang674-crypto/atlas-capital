@@ -13,7 +13,9 @@ Between rebalances the weights drift with returns, `w <- w (1 + r) / (1 + R)` (a
 return counts as 0: the position is held at its last price). Turnover = sum |target - drifted
 weight| (the first book counts in full, from cash); its cost, `turnover * cost_bps / 10^4`, is
 charged on the rebalance session. Weights are fractions of NAV (shorts negative); returns are
-simple daily fractions; no financing or borrow costs.
+simple daily fractions; no financing or borrow costs. A session on which the book returns
+-100% or worse (only possible with leverage or a concentrated book) raises `BacktestError`:
+there is no NAV left to drift or rebalance.
 """
 
 from collections.abc import Sequence
@@ -25,6 +27,7 @@ import numpy as np
 import pandas as pd
 
 from atlas.core.config import AtlasConfig
+from atlas.core.errors import BacktestError
 from atlas.core.pit import guard_not_label
 from atlas.quant.metrics.performance import (
     annualised_mean,
@@ -198,7 +201,7 @@ def weights_backtest(
     session of `daily`) on `daily` (sessions x symbols, simple daily returns). Timing, drift,
     turnover and costs as in the module docstring; the summary is `vector_backtest`'s
     without the quantile-book settings, plus `cost_bps`. A label as `targets` raises
-    `LookAheadError`."""
+    `LookAheadError`; a session's book return of -100% or worse raises `BacktestError`."""
     guard_not_label(targets, "targets")
     bps = cost_bps
     if bps < 0:
@@ -226,6 +229,11 @@ def weights_backtest(
     for j, session in enumerate(range(first, len(sessions))):
         if j > 0:
             day_ret = float(w @ r[session])
+            if not day_ret > -1.0:
+                raise BacktestError(
+                    f"the book's return on {sessions[session].date()} is {day_ret:.2%}: the "
+                    "whole NAV is lost, so the weights cannot drift or be rebalanced"
+                )
             gross_ret[j] = day_ret
             w = w * (1.0 + r[session]) / (1.0 + day_ret)
         if session in target_at:

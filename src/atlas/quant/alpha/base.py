@@ -20,6 +20,7 @@ from typing import Final, Protocol, runtime_checkable
 import numpy as np
 import pandas as pd
 
+from atlas.core.errors import ConfigError
 from atlas.data.view import DataView
 
 ALPHA_COLUMNS: Final = ("score", "exp_return_ann", "confidence")
@@ -44,6 +45,19 @@ class AlphaModel(Protocol):
     def predict(self, view: DataView) -> pd.DataFrame:
         """The alpha frame at `view.as_of`."""
         ...
+
+
+def check_horizon(model: AlphaModel, configured: int) -> None:
+    """`ConfigError` unless `model.horizon` equals `configured`, the horizon of the config
+    `predict` is about to use. A model built without its own config reports the code default
+    while `predict` follows the view's config; when the two differ, the horizon the model
+    states would not be the one it forecasts for."""
+    if model.horizon != configured:
+        raise ConfigError(
+            f"{type(model).__name__} reports a horizon of {model.horizon} sessions but the "
+            f"view's quant.alpha.{model.name} horizon is {configured}: build the model with "
+            f"config=view.config.quant.alpha.{model.name}"
+        )
 
 
 def empty_alpha_frame() -> pd.DataFrame:

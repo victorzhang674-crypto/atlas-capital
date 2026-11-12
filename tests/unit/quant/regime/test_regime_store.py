@@ -143,3 +143,29 @@ def test_build_and_store(tmp_path: Path) -> None:
     states = build_and_store(world.lake, out, date(2020, 3, 2), date(2020, 3, 13), world.config)
     assert [s.as_of for s in states] == list(CAL.sessions(date(2020, 3, 2), date(2020, 3, 13)))
     assert out.read(date(2020, 3, 2), date(2020, 3, 13)) == states
+
+
+# --- Phase 2 checkpoint, Tier 2: regime labels for signal research ------------------------------
+
+
+def test_labels_by_kind(store: RegimeStore) -> None:
+    days = [date(2020, 3, 16), date(2020, 3, 17), date(2020, 3, 18)]
+    store.write(
+        [
+            _state(days[0], vol_regime="LOW", trend_regime="UP", macro_quadrant="Goldilocks"),
+            _state(days[1], vol_regime="HIGH", trend_regime="DOWN", macro_quadrant=None),
+            _state(days[2], vol_regime="CRISIS", trend_regime="DOWN", macro_quadrant="Deflation"),
+        ]
+    )
+    vol = store.labels("vol", days[0], days[2])
+    assert list(vol.index) == [pd.Timestamp(d) for d in days] and vol.index.name == "date"
+    assert list(vol) == ["LOW", "HIGH", "CRISIS"] and vol.name == "vol_regime"
+    trend = store.labels("trend", days[1], days[2])
+    assert list(trend) == ["DOWN", "DOWN"] and trend.name == "trend_regime"
+    quadrant = store.labels("quadrant", days[0], days[2])
+    assert quadrant.name == "macro_quadrant"
+    assert list(quadrant.index) == [pd.Timestamp(days[0]), pd.Timestamp(days[2])]  # None left out
+    assert list(quadrant) == ["Goldilocks", "Deflation"]
+    assert store.labels("vol", date(2021, 1, 4), date(2021, 1, 8)).empty
+    with pytest.raises(ValueError, match="vol, trend, quadrant"):
+        store.labels("hmm", days[0], days[2])

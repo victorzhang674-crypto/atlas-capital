@@ -6,6 +6,8 @@ import pandas as pd
 import pytest
 
 from atlas.core.calendar import TradingCalendar
+from atlas.core.config import AtlasConfig
+from atlas.core.errors import ConfigError
 from atlas.core.pit import bar_available_at
 from atlas.core.storage import Lake
 from atlas.data.events import REACTION_COLUMNS
@@ -114,3 +116,13 @@ def test_zero_car_and_names_without_reactions(tu: TinyUniverse) -> None:
     assert out.loc["CCC", "score"] == 0.0
     assert out.loc["CCC", "exp_return_ann"] == 0.0
     assert "DDD" not in out.index  # no reaction at all
+
+
+def test_horizon_must_be_the_one_the_view_configures(tu: TinyUniverse) -> None:  # Tier 2
+    cfg = AtlasConfig.model_validate({"quant": {"alpha": {"pead": {"horizon": 42}}}})
+    view = DataView(tu.lake, CAL.next_session(W1), cfg)
+    with pytest.raises(ConfigError, match=r"horizon.*21.*42"):
+        PEADModel().predict(view)
+    model = PEADModel(config=cfg.quant.alpha.pead)
+    assert model.horizon == 42
+    check_alpha_frame(model.predict(view))

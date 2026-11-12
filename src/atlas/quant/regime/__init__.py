@@ -42,6 +42,7 @@ from atlas.quant.regime.macro_quadrant import (
 from atlas.quant.regime.state import MAX_RISK_SCALAR, MIN_RISK_SCALAR, RegimeState, risk_scalar
 from atlas.quant.regime.store import (
     REGIME_HISTORY,
+    REGIME_KINDS,
     RegimeStore,
     build_and_store,
     regime_config_hash,
@@ -64,6 +65,7 @@ __all__ = [
     "MIN_RISK_SCALAR",
     "QUADRANTS",
     "REGIME_HISTORY",
+    "REGIME_KINDS",
     "TREND_LABELS",
     "VOL_LABELS",
     "HMMFit",

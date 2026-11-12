@@ -5,9 +5,11 @@
 `ic` measures information coefficients and decay; `quantiles` the quantile spreads;
 `vector_backtest` runs a simple long-short backtest with costs (its engine,
 `weights_backtest`, takes target weights: Stage 23); `tearsheet` puts it together
-(`SignalTearSheet`, saved by `atlas research signal`).
+(`SignalTearSheet`, saved by `atlas research signal`); `holdout` tells whether a window reads
+returns after `backtest.in_sample_end` (the hold-out, spec A7).
 """
 
+from atlas.quant.research.holdout import HoldoutCheck, holdout_check
 from atlas.quant.research.ic import (
     METHODS,
     SUMMARY_FIELDS,
@@ -80,6 +82,7 @@ __all__ = [
     "BacktestResult",
     "ForwardReturns",
     "Frequency",
+    "HoldoutCheck",
     "ICSummary",
     "Method",
     "QuantileAnalysis",
@@ -98,6 +101,7 @@ __all__ = [
     "forward_returns",
     "headline_horizon",
     "held_rows",
+    "holdout_check",
     "ic_by_group",
     "ic_by_regime",
     "ic_decay",

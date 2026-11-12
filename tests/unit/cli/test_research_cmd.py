@@ -2,6 +2,7 @@
 
 import json
 import re
+import shutil
 from datetime import date
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from typer.testing import CliRunner
 
 from atlas.cli.app import app
 from atlas.cli.research_cmd import parse_bound
+from atlas.core.audit import AuditLog, audit_path
 from atlas.core.storage import DEFAULT_REGISTRY, Lake
 from atlas.quant.research import FIGURES
 
@@ -29,12 +31,18 @@ def world(tmp_path_factory: pytest.TempPathFactory) -> ResearchWorld:
     return build_research_world(Lake(root, registry=DEFAULT_REGISTRY.copy()))
 
 
-def _env(lake_root: Path) -> dict[str, str]:
-    return {**BASE_ENV, "ATLAS__DATA__LAKE_PATH": str(lake_root)}
+IN_SAMPLE = {"ATLAS__BACKTEST__IN_SAMPLE_END": "2030-12-31"}
+"""The research world's sessions end in 2024: with this the signal tests are in sample. The
+default `backtest.in_sample_end` (2021-12-31) is used by the hold-out tests (`holdout=True`)."""
 
 
-def invoke(lake_root: Path, *args: str) -> object:
-    return CliRunner().invoke(app, ["research", *args], env=_env(lake_root))
+def _env(lake_root: Path, *, holdout: bool = False) -> dict[str, str]:
+    env = {**BASE_ENV, "ATLAS__DATA__LAKE_PATH": str(lake_root)}
+    return env if holdout else {**env, **IN_SAMPLE}
+
+
+def invoke(lake_root: Path, *args: str, holdout: bool = False) -> object:
+    return CliRunner().invoke(app, ["research", *args], env=_env(lake_root, holdout=holdout))
 
 
 def test_research_signal_help() -> None:
@@ -43,7 +51,16 @@ def test_research_signal_help() -> None:
     result = CliRunner().invoke(app, ["research", "signal", "--help"], env=BASE_ENV)
     text = _plain(result.output)
     assert result.exit_code == 0
-    for option in ("--name", "--from", "--to", "--frequency", "--universe", "--out"):
+    for option in (
+        "--name",
+        "--from",
+        "--to",
+        "--frequency",
+        "--universe",
+        "--out",
+        "--allow-holdout",
+        "--regimes",
+    ):
         assert option in text
 
 
@@ -135,6 +152,167 @@ def test_research_signal_empty_lake_exit_1(tmp_path: Path) -> None:
     )
     assert result.exit_code == 1
     assert "Research failed" in _plain(result.output)
+
+
+# --- Phase 2 checkpoint, Tier 2: the hold-out guard, `--regimes`, the header -----------------
+
+
+def _signal_args(world: ResearchWorld, first: int = 75, last: int = 110) -> list[str]:
+    days = [str(world.day(first)), str(world.day(last))]
+    return ["signal", "--name", "reversal_5d", "--from", days[0], "--to", days[1]]
+
+
+def _audit_events(root: Path, run_id: str) -> list[dict[str, object]]:
+    path = audit_path(root, run_id)
+    if not path.is_file():
+        return []
+    assert AuditLog.verify_chain(path)
+    return [json.loads(line) for line in path.read_text().splitlines()]
+
+
+def test_research_signal_refuses_a_window_that_reads_the_holdout(
+    world: ResearchWorld, tmp_path: Path
+) -> None:
+    out = tmp_path / "sheet"
+    result = invoke(world.lake.root, *_signal_args(world), "--out", str(out), holdout=True)
+    assert result.exit_code == 2
+    text = " ".join(_plain(result.output).split())
+    assert "2021-12-31" in text and "--allow-holdout" in text
+    assert "in_sample_end" in text and "2021-10-01" in text  # the latest --to that fits
+    assert not out.exists()
+
+
+def test_allow_holdout_runs_and_records_the_override(world: ResearchWorld, tmp_path: Path) -> None:
+    out = tmp_path / "sheet"
+    args = [*_signal_args(world), "--frequency", "weekly", "--out", str(out), "--allow-holdout"]
+    result = invoke(world.lake.root, *args, holdout=True)
+    assert result.exit_code == 0, result.output
+    text = " ".join(_plain(result.output).split())
+    assert "Hold-out" in text and "audit log" in text
+    summary = json.loads((out / "tearsheet.json").read_text())
+    assert summary["labels"]["reads_holdout"] is True
+    events = _audit_events(world.lake.root, summary["run"]["run_id"])
+    assert [e["event_type"] for e in events] == ["OVERRIDE"]
+    payload = events[0]["payload"]
+    assert isinstance(payload, dict)
+    assert payload["override"] == "allow_holdout" and payload["command"] == "research signal"
+    assert payload["signal"] == "reversal_5d" and payload["in_sample_end"] == "2021-12-31"
+    assert payload["from"] == str(world.day(75)) and payload["to"] == str(world.day(110))
+    assert payload["last_label_session"] == summary["labels"]["last_session"] or (
+        payload["last_label_session"] > summary["labels"]["last_session"]  # past the lake's end
+    )
+    assert events[0]["actor"] == "cli" and events[0]["run_id"] == summary["run"]["run_id"]
+
+
+def test_allow_holdout_inside_the_sample_records_nothing(
+    world: ResearchWorld, tmp_path: Path
+) -> None:
+    out = tmp_path / "sheet"
+    args = [*_signal_args(world), "--frequency", "weekly", "--out", str(out), "--allow-holdout"]
+    result = invoke(world.lake.root, *args)
+    assert result.exit_code == 0, result.output
+    assert "Hold-out" not in _plain(result.output)
+    summary = json.loads((out / "tearsheet.json").read_text())
+    assert summary["labels"]["reads_holdout"] is False
+    assert _audit_events(world.lake.root, summary["run"]["run_id"]) == []
+
+
+def test_an_override_that_cannot_be_recorded_stops_the_run(
+    world: ResearchWorld, tmp_path: Path
+) -> None:
+    root = tmp_path / "lake"
+    shutil.copytree(world.lake.root, root, ignore=shutil.ignore_patterns("runs"))
+    runs = root / "runs"
+    runs.mkdir()
+    out = tmp_path / "sheet"
+    args = [*_signal_args(world), "--frequency", "weekly", "--out", str(out), "--allow-holdout"]
+    runs.chmod(0o555)  # the run's audit log cannot be created
+    try:
+        result = invoke(root, *args, holdout=True)
+    finally:
+        runs.chmod(0o755)
+    assert result.exit_code == 1
+    text = " ".join(_plain(result.output).split())
+    assert "Research failed" in text and "audit log" in text
+    assert not (out / "tearsheet.json").exists()
+
+
+@pytest.fixture(scope="module")
+def regime_days(world: ResearchWorld) -> list[date]:
+    """Stores a regime for sessions 76..110 of the research world (not for session 75)."""
+    from atlas.quant.regime import RegimeState, RegimeStore
+
+    days = [world.day(i) for i in range(76, 111)]
+    states = [
+        RegimeState(
+            as_of=day,
+            data_date=world.day(75 + i),
+            vol_regime="LOW" if i % 2 == 0 else "HIGH",
+            trend_regime="UP" if i % 3 else "DOWN",
+            hmm_probs=None,
+            hmm_labels=(),
+            macro_quadrant=None,
+            stress_flag=False,
+            risk_scalar=1.0,
+        )
+        for i, day in enumerate(days)
+    ]
+    RegimeStore(world.lake).write(states)
+    return days
+
+
+def test_regimes_option_reads_the_stored_history(
+    world: ResearchWorld, regime_days: list[date], tmp_path: Path
+) -> None:
+    out = tmp_path / "sheet"
+    args = [*_signal_args(world), "--frequency", "daily", "--out", str(out), "--regimes", "vol"]
+    result = invoke(world.lake.root, *args)
+    assert result.exit_code == 0, result.output
+    by_regime = json.loads((out / "tearsheet.json").read_text())["by_regime"]
+    assert by_regime["available"] is True and by_regime["source"] == "vol_regime"
+    assert set(by_regime["h1"]) == {"HIGH", "LOW"}
+    assert by_regime["h1"]["LOW"]["n_dates"] == 18 and by_regime["h1"]["HIGH"]["n_dates"] == 17
+    assert by_regime["dates_without_regime"] == 1  # session 75
+    text = " ".join(_plain(result.output).split())
+    assert "IC by vol_regime" in text and "HIGH" in text and "LOW" in text
+    assert "1 of 36 dates have no stored regime" in text
+
+
+def test_regimes_option_other_kinds_and_errors(
+    world: ResearchWorld, regime_days: list[date], tmp_path: Path
+) -> None:
+    out = tmp_path / "sheet"
+    args = [*_signal_args(world), "--frequency", "weekly", "--out", str(out)]
+    result = invoke(world.lake.root, *args, "--regimes", "trend")
+    assert result.exit_code == 0, result.output
+    by_regime = json.loads((out / "tearsheet.json").read_text())["by_regime"]
+    assert by_regime["source"] == "trend_regime" and set(by_regime["h1"]) <= {"UP", "DOWN"}
+    bad = invoke(world.lake.root, *args, "--regimes", "hmm")
+    assert bad.exit_code == 2 and "vol, trend, quadrant" in " ".join(_plain(bad.output).split())
+    none = invoke(world.lake.root, *args, "--regimes", "quadrant")  # no quadrant stored
+    assert none.exit_code == 1
+    assert "atlas regime build" in " ".join(_plain(none.output).split())
+
+
+def test_header_counts_the_dates_with_an_ic(world: ResearchWorld, tmp_path: Path) -> None:
+    out = tmp_path / "sheet"  # audit H: the first dates have no signal yet, so no IC
+    args = [*_signal_args(world, 2, 30), "--frequency", "daily", "--out", str(out)]
+    result = invoke(world.lake.root, *args)
+    assert result.exit_code == 0, result.output
+    summary = json.loads((out / "tearsheet.json").read_text())
+    with_ic = summary["ic"][f"h{summary['headline_horizon']}"]["spearman"]["n_dates"]
+    assert summary["n_dates"] == 29 and 0 < with_ic < 29
+    text = " ".join(_plain(result.output).split())
+    assert f"{with_ic} dates with an IC (29 requested)" in text
+
+
+def test_header_is_plain_when_every_date_has_an_ic(world: ResearchWorld, tmp_path: Path) -> None:
+    out = tmp_path / "sheet"
+    args = [*_signal_args(world, 80, 100), "--frequency", "daily", "--out", str(out)]
+    result = invoke(world.lake.root, *args)
+    assert result.exit_code == 0, result.output
+    text = " ".join(_plain(result.output).split())
+    assert "21 dates with an IC" in text and "requested" not in text
 
 
 # --- Stage 23: `atlas research pairs --as-of` -------------------------------------------------

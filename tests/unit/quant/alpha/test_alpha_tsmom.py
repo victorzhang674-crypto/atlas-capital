@@ -8,6 +8,7 @@ import pytest
 
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
+from atlas.core.errors import ConfigError
 from atlas.core.storage import Lake
 from atlas.data.view import DataView
 from atlas.quant.alpha import AlphaModel, TSMOMModel, check_alpha_frame, direction, trend_blend
@@ -113,3 +114,12 @@ def test_empty_universe(tmp_path_factory: pytest.TempPathFactory) -> None:
     out = TSMOMModel().predict(DataView(empty, AS_OF))
     assert out.empty
     check_alpha_frame(out)
+
+
+def test_horizon_must_be_the_one_the_view_configures(lake: Lake) -> None:  # Phase 2 checkpoint
+    view = _view(lake, horizon=42)
+    with pytest.raises(ConfigError, match=r"horizon.*21.*42"):
+        TSMOMModel().predict(view)
+    model = TSMOMModel(config=view.config.quant.alpha.tsmom)
+    assert model.horizon == 42
+    check_alpha_frame(model.predict(view))

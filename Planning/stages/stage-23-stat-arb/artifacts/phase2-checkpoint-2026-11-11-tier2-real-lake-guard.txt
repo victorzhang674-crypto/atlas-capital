@@ -1,0 +1,15 @@
+$ atlas research signal --name momentum_12_1 --from 2016 --to 2021 --out <scratch>   (main lake, read only)
+Usage: atlas research signal [OPTIONS]
+Try 'atlas research signal --help' for help.
+╭─ Error ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Invalid value for --to: the labels of 2021-12-01 close on 2022-03-03, after backtest.in_sample_end (2021-12-31): this window reads the hold-out    │
+│ (spec A7). The last --to that stays in sample is 2021-10-01. Pass --allow-holdout to run anyway; the override is written to the audit log.         │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+exit 2
+
+$ ... --allow-holdout   (the sandbox cannot write the main lake, so the override cannot be recorded)
+
+Research failed: AtlasError: cannot write the hold-out override to the audit log ([Errno 1] Operation not permitted: 
+'~/Projects/atlas-capital/data/runs/01M78H1JWYFNYRRGAAGS32ZXXD'); not running
+exit 1
+override
