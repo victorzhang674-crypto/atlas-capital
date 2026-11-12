@@ -1,0 +1,26 @@
+=== start 2026-11-12T10:04:19Z on main 22fa7c1
+=== uv run atlas risk-model build --from 2017 --to 2026
+2026-11-12T11:27:13.788299Z [warning  ] risk_model.etfs_skipped        [atlas.quant.risk_model.loader] date=2017-04-28 mode=dev reason="no ETF has 126 observations in the last 252 sessions: dropped {'DBC': 'history', 'EEM': 'history', 'EFA': 'history', 'FXE': 'history', 'FXY': 'history'} (every ETF)" run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:29:02.498683Z [warning  ] risk_model.etfs_skipped        [atlas.quant.risk_model.loader] date=2017-05-31 mode=dev reason="no ETF has 126 observations in the last 252 sessions: dropped {'BIL': 'history', 'DBC': 'history', 'EEM': 'history', 'EFA': 'history', 'FXE': 'history'} (every ETF)" run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:30:55.797781Z [warning  ] risk_model.etfs_skipped        [atlas.quant.risk_model.loader] date=2017-06-30 mode=dev reason="no ETF has 126 observations in the last 252 sessions: dropped {'BIL': 'history', 'DBC': 'history', 'EEM': 'history', 'EFA': 'history', 'FXE': 'history'} (every ETF)" run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:32:45.649285Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:34:30.705637Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:36:10.827294Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:37:59.803266Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:39:42.162177Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:41:20.566337Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:42:58.290628Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:44:37.535680Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:46:16.579706Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:47:55.160087Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:49:34.124808Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:51:13.959582Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:52:55.818675Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:54:35.094376Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:56:14.086629Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:57:53.265297Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+2026-11-12T11:59:32.822386Z [warning  ] risk_model.etf_dropped         [atlas.quant.risk_model.etf_mapping] dropped={'XLC': 'history'} mode=dev run_id=01M77KEA6TD4BVPW08WVWCE47V stage=risk_model.build
+Risk model: 2471 sessions fitted from 2017-01-03 to 2026-10-30, 0 skipped (too few names), mean R2 0.339, mean names 392; 115 snapshots from 2017-04-28 to 
+2026-10-30 with 30 ETFs; tables factor_returns and risk_model_snapshots in data (settings 4bbbb5a135ea). Run 01M77KEA6TD4BVPW08WVWCE47V.
+risk-model exit 0; seconds 17011
+=== end 2026-11-12T14:47:50Z

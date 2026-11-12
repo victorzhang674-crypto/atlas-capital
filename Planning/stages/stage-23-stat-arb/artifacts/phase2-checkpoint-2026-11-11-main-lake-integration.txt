@@ -1,0 +1,8 @@
+=== start 2026-11-12T14:49:41Z integration tests reading the main lake after the builds (worktree at 22fa7c1)
+......................s                                                  [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:143: set ATLAS_RISK_MODEL_FULL=1 for the 2018-2024 calibration
+22 passed, 1 skipped in 819.87s (0:13:39)
+
+integration exit 0
+=== end 2026-11-12T15:03:24Z

@@ -166,7 +166,7 @@ GICS and prices of delisted members (no free source); ML alpha, Johansen baskets
 PCA risk model (briefs' Out of scope).
 
 ## 5. Status
-- Tier 1 (2026-11-11): items 1, 2, 3, 5 and 6 done.
+- Tier 1: items 1, 2, 3, 5 and 6 done 2026-11-11; item 4 done 2026-11-12. Tier 1 is complete.
   - Item 1: block lists equal on six main-lake days; 0.8–1.2 s instead of 38–52 s per as-of.
   - Items 2–3: both commands tested and tried on the main lake into a scratch store
     (factors: 6 month-ends × 502 names in 15 min; risk model: 271 sessions, 10 snapshots,
@@ -175,6 +175,22 @@ PCA risk model (briefs' Out of scope).
     stopped one session early.
   - Item 5: `tests/integration/test_phase2_run.py`, 7 tests, in CI.
   - `make check` → exit 0, 4068 passed; offline integration 8 passed.
-  - **Item 4 not done:** the main-lake builds (about 3 h for factors from 2015, about 4 h for
-    the risk model from 2017). They need the owner's Terminal panel after the merge.
+  - **Item 4 done (2026-11-12):** both stores are built on the main lake and read back
+    (`READ-BACK OK`).
+    - `factor_exposures`: 142 month-ends 2015-01-30 .. 2026-10-30, 497–504 names, every value
+      finite; mean filled share 0.31 (2015) falling to 0.19 (2021 on).
+    - `factor_returns`: 2,471 sessions 2017-01-03 .. 2026-10-30, 20 factors, no missing cell;
+      mean R² 0.339, mean 392 names a day.
+    - `risk_model_snapshots`: 115 month-ends 2017-04-28 .. 2026-10-30, 319–455 stocks, 30 ETFs
+      from December 2018 on (three snapshots have 29), every covariance PSD.
+    - Bias statistic, out of sample over the 21 sessions after each snapshot (1.00 =
+      calibrated): cap-weighted 1.094, equal-weighted 1.076, random long/short 1.105, style
+      tilts 0.960–1.067, single names 1.067. Risk is under-predicted by 6–10% for diversified
+      portfolios.
+    - On the way: the first ten-year risk-model build was killed by the system (exit 137);
+      `load_cross_sections` kept a slice of the whole price panel alive per session. Fixed
+      test-first in Stage 19 (commit `22fa7c1`); the re-run took 4.7 h.
+    - Seen, not changed (Backlog): `BIL` is absent from three snapshots because the Stage 13
+      stale-price rule blocked it (a T-bill ETF's close can stay unchanged for days), with no
+      log line; the snapshot loop rebuilds its inputs at about 103 s per month-end.
 - Tiers 2–4: not started; each waits for the owner's word, as in Phase 1.

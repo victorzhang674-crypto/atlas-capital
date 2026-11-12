@@ -1,0 +1,46 @@
+=== start 2026-11-12T14:48:45Z read-back of the main lake (read only, from the worktree at 22fa7c1)
+factor_exposures: 142 month-ends 2015-01-30 .. 2026-10-30 (settings ea0279da348c)
+  2015: 12 month-ends, names 497-500, mean filled share 0.307
+  2016: 12 month-ends, names 499-501, mean filled share 0.287
+  2017: 12 month-ends, names 500-503, mean filled share 0.275
+  2018: 12 month-ends, names 502-503, mean filled share 0.265
+  2019: 12 month-ends, names 502-504, mean filled share 0.239
+  2020: 12 month-ends, names 502-504, mean filled share 0.213
+  2021: 12 month-ends, names 503-504, mean filled share 0.194
+  2022: 12 month-ends, names 500-504, mean filled share 0.197
+  2023: 12 month-ends, names 501-502, mean filled share 0.194
+  2024: 12 month-ends, names 502-503, mean filled share 0.193
+  2025: 12 month-ends, names 502-503, mean filled share 0.193
+  2026: 10 month-ends, names 503-503, mean filled share 0.194
+  point in time: nothing readable the session before the first month-end -> True
+factor_returns: 2471 sessions 2017-01-03 .. 2026-10-30, 20 factors, 0 missing cells
+risk_model_snapshots: 115 month-ends 2017-04-28 .. 2026-10-30 (settings 4bbbb5a135ea)
+  annualised vol of the daily factor returns: market 0.203, Communication Services 0.135, Consumer Discretionary 0.102, Consumer Staples 0.105, Energy 0.230, Financials 0.107, Health Care 0.107, Industrials 0.090, Information Technology 0.109, Materials 0.114, Real Estate 0.128, Utilities 0.131, momentum 0.054, value 0.033, quality 0.022, size 0.035, beta 0.085, growth 0.027, leverage 0.016, liquidity 0.034
+  point in time: on the morning of 2026-10-30 the latest readable model is 2026-09-30 -> True
+  2017:  9 snapshots, stocks 319-338, ETFs 0-29
+  2018: 12 snapshots, stocks 340-348, ETFs 29-30
+  2019: 12 snapshots, stocks 347-365, ETFs 30-30
+  2020: 12 snapshots, stocks 366-382, ETFs 29-30
+  2021: 12 snapshots, stocks 382-393, ETFs 29-30
+  2022: 12 snapshots, stocks 392-404, ETFs 29-30
+  2023: 12 snapshots, stocks 406-416, ETFs 30-30
+  2024: 12 snapshots, stocks 418-431, ETFs 30-30
+  2025: 12 snapshots, stocks 431-442, ETFs 30-30
+  2026: 10 snapshots, stocks 442-455, ETFs 30-30
+every snapshot's stock covariance is PSD; realised-return cells 936054, missing (counted as 0) 0 (0.00%)
+bias statistic sqrt(mean z^2), pooled out of sample over the 21 sessions after each snapshot (1.00 = calibrated):
+  cap_weighted            1.094  (n=2394)
+  equal_weighted          1.076  (n=2394)
+  random_long_short       1.105  (n=23940)
+  tilt_momentum           1.039  (n=2394)
+  tilt_value              1.002  (n=2394)
+  tilt_quality            1.013  (n=2394)
+  tilt_size               1.067  (n=2394)
+  tilt_beta               1.047  (n=2394)
+  tilt_growth             0.962  (n=2394)
+  tilt_leverage           0.960  (n=2394)
+  tilt_liquidity          1.063  (n=2394)
+  single_names            1.067  (n=936054)
+READ-BACK OK
+read-back exit 0
+=== end 2026-11-12T14:49:21Z
