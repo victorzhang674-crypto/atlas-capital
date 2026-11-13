@@ -1208,6 +1208,8 @@ def test_quant_factors_defaults() -> None:  # Stage 16 D1
         "universe": "sp500", "winsor_lower": 0.01, "winsor_upper": 0.99, "min_names": 20,
         "size_neutral": False, "period_tolerance_days": 20, "margin_quarters": 8,
         "min_abs_eps": 0.01, "max_price_age_sessions": 5,
+        "share_count_fallback": True, "share_count_fallback_excluded": ("BRK.B",),
+        "share_count_fallback_max_ratio": 3.0,
     }  # fmt: skip
 
 

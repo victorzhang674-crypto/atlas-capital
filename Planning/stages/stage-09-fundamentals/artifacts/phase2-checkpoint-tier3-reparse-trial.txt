@@ -1,0 +1,20 @@
+=== trial on a scratch copy of the main lake (curated tables copied, raw/ linked read-only), 2026-11-13T16:27Z
+lake: /tmp/claude-501/onepass-lake
+before: 2086094 rows, 742 symbols, 37 tags
+ingest: 2574827 rows upserted, 742 symbols ok, 0 failed, 259 rows without an acceptance time
+after: 2574827 rows, 742 symbols, 44 tags
+rows of the tags stored before: 2086094 (before: 2086094); identical: True
+rows of new tags: 488733, for 742 symbols
+                                                   rows  symbols
+tag                                                             
+AmortizationOfIntangibleAssets                    66713      634
+Depreciation                                      40749      532
+DepreciationAmortizationAndAccretionNet            9453       95
+DepreciationAndAmortization                       37874      365
+DepreciationDepletionAndAmortization              57348      542
+WeightedAverageNumberOfDilutedSharesOutstanding  138393      735
+WeightedAverageNumberOfSharesOutstandingBasic    138203      735
+real 42.87
+user 38.77
+sys 3.23
+exit 0

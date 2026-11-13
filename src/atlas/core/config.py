@@ -1068,7 +1068,14 @@ class FactorsConfig(_Frozen):
     before the latest, within `period_tolerance_days`; margin stability uses the last
     `margin_quarters` discrete quarters; EPS growth needs a year-ago TTM EPS of at least
     `min_abs_eps` USD in absolute value; the price for market cap is the latest known close no
-    older than `max_price_age_sessions` sessions.
+    older than `max_price_age_sessions` sessions. With `share_count_fallback`, a name with no
+    fresh cover-page share count gets its market cap from its latest weighted-average basic
+    shares (an average over a reporting period, so an approximation of the count: flagged in
+    the market frame's `shares_source`), provided it is within a factor of
+    `share_count_fallback_max_ratio` (> 1) of the count implied by TTM net income / TTM EPS
+    (filers sometimes state the average in thousands or millions); the symbols in
+    `share_count_fallback_excluded` (canonical tickers) never do, because their average is not
+    in units of the listed share.
     """
 
     universe: Annotated[str, Field(min_length=1)] = "sp500"
@@ -1080,6 +1087,17 @@ class FactorsConfig(_Frozen):
     margin_quarters: Annotated[int, Field(ge=2)] = 8
     min_abs_eps: Annotated[float, Field(gt=0)] = 0.01
     max_price_age_sessions: Annotated[int, Field(ge=1)] = 5
+    share_count_fallback: bool = True
+    share_count_fallback_excluded: tuple[str, ...] = ("BRK.B",)
+    share_count_fallback_max_ratio: Annotated[float, Field(gt=1)] = 3.0
+
+    @field_validator("share_count_fallback_excluded", mode="after")
+    @classmethod
+    def _canonical_symbols(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        symbols = tuple(normalize_symbol(s) for s in value)
+        if len(set(symbols)) != len(symbols):
+            raise ValueError(f"share_count_fallback_excluded lists a symbol twice: {symbols}")
+        return symbols
 
     @model_validator(mode="after")
     def _winsor_ordered(self) -> Self:

@@ -46,3 +46,10 @@ Every output below comes from commands run in this stage's chat (Project.md Rule
 - Acceptance criteria unchanged and still evidenced (in the brief's Verify).
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 2 checkpoint follow-up (one pass: rebuilt on the new data) — 2026-11-13
+- Commands run (this chat): `make check` → exit 0 (ruff clean, 386 files formatted, mypy clean on 157 files, 4168 passed); `uv run pytest -q` → 4168 passed, 71 deselected; integration on the main lake → 55 passed, 1 skipped (the flag-gated 2018–2024 calibration) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-final-checks.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-final-checks.txt)
+- Main lake: `factor_returns` and `risk_model_snapshots` rebuilt; every snapshot PSD; read-back OK, identical to the scratch read-back · [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-main-lake-readback.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-main-lake-readback.txt), [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-scratch-readback.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-scratch-readback.txt)
+- Acceptance criteria unchanged and still evidenced (in the brief's Verify).
+
+**Result:** ALL CRITERIA VERIFIED

@@ -232,9 +232,19 @@ QUARTERS = fiscal_quarters(date(2023, 12, 31), 16)
 them all); Q4 2023 is filed 2024-02-05 (known at `AS_OF`)."""
 
 
-def company_facts(c: Company, quarters: Sequence[tuple[date, date]] = QUARTERS) -> list[dict]:
-    """Discrete quarterly flows, quarter-end balances and a cover-page share count per
-    filing for company `c`."""
+DA_RATIO = 0.04
+"""Every company's depreciation & amortisation, as a fraction of its revenue."""
+
+
+def company_facts(
+    c: Company,
+    quarters: Sequence[tuple[date, date]] = QUARTERS,
+    *,
+    cover_count: bool = True,
+) -> list[dict]:
+    """Discrete quarterly flows (D&A = `DA_RATIO` x revenue), quarter-end balances, the
+    quarter's weighted-average basic shares (equal to the count) and, unless `cover_count`
+    is off, a cover-page share count per filing for company `c`."""
     rows: list[dict[str, Any]] = []
     for k, (start, end) in enumerate(quarters):
         filed = filed_after(end)
@@ -248,6 +258,7 @@ def company_facts(c: Company, quarters: Sequence[tuple[date, date]] = QUARTERS) 
             "NetIncomeLoss": rev * c.net_margin,
             "NetCashProvidedByUsedInOperatingActivities": rev * c.ocf_margin,
             "PaymentsToAcquirePropertyPlantAndEquipment": rev * c.capex_ratio,
+            "DepreciationDepletionAndAmortization": rev * DA_RATIO,
         }
         for tag, value in flows.items():
             rows.append(_fact(c.symbol, tag, value, end, filed, start=start))
@@ -274,14 +285,26 @@ def company_facts(c: Company, quarters: Sequence[tuple[date, date]] = QUARTERS) 
         rows.append(
             _fact(
                 c.symbol,
-                "EntityCommonStockSharesOutstanding",
+                "WeightedAverageNumberOfSharesOutstandingBasic",
                 shares,
-                filed - timedelta(days=7),
+                end,
                 filed,
+                start=start,
                 unit="shares",
-                taxonomy="dei",
             )
         )
+        if cover_count:
+            rows.append(
+                _fact(
+                    c.symbol,
+                    "EntityCommonStockSharesOutstanding",
+                    shares,
+                    filed - timedelta(days=7),
+                    filed,
+                    unit="shares",
+                    taxonomy="dei",
+                )
+            )
     return rows
 
 
@@ -350,9 +373,12 @@ class FactorWorld:
     sessions: tuple[date, ...]
 
 
-def build_factor_world(lake: Lake, seed: int = 16) -> FactorWorld:
+def build_factor_world(
+    lake: Lake, seed: int = 16, *, no_cover_count: Sequence[str] = ()
+) -> FactorWorld:
     """Write the world into `lake`: 600 sessions of bars to 2024-02-29 (CCC halves on the
-    split day), the CCC split, instruments with `SECTORS`, `SP500` membership and facts."""
+    split day), the CCC split, instruments with `SECTORS`, `SP500` membership and facts
+    (the companies in `no_cover_count` file no cover-page share count)."""
     cos = companies(seed)
     last = date(2024, 2, 29)
     bars = world_bars(STOCKS, last, 600, seed)
@@ -378,7 +404,7 @@ def build_factor_world(lake: Lake, seed: int = 16) -> FactorWorld:
         }
     )
     lake.write_table("index_membership", membership, mode="upsert")
-    rows = [r for c in cos for r in company_facts(c)]
+    rows = [r for c in cos for r in company_facts(c, cover_count=c.symbol not in no_cover_count)]
     lake.write_table("fundamentals_facts", facts_frame(rows), mode="upsert")
     days = tuple(sorted(set(bars["date"])))
     return FactorWorld(lake=lake, companies=tuple(cos), sessions=days)

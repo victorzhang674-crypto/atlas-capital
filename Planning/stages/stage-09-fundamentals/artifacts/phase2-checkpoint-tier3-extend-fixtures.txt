@@ -1,0 +1,18 @@
+CIK0000320193.json: DepreciationDepletionAndAmortization: 75 facts
+CIK0000320193.json: DepreciationAndAmortization: 27 facts
+CIK0000320193.json: DepreciationAmortizationAndAccretionNet: 92 facts
+CIK0000320193.json: Depreciation: 21 facts
+CIK0000320193.json: AmortizationOfIntangibleAssets: 24 facts
+CIK0000320193.json: WeightedAverageNumberOfSharesOutstandingBasic: 234 facts
+CIK0000320193.json: WeightedAverageNumberOfDilutedSharesOutstanding: 234 facts
+CIK0000320193.json: 707 facts added, 32 us-gaap tags now
+CIK0000789019.json: Depreciation: 70 facts
+CIK0000789019.json: AmortizationOfIntangibleAssets: 205 facts
+CIK0000789019.json: WeightedAverageNumberOfSharesOutstandingBasic: 230 facts
+CIK0000789019.json: WeightedAverageNumberOfDilutedSharesOutstanding: 232 facts
+CIK0000789019.json: 737 facts added, 28 us-gaap tags now
+CIK0000019617.json: DepreciationAmortizationAndAccretionNet: 164 facts
+CIK0000019617.json: AmortizationOfIntangibleAssets: 93 facts
+CIK0000019617.json: WeightedAverageNumberOfSharesOutstandingBasic: 236 facts
+CIK0000019617.json: WeightedAverageNumberOfDilutedSharesOutstanding: 236 facts
+CIK0000019617.json: 729 facts added, 25 us-gaap tags now

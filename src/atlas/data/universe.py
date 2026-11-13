@@ -324,6 +324,41 @@ def refresh_universe_reference(
     return report
 
 
+def apply_former_sectors(lake: Lake, *, config: AtlasConfig | None = None) -> tuple[str, ...]:
+    """Fill the reviewed sectors of `config.data.reference.former_sectors_file` into the
+    `instruments` rows of `lake` that a `refresh_universe_reference` with that file would
+    fill: no sector yet, not an ETF, not a current member of an index. Returns the symbols
+    filled, sorted (none on a second call).
+
+    It needs no source pages, so it changes nothing else: a refresh from today's pages would
+    also bring in today's index changes. Raises `DataError` when `instruments` was never
+    written.
+    """
+    cfg = config if config is not None else AtlasConfig()
+    if not lake.has_table(INSTRUMENTS.name):
+        raise DataError("instruments is empty: run refresh_universe_reference first")
+    reviewed = load_former_sectors(cfg.data.reference.former_sectors_file)
+    table = lake.read_table(INSTRUMENTS.name)
+    current: set[str] = set()
+    if lake.has_table(INDEX_MEMBERSHIP.name):
+        membership = lake.read_table(INDEX_MEMBERSHIP.name)
+        current = set(membership.loc[membership["end_date"].isna(), "symbol"])
+    wanted = [
+        symbol
+        for symbol, sector, is_etf in zip(
+            table["symbol"], table["sector"], table["is_etf"], strict=True
+        )
+        if pd.isna(sector) and not is_etf and symbol in reviewed and symbol not in current
+    ]
+    if not wanted:
+        return ()
+    rows = table[table["symbol"].isin(wanted)].copy()
+    rows["sector"] = [reviewed[symbol] for symbol in rows["symbol"]]
+    lake.write_table(INSTRUMENTS.name, rows, mode="upsert")
+    _log.info("universe.former_sectors_applied", instruments=len(rows))
+    return tuple(sorted(wanted))
+
+
 class Universe:
     """The investable universe on each date, from the lake's reference tables and prices.
 

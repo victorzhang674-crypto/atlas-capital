@@ -1,0 +1,75 @@
+=== red: the new tests before any code change (2026-11-13)
+
+==================================== ERRORS ====================================
+__ ERROR collecting tests/unit/data/fundamentals/test_fundamentals_average.py __
+tests/unit/data/fundamentals/test_fundamentals_average.py:32: in <module>
+    AVG = Concept(name="avg", kind="average", unit="shares", parts=(((("us-gaap", "W"),),),))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for Concept
+E   kind
+E     Input should be 'flow' or 'stock' [type=literal_error, input_value='average', input_type=str]
+E       For further information visit https://errors.pydantic.dev/2.14/v/literal_error
+___ ERROR collecting tests/unit/quant/factors/test_factor_share_fallback.py ____
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/tests/unit/quant/factors/test_factor_share_fallback.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/quant/factors/test_factor_share_fallback.py:28: in <module>
+    from atlas.quant.factors import (
+E   ImportError: cannot import name 'average_shares' from 'atlas.quant.factors' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/quant/factors/__init__.py)
+=========================== short test summary info ============================
+ERROR tests/unit/data/fundamentals/test_fundamentals_average.py - pydantic_co...
+ERROR tests/unit/quant/factors/test_factor_share_fallback.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+2 errors in 0.58s
+exit 2
+
+=== red: tests/unit/quant/factors/test_factor_raw.py alone (EBITDA)
+E         
+E         comparison failed
+E         Obtained: nan
+E         Expected: 10.0 ± 1.0e-05
+
+tests/unit/quant/factors/test_factor_raw.py:196: AssertionError
+____________________ test_net_debt_ebitda_spec_names_ebitda ____________________
+
+    def test_net_debt_ebitda_spec_names_ebitda() -> None:
+        spec = next(f for f in FACTORS if f.name == "net_debt_ebitda")
+        assert "EBITDA" in spec.description
+>       assert "proxy" not in spec.description
+E       AssertionError: assert 'proxy' not in '(total debt... in the map)'
+E         
+E         'proxy' is contained here:
+E           an EBITDA proxy, no D&A in the map)
+E         ?           +++++
+
+tests/unit/quant/factors/test_factor_raw.py:203: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/quant/factors/test_factor_raw.py::test_known_value[net_debt_ebitda-1.5]
+FAILED tests/unit/quant/factors/test_factor_raw.py::test_missing_or_nonpositive_denominators[overrides5-nan_factors5]
+FAILED tests/unit/quant/factors/test_factor_raw.py::test_net_debt_ebitda_with_an_operating_loss_smaller_than_depreciation
+FAILED tests/unit/quant/factors/test_factor_raw.py::test_net_debt_ebitda_spec_names_ebitda
+4 failed, 38 passed in 0.67s
+exit 1
+
+=== red: apply_former_sectors (tests/unit/data/test_universe.py -k apply_former) before the function exists
+    from atlas.data.universe import (
+E   ImportError: cannot import name 'apply_former_sectors' from 'atlas.data.universe' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/universe.py)
+=========================== short test summary info ============================
+ERROR tests/unit/data/test_universe.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.52s
+exit 2
+
+=== red: the confirmation by net income / EPS (tests added after the main-lake trial showed unit errors in the average), before its code
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/quant/factors/test_factor_share_fallback.py:28: in <module>
+    from atlas.quant.factors import (
+E   ImportError: cannot import name 'implied_shares' from 'atlas.quant.factors' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/quant/factors/__init__.py)
+=========================== short test summary info ============================
+ERROR tests/unit/quant/factors/test_factor_share_fallback.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.91s
+exit 2

@@ -18,6 +18,7 @@ from fundamentals_helpers import AAPL, fixture_facts, make_facts, repo_concept_m
 from atlas.core.config import FundamentalsConfig
 from atlas.core.pit import AsOf
 from atlas.data.fundamentals import (
+    ConceptMap,
     concept_history,
     concept_values,
     known_facts,
@@ -29,7 +30,9 @@ from atlas.data.fundamentals import (
 )
 
 CFG = FundamentalsConfig()
-CMAP = repo_concept_map()
+CMAP = ConceptMap({n: c for n, c in repo_concept_map().items() if c.kind != "average"})
+"""The repo's flows and stocks. The frame-based reference predates the `average` kind (it
+would read one as a stock), which has its own tests in `test_fundamentals_average.py`."""
 
 FLOW_TAGS: dict[str, list[tuple[str, str]]] = {
     "revenue": [

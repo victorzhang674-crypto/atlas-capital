@@ -7,8 +7,11 @@ difference of consecutive year-to-date periods sharing a start (H1 - Q1, 9M - H1
 then Q4 = FY - (Q1 + Q2 + Q3) when three quarters tile the fiscal year's first nine months.
 A reported quarter beats a derived one. `ttm` is the trailing twelve months at the latest
 period end where it can be built (the fiscal year ending there, else four contiguous
-quarters); `latest_balance` is a stock's latest instant. Units are those of the concept (USD,
-USD per share, shares); a derived EPS quarter is only approximate (share counts move).
+quarters); `latest_balance` is a stock's latest instant. An `average` concept (weighted-average
+shares) is neither: its value at a period end is the average of the shortest period reported
+to that end (the quarter rather than the year to date; at a fiscal year end only the year's
+average exists), and averages are never added or subtracted. Units are those of the concept
+(USD, USD per share, shares); a derived EPS quarter is only approximate (share counts move).
 """
 
 import math
@@ -310,6 +313,38 @@ def _balance_metric(periods: Sequence[PeriodRow]) -> MetricValue | None:
     )
 
 
+def _shortest_per_end(periods: Sequence[PeriodRow]) -> list[PeriodRow]:
+    """The durations of `periods`, one per period end (the shortest), sorted by end."""
+    best: dict[date, PeriodRow] = {}
+    for row in periods:
+        if row[2] > 0 and (row[1] not in best or row[2] < best[row[1]][2]):
+            best[row[1]] = row
+    return [best[end] for end in sorted(best)]
+
+
+def _average_metric(periods: Sequence[PeriodRow]) -> MetricValue | None:
+    rows = _shortest_per_end(periods)
+    if not rows:
+        return None
+    start, end, _, value, available, accn, tag = rows[-1]
+    return MetricValue(
+        value=value,
+        period_start=start,
+        period_end=end,
+        available_at=_EPOCH + timedelta(microseconds=available),
+        accn=str(accn),
+        tag=str(tag),
+        source="reported",
+    )
+
+
+def latest_average(periods: pd.DataFrame) -> MetricValue | None:
+    """The latest value of an average concept (`resolve_concept` output): at the greatest
+    `period_end`, the average over the shortest period ending there (`source="reported"`,
+    `period_start` = that period's start), or `None` when there is none."""
+    return _average_metric(period_rows(periods))
+
+
 def ttm(periods: pd.DataFrame, config: FundamentalsConfig) -> MetricValue | None:
     """Trailing-twelve-month value of a flow concept (`resolve_concept` output) at the latest
     period end where it can be built (the last row of `ttm_values`), or `None`."""
@@ -382,8 +417,8 @@ def _metric_name(concept: Concept) -> str:
 
 
 def metric_names(concept_map: ConceptMap) -> tuple[str, ...]:
-    """Index of the wide view: `<flow>_ttm` and `<stock>` per concept in map order, then
-    `RATIO_NAMES`."""
+    """Index of the wide view: `<flow>_ttm`, `<stock>` and `<average>` per concept in map
+    order, then `RATIO_NAMES`."""
     return (*(_metric_name(c) for c in concept_map.values()), *RATIO_NAMES)
 
 
@@ -430,14 +465,20 @@ def concept_values(
     known: pd.DataFrame, concept_map: ConceptMap, config: FundamentalsConfig
 ) -> dict[str, MetricValue | None]:
     """Each concept's value from `known` (one company's `known_facts`), by metric name in
-    concept-map order: a flow's TTM (`ttm`), a stock's latest balance (`latest_balance`),
-    `None` where there is none. It does not depend on the as-of day (staleness and ratios are
-    `assemble_detail`'s), so it can be reused for as long as the known facts are the same."""
+    concept-map order: a flow's TTM (`ttm`), a stock's latest balance (`latest_balance`), an
+    average's latest value (`latest_average`), `None` where there is none. It does not depend
+    on the as-of day (staleness and ratios are `assemble_detail`'s), so it can be reused for
+    as long as the known facts are the same."""
     index = FactIndex(known)
     values: dict[str, MetricValue | None] = {}
     for concept in concept_map.values():
         periods = resolve_rows(index, concept)
-        found = _ttm_metric(periods, config) if concept.kind == "flow" else _balance_metric(periods)
+        if concept.kind == "flow":
+            found = _ttm_metric(periods, config)
+        elif concept.kind == "stock":
+            found = _balance_metric(periods)
+        else:
+            found = _average_metric(periods)
         values[_metric_name(concept)] = found
     return values
 
@@ -505,6 +546,13 @@ def _stock_history(name: str, periods: Sequence[PeriodRow]) -> list[_HistoryRow]
     return [(name, None, r[1], r[3], math.nan, r[4], "reported", None) for r in instants]
 
 
+def _average_history(name: str, periods: Sequence[PeriodRow]) -> list[_HistoryRow]:
+    return [
+        (name, r[0], r[1], r[3], math.nan, r[4], "reported", None)
+        for r in _shortest_per_end(periods)
+    ]
+
+
 def concept_history(
     known: pd.DataFrame,
     concept_map: ConceptMap,
@@ -517,8 +565,10 @@ def concept_history(
     A flow has one row per end of a discrete quarter (`quarterly_values`: `value`,
     `period_start`, `source`) or of a TTM (`ttm_values`: `ttm`, `ttm_source`), NaN/None for
     the side that is missing; `available_at` is the later of the two. A stock has one row per
-    instant (`value` = the balance, `ttm` NaN, `period_start` None). Units are the concept's
-    (USD, USD per share, shares). An unknown concept name raises `ValueError`.
+    instant (`value` = the balance, `ttm` NaN, `period_start` None). An average has one row
+    per period end (`value` = the average over the shortest period ending there,
+    `period_start` its start, `ttm` NaN). Units are the concept's (USD, USD per share,
+    shares). An unknown concept name raises `ValueError`.
     """
     unknown = [n for n in names if n not in concept_map]
     if unknown:
@@ -530,8 +580,10 @@ def concept_history(
         periods = resolve_rows(index, concept)
         if concept.kind == "flow":
             rows += _flow_history(name, periods, config)
-        else:
+        elif concept.kind == "stock":
             rows += _stock_history(name, periods)
+        else:
+            rows += _average_history(name, periods)
     if not rows:
         return _empty_history()
     concepts, starts, ends, values, totals, stamps, sources, ttm_sources = zip(*rows, strict=True)
@@ -554,8 +606,9 @@ def fundamentals_pit_detail(
 ) -> pd.DataFrame:
     """The wide view with its sources: `DETAIL_COLUMNS`, one row per `metric_names` entry.
 
-    From the facts known at `as_of` (`known_facts`): each flow's TTM (`ttm`) and each stock's
-    latest balance (`latest_balance`), then `compute_ratios`. A metric whose period ended more
+    From the facts known at `as_of` (`known_facts`): each flow's TTM (`ttm`), each stock's
+    latest balance (`latest_balance`) and each average's latest value (`latest_average`),
+    then `compute_ratios`. A metric whose period ended more
     than `config.max_staleness_days` before `as_of.day` is NaN with `source="stale"`; one with
     no data is NaN with no source. A ratio row cites its latest input (`source="ratio"`).
     """

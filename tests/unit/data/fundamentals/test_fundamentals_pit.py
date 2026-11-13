@@ -135,6 +135,8 @@ def test_acceptance_fundamentals_pit_aapl_fy2023() -> None:
         "capex_ttm": 10_959 * M,
         "rnd_ttm": 29_915 * M,
         "sbc_ttm": 10_833 * M,
+        "depreciation_amortization_ttm": 11_519 * M,
+        "shares_weighted_average": 15_744_231_000.0,  # basic, fiscal year (not a count)
         "gross_margin": 169_148 / 383_285,
         "operating_margin": 114_301 / 383_285,
         "roe": 96_995 / 62_146,

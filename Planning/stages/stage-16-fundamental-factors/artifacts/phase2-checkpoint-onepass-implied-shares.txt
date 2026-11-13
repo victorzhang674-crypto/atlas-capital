@@ -1,0 +1,50 @@
+=== average and cover-page counts against TTM net income / TTM EPS, main lake after the re-ingest (read only), 2026-11-13T17:55Z
+
+== 2015-06-30: 498 names; implied count known for 469
+  avg/implied on 464: quantiles 1/5/25/50/75/95/99% [0.519, 0.895, 0.963, 0.98, 0.993, 1.05, 2.11]; within factor {1.25: 445, 1.5: 452, 2.0: 454, 3.0: 457}
+     outside a factor 2 (10): L 9.83e-07, WELL 0.000954, COP 0.000996, DISCA 0.491, DISCK 0.491, MNK 2.66, HBI 3.57, BBWI 2.17e+05, HIG 3.95e+05, ICE 6.81e+05
+  count/implied on 442: quantiles 1/5/25/50/75/95/99% [0.77, 0.905, 0.955, 0.979, 0.994, 1.104, 552.64]; within factor {1.25: 422, 1.5: 432, 2.0: 435, 3.0: 436}
+     outside a factor 2 (7): MNK 2.69, HBI 3.56, HBAN 934, BBWI 2.16e+05, HIG 3.93e+05, ICE 6.76e+05, STX 9.48e+05
+  fallback names (no fresh count, an average): 28; implied missing for 1: ['BRK.B']
+     avg/implied: DISCA 0.49, DISCK 0.49, SPG 0.83, REGN 0.89, VIAB 0.94, SNI 0.95, EXPE 0.97, CMCSA 0.97, MOS 0.97, ACN 0.97, CVC 0.98, EL 0.98, NWSA 0.98, HRL 0.98, UAA 0.98, UHS 0.98, BRCM 0.98, MKC 0.98, UPS 0.98, TAP 0.99, RL 0.99, F 0.99, MA 0.99, CME 1.00, LEN 1.01, META 1.01, TSN 1.05
+
+== 2017-06-30: 502 names; implied count known for 465
+  avg/implied on 461: quantiles 1/5/25/50/75/95/99% [0.465, 0.893, 0.97, 0.984, 0.994, 1.073, 1.486]; within factor {1.25: 441, 1.5: 449, 2.0: 455, 3.0: 455}
+     outside a factor 2 (6): GRMN 0.000995, FLIR 0.000996, COP 0.001, NWS 0.22, NWSA 0.22, ICE 4.58e+07
+  count/implied on 442: quantiles 1/5/25/50/75/95/99% [0.808, 0.884, 0.965, 0.982, 0.995, 1.108, 1.507]; within factor {1.25: 425, 1.5: 435, 2.0: 440, 3.0: 440}
+     outside a factor 2 (2): REG 3.21, ICE 4.57e+07
+  fallback names (no fresh count, an average): 25; implied missing for 2: ['UA', 'UAA']
+     avg/implied: NWSA 0.22, NWS 0.22, REGN 0.91, DISH 0.95, EXPE 0.97, NKE 0.97, ACN 0.98, HRL 0.98, EL 0.98, TSN 0.98, META 0.98, MKC 0.98, UHS 0.99, MA 0.99, F 0.99, UPS 0.99, TAP 0.99, SNI 1.00, LEN 1.00, CME 1.00, RL 1.00, VIAB 1.00, CMCSA 1.68
+
+== 2019-06-28: 502 names; implied count known for 471
+  avg/implied on 467: quantiles 1/5/25/50/75/95/99% [0.001, 0.89, 0.962, 0.979, 0.99, 1.042, 1.554]; within factor {1.25: 442, 1.5: 453, 2.0: 457, 3.0: 457}
+     outside a factor 2 (10): AXP 9.64e-07, PCAR 9.91e-07, KO 1e-06, COP 0.000793, FLIR 0.000973, GRMN 0.000998, FE 0.177, CVS 3.46, WY 3.89, CAH 80.5
+  count/implied on 449: quantiles 1/5/25/50/75/95/99% [0.76, 0.893, 0.956, 0.977, 0.992, 1.066, 1.65]; within factor {1.25: 427, 1.5: 439, 2.0: 445, 3.0: 445}
+     outside a factor 2 (4): FE 0.178, CVS 3.46, WY 3.88, CAH 80.5
+  fallback names (no fresh count, an average): 26; implied missing for 5: ['NWS', 'NWSA', 'TAP', 'UA', 'UAA']
+     avg/implied: DISH 0.84, REGN 0.95, EXPE 0.96, NKE 0.96, CHTR 0.97, EL 0.97, UHS 0.98, LEN 0.98, CMCSA 0.98, AOS 0.98, META 0.98, ACN 0.98, HRL 0.98, RL 0.99, MA 0.99, F 0.99, MKC 0.99, UPS 1.00, TSN 1.00, VIAB 1.00, CME 1.03
+
+== 2021-06-30: 504 names; implied count known for 474
+  avg/implied on 470: quantiles 1/5/25/50/75/95/99% [0.626, 0.865, 0.975, 0.989, 0.996, 1.053, 1.756]; within factor {1.25: 449, 1.5: 459, 2.0: 462, 3.0: 466}
+     outside a factor 2 (8): FCX 0.253, L 0.281, PXD 0.455, FOX 0.465, FOXA 0.465, SHW 2.52, NWS 24.1, NWSA 24.1
+  count/implied on 446: quantiles 1/5/25/50/75/95/99% [0.716, 0.894, 0.97, 0.986, 0.996, 1.054, 1.274]; within factor {1.25: 427, 1.5: 439, 2.0: 441, 3.0: 444}
+     outside a factor 2 (5): FCX 0.254, L 0.277, DVN 2.06, IFF 2.29, SHW 2.52
+  fallback names (no fresh count, an average): 28; implied missing for 1: ['TAP']
+     avg/implied: FOXA 0.47, FOX 0.47, DISH 0.84, REGN 0.93, CHTR 0.93, EL 0.98, ACN 0.98, NKE 0.99, META 0.99, LEN 0.99, MKC 0.99, F 0.99, UHS 0.99, BIO 0.99, CMCSA 0.99, MA 0.99, HRL 0.99, UPS 1.00, AOS 1.00, CME 1.00, TSN 1.00, RL 1.00, UAA 1.00, UA 1.00, EXPE 1.06, NWSA 24.08, NWS 24.08
+
+== 2024-01-31: 502 names; implied count known for 478
+  avg/implied on 475: quantiles 1/5/25/50/75/95/99% [0.616, 0.894, 0.973, 0.988, 0.996, 1.018, 1.211]; within factor {1.25: 462, 1.5: 467, 2.0: 471, 3.0: 473}
+     outside a factor 2 (4): TER 0.000934, WYNN 0.204, VTR 0.365, SRE 2.01
+  count/implied on 453: quantiles 1/5/25/50/75/95/99% [0.671, 0.888, 0.966, 0.986, 0.996, 1.029, 1.274]; within factor {1.25: 440, 1.5: 446, 2.0: 450, 3.0: 452}
+     outside a factor 2 (3): WYNN 0.204, VTR 0.365, SRE 2.01
+  fallback names (no fresh count, an average): 27; implied missing for 2: ['ABNB', 'TAP']
+     avg/implied: TSN 0.82, SPG 0.87, SCHW 0.91, REGN 0.93, FOX 0.95, FOXA 0.95, UHS 0.97, CHTR 0.97, CMCSA 0.98, RL 0.98, EL 0.98, NKE 0.98, META 0.98, ACN 0.98, LEN 0.99, CME 0.99, MA 0.99, UPS 0.99, MKC 0.99, HRL 1.00, F 1.00, AOS 1.01, NWSA 1.03, NWS 1.03, BIO 1.17
+
+== 2026-09-30: 503 names; implied count known for 480
+  avg/implied on 478: quantiles 1/5/25/50/75/95/99% [0.478, 0.904, 0.97, 0.987, 0.995, 1.037, 12.573]; within factor {1.25: 453, 1.5: 458, 2.0: 460, 3.0: 461}
+     outside a factor 2 (18): MCD 9.93e-07, TPL 0.125, ALB 0.137, IBKR 0.23, OMC 0.287, DD 2.1, CRWD 3.75, IVZ 3.77, CVNA 3.87, PCG 6.56, ANET 7.49, SCHW 7.6, MDT 12.1, BKNG 14.1, ED 16.1, BE 321, WAT 2.37e+03, FDX 9.92e+05
+  count/implied on 447: quantiles 1/5/25/50/75/95/99% [0.71, 0.901, 0.963, 0.984, 0.996, 1.054, 10.212]; within factor {1.25: 427, 1.5: 430, 2.0: 432, 3.0: 434}
+     outside a factor 2 (15): TPL 0.125, ALB 0.137, OMC 0.281, DD 2.09, WAT 2.37, IVZ 3.68, CRWD 3.77, ANET 7.5, SCHW 7.58, PCG 7.99, MDT 12.1, BKNG 13.8, ED 16.3, BE 329, FDX 9.9e+05
+  fallback names (no fresh count, an average): 35; implied missing for 2: ['ABNB', 'ECHO']
+     avg/implied: IBKR 0.23, NWSA 0.77, NWS 0.77, SPG 0.85, TKO 0.93, XYZ 0.94, CHTR 0.94, RDDT 0.95, UHS 0.96, REGN 0.96, WDAY 0.97, RL 0.97, ACN 0.98, HOOD 0.98, MA 0.99, BF.B 0.99, CMCSA 0.99, DASH 0.99, AOS 0.99, META 0.99, CME 0.99, EL 1.00, MKC 1.00, NKE 1.00, FOX 1.00, FOXA 1.00, UPS 1.00, TSN 1.00, DDOG 1.00, HRL 1.01, F 1.02, LEN 1.51, CVNA 3.87
+exit 0

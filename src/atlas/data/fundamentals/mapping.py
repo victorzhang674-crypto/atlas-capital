@@ -1,7 +1,9 @@
 """Concept map: standardised fundamentals defined over XBRL tags (`config/xbrl_map.yaml`).
 
-A concept (e.g. `revenue`) is a `flow` (a duration: summed into quarters and TTM) or a `stock`
-(an instant: latest balance), in one XBRL `unit`. Its value for a period is the sum of its
+A concept (e.g. `revenue`) is a `flow` (a duration: summed into quarters and TTM), a `stock`
+(an instant: latest balance) or an `average` (a quantity averaged over a duration, such as
+weighted-average shares: the latest period's value is used and periods are never added or
+subtracted), in one XBRL `unit`. Its value for a period is the sum of its
 **parts** that have a value (a missing part counts as 0; no part present → no value). A part is
 a fallback list of **alternatives**, tried in order; an alternative is one tag or a strict sum
 of tags (`"A + B"`, present only when every term has a value for that period). A concept
@@ -33,7 +35,7 @@ Alternative = tuple[TaxTag, ...]
 Part = tuple[Alternative, ...]
 """A fallback list of alternatives; the first with a value for a period wins."""
 
-Kind = Literal["flow", "stock"]
+Kind = Literal["flow", "stock", "average"]
 
 TAXONOMIES = ("us-gaap", "dei")
 _TERM_RE = re.compile(r"^(?:(?P<ns>[a-z][a-z-]*):)?(?P<name>[A-Z][A-Za-z0-9]*)$")
@@ -411,7 +413,8 @@ def resolve_concept(facts: pd.DataFrame, concept: Concept) -> pd.DataFrame:
     """The values of `concept` per period from `facts` (`fundamentals_facts` rows).
 
     Uses the facts in the concept's unit and of its kind (instants for a stock, durations for
-    a flow), the latest filing per tag and period (`latest_filings`), then per period the first
+    a flow or an average), the latest filing per tag and period (`latest_filings`), then per
+    period the first
     alternative of each part that has a value, summed over the parts present. Returns
     `PERIOD_COLUMNS` sorted by period (end, then length); `tag` names the tag(s) used (`A + B`
     for a strict sum, `A; B` for parts), `available_at`/`accn` the latest input. A concept no

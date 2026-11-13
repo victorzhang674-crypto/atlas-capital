@@ -41,6 +41,7 @@ from atlas.data.universe import (
     MembershipAnomaly,
     MembershipBuild,
     Universe,
+    apply_former_sectors,
     build_membership,
     load_known_anomalies,
     members_on,
@@ -915,6 +916,73 @@ def test_refresh_reads_the_former_sectors_file_from_config(tmp_lake: Lake, tmp_p
     )
     refresh_universe_reference(tmp_lake, constituents_html(), changes_html(), config=cfg)
     assert {i.symbol: i for i in read_instruments(tmp_lake)}["AIV"].sector is None
+
+
+def _reference_config(former: Path) -> AtlasConfig:
+    reference = ReferenceDataConfig(former_sectors_file=former)
+    return AtlasConfig().model_copy(
+        update={"data": AtlasConfig().data.model_copy(update={"reference": reference})}
+    )
+
+
+def test_apply_former_sectors_fills_only_what_a_refresh_would(
+    tmp_lake: Lake, tmp_path: Path
+) -> None:
+    """Phase 2 checkpoint: the reviewed sectors reach a lake without the source pages (a
+    refresh from today's pages would also bring in today's index changes)."""
+    absent = _reference_config(tmp_path / "absent.yaml")
+    refresh_universe_reference(tmp_lake, constituents_html(), changes_html(), config=absent)
+    rows = tmp_lake.read_table("instruments")
+    etf = str(rows.loc[rows["is_etf"], "symbol"].iloc[0])
+    blank = rows[rows["symbol"] == "MSFT"].assign(sector=None)  # a member the page gave none
+    tmp_lake.write_table("instruments", blank, mode="upsert")
+    before = tmp_lake.read_table("instruments").set_index("symbol").sort_index()
+    membership = tmp_lake.read_table("index_membership")
+    assert pd.isna(before.loc["AIV", "sector"]) and pd.isna(before.loc["MSFT", "sector"])
+
+    path = tmp_path / "former.yaml"
+    path.write_text(
+        "sectors:\n  AIV: Real Estate\n  XEC: Energy\n  AAPL: Utilities\n  MSFT: Utilities\n"
+        f"  {etf}: Energy\n  ZZZZ: Energy\n"
+    )
+    cfg = _reference_config(path)
+    assert apply_former_sectors(tmp_lake, config=cfg) == ("AIV", "XEC")
+
+    after = tmp_lake.read_table("instruments").set_index("symbol").sort_index()
+    assert list(after.index) == list(before.index)  # ZZZZ is not an instrument: not added
+    assert after.loc["AIV", "sector"] == "Real Estate" and after.loc["XEC", "sector"] == "Energy"
+    assert after.loc["AAPL", "sector"] == "Information Technology"  # the page's sector stays
+    assert pd.isna(after.loc["MSFT", "sector"])  # a current member is never filled from the file
+    assert pd.isna(after.loc[etf, "sector"])  # an ETF has none
+    untouched = [s for s in before.index if s not in ("AIV", "XEC")]
+    pd.testing.assert_frame_equal(after.loc[untouched], before.loc[untouched])
+    pd.testing.assert_frame_equal(
+        after.loc[["AIV", "XEC"]].drop(columns="sector"),
+        before.loc[["AIV", "XEC"]].drop(columns="sector"),
+    )
+    pd.testing.assert_frame_equal(tmp_lake.read_table("index_membership"), membership)
+    assert apply_former_sectors(tmp_lake, config=cfg) == ()  # nothing left to fill
+
+
+def test_apply_former_sectors_equals_a_refresh_with_the_file(
+    tmp_lake: Lake, tmp_path: Path, repo_root: Path
+) -> None:
+    """With the repo's list: filling a lake built without it gives the instruments a refresh
+    with it gives."""
+    absent = _reference_config(tmp_path / "absent.yaml")
+    listed = _reference_config(repo_root / "config" / "former_sectors.yaml")
+    refresh_universe_reference(tmp_lake, constituents_html(), changes_html(), config=absent)
+    filled = apply_former_sectors(tmp_lake, config=listed)
+    assert len(filled) > 100
+    got = tmp_lake.read_table("instruments").sort_values("symbol", ignore_index=True)
+    refresh_universe_reference(tmp_lake, constituents_html(), changes_html(), config=listed)
+    want = tmp_lake.read_table("instruments").sort_values("symbol", ignore_index=True)
+    pd.testing.assert_frame_equal(got, want)
+
+
+def test_apply_former_sectors_needs_the_instruments_table(tmp_lake: Lake) -> None:
+    with pytest.raises(DataError, match="refresh_universe_reference"):
+        apply_former_sectors(tmp_lake)
 
 
 def test_load_former_sectors(tmp_path: Path) -> None:

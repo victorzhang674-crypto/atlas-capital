@@ -1,0 +1,15 @@
+=== swap into /Users/zzjsmacbookair/Projects/atlas-capital/data from /private/tmp/claude-501/onepass-lake, 2026-11-13T17:52:39Z
+backed up fundamentals_facts:  24M digest b9350df6027bbd13
+backed up instruments:  28K digest 7c3a373ac5620934
+backed up factor_exposures:  16M digest 123ae67dd922bb3d
+backed up factor_returns: 580K digest 07936450176f86e4
+backed up risk_model_snapshots: 5.2M digest 730bb664eb793e20
+replaced fundamentals_facts: digest now ef16d8b8f2fc8af6 (scratch ef16d8b8f2fc8af6)
+replaced instruments: digest now 9150ad697e6bb1dd (scratch 9150ad697e6bb1dd)
+replaced factor_exposures: digest now e0d96f9b52166766 (scratch e0d96f9b52166766)
+replaced factor_returns: digest now df49f1a95cb8b51f (scratch df49f1a95cb8b51f)
+replaced risk_model_snapshots: digest now f6d44d9cd59abac7 (scratch f6d44d9cd59abac7)
+_meta.json: identical to the scratch copy's
+build log kept: runs/factors/build-onepass-2026-11-13.log
+build log kept: runs/risk_model/build-onepass-2026-11-13.log
+swap exit 0

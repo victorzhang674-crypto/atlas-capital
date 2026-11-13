@@ -66,3 +66,11 @@ Filled only with output from commands run in this stage's chat (Project.md Rule 
 
 **Result:** ALL CRITERIA VERIFIED
 - On merged `main` (`2f81f0e`, fast-forward from `f0b4d01`; owner's Terminal panel): `make check` → exit 0, 4068 passed, 38 deselected; integration → 8 passed, 15 skipped; branch merged; checkout clean · raw: [artifacts/phase2-checkpoint-2026-11-11-merged-main-check.txt](artifacts/phase2-checkpoint-2026-11-11-merged-main-check.txt)
+
+#### Phase 2 checkpoint, one pass (Tier 2 item 7, Tier 3 items 1–2 on the main lake) — 2026-11-13
+- Commands run (this chat): `make check` → exit 0 (ruff clean, 386 files formatted, mypy clean on 157 files, 4168 passed); `uv run pytest -q` → 4168 passed, 71 deselected; integration on the main lake → 55 passed, 1 skipped (the flag-gated 2018–2024 calibration) · raw: [artifacts/phase2-checkpoint-2026-11-11-onepass-final-checks.txt](artifacts/phase2-checkpoint-2026-11-11-onepass-final-checks.txt); red first: [artifacts/phase2-checkpoint-2026-11-11-onepass-red.txt](artifacts/phase2-checkpoint-2026-11-11-onepass-red.txt); first `make check` after the code: exit 0, 4168 passed · [artifacts/phase2-checkpoint-2026-11-11-onepass-make-check.txt](artifacts/phase2-checkpoint-2026-11-11-onepass-make-check.txt)
+- Main lake: five tables replaced from a verified scratch rebuild, old ones backed up · [artifacts/phase2-checkpoint-2026-11-11-onepass-swap.txt](artifacts/phase2-checkpoint-2026-11-11-onepass-swap.txt); read-back OK and identical to the scratch read-back · [artifacts/phase2-checkpoint-2026-11-11-onepass-main-lake-readback.txt](artifacts/phase2-checkpoint-2026-11-11-onepass-main-lake-readback.txt)
+- Records: Stages 08, 09, 16, 19 (`worklog.md`, `verification.md`), this folder, report §5, `PROGRESS.md`.
+- Not done: merge into `main`, push (each needs its own step; the push waits for the owner).
+
+**Result:** ALL CRITERIA VERIFIED

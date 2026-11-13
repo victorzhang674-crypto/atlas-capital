@@ -218,6 +218,9 @@ quant:
     margin_quarters: 8  # discrete quarters of gross margin in margin stability
     min_abs_eps: 0.01  # USD; EPS growth is NaN when the year-ago TTM EPS is smaller in absolute value
     max_price_age_sessions: 5  # market cap needs a close from the last this many known sessions
+    share_count_fallback: true  # no fresh cover-page share count: use the latest weighted-average basic shares (an approximation)
+    share_count_fallback_excluded: [BRK.B]  # never use the average for these: Berkshire's is in class-A equivalents (1 A = 1,500 B)
+    share_count_fallback_max_ratio: 3.0  # use an average only within this factor of TTM net income / TTM EPS (catches averages filed in thousands or millions)
   # Signal research toolkit (Stage 17, atlas.quant.research): IC, quantiles, decay, L/S backtest.
   research:
     universe: sp500  # names evaluated on each date: the members of this universe at that date

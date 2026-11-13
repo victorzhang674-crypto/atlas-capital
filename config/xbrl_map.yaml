@@ -4,6 +4,8 @@
 # Each concept has:
 #   kind:   flow  (a duration: income and cash-flow lines; summed into quarters and TTM)
 #           stock (an instant: balance-sheet lines and share counts; the latest balance is used)
+#           average (a quantity averaged over a duration: weighted-average shares; the latest
+#                   period's value is used, the quarter before the year to date, never summed)
 #   unit:   the XBRL unit kept (facts in other units are ignored)
 #   tags:   fallback list; for each period the first alternative with a value wins.
 #           A bare name is us-gaap; "dei:Name" is the dei taxonomy. "A + B" is an alternative
@@ -47,3 +49,12 @@ concepts:
   rnd: {kind: flow, unit: USD, tags: [ResearchAndDevelopmentExpense, ResearchAndDevelopmentExpenseExcludingAcquiredInProcessCost]}
   # Stock-based compensation, USD.
   sbc: {kind: flow, unit: USD, tags: [ShareBasedCompensation, AllocatedShareBasedCompensationExpense]}
+  # Depreciation, depletion and amortisation, USD (the cash-flow statement's total; EBITDA =
+  # operating income + this). A company that tags no total gets depreciation + amortisation of
+  # intangibles when it tags both; one that tags neither has no value (never depreciation alone).
+  depreciation_amortization: {kind: flow, unit: USD, tags: [DepreciationDepletionAndAmortization, DepreciationAndAmortization, DepreciationAmortizationAndAccretionNet, Depreciation + AmortizationOfIntangibleAssets]}
+  # Weighted-average common shares over a reporting period, shares (basic, else diluted). An
+  # average over the period, NOT a count on a date: used as the share count only for a company
+  # with no fresh shares_outstanding (quant.factors.share_count_fallback); several share classes
+  # are added together and Berkshire's is in class-A equivalents.
+  shares_weighted_average: {kind: average, unit: shares, tags: [WeightedAverageNumberOfSharesOutstandingBasic, WeightedAverageNumberOfDilutedSharesOutstanding]}

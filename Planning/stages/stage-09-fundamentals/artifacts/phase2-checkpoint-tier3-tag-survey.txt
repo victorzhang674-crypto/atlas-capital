@@ -1,0 +1,65 @@
+737 companyfacts files
+
+== D&A-like us-gaap tags (USD, fiscal-year facts): companies with a year >= 2015 | >= 2023
+   588 |  470  AmortizationOfIntangibleAssets
+   491 |  403  DepreciationDepletionAndAmortization
+   486 |  398  Depreciation
+   275 |  244  FinanceLeaseRightOfUseAssetAmortization
+   254 |  180  DepreciationAndAmortization
+   140 |   71  AmortizationOfFinancingCosts
+   137 |   90  AmortizationOfFinancingCostsAndDiscounts
+   103 |   69  AdjustmentForAmortization
+   102 |   44  AmortizationOfDebtDiscountPremium
+   100 |   42  OtherComprehensiveIncomeLossAmortizationAdjustmentFromAOCIPensionAndOtherPostretirementBenefitPlansForNetPriorServiceCostCreditBeforeTax
+    99 |   60  DefinedBenefitPlanAmortizationOfGainsLosses
+    96 |   79  CapitalizedContractCostAmortization
+    94 |   62  CapitalizedComputerSoftwareAmortization1
+    84 |   71  DepreciationAmortizationAndAccretionNet
+    79 |   34  OtherComprehensiveIncomeLossAmortizationAdjustmentFromAOCIPensionAndOtherPostretirementBenefitPlansForNetPriorServiceCostCreditNetOfTax
+    73 |    0  DefinedBenefitPlanFutureAmortizationOfGainLoss
+    68 |   30  DefinedBenefitPlanAmortizationOfPriorServiceCostCredit
+    64 |   23  OtherComprehensiveIncomeLossAmortizationAdjustmentFromAOCIPensionAndOtherPostretirementBenefitPlansForNetPriorServiceCostCreditTax
+    64 |    0  CapitalizedComputerSoftwareAmortization
+    61 |   59  OperatingLeaseRightOfUseAssetAmortizationExpense
+    60 |   38  OtherDepreciationAndAmortization
+    57 |    0  DefinedBenefitPlanFutureAmortizationOfPriorServiceCostCredit
+    49 |   31  AccretionAmortizationOfDiscountsAndPremiumsInvestments
+    38 |   35  CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization
+    38 |   27  DepreciationNonproduction
+    37 |   13  RestructuringReserveAcceleratedDepreciation
+    31 |   26  SECScheduleIIIRealEstateAccumulatedDepreciationDepreciationExpense
+    29 |   21  DeferredPolicyAcquisitionCostAmortizationExpense
+    25 |   12  OtherAmortizationOfDeferredCharges
+    25 |   18  RealEstateAccumulatedDepreciationRealEstateSold
+    24 |   19  CostOfGoodsAndServicesSoldDepreciationAndAmortization
+    23 |   17  AmortizationMethodQualifiedAffordableHousingProjectInvestmentsAmortization
+    22 |   11  InterestExpenseDebtExcludingAmortization
+    18 |    0  CostOfGoodsSoldExcludingDepreciationDepletionAndAmortization
+    18 |    5  DisposalGroupIncludingDiscontinuedOperationDepreciationAndAmortization
+    16 |   11  IncomeTaxReconciliationNondeductibleExpenseAmortization
+    16 |   13  HostingArrangementServiceContractImplementationCostExpenseAmortization
+    16 |   11  OperatingLeasesIncomeStatementDepreciationExpenseOnPropertySubjectToOrHeldForLease
+    16 |   13  CostOfGoodsAndServicesSoldAmortization
+    15 |   12  CostDepreciationAmortizationAndDepletion
+    15 |    0  CapitalLeasesIncomeStatementAmortizationExpense
+    15 |    4  DepreciationAndAmortizationDiscontinuedOperations
+    15 |    7  AmortizationOfDeferredCharges
+    14 |   14  SupplementaryInsuranceInformationAmortizationOfDeferredPolicyAcquisitionCosts
+    14 |    9  AmortizationOfAboveAndBelowMarketLeases
+
+== weighted-average share tags (shares, any duration): companies >= 2015 | >= 2023
+   725 |  625  WeightedAverageNumberOfDilutedSharesOutstanding
+   725 |  625  WeightedAverageNumberOfSharesOutstandingBasic
+    85 |    0  WeightedAverageNumberOfShareOutstandingBasicAndDiluted
+    41 |   24  WeightedAverageNumberOfSharesIssuedBasic
+    17 |    7  WeightedAverageNumberOfSharesRestrictedStock
+     8 |    4  WeightedAverageNumberOfSharesContingentlyIssuable
+     8 |    3  WeightedAverageNumberOfSharesCommonStockSubjectToRepurchaseOrCancellation
+     3 |    1  WeightedAverageNumberOfSharesTreasuryStock
+     1 |    1  WeightedAverageNumberOfLimitedPartnershipAndGeneralPartnershipUnitOutstandingBasicAndDiluted
+
+== company-years 2015-2025 with a fiscal-year D&A value, by fallback chain
+   4351 company-years,  491 companies  DDA only
+   5599 company-years,  605 companies  DDA, DA
+   5989 company-years,  635 companies  DDA, DA, DAAccretion
+   6560 company-years,  687 companies  DDA, DA, DAAccretion, Depreciation + AmortizationOfIntangibleAssets

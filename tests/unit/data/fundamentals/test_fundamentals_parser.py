@@ -69,6 +69,8 @@ def test_load_concept_map_repo_file(repo_root: Path) -> None:
         "capex",
         "rnd",
         "sbc",
+        "depreciation_amortization",
+        "shares_weighted_average",
     ]
     revenue = cmap["revenue"]
     assert (revenue.kind, revenue.unit) == ("flow", "USD")
@@ -88,7 +90,7 @@ def test_load_concept_map_repo_file(repo_root: Path) -> None:
         ("dei", "EntityCommonStockSharesOutstanding"),
     )
     assert cmap["eps_diluted"].unit == "USD/shares"
-    assert len(cmap.tags()) == 37
+    assert len(cmap.tags()) == 44  # 37 + five D&A tags + two weighted-average share tags
 
 
 @pytest.mark.parametrize(

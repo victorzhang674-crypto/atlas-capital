@@ -1,0 +1,28 @@
+=== rebuild on the scratch copy of the main lake (re-parsed facts, sectors filled; final code), sandbox
+--- atlas factors build --from 2015 --to 2026 --refresh, start 16:54:46Z
+│ 2022 │         12 │        502 │             0.182 │
+│ 2023 │         12 │        502 │             0.180 │
+│ 2024 │         12 │        502 │             0.178 │
+│ 2025 │         12 │        503 │             0.177 │
+│ 2026 │         10 │        503 │             0.175 │
+└──────┴────────────┴────────────┴───────────────────┘
+Factor cache: 142 month-ends from 2015-01-30 to 2026-10-30; 142 written, 0 
+already stored; table factor_exposures in /tmp/claude-501/onepass-lake (settings
+5a206d83192c). Run 01M7AXAQR1P5R3G13GSY7GXGFC.
+real 1661.70
+user 1817.76
+sys 75.27
+factors exit 0
+--- atlas risk-model build --from 2017 --to 2026 --cached-factors, start 17:22:27Z
+Risk model: 2471 sessions fitted from 2017-01-03 to 2026-10-30, 0 skipped (too 
+few names), mean R2 0.317, mean names 463; 115 snapshots from 2017-04-28 to 
+2026-10-30 with 30 ETFs; tables factor_returns and risk_model_snapshots in 
+/tmp/claude-501/onepass-lake (settings 818a7fb5a56c). Run 
+01M7AYXDCER66F50VWS4YBT89Q.
+Monthly anchors read from the factor cache where it has them (the build log's 
+risk_model.anchor_loaded lines say which); the cache must match the lake's data.
+real 1671.88
+user 1796.19
+sys 68.30
+risk exit 0
+--- end 17:50:19Z

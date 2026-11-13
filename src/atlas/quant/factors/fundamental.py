@@ -8,8 +8,18 @@ Inputs are what `DataView` returns at an as-of (`fundamentals_panel`, `fundament
 
 Units: USD for prices, caps, EV and statement lines; shares for counts; factors are fractions
 (yields, returns on capital, growth rates as simple fractions, CAGR per year), ratios (debt
-/ equity, net debt / EBIT), `size` is the natural log of USD market cap. A value whose
+/ equity, net debt / EBITDA), `size` is the natural log of USD market cap. A value whose
 denominator is missing or not positive is NaN (never a guess); ±inf never appears.
+
+Share counts: the cover-page count of the latest filing (`shares_outstanding`). A company
+that files none that is fresh (several share classes, mostly) may get the weighted-average
+basic shares of its latest reporting period instead (`average_shares`,
+`quant.factors.share_count_fallback`): an average over a quarter or a year, so the market
+cap is approximate (buybacks and issuance move the count by about a percent a year), and
+`compute_market` says which names used it (`shares_source`). An average is used only when
+it agrees, within `share_count_fallback_max_ratio`, with the count implied by TTM net income
+/ TTM diluted EPS (`implied_shares`): about 1% of filed averages are stated in thousands or
+millions of shares.
 """
 
 import hashlib
@@ -23,7 +33,7 @@ from typing import Literal
 import numpy as np
 import pandas as pd
 
-from atlas.core.calendar import TradingCalendar
+from atlas.core.calendar import TradingCalendar, market_date
 from atlas.core.config import AtlasConfig, FactorsConfig
 from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
@@ -81,7 +91,7 @@ FACTORS: tuple[FactorSpec, ...] = (
         "net_debt_ebitda",
         "leverage",
         "ratio",
-        "(total debt - cash) / TTM operating income (EBIT: an EBITDA proxy, no D&A in the map)",
+        "(total debt - cash) / TTM EBITDA (operating income + depreciation and amortisation)",
     ),
     FactorSpec("size", "size", "log_usd", "ln(market cap in USD)"),
     FactorSpec(
@@ -96,7 +106,18 @@ FACTORS: tuple[FactorSpec, ...] = (
 FACTOR_NAMES: tuple[str, ...] = tuple(f.name for f in FACTORS)
 """Names of `FACTORS`, the columns of `raw_factors`."""
 
-HISTORY_CONCEPTS = ("revenue", "gross_profit", "eps_diluted", "shares_outstanding")
+FACTOR_DEFINITIONS_VERSION = 2
+"""Part of `factor_config_hash`: raise it whenever the formula of a factor changes, so that
+panels stored under the old formula are no longer read (2: net debt / EBITDA instead of
+net debt / EBIT; the share-count fallback)."""
+
+HISTORY_CONCEPTS = (
+    "revenue",
+    "gross_profit",
+    "eps_diluted",
+    "shares_outstanding",
+    "shares_weighted_average",
+)
 """Concepts `factor_panel` reads with `DataView.fundamentals_history`."""
 
 MARKET_COLUMNS = (
@@ -104,11 +125,14 @@ MARKET_COLUMNS = (
     "price_date",
     "shares",
     "shares_date",
+    "shares_source",
     "market_cap",
     "enterprise_value",
 )
 """Columns of `compute_market`: raw close (USD) and its session, the latest share count in
-today's shares and its date, market cap and enterprise value (USD)."""
+today's shares, its date and where it came from (`reported` = a cover-page count, `average`
+= the weighted-average shares of a reporting period, `None` = no count), market cap and
+enterprise value (USD)."""
 
 SHARES_COLUMNS = ("symbol", "period_end", "shares")
 """Columns of `adjusted_shares`."""
@@ -148,6 +172,70 @@ def adjusted_shares(history: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame
     return out.sort_values(["symbol", "period_end"], kind="stable", ignore_index=True)
 
 
+def implied_shares(panel: pd.DataFrame, *, min_abs_eps: float) -> dict[str, float]:
+    """The share count implied by each symbol's TTM net income / TTM diluted EPS in `panel`
+    (`DataView.fundamentals_panel`; shares, as filed), where both are known, |EPS| is at
+    least `min_abs_eps` USD and the quotient is positive. A cross-check of magnitude only:
+    the two lines may cover different shares (basic and diluted, one class or all)."""
+    out: dict[str, float] = {}
+    incomes, eps = _floats(panel["net_income_ttm"]), _floats(panel["eps_diluted_ttm"])
+    for symbol in panel.index:
+        ni, e = incomes[symbol], eps[symbol]
+        if math.isnan(ni) or math.isnan(e) or abs(e) < min_abs_eps:
+            continue
+        count = ni / e
+        if count > 0:
+            out[str(symbol)] = count
+    return out
+
+
+def average_shares(
+    history: pd.DataFrame,
+    splits: pd.DataFrame,
+    *,
+    exclude: Sequence[str] = (),
+    confirm: Mapping[str, float] | None = None,
+    max_ratio: float = 3.0,
+) -> pd.DataFrame:
+    """The `shares_weighted_average` values of `history` (`DataView.fundamentals_history`
+    rows) in today's shares, without the symbols in `exclude`: `SHARES_COLUMNS` sorted by
+    symbol and period end.
+
+    With `confirm` (`implied_shares`), an average is kept only if, as filed, it lies within
+    a factor of `max_ratio` of its symbol's implied count (edges included); a symbol with no
+    implied count keeps none. Each kept average is divided by `splits`' factor
+    (`DataView.split_factors`) on the New York day its filing became public, not at its
+    period end: a filing made after a split states every share figure in the new shares,
+    also for periods that ended before the split. An average is not the count on a date
+    (see the module docstring)."""
+    rows = history[history["concept"] == "shares_weighted_average"]
+    if exclude:
+        rows = rows[~rows["symbol"].isin(list(exclude))]
+    if confirm is not None:
+        keep = []
+        for symbol, value in zip(rows["symbol"], rows["value"], strict=True):
+            implied = confirm.get(str(symbol))
+            keep.append(
+                implied is not None
+                and float(value) * max_ratio >= implied
+                and float(value) <= implied * max_ratio
+            )
+        rows = rows[np.asarray(keep, dtype=bool)]
+    filed = [market_date(stamp.to_pydatetime()) for stamp in rows["available_at"]]
+    shares = [
+        float(v) / _factor_at(splits, s, d)
+        for s, d, v in zip(rows["symbol"], filed, rows["value"], strict=True)
+    ]
+    out = pd.DataFrame(
+        {
+            "symbol": rows["symbol"].astype("str").to_numpy(),
+            "period_end": rows["period_end"].to_numpy(dtype="object"),
+            "shares": np.asarray(shares, dtype="float64"),
+        }
+    )
+    return out.sort_values(["symbol", "period_end"], kind="stable", ignore_index=True)
+
+
 def _floats(column: pd.Series) -> dict[str, float]:
     """`column` as a symbol -> float mapping."""
     return {str(k): float(v) for k, v in column.astype("float64").items()}
@@ -175,16 +263,19 @@ def compute_market(
     *,
     day: date,
     max_staleness_days: int,
+    fallback: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Market cap and EV of each symbol of `panel` (`MARKET_COLUMNS`, index `symbol`).
 
     `price` = raw close of the symbol's latest bar in `prices` (`DataView.prices` rows of
     the recent window), `shares` = its latest count in `shares` (`adjusted_shares`, today's
-    shares) dated within `max_staleness_days` of `day`. Market cap = price x the count in the
-    price session's shares (today's count x the split factor at the price's session, so a
-    split after the last bar does not double the cap); EV = market cap + `total_debt` -
-    `cash_and_equivalents` (NaN when either is missing). NaN when an input is missing or not
-    positive.
+    shares) dated within `max_staleness_days` of `day` (`shares_source` = `reported`). A
+    symbol with no such count takes its latest one in `fallback` (`average_shares`), under
+    the same age rule (`shares_source` = `average`); a count in `shares` is never replaced.
+    Market cap = price x the count in the price session's shares (today's count x the split
+    factor at the price's session, so a split after the last bar does not double the cap);
+    EV = market cap + `total_debt` - `cash_and_equivalents` (NaN when either is missing). NaN
+    when an input is missing or not positive.
     """
     floor = day - timedelta(days=max_staleness_days)
     latest_bar = (
@@ -192,26 +283,34 @@ def compute_market(
     )
     closes = _floats(latest_bar["close"])
     bar_days = _dates(latest_bar["date"])
-    fresh = shares[(shares["period_end"] >= floor) & (shares["period_end"] <= day)]
-    latest_count = fresh.groupby("symbol", sort=False).last()
-    counts = _floats(latest_count["shares"])
-    count_days = _dates(latest_count["period_end"])
+
+    def latest(counts: pd.DataFrame) -> tuple[dict[str, float], dict[str, date]]:
+        fresh = counts[(counts["period_end"] >= floor) & (counts["period_end"] <= day)]
+        last = fresh.groupby("symbol", sort=False).last()
+        return _floats(last["shares"]), _dates(last["period_end"])
+
+    counts, count_days = latest(shares)
+    averages, average_days = latest(fallback) if fallback is not None else ({}, {})
     debts, cashes = _floats(panel["total_debt"]), _floats(panel["cash_and_equivalents"])
     rows = []
     for symbol in panel.index:
         price, price_date = closes.get(symbol, math.nan), bar_days.get(symbol)
-        count, count_date = counts.get(symbol, math.nan), count_days.get(symbol)
+        count, count_date, source = math.nan, None, None
+        if symbol in counts:
+            count, count_date, source = counts[symbol], count_days[symbol], "reported"
+        elif symbol in averages:
+            count, count_date, source = averages[symbol], average_days[symbol], "average"
         cap = math.nan
         if _positive(price) and _positive(count) and price_date is not None:
             cap = price * count * _factor_at(splits, symbol, price_date)
         debt, cash = debts[symbol], cashes[symbol]
         ev = cap + debt - cash if not (math.isnan(debt) or math.isnan(cash)) else math.nan
-        rows.append((price, price_date, count, count_date, cap, ev))
+        rows.append((price, price_date, count, count_date, source, cap, ev))
     index = pd.Index(panel.index, name="symbol")
     out = pd.DataFrame(rows, columns=list(MARKET_COLUMNS), index=index)
     for col in ("price", "shares", "market_cap", "enterprise_value"):
         out[col] = out[col].astype("float64")
-    for col in ("price_date", "shares_date"):
+    for col in ("price_date", "shares_date", "shares_source"):
         out[col] = out[col].astype("object").where(out[col].notna(), None)
     return out
 
@@ -327,6 +426,7 @@ def raw_factors(
         assets = _value(p, "total_assets")
         ni, ocf = _value(p, "net_income_ttm"), _value(p, "operating_cash_flow_ttm")
         ebit = _value(p, "operating_income_ttm")
+        ebitda = ebit + _value(p, "depreciation_amortization_ttm")  # NaN if either is missing
         debt, cash = _value(p, "total_debt"), _value(p, "cash_and_equivalents")
         own = hist_by.get(symbol, empty_hist)
         values = {
@@ -342,7 +442,7 @@ def raw_factors(
             "margin_stability": _margin_stability(own, floor, config, max_quarter_days),
             **_growth(own, floor, config),
             "debt_to_equity": _value(p, "debt_to_equity"),
-            "net_debt_ebitda": _ratio(debt - cash, ebit),
+            "net_debt_ebitda": _ratio(debt - cash, ebitda),
             "size": math.log(cap) if _positive(cap) else math.nan,
             "net_issuance": _issuance(shares_by.get(symbol, empty_shares), floor, day, config),
         }
@@ -378,7 +478,8 @@ class FactorPanel:
 
 def factor_config_hash(config: AtlasConfig, factors: FactorsConfig | None = None) -> str:
     """A 12-hex-char tag of every setting the factor values depend on: `quant.factors` (or
-    `factors`), the fundamentals' quarter/year lengths and staleness, and `FACTOR_NAMES`."""
+    `factors`), the fundamentals' quarter/year lengths and staleness, `FACTOR_NAMES` and
+    `FACTOR_DEFINITIONS_VERSION`."""
     fc = factors if factors is not None else config.quant.factors
     fund = config.data.fundamentals
     payload = {
@@ -389,6 +490,7 @@ def factor_config_hash(config: AtlasConfig, factors: FactorsConfig | None = None
             "max_staleness_days": fund.max_staleness_days,
         },
         "names": list(FACTOR_NAMES),
+        "definitions": FACTOR_DEFINITIONS_VERSION,
     }
     text = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(text.encode()).hexdigest()[:12]
@@ -449,7 +551,8 @@ def factor_panel(
     are used: `fundamentals_panel`, `fundamentals_history` (`HISTORY_CONCEPTS`),
     `split_factors` (back far enough for every share count used), and `prices` over the last
     `max_price_age_sessions` sessions. Blocked symbols are left out. `config` overrides the
-    view's `quant.factors`.
+    view's `quant.factors`. With `share_count_fallback`, a name without a fresh cover-page
+    count takes its weighted-average shares for the market cap (not for net issuance).
     """
     fc = config if config is not None else view.config.quant.factors
     tag = factor_config_hash(view.config, fc)
@@ -465,8 +568,19 @@ def factor_panel(
     splits = view.split_factors(names, _split_lookback(view, fc, staleness))
     prices = view.prices(names, fc.max_price_age_sessions)
     shares = adjusted_shares(history, splits)
+    fallback = (
+        average_shares(
+            history,
+            splits,
+            exclude=fc.share_count_fallback_excluded,
+            confirm=implied_shares(panel, min_abs_eps=fc.min_abs_eps),
+            max_ratio=fc.share_count_fallback_max_ratio,
+        )
+        if fc.share_count_fallback
+        else None
+    )
     market = compute_market(
-        prices, shares, splits, panel, day=view.day, max_staleness_days=staleness
+        prices, shares, splits, panel, day=view.day, max_staleness_days=staleness, fallback=fallback
     )
     raw = raw_factors(
         panel,

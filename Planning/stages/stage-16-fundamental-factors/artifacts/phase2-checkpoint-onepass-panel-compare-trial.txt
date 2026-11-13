@@ -1,0 +1,165 @@
+NOTE (2026-11-13): run on the scratch copy with the code BEFORE the net income / EPS confirmation of averages was added; it is the run that showed the unit errors (e.g. 'more than 10% off' lines). The final comparison is phase2-checkpoint-onepass-panel-compare.txt.
+=== trial: stored panels of the main lake (before) against panels computed on the scratch copy (re-parsed facts, sectors filled), 2026-11-13T16:31Z
+
+===== 2015-06-30: 498 names (stored before: 498), panel in 7.5 s
+  factor              before  after  earlier values moved (max abs diff)
+  earnings_yield         346    367  0
+  book_yield             346    367  0
+  fcf_yield              302    321  0
+  ebit_ev                194    203  0
+  sales_ev               226    233  0
+  roe                    466    466  0
+  roa                    478    478  0
+  gross_profitability    205    205  0
+  accruals               478    478  0
+  margin_stability       166    166  0
+  revenue_growth         412    412  0
+  eps_growth             461    461  0
+  revenue_cagr_3y        376    376  0
+  debt_to_equity         367    367  0
+  net_debt_ebitda        260    256  16.8, 12 lost
+  size                   346    367  0
+  net_issuance           445    445  0
+  share count from: {'reported': 451, 'average': 27, 'none': 20}; market caps: 367
+  net debt / EBIT (before) median 1.56, net debt / EBITDA (after) median 1.22 on the 248 names with both; 8 gained, 12 lost
+  average / cover-page count on 444 names with both: 1% 0.2609, 5% 0.9678, median 1.0007, 95% 1.023, 99% 1.0493; 424 within 5%, 12 more than 10% off
+    more than 10% off: L 0.00, STX 0.00, WELL 0.00, HBAN 0.00, COP 0.00, QRVO 0.61, AGN 0.74, MDT 0.77, XL 0.83, SJM 0.85, NFX 0.89, CCL 1.31
+  cap from an average (27): META 239bn, CMCSA 151bn, MA 106bn, UPS 88bn, ACN 61bn, F 60bn, SPG 53bn, REGN 52bn, EL 33bn, CME 31bn, TSN 18bn, UAA 18bn, MOS 17bn, HRL 15bn, UHS 14bn, EXPE 14bn, TAP 13bn, RL 12bn, LEN 12bn, MKC 10bn, NWSA 8bn, BRCM nanbn, CVC nanbn, DISCA nanbn, DISCK nanbn, SNI nanbn, VIAB nanbn
+  still no cap (131): no price ['ACE', 'ADS', 'ADT', 'AET', 'AGN', 'ALTR', 'ALXN', 'ANDV', 'APC', 'ARG', 'AVB', 'BBBY', 'BCR', 'BHI', 'BRCM', 'CA', 'CAM', 'CCE', 'CELG', 'CERN', 'CHK', 'CMA', 'COL', 'CSC', 'CTRA', 'CTXS', 'CVC', 'DFS', 'DISCA', 'DISCK', 'DNB', 'DO', 'DPS', 'DTV', 'EA', 'EMC', 'ENDP', 'ESRX', 'ESV', 'ETFC', 'FDO', 'FLIR', 'FTR', 'GAS', 'GGP', 'GMCR', 'GPS', 'HAR', 'HBI', 'HCBK', 'HES', 'HOT', 'HSP', 'IPG', 'JNPR', 'JOY', 'JWN', 'K', 'KRFT', 'KSU', 'LEG', 'LLL', 'LLTC', 'LM', 'LVLT', 'MJN', 'MNK', 'MON', 'MRO', 'NBL', 'NE', 'NFX', 'NLSN', 'PBCT', 'PCL', 'PCP', 'PDCO', 'PLL', 'POM', 'PXD', 'QEP', 'QRVO', 'RAI', 'RHT', 'RTN', 'SCG', 'SE', 'SEE', 'SIAL', 'SNDK', 'SNI', 'SPLS', 'SRCL', 'STI', 'STJ', 'SWN', 'TE', 'TEG', 'TFCF', 'TFCFA', 'TGNA', 'TIF', 'TSS', 'TWC', 'TWX', 'TYC', 'VAR', 'VIAB', 'WBA', 'WFM', 'WYN', 'XEC', 'XL', 'XLNX', 'YHOO']; no count ['APA', 'AVGO', 'BLK', 'BRK.B', 'CI', 'DD', 'DIS', 'FTI', 'GOOG', 'GOOGL', 'LIN', 'SKYD', 'STZ', 'V', 'VTRS', 'XOM']
+  names with a sector: 324 before, 447 after
+
+===== 2017-06-30: 502 names (stored before: 502), panel in 8.1 s
+  factor              before  after  earlier values moved (max abs diff)
+  earnings_yield         383    405  0
+  book_yield             384    406  0
+  fcf_yield              331    353  0
+  ebit_ev                241    250  0
+  sales_ev               259    270  0
+  roe                    471    471  0
+  roa                    488    488  0
+  gross_profitability    215    215  0
+  accruals               486    486  0
+  margin_stability       172    172  0
+  revenue_growth         421    421  0
+  eps_growth             462    462  0
+  revenue_cagr_3y        404    404  0
+  debt_to_equity         382    382  0
+  net_debt_ebitda        282    278  171, 16 lost
+  size                   385    407  0
+  net_issuance           442    442  0
+  share count from: {'reported': 459, 'average': 25, 'none': 18}; market caps: 407
+  net debt / EBIT (before) median 1.94, net debt / EBITDA (after) median 1.57 on the 266 names with both; 12 gained, 16 lost
+  average / cover-page count on 449 names with both: 1% 0.857, 5% 0.9852, median 1.0002, 95% 1.0216, 99% 1.0478; 436 within 5%, 8 more than 10% off
+    more than 10% off: GRMN 0.00, FLIR 0.00, COP 0.00, COL 0.81, CBOE 0.82, PBCT 0.90, TRIP 1.12, CCL 1.35
+  cap from an average (25): META 437bn, CMCSA 185bn, MA 131bn, UPS 96bn, NKE 88bn, ACN 76bn, REGN 54bn, F 44bn, CME 42bn, EL 35bn, TSN 23bn, EXPE 22bn, TAP 19bn, HRL 18bn, LEN 12bn, MKC 12bn, UHS 12bn, UAA 9bn, UA 9bn, NWS 8bn, NWSA 8bn, RL 6bn, DISH nanbn, SNI nanbn, VIAB nanbn
+  still no cap (95): no price ['ADS', 'AET', 'AGN', 'ALXN', 'ANDV', 'ANSS', 'APC', 'ARNC', 'ATVI', 'AVB', 'BBBY', 'BCR', 'BHI', 'CA', 'CELG', 'CERN', 'CHK', 'CMA', 'COL', 'CSRA', 'CTRA', 'CTXS', 'CXO', 'DFS', 'DISCA', 'DISCK', 'DISH', 'DPS', 'EA', 'ESRX', 'ETFC', 'EVHC', 'FBHS', 'FL', 'FLIR', 'GGP', 'GPS', 'HBI', 'HES', 'HOLX', 'INFO', 'IPG', 'JNPR', 'JWN', 'K', 'KSU', 'LEG', 'LLL', 'LVLT', 'MNK', 'MON', 'MRO', 'NBL', 'NFX', 'NLSN', 'PBCT', 'PDCO', 'PXD', 'QRVO', 'RAI', 'RHT', 'RTN', 'SCG', 'SEE', 'SNI', 'SPLS', 'SRCL', 'STI', 'TFCF', 'TFCFA', 'TIF', 'TSS', 'TWX', 'VAR', 'VIAB', 'WBA', 'WFM', 'WYN', 'XEC', 'XL', 'XLNX']; no count ['APA', 'AVGO', 'BLK', 'BRK.B', 'CI', 'DD', 'DIS', 'LIN', 'SKYD', 'SPG', 'STZ', 'V', 'VTRS', 'XOM']
+  names with a sector: 365 before, 477 after
+
+===== 2019-06-28: 502 names (stored before: 502), panel in 8.6 s
+  factor              before  after  earlier values moved (max abs diff)
+  earnings_yield         401    425  0
+  book_yield             406    430  0
+  fcf_yield              351    375  0
+  ebit_ev                257    270  0
+  sales_ev               315    331  0
+  roe                    464    464  0
+  roa                    488    488  0
+  gross_profitability    213    213  0
+  accruals               487    487  0
+  margin_stability       200    200  0
+  revenue_growth         474    474  0
+  eps_growth             470    470  0
+  revenue_cagr_3y        412    412  0
+  debt_to_equity         379    379  0
+  net_debt_ebitda        298    290  96.6, 11 lost
+  size                   408    432  0
+  net_issuance           444    444  0
+  share count from: {'reported': 463, 'average': 26, 'none': 13}; market caps: 432
+  net debt / EBIT (before) median 2.12, net debt / EBITDA (after) median 1.56 on the 287 names with both; 3 gained, 11 lost
+  average / cover-page count on 455 names with both: 1% 0.001, 5% 0.9758, median 1.0, 95% 1.0246, 99% 1.0726; 435 within 5%, 12 more than 10% off
+    more than 10% off: KO 0.00, PCAR 0.00, AXP 0.00, GRMN 0.00, FLIR 0.00, COP 0.00, NEM 0.65, WAB 0.74, DIS 0.85, CCL 1.31, FOX 621000000.00, FOXA 621000000.00
+  cap from an average (26): META 541bn, MA 268bn, CMCSA 190bn, NKE 132bn, ACN 117bn, UPS 88bn, CHTR 88bn, CME 69bn, EL 66bn, F 41bn, REGN 34bn, TSN 29bn, HRL 22bn, MKC 21bn, EXPE 19bn, LEN 16bn, TAP 12bn, UHS 12bn, UAA 11bn, UA 10bn, RL 9bn, NWS 8bn, NWSA 8bn, AOS 8bn, DISH nanbn, VIAB nanbn
+  still no cap (70): no price ['ABMD', 'ADS', 'AGN', 'ALXN', 'ANSS', 'APC', 'ARNC', 'ATVI', 'AVB', 'CELG', 'CERN', 'CMA', 'CTRA', 'CTXS', 'CXO', 'DFS', 'DISCA', 'DISCK', 'DISH', 'DRE', 'EA', 'ETFC', 'FBHS', 'FL', 'FLIR', 'FRC', 'GPS', 'HBI', 'HES', 'HFC', 'HOLX', 'INFO', 'IPG', 'JNPR', 'JWN', 'K', 'KSU', 'LEG', 'LLL', 'MRO', 'MXIM', 'NBL', 'NLSN', 'PBCT', 'PXD', 'QRVO', 'RHT', 'RTN', 'SEE', 'SIVB', 'STI', 'TIF', 'TSS', 'TWTR', 'VAR', 'VIAB', 'WBA', 'WCG', 'XEC', 'XLNX']; no count ['APA', 'BKR', 'BLK', 'BRK.B', 'SKYD', 'SPG', 'STZ', 'V', 'VTRS', 'XOM']
+  names with a sector: 390 before, 494 after
+
+===== 2021-06-30: 504 names (stored before: 504), panel in 9.0 s
+  factor              before  after  earlier values moved (max abs diff)
+  earnings_yield         458    486  0
+  book_yield             460    488  0
+  fcf_yield              396    424  0
+  ebit_ev                294    308  0
+  sales_ev               372    391  0
+  roe                    475    475  0
+  roa                    498    498  0
+  gross_profitability    217    217  0
+  accruals               497    497  0
+  margin_stability       213    213  0
+  revenue_growth         494    494  0
+  eps_growth             475    475  0
+  revenue_cagr_3y        471    471  0
+  debt_to_equity         389    389  0
+  net_debt_ebitda        289    279  200, 18 lost
+  size                   460    488  0
+  net_issuance           458    458  0
+  share count from: {'reported': 465, 'average': 28, 'none': 11}; market caps: 488
+  net debt / EBIT (before) median 1.56, net debt / EBITDA (after) median 1.24 on the 271 names with both; 8 gained, 18 lost
+  average / cover-page count on 461 names with both: 1% 0.896, 5% 0.9773, median 1.0, 95% 1.0153, 99% 1.0463; 447 within 5%, 9 more than 10% off
+    more than 10% off: COP 0.00, SHW 0.33, IFF 0.83, PXD 0.86, NCLH 0.89, GLW 0.90, DD 1.14, CCL 1.16, SCHW 1.46
+  cap from an average (28): META 1002bn, MA 366bn, CMCSA 260bn, NKE 246bn, ACN 188bn, UPS 181bn, CHTR 137bn, EL 115bn, CME 76bn, F 60bn, REGN 58bn, LEN 31bn, TSN 27bn, HRL 26bn, MKC 23bn, EXPE 23bn, DISH 22bn, FOXA 22bn, FOX 21bn, BIO 19bn, NWSA 15bn, NWS 14bn, UHS 12bn, TAP 12bn, AOS 12bn, UAA 10bn, RL 9bn, UA 8bn
+  still no cap (16): no price ['CTRA', 'EA', 'INFO', 'LEG', 'QRVO']; no count ['BKR', 'BLK', 'BRK.B', 'DISCA', 'DISCK', 'FRC', 'SKYD', 'SPG', 'STZ', 'V', 'XOM']
+  names with a sector: 421 before, 503 after
+
+===== 2024-01-31: 502 names (stored before: 502), panel in 9.8 s
+  factor              before  after  earlier values moved (max abs diff)
+  earnings_yield         461    488  0
+  book_yield             464    491  0
+  fcf_yield              399    426  0
+  ebit_ev                297    311  0
+  sales_ev               376    396  0
+  roe                    461    461  0
+  roa                    495    495  0
+  gross_profitability    185    185  0
+  accruals               495    495  0
+  margin_stability       180    180  0
+  revenue_growth         491    491  0
+  eps_growth             480    480  0
+  revenue_cagr_3y        488    488  0
+  debt_to_equity         380    380  0
+  net_debt_ebitda        297    289  449, 17 lost
+  size                   464    491  0
+  net_issuance           463    463  0
+  share count from: {'reported': 468, 'average': 27, 'none': 7}; market caps: 491
+  net debt / EBIT (before) median 1.78, net debt / EBITDA (after) median 1.27 on the 280 names with both; 9 gained, 17 lost
+  average / cover-page count on 462 names with both: 1% 0.9097, 5% 0.9895, median 1.0006, 95% 1.0195, 99% 1.0489; 448 within 5%, 7 more than 10% off
+    more than 10% off: TER 0.00, OKE 0.78, PCG 0.81, NDAQ 0.85, AVGO 0.89, CCL 1.13, GM 1.18
+  cap from an average (27): META 1031bn, MA 419bn, ACN 233bn, CMCSA 192bn, NKE 158bn, UPS 124bn, SCHW 117bn, REGN 102bn, ABNB 96bn, CME 74bn, CHTR 56bn, EL 48bn, F 47bn, SPG 46bn, LEN 43bn, MKC 19bn, HRL 17bn, FOXA 16bn, TSN 16bn, NWS 15bn, FOX 15bn, NWSA 14bn, TAP 14bn, AOS 12bn, UHS 11bn, BIO 10bn, RL 10bn
+  still no cap (11): no price ['DAY', 'EA', 'QRVO', 'WBD']; no count ['BG', 'BLK', 'BRK.B', 'SKYD', 'STZ', 'V', 'XOM']
+  names with a sector: 453 before, 501 after
+
+===== 2026-09-30: 503 names (stored before: 503), panel in 11.7 s
+  factor              before  after  earlier values moved (max abs diff)
+  earnings_yield         459    494  0
+  book_yield             462    497  0
+  fcf_yield              392    423  0
+  ebit_ev                297    315  0
+  sales_ev               376    400  0
+  roe                    467    467  0
+  roa                    500    500  0
+  gross_profitability    188    188  0
+  accruals               500    500  0
+  margin_stability       184    184  0
+  revenue_growth         496    496  0
+  eps_growth             484    484  0
+  revenue_cagr_3y        486    486  0
+  debt_to_equity         381    381  0
+  net_debt_ebitda        306    299  53.4, 16 lost
+  size                   462    497  0
+  net_issuance           457    457  0
+  share count from: {'reported': 463, 'average': 35, 'none': 5}; market caps: 497
+  net debt / EBIT (before) median 1.66, net debt / EBITDA (after) median 1.34 on the 290 names with both; 9 gained, 16 lost
+  average / cover-page count on 456 names with both: 1% 0.8812, 5% 0.9891, median 1.0021, 95% 1.0238, 99% 1.0515; 441 within 5%, 6 more than 10% off
+    more than 10% off: MCD 0.00, TSLA 0.82, PCG 0.82, LITE 0.83, DVN 0.85, WAT 999.55
+  cap from an average (35): META 1879bn, MA 497bn, ACN 108bn, HOOD 104bn, DDOG 96bn, CME 95bn, ABNB 93bn, DASH 81bn, UPS 80bn, REGN 77bn, CMCSA 77bn, SPG 66bn, NKE 53bn, F 49bn, WDAY 46bn, CVNA 46bn, XYZ 44bn, IBKR 39bn, EL 34bn, RDDT 28bn, FOXA 27bn, ECHO 26bn, FOX 25bn, RL 21bn, LEN 20bn, TSN 18bn, NWS 18bn, NWSA 16bn, CHTR 13bn, TKO 13bn, MKC 13bn, BF.B 12bn, HRL 11bn, UHS 10bn, AOS 8bn
+  still no cap (6): no price ['WBD']; no count ['ARES', 'BRK.B', 'ERIE', 'STZ', 'V']
+  names with a sector: 501 before, 503 after
+exit 0

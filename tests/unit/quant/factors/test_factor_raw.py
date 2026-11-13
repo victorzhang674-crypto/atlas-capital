@@ -36,6 +36,7 @@ PANEL = {
     "stockholders_equity": 400.0,
     "fcf_ttm": 30.0,
     "operating_income_ttm": 80.0,
+    "depreciation_amortization_ttm": 20.0,
     "revenue_ttm": 1000.0,
     "gross_profit_ttm": 300.0,
     "total_assets": 2000.0,
@@ -77,6 +78,7 @@ def _market(symbols: list[str], cap: float = 1000.0, ev: float = 1150.0) -> pd.D
             "price_date": date(2024, 2, 29),
             "shares": 100.0,
             "shares_date": date(2024, 1, 22),
+            "shares_source": "reported",
             "market_cap": cap,
             "enterprise_value": ev,
         },
@@ -152,7 +154,7 @@ def test_columns_and_dtype() -> None:
         ("eps_growth", (2.5 - 2.0) / 2.0),
         ("revenue_cagr_3y", (1000 / 800) ** (1 / 3) - 1),
         ("debt_to_equity", 0.5),
-        ("net_debt_ebitda", (200 - 50) / 80),
+        ("net_debt_ebitda", (200 - 50) / (80 + 20)),  # EBITDA = EBIT + D&A
         ("size", math.log(1000)),
         ("net_issuance", -(98 / 100 - 1)),
     ],
@@ -171,8 +173,10 @@ def test_known_values_cover_every_factor() -> None:
     [
         ({"stockholders_equity": NAN}, ["book_yield"]),
         ({"total_assets": 0.0}, ["gross_profitability", "accruals"]),
-        ({"operating_income_ttm": -5.0}, ["net_debt_ebitda"]),
-        ({"operating_income_ttm": 0.0}, ["net_debt_ebitda"]),
+        ({"operating_income_ttm": -20.0}, ["net_debt_ebitda"]),  # EBITDA = 0
+        ({"operating_income_ttm": -25.0}, ["net_debt_ebitda"]),  # EBITDA < 0
+        ({"operating_income_ttm": NAN}, ["ebit_ev", "net_debt_ebitda"]),
+        ({"depreciation_amortization_ttm": NAN}, ["net_debt_ebitda"]),  # never EBIT alone
         ({"operating_cash_flow_ttm": NAN}, ["accruals"]),
         ({"total_debt": NAN}, ["net_debt_ebitda"]),
     ],
@@ -183,6 +187,20 @@ def test_missing_or_nonpositive_denominators(overrides: dict, nan_factors: list[
         assert math.isnan(values[name]), name
     others = [n for n in FACTOR_NAMES if n not in nan_factors]
     assert values[others].notna().all()
+
+
+def test_net_debt_ebitda_with_an_operating_loss_smaller_than_depreciation() -> None:
+    """EBIT -5 and D&A 20: EBITDA is 15, positive, so the ratio exists (with EBIT alone it
+    did not)."""
+    values = _raw(operating_income_ttm=-5.0)
+    assert values["net_debt_ebitda"] == pytest.approx((200 - 50) / 15)
+    assert values["ebit_ev"] == pytest.approx(-5 / 1150)  # a negative EBIT yield is kept
+
+
+def test_net_debt_ebitda_spec_names_ebitda() -> None:
+    spec = next(f for f in FACTORS if f.name == "net_debt_ebitda")
+    assert "EBITDA" in spec.description
+    assert "proxy" not in spec.description
 
 
 def test_no_market_cap_or_ev() -> None:

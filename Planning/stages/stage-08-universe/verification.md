@@ -45,3 +45,10 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - The list: 180 entries, each reviewed, 134 agreeing with the SIC majority · [artifacts/phase2-checkpoint-tier3-former-sectors-review.md](artifacts/phase2-checkpoint-tier3-former-sectors-review.md). Not from a data provider.
 - Not applied to the main lake (waits for the owner's review; needs a universe sync and a rebuild of the factor cache and the risk model).
 - Acceptance criteria unchanged and still evidenced (in the brief's Verify).
+
+#### Phase 2 checkpoint follow-up (one pass: reviewed sectors applied) — 2026-11-13
+- Commands run (this chat): `make check` → exit 0 (ruff clean, 386 files formatted, mypy clean on 157 files, 4168 passed); `uv run pytest -q` → 4168 passed, 71 deselected; integration on the main lake → 55 passed, 1 skipped (the flag-gated 2018–2024 calibration) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-final-checks.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-final-checks.txt); red first: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-red.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-red.txt)
+- Main lake: `instruments` with 683 sectors (was 503), nothing else changed · [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-swap.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-swap.txt)
+- Acceptance criteria unchanged and still evidenced.
+
+**Result:** ALL CRITERIA VERIFIED

@@ -122,7 +122,19 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    restatement filed under a different tag than the original is not picked up.
 4. **Only non-dimensional facts.** companyfacts carries company-wide values, not segment or
    share-class (**dimension**) breakdowns; multi-class companies may lack the cover-page share
-   count (then `CommonStockSharesOutstanding` from the balance sheet is used).
+   count (then `CommonStockSharesOutstanding` from the balance sheet is used). When neither is
+   fresh, the factor library (Stage 16) takes the latest **weighted-average basic shares**
+   (`shares_weighted_average`, an `average` concept: the quarter's average, never summed) as
+   the count for the market cap, and flags it (`shares_source = "average"`). It is an
+   approximation (an average over a quarter or a year, about a percent off the count; for a
+   multi-class company it covers every class, so each listed class carries the whole
+   company's cap, as Alphabet's two tickers already did). About 1% of filed averages are in
+   thousands or millions of shares (KO, COP, MCD): an average is used only within a factor of
+   3 of TTM net income / TTM EPS (`share_count_fallback_max_ratio`). Berkshire is excluded
+   (its average is in class-A equivalents). Added in the Phase 2 checkpoint (2026-11-13); at
+   2024-01-31 it gives 25 more members a market cap and 13 still have none: 4 without a recent
+   price, and Visa, Berkshire, BlackRock, Exxon, Constellation, Bunge, Skydance, Airbnb and
+   Molson Coors (no usable count, or an average that net income / EPS cannot confirm).
 5. **Derived quarters.** Cash-flow lines are reported year-to-date in 10-Qs and many companies
    report the fourth quarter only inside the fiscal year. Discrete quarters are therefore
    derived (H1 − Q1, 9M − H1, **Q4** = FY − Q1..Q3). A derived EPS quarter is approximate
@@ -131,7 +143,10 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    (`max_staleness_days`) is NaN.
 6. **Ratios use simple definitions.** ROE and ROA divide TTM net income by the latest equity
    and assets (not averages); a ratio with a missing or non-positive denominator (negative
-   equity) is NaN.
+   equity) is NaN. EBITDA (Stage 16's net debt / EBITDA) is TTM operating income + TTM
+   depreciation & amortisation (`depreciation_amortization`: the cash-flow statement's total,
+   else depreciation + amortisation of intangibles when both are tagged); a company that tags
+   neither has no EBITDA, never EBIT alone.
 7. **Facts dated after their own filing are left out.** A period cannot end after the report
    that states it, so such a fact is a filer error (AAL's 10-Q of 2026-07-23 dates its cover
    share count 2027-07-17; as the "latest" balance it would have hidden every later one).

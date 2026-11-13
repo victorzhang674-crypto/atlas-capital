@@ -19,6 +19,7 @@ from atlas.quant.factors.cleaning import (
 )
 from atlas.quant.factors.composite import composite, style_composites
 from atlas.quant.factors.fundamental import (
+    FACTOR_DEFINITIONS_VERSION,
     FACTOR_NAMES,
     FACTORS,
     GROUPS,
@@ -29,9 +30,11 @@ from atlas.quant.factors.fundamental import (
     FactorPanel,
     FactorSpec,
     adjusted_shares,
+    average_shares,
     compute_market,
     factor_config_hash,
     factor_panel,
+    implied_shares,
     raw_factors,
 )
 from atlas.quant.factors.store import (
@@ -44,6 +47,7 @@ from atlas.quant.factors.store import (
 
 __all__ = [
     "FACTORS",
+    "FACTOR_DEFINITIONS_VERSION",
     "FACTOR_EXPOSURES",
     "FACTOR_NAMES",
     "GROUPS",
@@ -58,6 +62,7 @@ __all__ = [
     "FactorStore",
     "StoredExposures",
     "adjusted_shares",
+    "average_shares",
     "build_factor_cache",
     "clean_factors",
     "composite",
@@ -65,6 +70,7 @@ __all__ = [
     "factor_config_hash",
     "factor_panel",
     "fill_missing",
+    "implied_shares",
     "monthly_rebalance_dates",
     "neutralize",
     "raw_factors",
