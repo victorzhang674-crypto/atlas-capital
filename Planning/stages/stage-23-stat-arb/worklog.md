@@ -190,3 +190,10 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - The timing test was not changed: it passes alone and in every single run of the suite (gate, `make check` × 4 in Tier 3, this clean run); it failed only with three suites running at once.
 - Not done: nothing is pushed (`origin/main` is at `c94eee5`; waits for the owner's word); nothing is applied to the main lake.
 - Records: this entry, `verification.md`, `PROGRESS.md`. Committed as `phase-2 checkpoint: merged-main check records (Tier 3)` and `main` fast-forwarded to that records commit (as in Tier 2).
+
+## 2026-11-13 — Phase 2 checkpoint, Tier 3: push and CI (owner: "Yes, push")
+
+- Before the push: the five commits `c94eee5..849143c` (79 files) scanned against the main checkout's `.env` → 0 secret values; no `.env`, `data/` or Parquet file; no e-mail address added.
+- `git push origin main claude/phase-two-checkpoint-stages-a4dbeb` (sandbox, https) → exit 0, `c94eee5..849143c` for both; `origin/main` and `origin/claude/phase-two-checkpoint-stages-a4dbeb` at `849143c`. A normal push, no force.
+- CI on `849143c` (read from the public GitHub API): run 43455207838 (`main`) → **success**, 15:41:55Z–15:54:38Z (12 min 43 s); run 43455207814 (branch) → **success**, 15:41:55Z–15:54:49Z (12 min 54 s) · raw: [artifacts/phase2-checkpoint-2026-11-11-tier3-ci.txt](artifacts/phase2-checkpoint-2026-11-11-tier3-ci.txt). CI ran the parallel `make check` and `make test-integration` for the first time.
+- Records: this entry, `verification.md`, `PROGRESS.md`; committed on the branch as `phase-2 checkpoint: push and CI records (Tier 3)` (records only, not pushed: a push of it would start another CI run to record; it goes out with the next merge, as `697b079` did).
