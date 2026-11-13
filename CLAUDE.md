@@ -15,7 +15,7 @@ The governing rules below are imported automatically. Follow them before and dur
 ## Engineering conventions (digest)
 Full tables: `Planning/02-stage-protocol.md` §4–§5.
 
-- **Commands:** `make install` (= `uv sync --group dev`), `make check` (= lint + format check + mypy + tests). Also `make test`, `lint`, `fmt`, `type`. `make test` and `make test-integration` run the test files in parallel (pytest-xdist, one file per worker); `uv run pytest -q` is the same suite, serial.
+- **Commands:** `make install` (= `uv sync --group dev`), `make check` (= lint + format check + mypy + tests). Also `make test`, `lint`, `fmt`, `type`. `make test` and `make test-integration` run the test files in parallel (pytest-xdist, one file per worker); `make test` then runs the wall-clock budget tests (marker `timing`) alone; `uv run pytest -q` is the same suite, serial.
 - **Layout:** code in `src/atlas/<package>/`; tests mirror it in `tests/unit/<package>/`; integration tests in `tests/integration/` marked `@pytest.mark.integration`.
 - **Types:** Pydantic v2 for contracts that cross packages; `@dataclass(frozen=True)` for internal values. mypy is strict on `core`, `risk`, `accounting`, `execution`.
 - **Units:** weights are fractions of NAV (0.05 = 5%, shorts negative); returns are simple daily unless named `log_`; `Decimal` for ledger, cash and fees; timezone-aware UTC datetimes, `date` for trading days. Docstrings state units.

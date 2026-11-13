@@ -360,6 +360,7 @@ def test_build_needs_history_before_as_of(fitted) -> None:
         build_risk_model(hist, w.styles, w.sectors, w.caps, w.dates[30].date(), SMALL)
 
 
+@pytest.mark.timing
 def test_build_time_500_names_under_2s(fitted) -> None:
     w, hist = fitted
     _model(w, hist)  # warm-up (imports, BLAS threads)

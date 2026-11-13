@@ -109,6 +109,7 @@ def _synthetic(symbols: int, first_day: int, days: int, close: float) -> pd.Data
 _SPEED_ATTEMPTS = 3
 
 
+@pytest.mark.timing
 def test_upsert_one_million_rows_under_five_seconds(
     tmp_path: Path, prices_schema: TableSchema
 ) -> None:

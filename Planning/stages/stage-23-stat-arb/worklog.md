@@ -213,3 +213,5 @@ The owner chose to do the three main-lake changes together: the reviewed sectors
 8. Merge: on merged `main` (`2c2d5e2`, fast-forward from `849143c`, 2026-11-13; run alone through the owner-allowed connector, the sandbox cannot write the main checkout): `make check` → exit 0, 4168 passed; integration → exit 0, 41 passed, 15 skipped (no lake path in that shell); tree of `main` = tree of the branch; branch merged; checkout clean · raw: [artifacts/phase2-checkpoint-2026-11-11-onepass-merged-main-check.txt](artifacts/phase2-checkpoint-2026-11-11-onepass-merged-main-check.txt). Not pushed (`origin/main` at `849143c`).
 
 To undo on the main lake: copy the five directories back from `data/cache/backup-phase2-onepass-2026-11-13/` (the old `_meta.json` is there too).
+
+- 2026-11-13, after the push of `d094f0b`: CI failed on both refs on the 5 s upsert budget under parallel `make test` (best 5.18 s); fixed in Stage 01's toolchain (budgets run alone after the parallel part), see the Stage 01 worklog · [artifacts/phase2-checkpoint-2026-11-11-onepass-ci.txt](artifacts/phase2-checkpoint-2026-11-11-onepass-ci.txt)

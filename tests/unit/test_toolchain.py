@@ -18,7 +18,7 @@ def pytest_ini(repo_root: Path) -> dict[str, Any]:
 
 def test_markers_registered(pytest_ini: dict[str, Any]) -> None:
     names = {marker.split(":", 1)[0].strip() for marker in pytest_ini["markers"]}
-    assert {"live", "llm", "integration"} <= names
+    assert {"live", "llm", "integration", "timing"} <= names
 
 
 def test_default_run_deselects_external_markers(pytest_ini: dict[str, Any]) -> None:
@@ -64,6 +64,43 @@ def _make_rule(repo_root: Path, target: str) -> str:
     return found.group(1)
 
 
+def _make_recipe(repo_root: Path, target: str) -> list[str]:
+    """Every command line of `target`'s recipe."""
+    makefile = (repo_root / "Makefile").read_text()
+    found = re.search(rf"^{re.escape(target)}:\n((?:\t.+\n?)+)", makefile, re.MULTILINE)
+    assert found is not None, target
+    return [line.strip() for line in found.group(1).splitlines()]
+
+
+TIMING_TESTS = {
+    "tests/unit/core/storage/test_storage_upsert.py": (
+        "test_upsert_one_million_rows_under_five_seconds"
+    ),
+    "tests/unit/quant/risk_model/test_factor_risk_model.py": "test_build_time_500_names_under_2s",
+    "tests/unit/quant/features/test_feature_performance.py": "test_all_features_500x2000_under_20s",
+}
+"""The wall-clock budgets of the briefs (Stages 06, 19, 15)."""
+
+
+def test_timing_tests_run_alone_after_the_parallel_part(
+    repo_root: Path, pytest_ini: dict[str, Any]
+) -> None:
+    # Phase 2 checkpoint: CI failed twice when the 5 s upsert ran beside other test files on
+    # a small runner (best of three 5.18 s). `make test` runs everything else in parallel,
+    # then the budgets alone, so they are measured as before the parallel run; a plain
+    # `uv run pytest -q` (the gate) still runs them with the rest.
+    default = "not live and not llm and not integration"
+    first, second = _make_recipe(repo_root, "test")
+    assert "-n auto" in first and "--dist loadfile" in first, first
+    assert f"-m '{default} and not timing'" in first, first
+    assert second.startswith("uv run pytest ") and "-m timing" in second, second
+    assert "-n " not in second, second
+    assert f"-m '{default}'" in pytest_ini["addopts"]  # the gate keeps them
+    for path, name in TIMING_TESTS.items():
+        text = (repo_root / path).read_text()
+        assert f"@pytest.mark.timing\ndef {name}(" in text, name
+
+
 def test_make_test_runs_in_parallel_one_file_per_worker(
     repo_root: Path, pytest_ini: dict[str, Any]
 ) -> None:
@@ -71,7 +108,7 @@ def test_make_test_runs_in_parallel_one_file_per_worker(
     # CI) spreads the test files over the cores; a file stays on one worker, so its module
     # fixtures (the synthetic lakes) are still built once.
     for target in ("test", "test-integration"):
-        rule = _make_rule(repo_root, target)
+        rule = _make_recipe(repo_root, target)[0]
         assert rule.startswith("uv run pytest ") and "-n auto" in rule, rule
         assert "--dist loadfile" in rule, rule
     assert "-m integration" in _make_rule(repo_root, "test-integration")

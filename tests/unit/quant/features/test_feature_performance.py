@@ -56,6 +56,7 @@ def big_lake(tmp_path_factory: pytest.TempPathFactory) -> tuple[Lake, list[str]]
     return lake, symbols
 
 
+@pytest.mark.timing
 def test_all_features_500x2000_under_20s(
     big_lake: tuple[Lake, list[str]], capsys: pytest.CaptureFixture[str]
 ) -> None:

@@ -1,0 +1,515 @@
+check	UNKNOWN STEP	﻿2026-11-13T18:16:59.4339038Z Current runner version: '2.338.2'
+check	UNKNOWN STEP	2026-11-13T18:16:59.4375498Z ##[group]Runner Image Provisioner
+check	UNKNOWN STEP	2026-11-13T18:16:59.4377108Z Hosted Compute Agent
+check	UNKNOWN STEP	2026-11-13T18:16:59.4378184Z Version: 20261103.629
+check	UNKNOWN STEP	2026-11-13T18:16:59.4379418Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+check	UNKNOWN STEP	2026-11-13T18:16:59.4380695Z Build Date: 2026-11-03T17:26:59Z
+check	UNKNOWN STEP	2026-11-13T18:16:59.4381958Z Worker ID: {119667dd-fd4f-4764-ac6e-0fc2ba190a8d}
+check	UNKNOWN STEP	2026-11-13T18:16:59.4383264Z Region: eastus
+check	UNKNOWN STEP	2026-11-13T18:16:59.4384259Z Cloud: Azure
+check	UNKNOWN STEP	2026-11-13T18:16:59.4385330Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:16:59.4387956Z ##[group]Operating System
+check	UNKNOWN STEP	2026-11-13T18:16:59.4389655Z Ubuntu
+check	UNKNOWN STEP	2026-11-13T18:16:59.4390536Z 24.04.5
+check	UNKNOWN STEP	2026-11-13T18:16:59.4391441Z LTS
+check	UNKNOWN STEP	2026-11-13T18:16:59.4392440Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:16:59.4393341Z ##[group]Runner Image
+check	UNKNOWN STEP	2026-11-13T18:16:59.4394491Z Image: ubuntu-24.04
+check	UNKNOWN STEP	2026-11-13T18:16:59.4395471Z Version: 20261111.370.1
+check	UNKNOWN STEP	2026-11-13T18:16:59.4398155Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261111.370/images/ubuntu/Ubuntu2404-Readme.md
+check	UNKNOWN STEP	2026-11-13T18:16:59.4400928Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261111.370
+check	UNKNOWN STEP	2026-11-13T18:16:59.4402741Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:16:59.4404651Z ##[group]GITHUB_TOKEN Permissions
+check	UNKNOWN STEP	2026-11-13T18:16:59.4407869Z Contents: read
+check	UNKNOWN STEP	2026-11-13T18:16:59.4408896Z Metadata: read
+check	UNKNOWN STEP	2026-11-13T18:16:59.4409946Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:16:59.4413109Z Secret source: Actions
+check	UNKNOWN STEP	2026-11-13T18:16:59.4414729Z Cache mode: write
+check	UNKNOWN STEP	2026-11-13T18:16:59.4416569Z Prepare workflow directory
+check	UNKNOWN STEP	2026-11-13T18:16:59.4883880Z Prepare all required actions
+check	UNKNOWN STEP	2026-11-13T18:16:59.4932065Z Getting action download info
+check	UNKNOWN STEP	2026-11-13T18:16:59.6799613Z Download action repository 'actions/checkout@v7.0.1' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+check	UNKNOWN STEP	2026-11-13T18:16:59.8626421Z Download action repository 'astral-sh/setup-uv@v10.3.3' (SHA:68559e99cc807c1eb7e9238fd43a15bba460eec2)
+check	UNKNOWN STEP	2026-11-13T18:17:00.1850145Z Complete job name: check
+check	UNKNOWN STEP	2026-11-13T18:17:00.2732751Z ##[group]Run actions/checkout@v7.0.1
+check	UNKNOWN STEP	2026-11-13T18:17:00.2733691Z with:
+check	UNKNOWN STEP	2026-11-13T18:17:00.2734220Z   repository: victorzhang674-crypto/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:00.2738242Z   token: ***
+check	UNKNOWN STEP	2026-11-13T18:17:00.2738692Z   ssh-strict: true
+check	UNKNOWN STEP	2026-11-13T18:17:00.2739162Z   ssh-user: git
+check	UNKNOWN STEP	2026-11-13T18:17:00.2739616Z   persist-credentials: true
+check	UNKNOWN STEP	2026-11-13T18:17:00.2740107Z   clean: true
+check	UNKNOWN STEP	2026-11-13T18:17:00.2740551Z   sparse-checkout-cone-mode: true
+check	UNKNOWN STEP	2026-11-13T18:17:00.2741076Z   fetch-depth: 1
+check	UNKNOWN STEP	2026-11-13T18:17:00.2741515Z   fetch-tags: false
+check	UNKNOWN STEP	2026-11-13T18:17:00.2741966Z   show-progress: true
+check	UNKNOWN STEP	2026-11-13T18:17:00.2742419Z   lfs: false
+check	UNKNOWN STEP	2026-11-13T18:17:00.2742839Z   submodules: false
+check	UNKNOWN STEP	2026-11-13T18:17:00.2743297Z   set-safe-directory: true
+check	UNKNOWN STEP	2026-11-13T18:17:00.2743803Z   allow-unsafe-pr-checkout: false
+check	UNKNOWN STEP	2026-11-13T18:17:00.2744587Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:00.7104652Z Syncing repository: victorzhang674-crypto/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:00.7108286Z ##[group]Getting Git version info
+check	UNKNOWN STEP	2026-11-13T18:17:00.7109725Z Working directory is '/home/runner/work/atlas-capital/atlas-capital'
+check	UNKNOWN STEP	2026-11-13T18:17:00.7111979Z [command]/usr/bin/git version
+check	UNKNOWN STEP	2026-11-13T18:17:00.7202065Z git version 2.56.1
+check	UNKNOWN STEP	2026-11-13T18:17:00.7223599Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:00.7234022Z Temporarily overriding HOME='/home/runner/work/_temp/f73e232c-75f3-4715-bbc1-2761882e0d23' before making global git config changes
+check	UNKNOWN STEP	2026-11-13T18:17:00.7236881Z Adding repository directory to the temporary git global config as a safe directory
+check	UNKNOWN STEP	2026-11-13T18:17:00.7241088Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/atlas-capital/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:00.7303826Z Deleting the contents of '/home/runner/work/atlas-capital/atlas-capital'
+check	UNKNOWN STEP	2026-11-13T18:17:00.7307191Z ##[group]Determining repository object format
+check	UNKNOWN STEP	2026-11-13T18:17:00.7308870Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:00.7310003Z ##[group]Initializing the repository
+check	UNKNOWN STEP	2026-11-13T18:17:00.7313963Z [command]/usr/bin/git init /home/runner/work/atlas-capital/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:00.7428522Z hint: Using 'master' as the name for the initial branch. This default branch name
+check	UNKNOWN STEP	2026-11-13T18:17:00.7430101Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+check	UNKNOWN STEP	2026-11-13T18:17:00.7431181Z hint: to use in all of your new repositories, which will suppress this warning,
+check	UNKNOWN STEP	2026-11-13T18:17:00.7432026Z hint: call:
+check	UNKNOWN STEP	2026-11-13T18:17:00.7432479Z hint:
+check	UNKNOWN STEP	2026-11-13T18:17:00.7433046Z hint: 	git config --global init.defaultBranch <name>
+check	UNKNOWN STEP	2026-11-13T18:17:00.7433744Z hint:
+check	UNKNOWN STEP	2026-11-13T18:17:00.7434402Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+check	UNKNOWN STEP	2026-11-13T18:17:00.7435485Z hint: 'development'. The just-created branch can be renamed via this command:
+check	UNKNOWN STEP	2026-11-13T18:17:00.7436671Z hint:
+check	UNKNOWN STEP	2026-11-13T18:17:00.7437158Z hint: 	git branch -m <name>
+check	UNKNOWN STEP	2026-11-13T18:17:00.7437703Z hint:
+check	UNKNOWN STEP	2026-11-13T18:17:00.7438422Z hint: Disable this message with "git config set advice.defaultBranchName false"
+check	UNKNOWN STEP	2026-11-13T18:17:00.7448610Z Initialized empty Git repository in /home/runner/work/atlas-capital/atlas-capital/.git/
+check	UNKNOWN STEP	2026-11-13T18:17:00.7462002Z [command]/usr/bin/git remote add origin https://github.com/victorzhang674-crypto/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:00.7534209Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:00.7535538Z ##[group]Disabling automatic garbage collection
+check	UNKNOWN STEP	2026-11-13T18:17:00.7537871Z [command]/usr/bin/git config --local gc.auto 0
+check	UNKNOWN STEP	2026-11-13T18:17:00.7577882Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:00.7579402Z ##[group]Setting up auth
+check	UNKNOWN STEP	2026-11-13T18:17:00.7580277Z Removing SSH command configuration
+check	UNKNOWN STEP	2026-11-13T18:17:00.7582205Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+check	UNKNOWN STEP	2026-11-13T18:17:00.7629209Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+check	UNKNOWN STEP	2026-11-13T18:17:00.8103321Z Removing HTTP extra header
+check	UNKNOWN STEP	2026-11-13T18:17:00.8110431Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+check	UNKNOWN STEP	2026-11-13T18:17:00.8156332Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+check	UNKNOWN STEP	2026-11-13T18:17:00.8399830Z Removing includeIf entries pointing to credentials config files
+check	UNKNOWN STEP	2026-11-13T18:17:00.8406286Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+check	UNKNOWN STEP	2026-11-13T18:17:00.8460893Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+check	UNKNOWN STEP	2026-11-13T18:17:00.8711031Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+check	UNKNOWN STEP	2026-11-13T18:17:00.8763058Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git.path /home/runner/work/_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config
+check	UNKNOWN STEP	2026-11-13T18:17:00.8808098Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config
+check	UNKNOWN STEP	2026-11-13T18:17:00.8852266Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config
+check	UNKNOWN STEP	2026-11-13T18:17:00.8900627Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config
+check	UNKNOWN STEP	2026-11-13T18:17:00.8942564Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:00.8943911Z ##[group]Fetching the repository
+check	UNKNOWN STEP	2026-11-13T18:17:00.8950884Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d094f0bc266c92438583cd4c1eb364e289378872:refs/remotes/origin/main
+check	UNKNOWN STEP	2026-11-13T18:17:01.8100424Z From https://github.com/victorzhang674-crypto/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:01.8103077Z  * [new ref]         d094f0bc266c92438583cd4c1eb364e289378872 -> origin/main
+check	UNKNOWN STEP	2026-11-13T18:17:01.8109785Z [command]/usr/bin/git branch --list --remote origin/main
+check	UNKNOWN STEP	2026-11-13T18:17:01.8155472Z   origin/main
+check	UNKNOWN STEP	2026-11-13T18:17:01.8165361Z [command]/usr/bin/git rev-parse refs/remotes/origin/main
+check	UNKNOWN STEP	2026-11-13T18:17:01.8199626Z d094f0bc266c92438583cd4c1eb364e289378872
+check	UNKNOWN STEP	2026-11-13T18:17:01.8205228Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:01.8207195Z ##[group]Determining the checkout info
+check	UNKNOWN STEP	2026-11-13T18:17:01.8211553Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:01.8212996Z [command]/usr/bin/git sparse-checkout disable
+check	UNKNOWN STEP	2026-11-13T18:17:01.8282047Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+check	UNKNOWN STEP	2026-11-13T18:17:01.8324609Z ##[group]Checking out the ref
+check	UNKNOWN STEP	2026-11-13T18:17:01.8328289Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+check	UNKNOWN STEP	2026-11-13T18:17:01.9422439Z Switched to a new branch 'main'
+check	UNKNOWN STEP	2026-11-13T18:17:01.9427266Z branch 'main' set up to track 'origin/main'.
+check	UNKNOWN STEP	2026-11-13T18:17:01.9438384Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:01.9495235Z [command]/usr/bin/git log -1 --format=%H
+check	UNKNOWN STEP	2026-11-13T18:17:01.9534845Z d094f0bc266c92438583cd4c1eb364e289378872
+check	UNKNOWN STEP	2026-11-13T18:17:02.0024083Z ##[group]Run astral-sh/setup-uv@v10.3.3
+check	UNKNOWN STEP	2026-11-13T18:17:02.0025326Z with:
+check	UNKNOWN STEP	2026-11-13T18:17:02.0026295Z   enable-cache: true
+check	UNKNOWN STEP	2026-11-13T18:17:02.0103803Z   activate-environment: false
+check	UNKNOWN STEP	2026-11-13T18:17:02.0105996Z   no-project: false
+check	UNKNOWN STEP	2026-11-13T18:17:02.0108097Z   working-directory: /home/runner/work/atlas-capital/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:02.0124342Z   github-token: ***
+check	UNKNOWN STEP	2026-11-13T18:17:02.0127156Z   cache-dependency-glob: **/*requirements*.txt
+check	UNKNOWN STEP	**/*requirements*.in
+check	UNKNOWN STEP	**/*constraints*.txt
+check	UNKNOWN STEP	**/*constraints*.in
+check	UNKNOWN STEP	**/pyproject.toml
+check	UNKNOWN STEP	**/uv.lock
+check	UNKNOWN STEP	**/*.py.lock
+check	UNKNOWN STEP	
+check	UNKNOWN STEP	2026-11-13T18:17:02.0129828Z   restore-cache: true
+check	UNKNOWN STEP	2026-11-13T18:17:02.0130745Z   save-cache: auto
+check	UNKNOWN STEP	2026-11-13T18:17:02.0131631Z   prune-cache: false
+check	UNKNOWN STEP	2026-11-13T18:17:02.0132570Z   cache-python: false
+check	UNKNOWN STEP	2026-11-13T18:17:02.0133589Z   ignore-nothing-to-cache: false
+check	UNKNOWN STEP	2026-11-13T18:17:02.0134720Z   ignore-empty-workdir: false
+check	UNKNOWN STEP	2026-11-13T18:17:02.0136058Z   download-from-astral-mirror: true
+check	UNKNOWN STEP	2026-11-13T18:17:02.0137286Z   add-problem-matchers: true
+check	UNKNOWN STEP	2026-11-13T18:17:02.0138281Z   quiet: false
+check	UNKNOWN STEP	2026-11-13T18:17:02.0139152Z   resolution-strategy: highest
+check	UNKNOWN STEP	2026-11-13T18:17:02.0140161Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:02.2167850Z Trying to find version for uv in: /home/runner/work/atlas-capital/atlas-capital/uv.toml
+check	UNKNOWN STEP	2026-11-13T18:17:02.2171489Z Could not find file: /home/runner/work/atlas-capital/atlas-capital/uv.toml
+check	UNKNOWN STEP	2026-11-13T18:17:02.2174995Z Trying to find version for uv in: /home/runner/work/atlas-capital/atlas-capital/pyproject.toml
+check	UNKNOWN STEP	2026-11-13T18:17:02.2178994Z Could not determine uv version from uv.toml or pyproject.toml. Falling back to latest.
+check	UNKNOWN STEP	2026-11-13T18:17:02.2183842Z Fetching manifest data from https://releases.astral.sh/github/versions/main/v1/uv.ndjson ...
+check	UNKNOWN STEP	2026-11-13T18:17:02.3100816Z Downloading uv from "https://releases.astral.sh/github/uv/releases/download/0.13.8/uv-x86_64-unknown-linux-gnu.tar.gz" ...
+check	UNKNOWN STEP	2026-11-13T18:17:02.4720337Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/802018e5-9566-43f2-8771-b01cd7cadef0 -f /home/runner/work/_temp/4326ffb0-7dba-4027-8a87-1842e2a956a3
+check	UNKNOWN STEP	2026-11-13T18:17:02.7839159Z Added /home/runner/.local/bin to the path
+check	UNKNOWN STEP	2026-11-13T18:17:02.7843056Z Added /opt/hostedtoolcache/uv/0.13.8/x86_64 to the path
+check	UNKNOWN STEP	2026-11-13T18:17:02.7844787Z Set UV_PYTHON_INSTALL_DIR to /home/runner/work/_temp/uv-python-dir
+check	UNKNOWN STEP	2026-11-13T18:17:02.7846168Z Added /home/runner/work/_temp/uv-python-dir to the path
+check	UNKNOWN STEP	2026-11-13T18:17:02.7873019Z Set UV_CACHE_DIR to /home/runner/work/_temp/setup-uv-cache
+check	UNKNOWN STEP	2026-11-13T18:17:02.7874106Z Successfully installed uv version 0.13.8
+check	UNKNOWN STEP	2026-11-13T18:17:02.8501174Z Searching files using cache dependency glob: /home/runner/work/atlas-capital/atlas-capital/**/*requirements*.txt,/home/runner/work/atlas-capital/atlas-capital/**/*requirements*.in,/home/runner/work/atlas-capital/atlas-capital/**/*constraints*.txt,/home/runner/work/atlas-capital/atlas-capital/**/*constraints*.in,/home/runner/work/atlas-capital/atlas-capital/**/pyproject.toml,/home/runner/work/atlas-capital/atlas-capital/**/uv.lock,/home/runner/work/atlas-capital/atlas-capital/**/*.py.lock
+check	UNKNOWN STEP	2026-11-13T18:17:03.0091717Z /home/runner/work/atlas-capital/atlas-capital/pyproject.toml
+check	UNKNOWN STEP	2026-11-13T18:17:03.0767857Z /home/runner/work/atlas-capital/atlas-capital/uv.lock
+check	UNKNOWN STEP	2026-11-13T18:17:03.0787308Z Found 2 files to hash.
+check	UNKNOWN STEP	2026-11-13T18:17:03.0874459Z Trying to restore cache from GitHub Actions cache with key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-d91fdd113e8966a5ded9831a2881c770b0b2a8a0fe1bdfa5f9548e4ce5a70c0e
+check	UNKNOWN STEP	2026-11-13T18:17:03.1378351Z Cache hit for: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-d91fdd113e8966a5ded9831a2881c770b0b2a8a0fe1bdfa5f9548e4ce5a70c0e
+check	UNKNOWN STEP	2026-11-13T18:17:04.1837464Z Received 192937984 of 239400979 (80.6%), 181.6 MBs/sec
+check	UNKNOWN STEP	2026-11-13T18:17:04.4171268Z Received 239400979 of 239400979 (100.0%), 182.9 MBs/sec
+check	UNKNOWN STEP	2026-11-13T18:17:04.4172389Z Cache Size: ~228 MB (239400979 B)
+check	UNKNOWN STEP	2026-11-13T18:17:04.4292943Z [command]/usr/bin/tar -xf /home/runner/work/_temp/7c90f7e7-80db-4d99-8abc-5170accdf4b3/cache.tzst -P -C /home/runner/work/atlas-capital/atlas-capital --use-compress-program unzstd
+check	UNKNOWN STEP	2026-11-13T18:17:06.2468375Z Cache restored successfully
+check	UNKNOWN STEP	2026-11-13T18:17:06.2575416Z cache restored from GitHub Actions cache with key: setup-uv-2-x86_64-unknown-linux-gnu-ubuntu-24.04-3.12.3-d91fdd113e8966a5ded9831a2881c770b0b2a8a0fe1bdfa5f9548e4ce5a70c0e
+check	UNKNOWN STEP	2026-11-13T18:17:06.3776798Z ##[group]Run uv sync --locked --group dev
+check	UNKNOWN STEP	2026-11-13T18:17:06.3777233Z ^[[36;1muv sync --locked --group dev^[[0m
+check	UNKNOWN STEP	2026-11-13T18:17:06.3803002Z shell: /usr/bin/bash -e {0}
+check	UNKNOWN STEP	2026-11-13T18:17:06.3803288Z env:
+check	UNKNOWN STEP	2026-11-13T18:17:06.3803583Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+check	UNKNOWN STEP	2026-11-13T18:17:06.3804007Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+check	UNKNOWN STEP	2026-11-13T18:17:06.3804315Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:06.3958644Z Using CPython 3.12.3 interpreter at: /usr/bin/python3.12
+check	UNKNOWN STEP	2026-11-13T18:17:06.3994257Z Creating virtual environment at: .venv
+check	UNKNOWN STEP	2026-11-13T18:17:06.3994848Z Resolved 111 packages in 1ms
+check	UNKNOWN STEP	2026-11-13T18:17:06.4044544Z    Building atlas-capital @ file:///home/runner/work/atlas-capital/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:06.7782789Z       Built atlas-capital @ file:///home/runner/work/atlas-capital/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:17:06.7800101Z Prepared 1 package in 376ms
+check	UNKNOWN STEP	2026-11-13T18:17:06.9057379Z Installed 109 packages in 125ms
+check	UNKNOWN STEP	2026-11-13T18:17:06.9058438Z  + annotated-doc==0.0.5
+check	UNKNOWN STEP	2026-11-13T18:17:06.9059019Z  + annotated-types==0.8.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9059518Z  + anthropic==2.7.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9059946Z  + anyio==4.15.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9060363Z  + arch==8.0.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9060821Z  + ast-serialize==0.13.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9061631Z  + atlas-capital==0.1.0 (from file:///home/runner/work/atlas-capital/atlas-capital)
+check	UNKNOWN STEP	2026-11-13T18:17:06.9062505Z  + beautifulsoup4==4.15.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9063007Z  + certifi==2026.10.23
+check	UNKNOWN STEP	2026-11-13T18:17:06.9063452Z  + cffi==2.1.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9063854Z  + cfgv==3.5.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9064285Z  + charset-normalizer==3.5.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9064797Z  + cloudpickle==3.1.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9065248Z  + contourpy==1.4.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9065679Z  + coverage==7.17.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9066334Z  + curl-cffi==0.17.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9066789Z  + cycler==0.12.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9067219Z  + distlib==0.4.4
+check	UNKNOWN STEP	2026-11-13T18:17:06.9067666Z  + docstring-parser==0.18.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9068160Z  + duckdb==2.0.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9068619Z  + exchange-calendars==4.13.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9069123Z  + execnet==2.1.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9069565Z  + filelock==4.2.4
+check	UNKNOWN STEP	2026-11-13T18:17:06.9069992Z  + fonttools==4.68.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9070436Z  + formulaic==1.2.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9070856Z  + h11==0.16.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9071318Z  + hmmlearn==0.3.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9071741Z  + httpcore==1.0.9
+check	UNKNOWN STEP	2026-11-13T18:17:06.9072165Z  + httpcore2==2.16.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9072812Z  + httpx==0.28.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9074879Z  + httpx2==2.16.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9075266Z  + hypothesis==6.170.11
+check	UNKNOWN STEP	2026-11-13T18:17:06.9075648Z  + identify==2.6.20
+check	UNKNOWN STEP	2026-11-13T18:17:06.9076227Z  + idna==3.20
+check	UNKNOWN STEP	2026-11-13T18:17:06.9076574Z  + iniconfig==2.3.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9076937Z  + interface-meta==2.0.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9077315Z  + jiter==0.19.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9077648Z  + joblib==1.6.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9077998Z  + kiwisolver==1.5.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9078381Z  + korean-lunar-calendar==0.4.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9078807Z  + librt==0.16.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9079137Z  + lxml==6.1.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9079492Z  + markdown-it-py==4.2.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9079881Z  + matplotlib==3.11.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9080240Z  + mdurl==0.1.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9080776Z  + multitasking==0.0.13
+check	UNKNOWN STEP	2026-11-13T18:17:06.9081273Z  + mypy==2.4.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9081747Z  + mypy-extensions==1.1.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9082247Z  + narwhals==2.28.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9082740Z  + nodeenv==1.11.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9083205Z  + numpy==2.5.4
+check	UNKNOWN STEP	2026-11-13T18:17:06.9083771Z  + opentelemetry-api==1.45.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9084208Z  + packaging==26.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9084688Z  + pandas==3.1.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9085324Z  + pandas-stubs==3.0.5.260914
+check	UNKNOWN STEP	2026-11-13T18:17:06.9085921Z  + pathspec==1.1.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9086578Z  + patsy==1.0.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9087116Z  + peewee==4.5.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9087591Z  + pillow==13.0.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9088074Z  + platformdirs==4.13.5
+check	UNKNOWN STEP	2026-11-13T18:17:06.9088629Z  + pluggy==1.7.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9089465Z  + pre-commit==4.7.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9089950Z  + pre-commit-hooks==6.0.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9090358Z  + protobuf==7.36.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9090751Z  + pyarrow==26.0.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9091171Z  + pycparser==3.12
+check	UNKNOWN STEP	2026-11-13T18:17:06.9091666Z  + pydantic==2.14.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9092125Z  + pydantic-core==2.50.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9092678Z  + pydantic-settings==2.16.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9093093Z  + pygments==2.21.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9093524Z  + pyluach==2.3.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9094022Z  + pyparsing==3.3.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9094539Z  + pytest==9.1.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9095066Z  + pytest-cov==7.1.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9095610Z  + pytest-xdist==3.8.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9096270Z  + python-dateutil==3.0.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9096724Z  + python-discovery==1.6.4
+check	UNKNOWN STEP	2026-11-13T18:17:06.9097180Z  + python-dotenv==1.2.4
+check	UNKNOWN STEP	2026-11-13T18:17:06.9097720Z  + python-ulid==4.0.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9098114Z  + pytz==2026.5
+check	UNKNOWN STEP	2026-11-13T18:17:06.9098514Z  + pyyaml==6.0.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9099121Z  + rapidfuzz==3.14.6
+check	UNKNOWN STEP	2026-11-13T18:17:06.9099664Z  + requests==2.34.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9100154Z  + respx==0.23.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9100550Z  + rich==15.0.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9101215Z  + ruamel-yaml==0.19.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9101696Z  + ruff==0.17.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9102187Z  + scikit-learn==1.9.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9102650Z  + scipy==1.18.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9103154Z  + shellingham==1.5.4
+check	UNKNOWN STEP	2026-11-13T18:17:06.9103598Z  + six==1.17.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9104152Z  + sniffio==1.3.1
+check	UNKNOWN STEP	2026-11-13T18:17:06.9104656Z  + sortedcontainers==2.4.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9105115Z  + soupsieve==3.0.4
+check	UNKNOWN STEP	2026-11-13T18:17:06.9105636Z  + statsmodels==0.15.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9106309Z  + structlog==26.1.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9106879Z  + threadpoolctl==3.8.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9107318Z  + toolz==1.2.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9107836Z  + truststore==0.10.5
+check	UNKNOWN STEP	2026-11-13T18:17:06.9108325Z  + typer==0.27.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9108914Z  + types-pyyaml==6.0.12.20260906
+check	UNKNOWN STEP	2026-11-13T18:17:06.9109374Z  + typing-extensions==4.16.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9109937Z  + typing-inspection==0.4.4
+check	UNKNOWN STEP	2026-11-13T18:17:06.9110337Z  + tzdata==2026.5
+check	UNKNOWN STEP	2026-11-13T18:17:06.9110708Z  + urllib3==2.8.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9111313Z  + virtualenv==21.14.13
+check	UNKNOWN STEP	2026-11-13T18:17:06.9111757Z  + websockets==17.3
+check	UNKNOWN STEP	2026-11-13T18:17:06.9112271Z  + wrapt==2.5.2
+check	UNKNOWN STEP	2026-11-13T18:17:06.9112722Z  + yfinance==1.7.0
+check	UNKNOWN STEP	2026-11-13T18:17:06.9241568Z ##[group]Run make check
+check	UNKNOWN STEP	2026-11-13T18:17:06.9241873Z ^[[36;1mmake check^[[0m
+check	UNKNOWN STEP	2026-11-13T18:17:06.9263926Z shell: /usr/bin/bash -e {0}
+check	UNKNOWN STEP	2026-11-13T18:17:06.9264202Z env:
+check	UNKNOWN STEP	2026-11-13T18:17:06.9264509Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+check	UNKNOWN STEP	2026-11-13T18:17:06.9264936Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+check	UNKNOWN STEP	2026-11-13T18:17:06.9265274Z ##[endgroup]
+check	UNKNOWN STEP	2026-11-13T18:17:06.9336045Z uv run ruff check .
+check	UNKNOWN STEP	2026-11-13T18:17:07.0428050Z All checks passed!
+check	UNKNOWN STEP	2026-11-13T18:17:07.0460421Z uv run ruff format --check .
+check	UNKNOWN STEP	2026-11-13T18:17:07.1539766Z 386 files already formatted
+check	UNKNOWN STEP	2026-11-13T18:17:07.1559835Z uv run mypy src/atlas
+check	UNKNOWN STEP	2026-11-13T18:17:38.2984514Z Success: no issues found in 157 source files
+check	UNKNOWN STEP	2026-11-13T18:17:38.3544727Z uv run pytest -q -n auto --dist loadfile
+check	UNKNOWN STEP	2026-11-13T18:18:07.6297008Z bringing up nodes...
+check	UNKNOWN STEP	2026-11-13T18:18:07.6306599Z bringing up nodes...
+check	UNKNOWN STEP	2026-11-13T18:18:07.6306959Z 
+check	UNKNOWN STEP	2026-11-13T18:18:07.7327194Z ........................................................................ [  1%]
+check	UNKNOWN STEP	2026-11-13T18:18:07.8636681Z ........................................................................ [  3%]
+check	UNKNOWN STEP	2026-11-13T18:18:07.9797171Z ........................................................................ [  5%]
+check	UNKNOWN STEP	2026-11-13T18:18:08.1257393Z ........................................................................ [  6%]
+check	UNKNOWN STEP	2026-11-13T18:18:08.2676867Z ........................................................................ [  8%]
+check	UNKNOWN STEP	2026-11-13T18:18:08.4120967Z ........................................................................ [ 10%]
+check	UNKNOWN STEP	2026-11-13T18:18:08.5486886Z ........................................................................ [ 12%]
+check	UNKNOWN STEP	2026-11-13T18:18:08.6897432Z ........................................................................ [ 13%]
+check	UNKNOWN STEP	2026-11-13T18:18:08.8277752Z ........................................................................ [ 15%]
+check	UNKNOWN STEP	2026-11-13T18:18:08.9907141Z ........................................................................ [ 17%]
+check	UNKNOWN STEP	2026-11-13T18:18:09.6067142Z ........................................................................ [ 19%]
+check	UNKNOWN STEP	2026-11-13T18:18:09.8747122Z ........................................................................ [ 20%]
+check	UNKNOWN STEP	2026-11-13T18:18:10.2027094Z ........................................................................ [ 22%]
+check	UNKNOWN STEP	2026-11-13T18:18:10.4877302Z ........................................................................ [ 24%]
+check	UNKNOWN STEP	2026-11-13T18:18:10.7616915Z ........................................................................ [ 25%]
+check	UNKNOWN STEP	2026-11-13T18:18:11.3096165Z ........................................................................ [ 27%]
+check	UNKNOWN STEP	2026-11-13T18:18:11.4617035Z ........................................................................ [ 29%]
+check	UNKNOWN STEP	2026-11-13T18:18:11.9007081Z ........................................................................ [ 31%]
+check	UNKNOWN STEP	2026-11-13T18:18:13.1136974Z ........................................................................ [ 32%]
+check	UNKNOWN STEP	2026-11-13T18:18:14.1348480Z ........................................................................ [ 34%]
+check	UNKNOWN STEP	2026-11-13T18:18:14.4098628Z ........................................................................ [ 36%]
+check	UNKNOWN STEP	2026-11-13T18:18:15.1854442Z ........................................................................ [ 38%]
+check	UNKNOWN STEP	2026-11-13T18:18:15.8907130Z ........................................................................ [ 39%]
+check	UNKNOWN STEP	2026-11-13T18:18:17.9547107Z ........................................................................ [ 41%]
+check	UNKNOWN STEP	2026-11-13T18:18:19.3706825Z ........................................................................ [ 43%]
+check	UNKNOWN STEP	2026-11-13T18:18:21.7116856Z ........................................................................ [ 44%]
+check	UNKNOWN STEP	2026-11-13T18:18:23.7977077Z ........................................................................ [ 46%]
+check	UNKNOWN STEP	2026-11-13T18:18:27.3096778Z ........................................................................ [ 48%]
+check	UNKNOWN STEP	2026-11-13T18:18:28.5077605Z ........................................................................ [ 50%]
+check	UNKNOWN STEP	2026-11-13T18:18:29.0696986Z ........................................................................ [ 51%]
+check	UNKNOWN STEP	2026-11-13T18:18:30.2516724Z ........................................................................ [ 53%]
+check	UNKNOWN STEP	2026-11-13T18:18:31.6903968Z ........................................................................ [ 55%]
+check	UNKNOWN STEP	2026-11-13T18:18:33.1976821Z ........................................................................ [ 57%]
+check	UNKNOWN STEP	2026-11-13T18:18:34.1086787Z ........................................................................ [ 58%]
+check	UNKNOWN STEP	2026-11-13T18:18:37.9556864Z ........................................................................ [ 60%]
+check	UNKNOWN STEP	2026-11-13T18:18:39.2418605Z ........................................................................ [ 62%]
+check	UNKNOWN STEP	2026-11-13T18:18:54.2288365Z ........................................................................ [ 63%]
+check	UNKNOWN STEP	2026-11-13T18:19:03.2156966Z ........................................................................ [ 65%]
+check	UNKNOWN STEP	2026-11-13T18:19:06.4746840Z ........................................................................ [ 67%]
+check	UNKNOWN STEP	2026-11-13T18:19:19.1947097Z ........................................................................ [ 69%]
+check	UNKNOWN STEP	2026-11-13T18:19:25.6996931Z ........................................................................ [ 70%]
+check	UNKNOWN STEP	2026-11-13T18:19:26.1686825Z ........................................................................ [ 72%]
+check	UNKNOWN STEP	2026-11-13T18:20:31.3362555Z ........................................................................ [ 74%]
+check	UNKNOWN STEP	2026-11-13T18:20:43.1414422Z ........................................................................ [ 76%]
+check	UNKNOWN STEP	2026-11-13T18:20:45.5497057Z ........................................................................ [ 77%]
+check	UNKNOWN STEP	2026-11-13T18:20:47.8063590Z ........................................................................ [ 79%]
+check	UNKNOWN STEP	2026-11-13T18:20:49.4606863Z ........................................................................ [ 81%]
+check	UNKNOWN STEP	2026-11-13T18:20:51.5146891Z ........................................................................ [ 82%]
+check	UNKNOWN STEP	2026-11-13T18:21:23.7227050Z ........................................................................ [ 84%]
+check	UNKNOWN STEP	2026-11-13T18:21:26.5876756Z ........................................................................ [ 86%]
+check	UNKNOWN STEP	2026-11-13T18:21:41.8286821Z ........................................................................ [ 88%]
+check	UNKNOWN STEP	2026-11-13T18:21:58.6286979Z ........................................................................ [ 89%]
+check	UNKNOWN STEP	2026-11-13T18:22:07.6327031Z ........................................................................ [ 91%]
+check	UNKNOWN STEP	2026-11-13T18:22:48.5636724Z ........................................................................ [ 93%]
+check	UNKNOWN STEP	2026-11-13T18:23:14.9046906Z ........................................................................ [ 95%]
+check	UNKNOWN STEP	2026-11-13T18:24:02.6556964Z ...................F.................................................... [ 96%]
+check	UNKNOWN STEP	2026-11-13T18:24:20.8547118Z ........................................................................ [ 98%]
+check	UNKNOWN STEP	2026-11-13T18:29:29.7112837Z nanobind: leaked 27 instances!
+check	UNKNOWN STEP	2026-11-13T18:29:29.7126537Z nanobind: leaked 6 types!
+check	UNKNOWN STEP	2026-11-13T18:29:29.7176930Z  - leaked type "_duckdb._sqltypes.DuckDBPyType"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7186291Z  - leaked type "_duckdb.DuckDBPyConnection"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7216442Z  - leaked type "FunctionNullHandling"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7266540Z  - leaked type "PythonUDFType"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7267331Z  - leaked type "ExplainType"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7268131Z  - leaked type "PythonExceptionHandling"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7268861Z nanobind: leaked 84 functions!
+check	UNKNOWN STEP	2026-11-13T18:29:29.7269447Z  - leaked function "abort"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7269961Z  - leaked function "df"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7270452Z  - leaked function "dtype"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7270965Z  - leaked function "_bind"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7271476Z  - leaked function "fetchall"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7272009Z  - leaked function "interrupt"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7272566Z  - leaked function "filesystem_is_registered"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7273677Z  - leaked function "unregister_filesystem"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7274292Z  - leaked function "duplicate"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7274819Z  - leaked function "torch"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7275598Z  - ... skipped remainder
+check	UNKNOWN STEP	2026-11-13T18:29:29.7276764Z nanobind: this is likely caused by a reference counting issue in the binding code.
+check	UNKNOWN STEP	2026-11-13T18:29:29.7751984Z See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+check	UNKNOWN STEP	2026-11-13T18:29:29.7753067Z nanobind: leaked 6 types!
+check	UNKNOWN STEP	2026-11-13T18:29:29.7753721Z  - leaked type "_duckdb._sqltypes.DuckDBPyType"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7754404Z  - leaked type "_duckdb.DuckDBPyConnection"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7755005Z  - leaked type "FunctionNullHandling"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7755573Z  - leaked type "PythonUDFType"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7756333Z  - leaked type "ExplainType"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7756882Z  - leaked type "PythonExceptionHandling"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7757517Z nanobind: leaked 84 functions!
+check	UNKNOWN STEP	2026-11-13T18:29:29.7758040Z  - leaked function "__init__"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7758601Z  - leaked function "_prepare_script"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7759203Z  - leaked function "get_profiling_information"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7759840Z  - leaked function "df"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7760358Z  - leaked function "register"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7760913Z  - leaked function "rollback"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7761467Z  - leaked function "disable_profiling"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7762024Z  - leaked function "_name_scope"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7762563Z  - leaked function "register_filesystem"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7763140Z  - leaked function "abort"
+check	UNKNOWN STEP	2026-11-13T18:29:29.7763795Z  - ... skipped remainder
+check	UNKNOWN STEP	2026-11-13T18:29:29.7764304Z nanobind: this is likely caused by a reference counting issue in the binding code.
+check	UNKNOWN STEP	2026-11-13T18:29:30.1122434Z See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+check	UNKNOWN STEP	2026-11-13T18:29:30.1123119Z nanobind: leaked 6 types!
+check	UNKNOWN STEP	2026-11-13T18:29:30.1123778Z  - leaked type "_duckdb._sqltypes.DuckDBPyType"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1124598Z  - leaked type "_duckdb.DuckDBPyConnection"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1125309Z  - leaked type "FunctionNullHandling"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1126250Z  - leaked type "PythonUDFType"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1126878Z  - leaked type "ExplainType"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1127466Z  - leaked type "PythonExceptionHandling"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1128098Z nanobind: leaked 84 functions!
+check	UNKNOWN STEP	2026-11-13T18:29:30.1128653Z  - leaked function "df"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1129120Z  - leaked function ""
+check	UNKNOWN STEP	2026-11-13T18:29:30.1129539Z  - leaked function "__getitem__"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1130040Z  - leaked function "_register_collection"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1130581Z  - leaked function "checkpoint"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1131049Z  - leaked function "__repr__"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1131399Z  - leaked function "_catalog_version"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1131736Z  - leaked function "enum_type"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1132044Z  - leaked function "unregister"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1132341Z  - leaked function "__init__"
+check	UNKNOWN STEP	2026-11-13T18:29:30.1132633Z  - ... skipped remainder
+check	UNKNOWN STEP	2026-11-13T18:29:30.1133219Z nanobind: this is likely caused by a reference counting issue in the binding code.
+check	UNKNOWN STEP	2026-11-13T18:29:30.5028728Z ................................................................         [100%]
+check	UNKNOWN STEP	2026-11-13T18:29:30.5029501Z =================================== FAILURES ===================================
+check	UNKNOWN STEP	2026-11-13T18:29:30.5030367Z _______________ test_upsert_one_million_rows_under_five_seconds ________________
+check	UNKNOWN STEP	2026-11-13T18:29:30.5031383Z [gw0] linux -- Python 3.12.3 /home/runner/work/atlas-capital/atlas-capital/.venv/bin/python
+check	UNKNOWN STEP	2026-11-13T18:29:30.5031973Z 
+check	UNKNOWN STEP	2026-11-13T18:29:30.5032436Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/popen-gw0/test_upsert_one_million_rows_u0')
+check	UNKNOWN STEP	2026-11-13T18:29:30.5034310Z prices_schema = TableSchema(name='prices_daily', columns=(Column(name='symbol', dtype=<ColumnType.STRING: 'string'>, nullable=False), ...), primary_key=('symbol', 'date'), partition_by=('symbol',), year_column=None, version=1, static=False, description='')
+check	UNKNOWN STEP	2026-11-13T18:29:30.5035989Z 
+check	UNKNOWN STEP	2026-11-13T18:29:30.5036637Z     def test_upsert_one_million_rows_under_five_seconds(
+check	UNKNOWN STEP	2026-11-13T18:29:30.5037193Z         tmp_path: Path, prices_schema: TableSchema
+check	UNKNOWN STEP	2026-11-13T18:29:30.5037893Z     ) -> None:
+check	UNKNOWN STEP	2026-11-13T18:29:30.5038408Z         """Best of up to `_SPEED_ATTEMPTS` timings, each on a fresh lake, so a briefly loaded
+check	UNKNOWN STEP	2026-11-13T18:29:30.5039250Z         machine does not fail the brief's target; the 5 s limit itself is unchanged."""
+check	UNKNOWN STEP	2026-11-13T18:29:30.5039891Z         timings: list[float] = []
+check	UNKNOWN STEP	2026-11-13T18:29:30.5040308Z         for attempt in range(_SPEED_ATTEMPTS):
+check	UNKNOWN STEP	2026-11-13T18:29:30.5040952Z             lake = Lake(tmp_path / f"lake{attempt}", registry=SchemaRegistry([prices_schema]))
+check	UNKNOWN STEP	2026-11-13T18:29:30.5041858Z             lake.write_table("prices_daily", _synthetic(500, 0, 2_000, close=1.0))  # seed, not timed
+check	UNKNOWN STEP	2026-11-13T18:29:30.5042754Z             batch = _synthetic(500, 1_000, 2_000, close=2.0)  # days 1000-2999: half overlap, half new
+check	UNKNOWN STEP	2026-11-13T18:29:30.5043413Z             assert len(batch) == 1_000_000
+check	UNKNOWN STEP	2026-11-13T18:29:30.5043806Z     
+check	UNKNOWN STEP	2026-11-13T18:29:30.5044110Z             start = time.perf_counter()
+check	UNKNOWN STEP	2026-11-13T18:29:30.5044659Z             result = lake.write_table("prices_daily", batch, mode="upsert")
+check	UNKNOWN STEP	2026-11-13T18:29:30.5045274Z             timings.append(time.perf_counter() - start)
+check	UNKNOWN STEP	2026-11-13T18:29:30.5045981Z             assert result.rows == 1_000_000
+check	UNKNOWN STEP	2026-11-13T18:29:30.5046433Z             if timings[-1] < 5.0:
+check	UNKNOWN STEP	2026-11-13T18:29:30.5046791Z                 break
+check	UNKNOWN STEP	2026-11-13T18:29:30.5047161Z         shown = ", ".join(f"{t:.2f} s" for t in timings)
+check	UNKNOWN STEP	2026-11-13T18:29:30.5047879Z         print(f"\n1M-row upsert into a 1M-row table (500 partitions): {min(timings):.2f} s ({shown})")
+check	UNKNOWN STEP	2026-11-13T18:29:30.5048575Z     
+check	UNKNOWN STEP	2026-11-13T18:29:30.5048966Z >       assert min(timings) < 5.0, f"no attempt under 5 s: {shown}"
+check	UNKNOWN STEP	2026-11-13T18:29:30.5049605Z E       AssertionError: no attempt under 5 s: 6.05 s, 5.18 s, 6.27 s
+check	UNKNOWN STEP	2026-11-13T18:29:30.5050150Z E       assert 5.176744019000012 < 5.0
+check	UNKNOWN STEP	2026-11-13T18:29:30.5050812Z E        +  where 5.176744019000012 = min([6.0512158699999645, 5.176744019000012, 6.27298080700001])
+check	UNKNOWN STEP	2026-11-13T18:29:30.5051336Z 
+check	UNKNOWN STEP	2026-11-13T18:29:30.5051630Z tests/unit/core/storage/test_storage_upsert.py:133: AssertionError
+check	UNKNOWN STEP	2026-11-13T18:29:30.5052331Z ----------------------------- Captured stdout call -----------------------------
+check	UNKNOWN STEP	2026-11-13T18:29:30.5052771Z 
+check	UNKNOWN STEP	2026-11-13T18:29:30.5053111Z 1M-row upsert into a 1M-row table (500 partitions): 5.18 s (6.05 s, 5.18 s, 6.27 s)
+check	UNKNOWN STEP	2026-11-13T18:29:30.5053855Z ------------------------------ Captured log call -------------------------------
+check	UNKNOWN STEP	2026-11-13T18:29:30.5055441Z INFO     atlas.core.storage.lake:lake.py:200 {'table': 'prices_daily', 'write_mode': 'append', 'rows': 1000000, 'partitions': 500, 'event': 'lake.write', 'level': 'info', 'logger': 'atlas.core.storage.lake', 'timestamp': '2026-11-13T18:23:09.814928Z'}
+check	UNKNOWN STEP	2026-11-13T18:29:30.5058650Z INFO     atlas.core.storage.lake:lake.py:200 {'table': 'prices_daily', 'write_mode': 'upsert', 'rows': 1000000, 'partitions': 500, 'event': 'lake.write', 'level': 'info', 'logger': 'atlas.core.storage.lake', 'timestamp': '2026-11-13T18:23:16.384665Z'}
+check	UNKNOWN STEP	2026-11-13T18:29:30.5061059Z INFO     atlas.core.storage.lake:lake.py:200 {'table': 'prices_daily', 'write_mode': 'append', 'rows': 1000000, 'partitions': 500, 'event': 'lake.write', 'level': 'info', 'logger': 'atlas.core.storage.lake', 'timestamp': '2026-11-13T18:23:19.694689Z'}
+check	UNKNOWN STEP	2026-11-13T18:29:30.5063440Z INFO     atlas.core.storage.lake:lake.py:200 {'table': 'prices_daily', 'write_mode': 'upsert', 'rows': 1000000, 'partitions': 500, 'event': 'lake.write', 'level': 'info', 'logger': 'atlas.core.storage.lake', 'timestamp': '2026-11-13T18:23:25.269663Z'}
+check	UNKNOWN STEP	2026-11-13T18:29:30.5065972Z INFO     atlas.core.storage.lake:lake.py:200 {'table': 'prices_daily', 'write_mode': 'append', 'rows': 1000000, 'partitions': 500, 'event': 'lake.write', 'level': 'info', 'logger': 'atlas.core.storage.lake', 'timestamp': '2026-11-13T18:23:28.443084Z'}
+check	UNKNOWN STEP	2026-11-13T18:29:30.5068569Z INFO     atlas.core.storage.lake:lake.py:200 {'table': 'prices_daily', 'write_mode': 'upsert', 'rows': 1000000, 'partitions': 500, 'event': 'lake.write', 'level': 'info', 'logger': 'atlas.core.storage.lake', 'timestamp': '2026-11-13T18:23:35.109117Z'}
+check	UNKNOWN STEP	2026-11-13T18:29:30.5070249Z =========================== short test summary info ============================
+check	UNKNOWN STEP	2026-11-13T18:29:30.5071465Z FAILED tests/unit/core/storage/test_storage_upsert.py::test_upsert_one_million_rows_under_five_seconds - AssertionError: no attempt under 5 s: 6.05 s, 5.18 s, 6.27 s
+check	UNKNOWN STEP	2026-11-13T18:29:30.5072564Z assert 5.176744019000012 < 5.0
+check	UNKNOWN STEP	2026-11-13T18:29:30.5073145Z  +  where 5.176744019000012 = min([6.0512158699999645, 5.176744019000012, 6.27298080700001])
+check	UNKNOWN STEP	2026-11-13T18:29:30.5073797Z 1 failed, 4167 passed in 707.59s (0:11:47)
+check	UNKNOWN STEP	2026-11-13T18:29:30.8563435Z See https://nanobind.readthedocs.io/en/latest/refleaks.htmlmake: *** [Makefile:11: test] Error 1
+check	UNKNOWN STEP	2026-11-13T18:29:30.8580593Z ##[error]Process completed with exit code 2.
+check	UNKNOWN STEP	2026-11-13T18:29:30.8749460Z Post job cleanup.
+check	UNKNOWN STEP	2026-11-13T18:29:30.9700439Z [command]/usr/bin/git version
+check	UNKNOWN STEP	2026-11-13T18:29:30.9762455Z git version 2.56.1
+check	UNKNOWN STEP	2026-11-13T18:29:30.9808528Z Temporarily overriding HOME='/home/runner/work/_temp/ecdb9c5c-a64d-444b-afc0-794658952de1' before making global git config changes
+check	UNKNOWN STEP	2026-11-13T18:29:30.9810215Z Adding repository directory to the temporary git global config as a safe directory
+check	UNKNOWN STEP	2026-11-13T18:29:30.9814921Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/atlas-capital/atlas-capital
+check	UNKNOWN STEP	2026-11-13T18:29:30.9873186Z Removing SSH command configuration
+check	UNKNOWN STEP	2026-11-13T18:29:30.9881273Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+check	UNKNOWN STEP	2026-11-13T18:29:30.9953531Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+check	UNKNOWN STEP	2026-11-13T18:29:31.0291485Z Removing HTTP extra header
+check	UNKNOWN STEP	2026-11-13T18:29:31.0300317Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+check	UNKNOWN STEP	2026-11-13T18:29:31.0358338Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+check	UNKNOWN STEP	2026-11-13T18:29:31.0717733Z Removing includeIf entries pointing to credentials config files
+check	UNKNOWN STEP	2026-11-13T18:29:31.0719194Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+check	UNKNOWN STEP	2026-11-13T18:29:31.0752680Z includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git.path
+check	UNKNOWN STEP	2026-11-13T18:29:31.0768027Z includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git/worktrees/*.path
+check	UNKNOWN STEP	2026-11-13T18:29:31.0772024Z includeif.gitdir:/github/workspace/.git.path
+check	UNKNOWN STEP	2026-11-13T18:29:31.0788529Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+check	UNKNOWN STEP	2026-11-13T18:29:31.0798283Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git.path
+check	UNKNOWN STEP	2026-11-13T18:29:31.0818819Z /home/runner/work/_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config
+check	UNKNOWN STEP	2026-11-13T18:29:31.0834737Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-923b0b3e\-f83f\-467f\-a653\-4c8471333d7e\.config
+check	UNKNOWN STEP	2026-11-13T18:29:31.0933471Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git/worktrees/*.path
+check	UNKNOWN STEP	2026-11-13T18:29:31.0987310Z /home/runner/work/_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config
+check	UNKNOWN STEP	2026-11-13T18:29:31.0999092Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/atlas-capital/atlas-capital/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-923b0b3e\-f83f\-467f\-a653\-4c8471333d7e\.config
+check	UNKNOWN STEP	2026-11-13T18:29:31.1062687Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+check	UNKNOWN STEP	2026-11-13T18:29:31.1104758Z /github/runner_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config
+check	UNKNOWN STEP	2026-11-13T18:29:31.1113809Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-923b0b3e\-f83f\-467f\-a653\-4c8471333d7e\.config
+check	UNKNOWN STEP	2026-11-13T18:29:31.1164661Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+check	UNKNOWN STEP	2026-11-13T18:29:31.1200859Z /github/runner_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config
+check	UNKNOWN STEP	2026-11-13T18:29:31.1211075Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-923b0b3e\-f83f\-467f\-a653\-4c8471333d7e\.config
+check	UNKNOWN STEP	2026-11-13T18:29:31.1257490Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+check	UNKNOWN STEP	2026-11-13T18:29:31.1505462Z Removing credentials config '/home/runner/work/_temp/git-credentials-923b0b3e-f83f-467f-a653-4c8471333d7e.config'
+check	UNKNOWN STEP	2026-11-13T18:29:31.1673743Z Cleaning up orphan processes

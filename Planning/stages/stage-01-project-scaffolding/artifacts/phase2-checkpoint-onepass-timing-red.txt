@@ -1,0 +1,8 @@
+=== red: timing tests run alone (tests/unit/test_toolchain.py) before the Makefile, markers and pyproject change, 2026-11-13T20:43Z
+
+tests/unit/test_toolchain.py:91: ValueError
+=========================== short test summary info ============================
+FAILED tests/unit/test_toolchain.py::test_markers_registered - AssertionError...
+FAILED tests/unit/test_toolchain.py::test_timing_tests_run_alone_after_the_parallel_part
+2 failed, 4 passed in 0.43s
+exit 1

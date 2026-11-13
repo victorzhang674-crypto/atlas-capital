@@ -44,3 +44,9 @@ Owner-requested follow-up (see worklog, 2026-11-02): private GitHub remote `vict
 - Local: `make check` → exit 0 (2118 passed) under plain, `GITHUB_ACTIONS=true` and `FORCE_COLOR=1` environments · raw: [stage-14 artifacts/checkpoint-2026-11-02-ci-help-test.txt](../stage-14-data-cli/artifacts/checkpoint-2026-11-02-ci-help-test.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 2 checkpoint follow-up (timing budgets run alone) — 2026-11-13
+- Commands run (this chat): `make check` → exit 0 (ruff clean, 386 files formatted, mypy clean, 4166 + 3 passed); `uv run pytest -q` → 4169 passed, 71 deselected · raw: [artifacts/phase2-checkpoint-onepass-timing-checks.txt](artifacts/phase2-checkpoint-onepass-timing-checks.txt); red first: [artifacts/phase2-checkpoint-onepass-timing-red.txt](artifacts/phase2-checkpoint-onepass-timing-red.txt); the CI failure it fixes: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-ci-failed-log.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-ci-failed-log.txt)
+- Acceptance criteria unchanged and still evidenced; the three budgets keep their limits.
+
+**Result:** ALL CRITERIA VERIFIED

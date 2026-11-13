@@ -74,6 +74,7 @@ markers = [
     "live: hits real network services (skipped by default)",
     "llm: calls a real LLM API (skipped by default)",
     "integration: slower multi-component tests in tests/integration (skipped by default)",
+    "timing: a wall-clock budget of a brief; `make test` runs these alone after the parallel part",
 ]
 
 [tool.ruff]
