@@ -47,6 +47,7 @@ Owner-requested follow-up (see worklog, 2026-11-02): private GitHub remote `vict
 
 #### Phase 2 checkpoint follow-up (timing budgets run alone) — 2026-11-13
 - Commands run (this chat): `make check` → exit 0 (ruff clean, 386 files formatted, mypy clean, 4166 + 3 passed); `uv run pytest -q` → 4169 passed, 71 deselected · raw: [artifacts/phase2-checkpoint-onepass-timing-checks.txt](artifacts/phase2-checkpoint-onepass-timing-checks.txt); red first: [artifacts/phase2-checkpoint-onepass-timing-red.txt](artifacts/phase2-checkpoint-onepass-timing-red.txt); the CI failure it fixes: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-ci-failed-log.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-ci-failed-log.txt)
+- On merged `main` (`a4a1882`, fast-forward from `d094f0b`; run alone through the owner-allowed connector): `make check` → exit 0 (4166 passed in parallel, then 3 passed alone in 16 s); integration → exit 0, 41 passed, 15 skipped; trees equal; branch merged · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-merged-main-check-2.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-merged-main-check-2.txt)
 - Acceptance criteria unchanged and still evidenced; the three budgets keep their limits.
 
 **Result:** ALL CRITERIA VERIFIED
