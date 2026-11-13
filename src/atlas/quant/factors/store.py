@@ -159,8 +159,24 @@ class FactorStore:
         if known.empty:
             return None
         day = max(known["date"])
-        own = known[known["date"] == day]
+        return self._stored(day, known[known["date"] == day])
 
+    def read_on(self, as_of: date | AsOf) -> StoredExposures | None:
+        """The cached panel computed on `as_of.day` itself, if its rows are known at `as_of`
+        (a `date` uses the configured decision time); `None` otherwise. It is what
+        `factor_panel(DataView(lake, as_of))` gave when it was stored: a reader that wants the
+        fresh panel of that day, not an older one, can take it instead of computing it."""
+        point = _point(as_of, self._cfg)
+        if not self._lake.has_table(FACTOR_EXPOSURES.name):
+            return None
+        rows = self._rows([("date", "==", point.day)])
+        known = pit_filter(rows, point)
+        assert_no_lookahead(known, point)
+        if known.empty:
+            return None
+        return self._stored(point.day, known)
+
+    def _stored(self, day: date, own: pd.DataFrame) -> StoredExposures:
         def wide(column: str) -> pd.DataFrame:
             table = own.pivot(index="symbol", columns="factor", values=column)
             table = table.reindex(columns=list(FACTOR_NAMES)).sort_index()

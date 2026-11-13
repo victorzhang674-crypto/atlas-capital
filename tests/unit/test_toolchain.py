@@ -55,3 +55,31 @@ def test_ci_runs_the_full_check_offline(repo_root: Path) -> None:
     # first CI run failed on `@v10` (Phase 0 checkpoint).
     for ref in [step["uses"] for step in steps if "uses" in step]:
         assert re.fullmatch(r"[\w.-]+/[\w.-]+@v\d+\.\d+\.\d+", ref), ref
+
+
+def _make_rule(repo_root: Path, target: str) -> str:
+    makefile = (repo_root / "Makefile").read_text()
+    found = re.search(rf"^{re.escape(target)}:\n\t(.+)$", makefile, re.MULTILINE)
+    assert found is not None, target
+    return found.group(1)
+
+
+def test_make_test_runs_in_parallel_one_file_per_worker(
+    repo_root: Path, pytest_ini: dict[str, Any]
+) -> None:
+    # Phase 2 checkpoint, Tier 3: the suite passed 6 minutes. `make test` (so `make check` and
+    # CI) spreads the test files over the cores; a file stays on one worker, so its module
+    # fixtures (the synthetic lakes) are still built once.
+    for target in ("test", "test-integration"):
+        rule = _make_rule(repo_root, target)
+        assert rule.startswith("uv run pytest ") and "-n auto" in rule, rule
+        assert "--dist loadfile" in rule, rule
+    assert "-m integration" in _make_rule(repo_root, "test-integration")
+    # a plain `uv run pytest` stays serial: single tests, `--pdb` and the mutation scripts
+    assert "-n " not in pytest_ini["addopts"] and "--dist" not in pytest_ini["addopts"]
+    meta = tomllib.loads((repo_root / "pyproject.toml").read_text())
+    assert any(
+        dep.startswith("pytest-xdist")
+        for dep in meta["dependency-groups"]["dev"]
+        if isinstance(dep, str)
+    )

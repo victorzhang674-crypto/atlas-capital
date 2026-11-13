@@ -10,7 +10,7 @@ fundamental factor (its cleaned cross-sectional z-score exposure).
 """
 
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from types import MappingProxyType
 from typing import Literal, get_args
@@ -22,7 +22,7 @@ from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.core.pit import guard_not_label
 from atlas.data.view import DataView
-from atlas.quant.factors import FACTOR_NAMES, factor_panel
+from atlas.quant.factors import FACTOR_NAMES, FactorStore, factor_panel
 from atlas.quant.features import REGISTRY, FeatureRegistry, compute_features
 from atlas.quant.research.labels import ViewFactory, check_dates
 
@@ -86,13 +86,16 @@ class SignalPanel:
     the name was not a member, is blocked or has no value), `members` (date -> the members
     evaluated that day) and `sectors` (symbol -> GICS sector, `None` when unknown; today's
     sectors, not point-in-time). Units: those of the feature (`FeatureSpec.unit`) or z-scores
-    for a fundamental factor."""
+    for a fundamental factor. `factor_panels`: when a factor cache was read (`signal_panel`
+    with `factor_store`), date -> the day of the stored panel used, `None` where the panel was
+    computed; empty otherwise."""
 
     name: str
     kind: SignalKind
     values: pd.DataFrame
     members: Mapping[date, tuple[str, ...]]
     sectors: pd.Series
+    factor_panels: Mapping[date, date | None] = field(default_factory=dict)
 
 
 def _sectors(view: DataView, symbols: Sequence[str]) -> pd.Series:
@@ -107,14 +110,24 @@ def _sectors(view: DataView, symbols: Sequence[str]) -> pd.Series:
 
 
 def _row(
-    view: DataView, name: str, kind: SignalKind, members: list[str], registry: FeatureRegistry
-) -> pd.Series:
+    view: DataView,
+    name: str,
+    kind: SignalKind,
+    members: list[str],
+    registry: FeatureRegistry,
+    factor_store: FactorStore | None,
+) -> tuple[pd.Series, date | None]:
+    """The signal of `members` at `view` and, for a factor read from the cache, the day of
+    the stored panel."""
     if not members:
-        return pd.Series(dtype="float64")
+        return pd.Series(dtype="float64"), None
     if kind == "technical":
         frame = compute_features(view, members, [name], history=1, registry=registry)[name]
-        return frame.iloc[-1].astype("float64")
-    return factor_panel(view, members).exposures[name].astype("float64")
+        return frame.iloc[-1].astype("float64"), None
+    stored = factor_store.read(view.as_of) if factor_store is not None else None
+    if stored is not None:
+        return stored.exposures[name].reindex(members).astype("float64"), stored.date
+    return factor_panel(view, members).exposures[name].astype("float64"), None
 
 
 def signal_panel(
@@ -126,25 +139,35 @@ def signal_panel(
     registry: FeatureRegistry = REGISTRY,
     calendar: TradingCalendar | None = None,
     progress: Callable[[date], None] | None = None,
+    factor_store: FactorStore | None = None,
 ) -> SignalPanel:
     """Signal `name` on each of `dates` (ascending sessions), each from
     `view_factory(date)`, for the members of `universe` (default
     `quant.research.universe` of the view's config) at that date. `calendar` (default XNYS
     with the default calendar settings) checks the dates; `progress(date)` is called after
-    each date. Unknown names raise `ValueError` before any data is read."""
+    each date. Unknown names raise `ValueError` before any data is read.
+
+    `factor_store` (fundamental factors only): each date takes the latest stored panel on or
+    before it that was known at the date (`FactorStore.read`) instead of computing one. That
+    is a different signal from the default: the stored panel is as old as the last cached
+    rebalance date and was cleaned over the factor universe of that day. A date with no stored
+    panel is computed. `SignalPanel.factor_panels` records which panel each date used."""
     kind = signal_kind(name, registry)
     days = check_dates(dates, calendar if calendar is not None else TradingCalendar())
     rows: dict[date, pd.Series] = {}
     members: dict[date, tuple[str, ...]] = {}
+    used: dict[date, date | None] = {}
     view: DataView | None = None
     for day in days:
         view = view_factory(day)
         wanted = view.universe(
             universe if universe is not None else view.config.quant.research.universe
         )
-        row = _row(view, name, kind, wanted, registry)
+        row, stored_day = _row(view, name, kind, wanted, registry, factor_store)
         guard_not_label(row, "signal")
         rows[day] = row
+        if factor_store is not None and kind == "fundamental":
+            used[day] = stored_day
         members[day] = tuple(wanted)
         if progress is not None:
             progress(day)
@@ -163,4 +186,5 @@ def signal_panel(
         values=values,
         members=MappingProxyType(members),
         sectors=_sectors(view, columns),
+        factor_panels=MappingProxyType(used),
     )

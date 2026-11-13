@@ -33,6 +33,7 @@ from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.core.pit import guard_not_label
 from atlas.core.run_context import current_run_context
+from atlas.quant.factors import FactorStore
 from atlas.quant.research.ic import (
     METHODS,
     Method,
@@ -231,6 +232,7 @@ def build_tearsheet(
     kind: str | None = None,
     frequency: str | None = None,
     universe: str | None = None,
+    factor_panels: Mapping[date, date | None] | None = None,
     config: AtlasConfig | None = None,
 ) -> SignalTearSheet:
     """The tear sheet of `signal` (evaluation dates x symbols) against `labels` (module
@@ -238,7 +240,10 @@ def build_tearsheet(
     regime label (Stage 21; without it the by-regime section says it is not available; its
     name is recorded as the section's `source`, with the number of dates that have no regime).
     `summary["labels"]` says how far the labels read (`last_session`) and whether that is past
-    `backtest.in_sample_end` (`reads_holdout`).
+    `backtest.in_sample_end` (`reads_holdout`). `factor_panels` (`SignalPanel.factor_panels`:
+    date -> the day of the cached factor panel used, `None` = computed) is summarised in
+    `summary["factor_cache"]`: how many dates read the cache and how old, in sessions, the
+    panels were; `None` when no cache was read.
     `kind`, `frequency` and `universe` are recorded in the summary, and so is the active run
     (`run_id`, `mode`, `config_fingerprint`, `stage`; `None` outside a `run_context`). The
     turnover proxy is 1 - the lag-1 rank autocorrelation, whatever lags are configured."""
@@ -296,6 +301,19 @@ def build_tearsheet(
         "rank_autocorrelation": {str(k): v for k, v in ac.items()},
         "turnover_proxy": 1.0 - float(lag1),
     }
+    factor_cache: dict[str, int] | None = None
+    if factor_panels:
+        ages = [
+            len(calendar.sessions(stored, day)) - 1
+            for day, stored in factor_panels.items()
+            if stored is not None
+        ]
+        factor_cache = {
+            "dates_from_cache": len(ages),
+            "dates_computed": len(factor_panels) - len(ages),
+            "oldest_panel_sessions": max(ages, default=0),
+            "newest_panel_sessions": min(ages, default=0),
+        }
     ctx = current_run_context()
     run = (
         None
@@ -345,6 +363,7 @@ def build_tearsheet(
         else None,
         "by_sector": by_sector,
         "by_regime": by_regime,
+        "factor_cache": factor_cache,
         "backtest": backtest.summary,
         "backtest_end": str(backtest_end),
         "settings": rc.model_dump(mode="json"),
@@ -372,11 +391,13 @@ def research_signal(
     universe: str | None = None,
     regimes: pd.Series | None = None,
     progress: Callable[[date], None] | None = None,
+    factor_store: FactorStore | None = None,
 ) -> SignalTearSheet:
     """Evaluate signal `name` on the evaluation dates in [`start`, `end`] (`frequency`,
     default `quant.research.frequency`): the point-in-time signal panel (`signal_panel`, the
     members of `universe` at each date), the labels (`forward_returns`) and the tear sheet.
-    `DataError` when no name has a signal on any date."""
+    `DataError` when no name has a signal on any date. `factor_store`: a fundamental factor is
+    read from that cache (`signal_panel`; recorded in `summary["factor_cache"]`)."""
     cfg = config if config is not None else AtlasConfig()
     rc = cfg.quant.research
     freq: Frequency = rc.frequency if frequency is None else frequency
@@ -386,7 +407,13 @@ def research_signal(
     if not dates:
         raise ValueError(f"no trading sessions between {start} and {end}")
     panel = signal_panel(
-        name, view_factory, dates, universe=univ, calendar=calendar, progress=progress
+        name,
+        view_factory,
+        dates,
+        universe=univ,
+        calendar=calendar,
+        progress=progress,
+        factor_store=factor_store,
     )
     if panel.values.empty or not panel.values.notna().any().any():
         raise DataError(f"no member of {univ!r} has a value of {name!r} in {start}..{end}")
@@ -407,5 +434,6 @@ def research_signal(
         kind=panel.kind,
         frequency=freq,
         universe=univ,
+        factor_panels=panel.factor_panels,
         config=cfg,
     )

@@ -404,7 +404,7 @@ def _split_lookback(view: DataView, config: FactorsConfig, staleness: int) -> in
     return max(len(cal.sessions(start, last)), 1)
 
 
-def _sectors(view: DataView, symbols: Sequence[str]) -> pd.Series:
+def panel_sectors(view: DataView, symbols: Sequence[str]) -> pd.Series:
     """Each name's GICS sector (`None` when its instrument row has none or it has no row,
     logged). Raises `DataError` when no name has an instrument row: the instruments table is
     empty or not synced, and every name would silently lose sector neutralisation."""
@@ -478,7 +478,7 @@ def factor_panel(
         max_staleness_days=staleness,
         max_quarter_days=view.config.data.fundamentals.quarter_days[1],
     )
-    sectors = _sectors(view, names)
+    sectors = panel_sectors(view, names)
     cleaned = clean_factors(raw, sectors, fc)
     return FactorPanel(
         as_of=view.as_of,

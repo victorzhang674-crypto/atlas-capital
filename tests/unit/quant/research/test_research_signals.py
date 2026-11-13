@@ -10,11 +10,15 @@ import pytest
 from factor_world import build_factor_world
 from research_world import CAL, ResearchWorld, build_research_world
 
+from atlas.core.config import AtlasConfig
 from atlas.core.storage import DEFAULT_REGISTRY, Lake
 from atlas.data.view import DataView
 from atlas.quant.factors import factor_panel
 from atlas.quant.features import compute_features
 from atlas.quant.research import SignalPanel, evaluation_dates, signal_kind, signal_panel
+
+FACTOR_CFG = AtlasConfig.model_validate({"quant": {"factors": {"min_names": 5}}})
+"""The Stage 16 factor world has 12 names; the default minimum is 20."""
 
 
 def _lake(path: Path) -> Lake:
@@ -115,12 +119,54 @@ def test_signal_panel_fundamental_uses_factor_exposures(tmp_path: Path) -> None:
     lake = _lake(tmp_path)
     build_factor_world(lake)
     dates = [date(2024, 2, 1), date(2024, 3, 1)]
-    out = signal_panel("earnings_yield", lambda d: DataView(lake, d), dates)
+    out = signal_panel("earnings_yield", lambda d: DataView(lake, d, FACTOR_CFG), dates)
     assert out.kind == "fundamental"
     for d in dates:
-        want = factor_panel(DataView(lake, d)).exposures["earnings_yield"]
+        want = factor_panel(DataView(lake, d, FACTOR_CFG)).exposures["earnings_yield"]
+        # Phase 2 checkpoint: with the default 20-name minimum this 12-name world gave an
+        # all-NaN factor, and the comparison below compared NaN with NaN
+        assert want.notna().sum() >= 10
         got = out.values.loc[pd.Timestamp(d), list(want.index)]
         np.testing.assert_allclose(got.to_numpy(), want.to_numpy())
+
+
+def test_signal_panel_fundamental_from_the_factor_cache(tmp_path: Path) -> None:  # Tier 3
+    from atlas.quant.factors import FactorStore, build_factor_cache
+
+    lake = _lake(tmp_path)
+    build_factor_world(lake)
+    store = FactorStore(Lake(tmp_path / "cache", registry=DEFAULT_REGISTRY.copy()), FACTOR_CFG)
+    month_ends = [date(2024, 1, 31), date(2024, 2, 29)]
+    build_factor_cache(lake, month_ends, config=FACTOR_CFG, store=store)
+
+    def factory(d: date) -> DataView:
+        return DataView(lake, d, FACTOR_CFG)
+
+    dates = [date(2024, 1, 30), date(2024, 2, 1), date(2024, 3, 1)]
+    out = signal_panel("earnings_yield", factory, dates, factor_store=store)
+    # each date takes the latest stored panel on or before it; none yet on 2024-01-30
+    assert out.factor_panels == {
+        date(2024, 1, 30): None,
+        date(2024, 2, 1): date(2024, 1, 31),
+        date(2024, 3, 1): date(2024, 2, 29),
+    }
+    fresh = factor_panel(factory(dates[0])).exposures["earnings_yield"]
+    assert fresh.notna().sum() >= 10
+    got = out.values.loc[pd.Timestamp(dates[0]), list(fresh.index)]
+    np.testing.assert_allclose(got.to_numpy(), fresh.to_numpy())
+    for day, stored_day in zip(dates[1:], month_ends, strict=True):
+        want = factor_panel(factory(stored_day)).exposures["earnings_yield"]
+        assert want.notna().sum() >= 10
+        got = out.values.loc[pd.Timestamp(day), list(want.index)]
+        np.testing.assert_allclose(got.to_numpy(), want.to_numpy())
+    # the panel stored on 2024-01-31 is not the one a view on 2024-02-01 computes
+    newer = factor_panel(factory(dates[1])).exposures["earnings_yield"]
+    older = out.values.loc[pd.Timestamp(dates[1]), list(newer.index)]
+    assert not np.allclose(older.to_numpy(), newer.to_numpy(), equal_nan=True)
+    plain = signal_panel("earnings_yield", factory, dates[:1])
+    assert plain.factor_panels == {}  # no cache asked for
+    technical = signal_panel("reversal_5d", factory, dates, factor_store=store)
+    assert technical.factor_panels == {}  # a price feature never reads the factor cache
 
 
 def test_signal_panel_sectors(world: ResearchWorld, panel: SignalPanel) -> None:

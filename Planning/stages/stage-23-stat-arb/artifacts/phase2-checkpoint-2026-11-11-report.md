@@ -210,4 +210,21 @@ PCA risk model (briefs' Out of scope).
   - **Item 7 waits for the owner's decision.** It needs no download (the raw filings are
     kept), but it changes the leverage factor, so `factor_exposures`, `factor_returns` and
     `risk_model_snapshots` on the main lake would be rebuilt (about 9 h).
-- Tiers 3–4: not started; each waits for the owner's word, as in Phase 1.
+- Tier 3 (owner's word 2026-11-12: "Start Tier 3"): items 3, 4 and 5 done 2026-11-13.
+  - Item 3: the per-company fundamentals pipeline works on plain rows instead of small
+    pandas frames. Same results: every company of the main lake at three dates is equal
+    (742 companies, 70,752 frames, 1,279,687 history rows) and that work is 87 times faster
+    (1,148 s → 13.2 s). A real factor panel: 372.6 s → 15.5 s under the profiler.
+  - Item 4: opt-in readers of the factor cache. `FactorStore.read_on` gives the panel of
+    one exact day; `atlas risk-model build --cached-factors` reads its monthly anchors from
+    it (same timing, factor returns within 3.2e-15); `MultiFactorModel(factor_store=…)`
+    reads its style scores from it on a cached day (same numbers);
+    `atlas research signal --cached-factors` uses the latest stored panel per date (an older
+    signal, recorded in the tear sheet).
+  - Item 5: `make test`, `make test-integration` and CI run the test files in parallel
+    (`pytest-xdist`). Serial suite 518 s → 304 s, parallel 135 s, all measured under a heavy
+    outside load. Still over the protocol's 60 s: the statarb acceptance tests remain.
+  - A rebuild of both stores on the main lake now costs under an hour (it cost about 9 h):
+    about 7 s per month-end for factors, 89 s per year for the risk model.
+  - Items 1 and 2: see the lines that follow.
+- Tier 4: not started; waits for the owner's word, as in Phase 1.

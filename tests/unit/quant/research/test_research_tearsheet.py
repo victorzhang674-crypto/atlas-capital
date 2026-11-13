@@ -248,3 +248,23 @@ def test_tearsheet_records_where_the_regimes_came_from(
         "by_regime"
     ]
     assert by_regime["dates_without_regime"] == 3
+
+
+def test_tearsheet_records_the_factor_cache_use(
+    inputs: tuple[pd.DataFrame, ForwardReturns],
+) -> None:  # Tier 3 item 4
+    signal, labels = inputs
+    assert build_tearsheet("planted", signal, labels, config=CFG).summary["factor_cache"] is None
+    days = [d.date() for d in signal.index]
+    used: dict[date, date | None] = {d: CAL.offset(d, -3) for d in days}
+    used[days[0]] = None
+    used[days[1]] = CAL.offset(days[1], -10)
+    got = build_tearsheet("planted", signal, labels, factor_panels=used, config=CFG).summary[
+        "factor_cache"
+    ]
+    assert got == {
+        "dates_from_cache": len(days) - 1,
+        "dates_computed": 1,
+        "oldest_panel_sessions": 10,
+        "newest_panel_sessions": 3,
+    }

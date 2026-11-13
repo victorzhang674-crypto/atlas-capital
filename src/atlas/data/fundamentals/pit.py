@@ -14,10 +14,10 @@ USD per share, shares); a derived EPS quarter is only approximate (share counts 
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
+from itertools import pairwise
 from typing import Any
 
-import numpy as np
 import pandas as pd
 
 from atlas.core.config import AtlasConfig, FundamentalsConfig
@@ -28,9 +28,14 @@ from atlas.core.types.instruments import normalize_symbol
 from atlas.data.fundamentals.mapping import (
     Concept,
     ConceptMap,
+    FactIndex,
+    PeriodRow,
     latest_filings,
     load_concept_map,
-    resolve_concept,
+    period_rows,
+    resolve_rows,
+    stamps_column,
+    stamps_us,
 )
 from atlas.data.fundamentals.parser import FUNDAMENTALS_FACTS
 
@@ -68,26 +73,20 @@ class MetricValue:
     source: str
 
 
-def _with_ts(periods: pd.DataFrame) -> pd.DataFrame:
-    """`periods` plus naive Timestamp columns `s`/`e` for date arithmetic."""
-    out = periods.copy()
-    out["s"] = pd.to_datetime(out["period_start"])
-    out["e"] = pd.to_datetime(out["period_end"])
-    return out
+FlowRow = tuple[date, date, float, int, str, str, str]
+"""One discrete quarter or TTM value as a plain row: `(period_start, period_end, value,
+available_at, accn, tag, source)`, `available_at` in microseconds since the epoch (UTC)."""
+
+_EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
 
 
-def _latest(frame: pd.DataFrame, prefixes: list[str]) -> tuple[pd.Series, pd.Series]:
-    """Per row, the greatest `<p>available_at` over `prefixes` and the `<p>accn` beside it."""
-    stamps = np.stack(
-        [frame[f"{p}available_at"].to_numpy(dtype="datetime64[us]") for p in prefixes], axis=1
-    )
-    pick = stamps.argmax(axis=1)
-    rows = np.arange(len(frame))
-    accns = np.stack([frame[f"{p}accn"].to_numpy(dtype=object) for p in prefixes], axis=1)
-    available = pd.Series(
-        pd.to_datetime(stamps[rows, pick]).tz_localize("UTC"), index=frame.index
-    ).astype("datetime64[us, UTC]")
-    return available, pd.Series(accns[rows, pick], index=frame.index, dtype="str")
+def _latest_input(rows: Sequence[tuple[int, str]]) -> tuple[int, str]:
+    """The greatest `available_at` of `rows` and the `accn` beside it (the first on a tie)."""
+    best = rows[0]
+    for row in rows[1:]:
+        if row[0] > best[0]:
+            best = row
+    return best
 
 
 def _empty_quarters() -> pd.DataFrame:
@@ -104,60 +103,103 @@ def _empty_quarters() -> pd.DataFrame:
     )
 
 
-def _chain_differences(p: pd.DataFrame, low: int, high: int) -> pd.DataFrame:
+def _first_per_end(rows: Sequence[FlowRow]) -> list[FlowRow]:
+    """`rows` without the later rows of a period end already seen."""
+    seen: set[date] = set()
+    out = []
+    for row in rows:
+        if row[1] not in seen:
+            seen.add(row[1])
+            out.append(row)
+    return out
+
+
+def _chain_differences(flows: Sequence[PeriodRow], low: int, high: int) -> list[FlowRow]:
     """Quarters from consecutive cumulative periods that share a start date."""
-    chain = p.sort_values(["s", "e"], kind="stable")
-    prev = chain.groupby("s", sort=False)[["e", "value", "available_at", "accn"]].shift(1)
-    gap = (chain["e"] - prev["e"]).dt.days
-    ok = prev["e"].notna() & gap.between(low, high)
-    cur, before = chain[ok], prev[ok].add_prefix("p_")
-    both = pd.concat([cur, before], axis=1)
-    available, accn = _latest(both, ["", "p_"])
-    return pd.DataFrame(
-        {
-            "s": before["p_e"] + _DAY,
-            "e": cur["e"],
-            "value": cur["value"] - before["p_value"],
-            "available_at": available,
-            "accn": accn,
-            "tag": cur["tag"],
-            "source": "derived",
-        }
-    )
+    chain = sorted(flows, key=lambda r: (r[0], r[1]))  # every flow has a start
+    out: list[FlowRow] = []
+    for prev, cur in pairwise(chain):
+        if prev[0] != cur[0] or not low <= (cur[1] - prev[1]).days <= high:
+            continue
+        available, accn = _latest_input([(cur[4], cur[5]), (prev[4], prev[5])])
+        out.append((prev[1] + _DAY, cur[1], cur[3] - prev[3], available, accn, cur[6], "derived"))
+    return out
 
 
 def _q4_from_three_quarters(
-    annual: pd.DataFrame, quarters: pd.DataFrame, low: int, high: int
-) -> pd.DataFrame:
+    annual: Sequence[PeriodRow], quarters: Sequence[FlowRow], low: int, high: int
+) -> list[FlowRow]:
     """Q4 = FY - (Q1 + Q2 + Q3) where three known quarters tile the year from its start."""
-    cols = ["s", "e", "value", "available_at", "accn"]
-    m = annual[[*cols, "tag"]].add_prefix("a_")
-    for i, key in ((1, "a_s"), (2, "n2"), (3, "n3")):
-        m = m.merge(quarters[cols].add_prefix(f"q{i}_"), left_on=key, right_on=f"q{i}_s")
-        m[f"n{i + 1}"] = m[f"q{i}_e"] + _DAY
-    days = (m["a_e"] - m["q3_e"]).dt.days
-    m = m[days.between(low, high)]
-    available, accn = _latest(m, ["a_", "q1_", "q2_", "q3_"])
-    return pd.DataFrame(
+    by_start: dict[date, list[FlowRow]] = {}
+    for quarter in quarters:
+        by_start.setdefault(quarter[0], []).append(quarter)
+    out: list[FlowRow] = []
+    for year in annual:  # candidates in the order of the years, then Q1, Q2, Q3
+        assert year[0] is not None  # a duration has a start
+        for q1 in by_start.get(year[0], ()):
+            for q2 in by_start.get(q1[1] + _DAY, ()):
+                for q3 in by_start.get(q2[1] + _DAY, ()):
+                    if not low <= (year[1] - q3[1]).days <= high:
+                        continue
+                    available, accn = _latest_input(
+                        [(year[4], year[5]), (q1[3], q1[4]), (q2[3], q2[4]), (q3[3], q3[4])]
+                    )
+                    value = year[3] - q1[2] - q2[2] - q3[2]
+                    out.append((q3[1] + _DAY, year[1], value, available, accn, year[6], "derived"))
+    return out
+
+
+def quarter_rows(periods: Sequence[PeriodRow], config: FundamentalsConfig) -> list[FlowRow]:
+    """`quarterly_values` on plain rows (`resolve_rows` output), sorted by period end."""
+    flows = [r for r in periods if r[2] > 0]
+    if not flows:
+        return []
+    low, high = config.quarter_days
+    reported: list[FlowRow] = []
+    for start, end, days, value, available, accn, tag in flows:
+        if low <= days <= high:
+            assert start is not None  # a duration has a start
+            reported.append((start, end, value, available, accn, tag, "reported"))
+    quarters = _first_per_end([*reported, *_chain_differences(flows, low, high)])
+    year_low, year_high = config.annual_days
+    annual = [r for r in flows if year_low <= r[2] <= year_high]
+    q4 = _q4_from_three_quarters(annual, quarters, low, high)
+    quarters = _first_per_end([*quarters, *q4])
+    return sorted(quarters, key=lambda r: r[1])
+
+
+def _flow_frame(rows: Sequence[FlowRow], columns: Sequence[str]) -> pd.DataFrame:
+    starts, ends, values, stamps, accns, tags, sources = zip(*rows, strict=True)
+    frame = pd.DataFrame(
         {
-            "s": m["n4"],
-            "e": m["a_e"],
-            "value": m["a_value"] - m["q1_value"] - m["q2_value"] - m["q3_value"],
-            "available_at": available,
-            "accn": accn,
-            "tag": m["a_tag"],
-            "source": "derived",
+            "period_start": pd.Series(list(starts), dtype="object"),
+            "period_end": pd.Series(list(ends), dtype="object"),
+            "value": pd.Series(list(values), dtype="float64"),
+            "available_at": stamps_column(stamps),
+            "accn": pd.Series(list(accns), dtype="str"),
+            "tag": pd.Series(list(tags), dtype="str"),
+            "source": pd.Series(list(sources), dtype="str"),
         }
     )
+    return frame[list(columns)]
 
 
-def _to_dates(frame: pd.DataFrame) -> pd.DataFrame:
-    out = frame.copy()
-    out["period_start"] = pd.Series([ts.date() for ts in out["s"]], index=out.index, dtype="object")
-    out["period_end"] = pd.Series([ts.date() for ts in out["e"]], index=out.index, dtype="object")
-    out["value"] = out["value"].astype("float64")
-    out["available_at"] = out["available_at"].astype("datetime64[us, UTC]")
-    return out
+def _flow_rows(frame: pd.DataFrame) -> list[FlowRow]:
+    """A `QUARTER_COLUMNS` frame as plain rows (in the frame's order)."""
+    if frame.empty:
+        return []
+    return list(
+        zip(
+            frame["period_start"].tolist(),
+            frame["period_end"].tolist(),
+            [float(v) for v in frame["value"].tolist()],
+            stamps_us(frame["available_at"]),
+            frame["accn"].tolist(),
+            frame["tag"].tolist(),
+            frame["source"].tolist(),
+            strict=True,
+        )
+    )
 
 
 def quarterly_values(periods: pd.DataFrame, config: FundamentalsConfig) -> pd.DataFrame:
@@ -168,34 +210,19 @@ def quarterly_values(periods: pd.DataFrame, config: FundamentalsConfig) -> pd.Da
     from FY - Q1..Q3 (`source="derived"`, `available_at`/`accn` of the latest input). Quarter
     and year lengths come from `config.quarter_days` / `config.annual_days`.
     """
-    flows = periods[periods["duration_days"] > 0]
-    if flows.empty:
-        return _empty_quarters()
-    p = _with_ts(flows)
-    low, high = config.quarter_days
-    reported = p[p["duration_days"].between(low, high)].assign(source="reported")
-    keep = ["s", "e", "value", "available_at", "accn", "tag", "source"]
-    quarters = pd.concat(
-        [reported[keep], _chain_differences(p, low, high)[keep]], ignore_index=True
-    ).drop_duplicates(subset="e", keep="first")
-    annual = p[p["duration_days"].between(*config.annual_days)]
-    q4 = _q4_from_three_quarters(annual, quarters, low, high)
-    quarters = pd.concat([quarters, q4[keep]], ignore_index=True).drop_duplicates(
-        subset="e", keep="first"
-    )
-    quarters = _to_dates(quarters.sort_values("e", kind="stable"))
-    return quarters[list(QUARTER_COLUMNS)].reset_index(drop=True)
+    rows = quarter_rows(period_rows(periods), config)
+    return _flow_frame(rows, QUARTER_COLUMNS) if rows else _empty_quarters()
 
 
-def _metric(row: pd.Series, source: str, tag: str | None = None) -> MetricValue:
-    start = row["period_start"]
+def _metric(row: FlowRow) -> MetricValue:
+    start, end, value, available, accn, tag, source = row
     return MetricValue(
-        value=float(row["value"]),
-        period_start=None if start is None or pd.isna(start) else start,
-        period_end=row["period_end"],
-        available_at=pd.Timestamp(row["available_at"]).to_pydatetime(),
-        accn=str(row["accn"]),
-        tag=str(row["tag"]) if tag is None else tag,
+        value=value,
+        period_start=start,
+        period_end=end,
+        available_at=_EPOCH + timedelta(microseconds=available),
+        accn=str(accn),
+        tag=str(tag),
         source=source,
     )
 
@@ -206,6 +233,41 @@ TTM_COLUMNS = ("period_start", "period_end", "value", "available_at", "accn", "t
 
 def _empty_ttm() -> pd.DataFrame:
     return _empty_quarters()[list(TTM_COLUMNS)]
+
+
+def ttm_rows(
+    periods: Sequence[PeriodRow],
+    config: FundamentalsConfig,
+    *,
+    quarters: Sequence[FlowRow] | None = None,
+) -> list[FlowRow]:
+    """`ttm_values` on plain rows (`resolve_rows` output), sorted by period end."""
+    flows = [r for r in periods if r[2] > 0]
+    if not flows:
+        return []
+    year_low, year_high = config.annual_days
+    candidates: list[FlowRow] = []
+    for start, end, days, value, available, accn, tag in flows:
+        if year_low <= days <= year_high:
+            assert start is not None  # a duration has a start
+            candidates.append((start, end, value, available, accn, tag, "annual"))
+    known = quarter_rows(flows, config) if quarters is None else quarters
+    by_end: dict[date, list[FlowRow]] = {}
+    for quarter in known:
+        by_end.setdefault(quarter[1], []).append(quarter)
+    summed: list[FlowRow] = []
+    for q4 in known:
+        for q3 in by_end.get(q4[0] - _DAY, ()):
+            for q2 in by_end.get(q3[0] - _DAY, ()):
+                for q1 in by_end.get(q2[0] - _DAY, ()):
+                    four = (q1, q2, q3, q4)
+                    available, accn = _latest_input([(q[3], q[4]) for q in four])
+                    value = ((q1[2] + q2[2]) + q3[2]) + q4[2]
+                    tag = "; ".join(dict.fromkeys(q[5] for q in four))
+                    summed.append((q1[0], q4[1], value, available, accn, tag, "quarters"))
+    # the fiscal year ending there, else four quarters: annual candidates come first
+    found = _first_per_end(sorted([*candidates, *summed], key=lambda r: (r[1], r[6] != "annual")))
+    return found
 
 
 def ttm_values(
@@ -219,62 +281,45 @@ def ttm_values(
     those of the latest input; `tag` joins the tags used. `quarters` may pass the concept's
     `quarterly_values(periods, config)` when the caller already has it.
     """
-    flows = periods[periods["duration_days"] > 0]
-    if flows.empty:
-        return _empty_ttm()
-    annual = _with_ts(flows)
-    annual = annual[annual["duration_days"].between(*config.annual_days)]
-    candidates = [annual.assign(source="annual", rank=0)]
-    q = _with_ts(quarterly_values(flows, config) if quarters is None else quarters)
-    cols = ["s", "e", "value", "available_at", "accn", "tag"]
-    m = q[cols].add_prefix("q4_")
-    for i in (3, 2, 1):
-        m[f"p{i}"] = m[f"q{i + 1}_s"] - _DAY
-        m = m.merge(q[cols].add_prefix(f"q{i}_"), left_on=f"p{i}", right_on=f"q{i}_e")
-    if not m.empty:
-        available, accn = _latest(m, ["q1_", "q2_", "q3_", "q4_"])
-        tags = m[["q1_tag", "q2_tag", "q3_tag", "q4_tag"]].to_numpy()
-        candidates.append(
-            pd.DataFrame(
-                {
-                    "s": m["q1_s"],
-                    "e": m["q4_e"],
-                    "value": m[["q1_value", "q2_value", "q3_value", "q4_value"]].sum(axis=1),
-                    "available_at": available,
-                    "accn": accn,
-                    "tag": ["; ".join(dict.fromkeys(t)) for t in tags],
-                    "source": "quarters",
-                    "rank": 1,
-                }
-            )
-        )
-    found = pd.concat(candidates, ignore_index=True)
-    if found.empty:
-        return _empty_ttm()
-    best = found.sort_values(["e", "rank"], kind="stable").drop_duplicates(subset="e", keep="first")
-    best = _to_dates(best)
-    best["accn"] = best["accn"].astype("str")
-    best["tag"] = best["tag"].astype("str")
-    return best[list(TTM_COLUMNS)].reset_index(drop=True)
+    rows = ttm_rows(
+        period_rows(periods),
+        config,
+        quarters=None if quarters is None else _flow_rows(quarters),
+    )
+    return _flow_frame(rows, TTM_COLUMNS) if rows else _empty_ttm()
+
+
+def _ttm_metric(periods: Sequence[PeriodRow], config: FundamentalsConfig) -> MetricValue | None:
+    rows = ttm_rows(periods, config)
+    return _metric(rows[-1]) if rows else None
+
+
+def _balance_metric(periods: Sequence[PeriodRow]) -> MetricValue | None:
+    instants = sorted((r for r in periods if r[2] == 0), key=lambda r: r[1])
+    if not instants:
+        return None
+    _, end, _, value, available, accn, tag = instants[-1]
+    return MetricValue(
+        value=value,
+        period_start=None,
+        period_end=end,
+        available_at=_EPOCH + timedelta(microseconds=available),
+        accn=str(accn),
+        tag=str(tag),
+        source="reported",
+    )
 
 
 def ttm(periods: pd.DataFrame, config: FundamentalsConfig) -> MetricValue | None:
     """Trailing-twelve-month value of a flow concept (`resolve_concept` output) at the latest
     period end where it can be built (the last row of `ttm_values`), or `None`."""
-    values = ttm_values(periods, config)
-    if values.empty:
-        return None
-    last = values.iloc[-1]
-    return _metric(last, str(last["source"]))
+    return _ttm_metric(period_rows(periods), config)
 
 
 def latest_balance(periods: pd.DataFrame) -> MetricValue | None:
     """The latest balance of a stock concept (`resolve_concept` output): the instant with the
     greatest `period_end` (`source="reported"`), or `None` when there is none."""
-    instants = periods[periods["duration_days"] == 0]
-    if instants.empty:
-        return None
-    return _metric(instants.sort_values("period_end", kind="stable").iloc[-1], "reported")
+    return _balance_metric(period_rows(periods))
 
 
 def known_facts(facts: pd.DataFrame, as_of: AsOf) -> pd.DataFrame:
@@ -388,10 +433,11 @@ def concept_values(
     concept-map order: a flow's TTM (`ttm`), a stock's latest balance (`latest_balance`),
     `None` where there is none. It does not depend on the as-of day (staleness and ratios are
     `assemble_detail`'s), so it can be reused for as long as the known facts are the same."""
+    index = FactIndex(known)
     values: dict[str, MetricValue | None] = {}
     for concept in concept_map.values():
-        periods = resolve_concept(known, concept)
-        found = ttm(periods, config) if concept.kind == "flow" else latest_balance(periods)
+        periods = resolve_rows(index, concept)
+        found = _ttm_metric(periods, config) if concept.kind == "flow" else _balance_metric(periods)
         values[_metric_name(concept)] = found
     return values
 
@@ -424,33 +470,39 @@ def _empty_history() -> pd.DataFrame:
     )
 
 
-def _flow_history(periods: pd.DataFrame, config: FundamentalsConfig) -> pd.DataFrame:
-    q = quarterly_values(periods, config)
-    t = ttm_values(periods, config, quarters=q)
-    q = q[["period_start", "period_end", "value", "available_at", "source"]]
-    t = t[["period_end", "value", "available_at", "source"]].rename(
-        columns={"value": "ttm", "available_at": "ttm_available_at", "source": "ttm_source"}
-    )
-    q = q.astype({"period_end": "object"})
-    t = t.astype({"period_end": "object"})
-    both = q.merge(t, on="period_end", how="outer").sort_values("period_end", kind="stable")
-    both["available_at"] = both[["available_at", "ttm_available_at"]].max(axis=1)
-    return both.drop(columns="ttm_available_at")
+_HistoryRow = tuple[
+    str, date | None, date, float, float, int, str | None, str | None
+]  # HISTORY_COLUMNS
 
 
-def _stock_history(periods: pd.DataFrame) -> pd.DataFrame:
-    instants = periods[periods["duration_days"] == 0].sort_values("period_end", kind="stable")
-    return pd.DataFrame(
-        {
-            "period_start": None,
-            "period_end": instants["period_end"],
-            "value": instants["value"],
-            "ttm": math.nan,
-            "available_at": instants["available_at"],
-            "source": "reported",
-            "ttm_source": None,
-        }
-    )
+def _flow_history(
+    name: str, periods: Sequence[PeriodRow], config: FundamentalsConfig
+) -> list[_HistoryRow]:
+    quarters = quarter_rows(periods, config)
+    by_end = {q[1]: q for q in quarters}
+    ttm_by_end = {t[1]: t for t in ttm_rows(periods, config, quarters=quarters)}
+    out: list[_HistoryRow] = []
+    for end in sorted(by_end.keys() | ttm_by_end.keys()):
+        quarter, total = by_end.get(end), ttm_by_end.get(end)
+        available = max(row[3] for row in (quarter, total) if row is not None)
+        out.append(
+            (
+                name,
+                None if quarter is None else quarter[0],
+                end,
+                math.nan if quarter is None else quarter[2],
+                math.nan if total is None else total[2],
+                available,
+                None if quarter is None else quarter[6],
+                None if total is None else total[6],
+            )
+        )
+    return out
+
+
+def _stock_history(name: str, periods: Sequence[PeriodRow]) -> list[_HistoryRow]:
+    instants = sorted((r for r in periods if r[2] == 0), key=lambda r: r[1])
+    return [(name, None, r[1], r[3], math.nan, r[4], "reported", None) for r in instants]
 
 
 def concept_history(
@@ -471,26 +523,30 @@ def concept_history(
     unknown = [n for n in names if n not in concept_map]
     if unknown:
         raise ValueError(f"unknown concept(s) {unknown}; known: {list(concept_map)}")
-    frames = []
+    index = FactIndex(known)
+    rows: list[_HistoryRow] = []
     for name in names:
         concept = concept_map[name]
-        periods = resolve_concept(known, concept)
-        part = _flow_history(periods, config) if concept.kind == "flow" else _stock_history(periods)
-        if not part.empty:
-            frames.append(part.assign(concept=name))
-    if not frames:
+        periods = resolve_rows(index, concept)
+        if concept.kind == "flow":
+            rows += _flow_history(name, periods, config)
+        else:
+            rows += _stock_history(name, periods)
+    if not rows:
         return _empty_history()
-    out = pd.concat(frames, ignore_index=True)
-    out["value"] = out["value"].astype("float64")
-    out["ttm"] = out["ttm"].astype("float64")
-    out["available_at"] = pd.to_datetime(out["available_at"], utc=True).astype(
-        "datetime64[us, UTC]"
-    )
-    out["period_start"] = out["period_start"].astype("object")
-    out["period_start"] = out["period_start"].where(out["period_start"].notna(), None)
-    for col in ("source", "ttm_source"):
-        out[col] = out[col].astype("object").where(out[col].notna(), None)
-    return out[list(HISTORY_COLUMNS)].reset_index(drop=True)
+    concepts, starts, ends, values, totals, stamps, sources, ttm_sources = zip(*rows, strict=True)
+    return pd.DataFrame(
+        {
+            "concept": pd.Series(list(concepts), dtype="str"),
+            "period_start": pd.Series(list(starts), dtype="object"),
+            "period_end": pd.Series(list(ends), dtype="object"),
+            "value": pd.Series(list(values), dtype="float64"),
+            "ttm": pd.Series(list(totals), dtype="float64"),
+            "available_at": stamps_column(stamps),
+            "source": pd.Series(list(sources), dtype="object"),
+            "ttm_source": pd.Series(list(ttm_sources), dtype="object"),
+        }
+    )[list(HISTORY_COLUMNS)]
 
 
 def fundamentals_pit_detail(

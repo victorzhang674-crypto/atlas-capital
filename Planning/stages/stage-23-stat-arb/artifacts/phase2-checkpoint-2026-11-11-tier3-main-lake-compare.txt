@@ -1,0 +1,7 @@
+2086094 facts, 742 companies, as-of days ['2017-06-30', '2021-12-31', '2026-10-30']
+2017-06-30: ok so far: {'companies': 682, 'frames': 22506, 'values': 8824, 'history_rows': 271513}
+2021-12-31: ok so far: {'companies': 1402, 'frames': 46266, 'values': 18294, 'history_rows': 695633}
+2026-10-30: ok so far: {'companies': 2144, 'frames': 70752, 'values': 28170, 'history_rows': 1279687}
+concept_values + concept_history: reference 1148.0 s, new 13.2 s (87x)
+ALL EQUAL: {'companies': 2144, 'frames': 70752, 'values': 28170, 'history_rows': 1279687}
+exit 0

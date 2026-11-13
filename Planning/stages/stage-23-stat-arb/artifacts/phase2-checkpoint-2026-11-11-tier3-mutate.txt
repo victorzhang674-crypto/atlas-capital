@@ -1,0 +1,13 @@
+caught  : earliest filing of a period wins
+caught  : last alternative with a value wins
+SURVIVED: combined row cites the earlier input on a tie
+caught  : strict sum keeps periods one input lacks
+caught  : derived quarter cites the later row on a tie
+caught  : derived quarters beat reported ones
+caught  : year-to-date chains ignore the start date
+caught  : Q4 derived although the quarters do not tile the year
+caught  : four quarters beat the fiscal year in a TTM
+caught  : TTM sums three quarters
+caught  : history takes the earlier of the two availability times
+caught  : latest balance is the earliest instant
+11/12 mutants caught

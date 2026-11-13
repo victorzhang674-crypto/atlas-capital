@@ -39,3 +39,10 @@ Every output below comes from commands run in this stage's chat (Project.md Rule
 - Seen, not changed (Backlog): `BIL` is absent from three snapshots (on the Stage 13 block list those days, no log line); the snapshot loop takes about 103 s per month-end.
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 2 checkpoint follow-up (Tier 3 item 4: anchors from the factor cache) — 2026-11-13
+- Red first, then green: the three loader tests and the three command tests named in [worklog.md](worklog.md); brief's Verify `uv run pytest tests/unit/quant/risk_model -q` → 199 passed; `make check` → exit 0 (ruff clean, 384 files formatted, mypy clean on 157 files, 4121 passed, parallel in 135 s); `uv run pytest -q` (serial) → 4121 passed, 71 deselected in 304 s; `make test-integration` → 41 passed, 15 skipped (no lake) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-verify.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-verify.txt), [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-make-check.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-make-check.txt), [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-red.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-red.txt)
+- Main lake (read only, scratch store): 2023 built in 89 s with `--cached-factors`; factor returns within 3.2e-15 of the stored ones · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-real-lake-risk-trial.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-real-lake-risk-trial.txt)
+- Acceptance criteria unchanged and still evidenced (in the brief's Verify).
+
+**Result:** ALL CRITERIA VERIFIED

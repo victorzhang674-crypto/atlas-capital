@@ -29,8 +29,8 @@ from atlas.core.logging import get_logger
 from atlas.core.storage import Lake
 from atlas.data.view import DataView
 from atlas.quant.factors.composite import style_composites
-from atlas.quant.factors.fundamental import factor_panel
-from atlas.quant.factors.store import monthly_rebalance_dates
+from atlas.quant.factors.fundamental import factor_panel, panel_sectors
+from atlas.quant.factors.store import FactorStore, StoredExposures, monthly_rebalance_dates
 from atlas.quant.features.registry import (
     REGISTRY,
     PricePanel,
@@ -87,6 +87,18 @@ def _fundamental(
     panel = factor_panel(view, symbols)
     comps = style_composites(panel.exposures)[list(FUNDAMENTAL_STYLES)]
     return comps, panel.sectors, panel.market["market_cap"].astype("float64")
+
+
+def _fundamental_stored(
+    view: DataView, stored: StoredExposures
+) -> tuple[pd.DataFrame, pd.Series, pd.Series]:
+    """`_fundamental(view, None)` from the cached panel of the view's day: the same style
+    composites and sectors; the market caps are exp(the stored raw `size`), which is the cap
+    `factor_panel` computed up to floating-point rounding (about 1e-16 relative)."""
+    names = list(stored.exposures.index)
+    comps = style_composites(stored.exposures)[list(FUNDAMENTAL_STYLES)]
+    caps = pd.Series(np.exp(stored.raw["size"].to_numpy(dtype="float64")), index=comps.index)
+    return comps, panel_sectors(view, names), caps
 
 
 def style_inputs(view: DataView, symbols: Sequence[str] | None = None) -> StyleInputs:
@@ -148,10 +160,17 @@ def load_cross_sections(
     config: AtlasConfig | None = None,
     *,
     symbols: Sequence[str] | None = None,
+    factor_store: FactorStore | None = None,
 ) -> list[CrossSection]:
     """The daily cross-sections for the sessions in [`start`, `end`]: one per session, names =
     the factor universe (`symbols`, default the point-in-time members) at the latest monthly
-    anchor on or before the session. Raises `DataError` when the window has no session."""
+    anchor on or before the session. Raises `DataError` when the window has no session.
+
+    `factor_store`: a monthly anchor whose panel is in that cache (`FactorStore.read_on`: the
+    panel computed on the anchor day itself, so the same timing) is read from it instead of
+    computed; an anchor it lacks is computed. Not used with `symbols` (a stored panel is
+    cleaned over the whole universe). The cache must have been built from this lake as it is
+    now: it is keyed by the factor settings, not by the data."""
     cfg = config if config is not None else AtlasConfig()
     cal = TradingCalendar(config=cfg.calendar)
     days = cal.sessions(start, end)
@@ -172,11 +191,24 @@ def load_cross_sections(
     anchors: dict[date, _Anchor] = {}
     for a in sorted(set(anchor_for.values())):
         view = DataView(lake, a, cfg) if view is None else view.advance(a)
-        styles, sectors, caps = _fundamental(view, symbols)
+        stored = (
+            factor_store.read_on(view.as_of)
+            if factor_store is not None and symbols is None
+            else None
+        )
+        if stored is not None:
+            styles, sectors, caps = _fundamental_stored(view, stored)
+        else:
+            styles, sectors, caps = _fundamental(view, symbols)
         anchors[a] = _Anchor(
             day=a, data_date=view.sessions(1)[-1], styles=styles, sectors=sectors, caps=caps
         )
-        _log.info("risk_model.anchor_loaded", anchor=a.isoformat(), names=len(styles))
+        _log.info(
+            "risk_model.anchor_loaded",
+            anchor=a.isoformat(),
+            names=len(styles),
+            source="computed" if stored is None else "cache",
+        )
     names = sorted({n for anchor in anchors.values() for n in anchor.styles.index})
     if not names:
         raise DataError("no names with factor exposures in the window")
@@ -240,13 +272,14 @@ def build_factor_history(
     config: AtlasConfig | None = None,
     *,
     symbols: Sequence[str] | None = None,
+    factor_store: FactorStore | None = None,
 ) -> FactorHistory:
-    """`fit_factor_history` over `load_cross_sections`; days with too few usable names are
-    skipped and listed in `FactorHistory.skipped`."""
+    """`fit_factor_history` over `load_cross_sections` (`factor_store` as there); days with
+    too few usable names are skipped and listed in `FactorHistory.skipped`."""
     cfg = config if config is not None else AtlasConfig()
     fm = cfg.quant.risk_model.factor_model
     return fit_factor_history(
-        load_cross_sections(lake, start, end, cfg, symbols=symbols),
+        load_cross_sections(lake, start, end, cfg, symbols=symbols, factor_store=factor_store),
         FactorSet.from_config(fm),
         fm,
         on_short="skip",
@@ -281,16 +314,22 @@ def build_and_store(
     *,
     symbols: Sequence[str] | None = None,
     etfs: Sequence[str] | None = None,
+    factor_store: FactorStore | None = None,
 ) -> tuple[FactorHistory, tuple[date, ...]]:
     """Fit the daily factor returns over [`start`, `end`] from `lake`, store them in `store`,
     and store a model snapshot on each month-end (data date) that has at least
     `quant.risk_model.min_history` sessions of factor returns. With `etfs`, each snapshot also
     carries their time-series exposures; a month-end where none of them has enough history
     yet (`etf.min_obs`) is stored without ETFs and logged (`risk_model.etfs_skipped`). Returns
-    the history and the snapshot dates."""
+    the history and the snapshot dates. `factor_store`: the regression's monthly anchors are
+    read from that factor cache where it has them (`load_cross_sections`); the snapshots are
+    always computed, because a snapshot is taken the morning after the month-end and no panel
+    is stored for that day."""
     cfg = config if config is not None else AtlasConfig()
     cal = TradingCalendar(config=cfg.calendar)
-    history = build_factor_history(lake, start, end, cfg, symbols=symbols)
+    history = build_factor_history(
+        lake, start, end, cfg, symbols=symbols, factor_store=factor_store
+    )
     store.write_factor_returns(history)
     index = history.factor_returns.index
     written: list[date] = []

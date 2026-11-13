@@ -4,11 +4,14 @@
 install:
 	uv sync --group dev
 
+# -n auto --dist loadfile (pytest-xdist): the test files are spread over the cores and each
+# file stays on one worker, so its module fixtures (the synthetic lakes) are built once.
+# A plain `uv run pytest -q` is the same suite, serial.
 test:
-	uv run pytest -q
+	uv run pytest -q -n auto --dist loadfile
 
 test-integration:
-	uv run pytest -m integration -q
+	uv run pytest -m integration -q -n auto --dist loadfile
 
 lint:
 	uv run ruff check .

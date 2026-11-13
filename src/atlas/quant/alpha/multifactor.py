@@ -36,6 +36,7 @@ from atlas.quant.alpha.base import alpha_frame, check_horizon, empty_alpha_frame
 from atlas.quant.alpha.calibration import grinold_alpha, ic_weights, trailing_ic
 from atlas.quant.factors import (
     FactorPanel,
+    FactorStore,
     composite,
     factor_panel,
     neutralize,
@@ -134,11 +135,18 @@ def component_frame(
     symbols: Sequence[str] | None = None,
     *,
     config: AlphaMultiFactorConfig | None = None,
+    factor_store: FactorStore | None = None,
 ) -> ComponentPanel:
     """The cleaned components (module docstring) of `symbols` (default: the members of
     `config.universe` at the view's as-of; blocked names are left out by the view) at
     `view.as_of`; `config` defaults to the view's `quant.alpha.multifactor`. Unknown feature
-    names raise `ValueError` before any data is read."""
+    names raise `ValueError` before any data is read.
+
+    `factor_store`: when that cache holds the factor panel computed on the view's day itself
+    (`FactorStore.read_on`), the style scores are taken from it instead of computing the
+    panel: the same numbers. Only for the default members of the factor universe; otherwise,
+    and on a day with no stored panel, the panel is computed. The cache must have been built
+    from the lake as it is now."""
     cfg = config if config is not None else view.config.quant.alpha.multifactor
     _check_sources(cfg)
     members = view.universe(cfg.universe) if symbols is None else list(symbols)
@@ -161,7 +169,19 @@ def component_frame(
     latest = {n: feats[n].iloc[-1].reindex(members) for n in names}
     styles: pd.DataFrame | None = None
     if any(c.kind == "style" for c in cfg.components.values()):
-        styles = style_scores(factor_panel(view, members)).reindex(members)
+        stored = None
+        if (
+            factor_store is not None
+            and symbols is None
+            and cfg.universe == view.config.quant.factors.universe
+        ):
+            stored = factor_store.read_on(view.as_of)
+        scores = (
+            style_composites(stored.exposures.mask(stored.filled))
+            if stored is not None
+            else style_scores(factor_panel(view, members))
+        )
+        styles = scores.reindex(members)
     fc = view.config.quant.factors
     values: dict[str, pd.Series] = {}
     for name, comp in cfg.components.items():
@@ -235,13 +255,15 @@ class MultiFactorModel:
     model's horizon) feeds IC weighting (`weighting: ic`) and the Grinold IC, using only the
     ICs known at the view's day within `ic_window_months`. `resid_vol` (optional; symbol ->
     annualised residual vol, e.g. `specific_vol(RiskModel)`) replaces the
-    `resid_vol_feature`. Output: `score` = the composite z-score; `exp_return_ann` = annualised
-    expected residual return (fraction); `confidence` = coverage x reliability.
+    `resid_vol_feature`. `factor_store` (optional): the factor cache `component_frame` may
+    read the style scores from. Output: `score` = the composite z-score; `exp_return_ann` =
+    annualised expected residual return (fraction); `confidence` = coverage x reliability.
     """
 
     config: AlphaMultiFactorConfig | None = None
     ic_history: pd.DataFrame | None = None
     resid_vol: pd.Series | None = None
+    factor_store: FactorStore | None = None
 
     @property
     def name(self) -> str:
@@ -288,7 +310,8 @@ class MultiFactorModel:
         """The alpha frame of the universe members at `view.as_of` (module docstring)."""
         cfg = self.config or view.config.quant.alpha.multifactor
         check_horizon(self, cfg.horizon)
-        return self.predict_components(view, component_frame(view, config=cfg))
+        panel = component_frame(view, config=cfg, factor_store=self.factor_store)
+        return self.predict_components(view, panel)
 
     def predict_components(self, view: DataView, panel: ComponentPanel) -> pd.DataFrame:
         """The alpha frame from an already built `panel` (`component_frame(view)` at the same

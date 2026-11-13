@@ -1,0 +1,19 @@
+$ atlas factors build --from 2023-07-01 --to 2023-12-31 --store <scratch>   (main lake, read only)
+                 Factor cache by year                 
+┏━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ year ┃ month-ends ┃ mean names ┃ mean filled share ┃
+┡━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ 2023 │          6 │        502 │             0.194 │
+└──────┴────────────┴────────────┴───────────────────┘
+Factor cache: 6 month-ends from 2023-07-31 to 2023-12-29; 6 written, 0 already stored; table factor_exposures in <scratch>/t3/scratch-store 
+(settings ea0279da348c). Run 01M79PVW2J91K4ED3CG00JAV1T.
+exit 0; seconds 47
+
+# the six panels just built, against the panels stored on the main lake on 2026-11-11/12 (old code)
+2023-07-31: exposures, raw and filled equal (exact), 502 names x 17 factors
+2023-08-31: exposures, raw and filled equal (exact), 502 names x 17 factors
+2023-09-29: exposures, raw and filled equal (exact), 502 names x 17 factors
+2023-10-31: exposures, raw and filled equal (exact), 502 names x 17 factors
+2023-11-30: exposures, raw and filled equal (exact), 502 names x 17 factors
+2023-12-29: exposures, raw and filled equal (exact), 502 names x 17 factors
+ALL SIX PANELS EQUAL

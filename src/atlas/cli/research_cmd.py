@@ -17,7 +17,10 @@ sessions past it, and a window whose labels close after `backtest.in_sample_end`
 unless `--allow-holdout` is given. The override is written to the run's audit log
 (`<lake>/runs/<run_id>/audit.jsonl`, an `OVERRIDE` event) before any data is read; if it
 cannot be written, the run stops (exit 1). `--regimes vol|trend|quadrant` adds the IC by
-regime from the stored `regime_history` (`atlas regime build`).
+regime from the stored `regime_history` (`atlas regime build`). `--cached-factors` reads a
+fundamental factor from the stored month-end panels (`atlas factors build`) instead of
+computing a panel per date: faster, but each date then uses the latest panel stored on or
+before it, so the signal is older; the tear sheet records how old (`factor_cache`).
 
 `atlas research pairs --as-of 2021-12-01` (Stage 23) selects the cointegrated same-sector
 pairs at the as-of (point in time: the universe's members on that day, closes through the
@@ -45,6 +48,7 @@ from atlas.core.logging import configure_logging, reset_logging
 from atlas.core.run_context import run_context
 from atlas.core.storage import Lake
 from atlas.data.view import DataView
+from atlas.quant.factors import FactorStore
 from atlas.quant.regime import REGIME_KINDS, RegimeStore
 from atlas.quant.research import (
     FREQUENCIES,
@@ -194,14 +198,26 @@ def signal_cmd(
             help="Run although the labels close after backtest.in_sample_end (audited).",
         ),
     ] = False,
+    cached_factors: Annotated[
+        bool,
+        typer.Option(
+            "--cached-factors",
+            help="Read a fundamental factor from the stored month-end panels (older, faster).",
+        ),
+    ] = False,
 ) -> None:
     """Evaluate a signal (IC, quantiles, decay, long-short backtest) and save its tear sheet."""
     console = _console()
     first, last = parse_bound(start), parse_bound(end, end=True)
     try:
-        signal_kind(name)
+        kind = signal_kind(name)
     except ValueError as exc:
         raise typer.BadParameter(str(exc), param_hint="--name") from None
+    if cached_factors and kind != "fundamental":
+        raise typer.BadParameter(
+            f"{name} is a price feature: only a fundamental factor is in the factor cache",
+            param_hint="--cached-factors",
+        )
     if frequency is not None and frequency not in FREQUENCIES:
         raise typer.BadParameter(
             f"must be one of {', '.join(FREQUENCIES)}", param_hint="--frequency"
@@ -269,6 +285,7 @@ def signal_cmd(
                 universe=universe,
                 regimes=labels,
                 progress=lambda _day: progress.advance(task),
+                factor_store=FactorStore(lake, config) if cached_factors else None,
             )
             written = sheet.save(target)
     except AtlasError as exc:
@@ -283,6 +300,14 @@ def signal_cmd(
             f"audit log of run {run.run_id}."
         )
     console.print(_summary_table(sheet))
+    cache = sheet.summary["factor_cache"]
+    if cache is not None:
+        low, high = cache["newest_panel_sessions"], cache["oldest_panel_sessions"]
+        age = f"{low} to {high} sessions" if low != high else f"{high} session(s)"
+        console.print(
+            f"[yellow]Factor cache:[/yellow] {cache['dates_from_cache']} of {len(dates)} dates "
+            f"read stored panels ({age} old); the others were computed."
+        )
     if regimes is not None:
         console.print(_regime_table(sheet))
         missing = sheet.summary["by_regime"]["dates_without_regime"]

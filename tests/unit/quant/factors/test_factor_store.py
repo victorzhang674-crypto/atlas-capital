@@ -178,3 +178,29 @@ def test_build_factor_cache_into_another_lake(tmp_path: Path) -> None:
     assert target.dates() == (day,)
     assert not lake.has_table(FACTOR_EXPOSURES.name)
     assert build_factor_cache(lake, [day], config=CFG, store=target) == ()
+
+
+# --- Phase 2 checkpoint, Tier 3 item 4: the panel of one exact day ------------------------------
+
+
+def test_read_on_gives_only_the_panel_computed_that_day(tmp_lake: Lake) -> None:
+    store = FactorStore(tmp_lake, CFG)
+    assert store.read_on(date(2024, 1, 31)) is None  # no table yet
+    store.write(_panel(date(2024, 1, 31), seed=1))
+    store.write(_panel(date(2024, 2, 29), seed=2))
+    got = store.read_on(date(2024, 1, 31))
+    assert got is not None and got.date == date(2024, 1, 31)
+    want = store.read(date(2024, 1, 31))
+    assert want is not None
+    pd.testing.assert_frame_equal(got.exposures, want.exposures)
+    pd.testing.assert_frame_equal(got.raw, want.raw)
+    pd.testing.assert_frame_equal(got.filled, want.filled)
+    assert store.read_on(date(2024, 2, 1)) is None  # `read` would give the January panel
+    assert store.read(date(2024, 2, 1)).date == date(2024, 1, 31)  # type: ignore[union-attr]
+    early = AsOf(
+        day=date(2024, 2, 29),
+        cutoff=AsOf.for_session(date(2024, 2, 29)).cutoff - timedelta(hours=1),
+    )
+    assert store.read_on(early) is None  # computed at the cutoff: not known an hour before
+    other = AtlasConfig.model_validate({"quant": {"factors": {"min_names": 6}}})
+    assert FactorStore(tmp_lake, other).read_on(date(2024, 1, 31)) is None  # other settings

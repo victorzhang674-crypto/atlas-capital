@@ -1,0 +1,11 @@
+$ atlas risk-model build --from 2023-01-01 --to 2023-12-31 --store <scratch> --cached-factors   (main lake, read only)
+to 2023-12-29 with 30 ETFs; tables factor_returns and risk_model_snapshots in <scratch>/t3/scratch-risk (settings 4bbbb5a135ea). Run 
+01M79PXS38ZPY1Y65VCKEPFMEE.
+Monthly anchors read from the factor cache where it has them (the build log's risk_model.anchor_loaded lines say which); the cache must match the 
+lake's data.
+exit 0; seconds 89
+
+# the trial (monthly anchors from the factor cache) against the store built on the main lake on 2026-11-12
+# (anchors computed, old code); the trial's factor history starts in 2023, the main lake's in 2017
+factor_returns 2023-01-03 .. 2023-12-29: 250 sessions x 20 factors, largest absolute difference 3.20e-15 (returns are of order 1e-2)
+snapshots in the trial: ['2023-04-28', '2023-05-31', '2023-06-30', '2023-07-31', '2023-08-31', '2023-09-29', '2023-10-31', '2023-11-30', '2023-12-29']

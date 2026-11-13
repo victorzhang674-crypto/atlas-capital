@@ -2,6 +2,7 @@
 
 import math
 from datetime import date
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -342,3 +343,39 @@ def test_horizon_must_be_the_one_predict_uses(world: FactorWorld) -> None:  # Ph
     model = MultiFactorModel(config=view.config.quant.alpha.multifactor)
     assert model.horizon == 42
     check_alpha_frame(model.predict(view))
+
+
+# --- Phase 2 checkpoint, Tier 3 item 4: style scores from the factor cache ----------------------
+
+
+def test_predict_from_the_factor_cache_equals_a_fresh_prediction(
+    world: FactorWorld, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import atlas.quant.alpha.multifactor as multifactor_module
+    from atlas.core.storage import DEFAULT_REGISTRY
+    from atlas.quant.factors import FactorStore, factor_panel
+
+    view = _view(world)
+    fresh = MultiFactorModel().predict(view)
+    store = FactorStore(Lake(tmp_path / "cache", registry=DEFAULT_REGISTRY.copy()), view.config)
+    store.write(factor_panel(view))
+    monkeypatch.setattr(
+        multifactor_module, "factor_panel", lambda *a, **k: pytest.fail("the cache was not used")
+    )
+    cached = MultiFactorModel(factor_store=store).predict(view)
+    pd.testing.assert_frame_equal(cached, fresh)
+
+
+def test_predict_without_a_panel_of_that_day_computes_it(
+    world: FactorWorld, tmp_path: Path
+) -> None:
+    from atlas.core.storage import DEFAULT_REGISTRY
+    from atlas.quant.factors import FactorStore, factor_panel
+
+    view = _view(world)
+    earlier = DataView(world.lake, CAL.offset(EQUITY_AS_OF, -1), view.config)
+    store = FactorStore(Lake(tmp_path / "cache", registry=DEFAULT_REGISTRY.copy()), view.config)
+    store.write(factor_panel(earlier))  # yesterday's panel is not today's
+    pd.testing.assert_frame_equal(
+        MultiFactorModel(factor_store=store).predict(view), MultiFactorModel().predict(view)
+    )

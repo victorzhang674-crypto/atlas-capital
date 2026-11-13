@@ -206,13 +206,15 @@ def test_build_factor_history_fits_the_loaded_sections(monkeypatch: pytest.Monke
     w = make_world(n=120, t=30, seed=81)
     seen = {}
 
-    def fake_load(lake, start, end, config, *, symbols=None):
+    def fake_load(lake, start, end, config, *, symbols=None, factor_store=None):
         seen["args"] = (start, end, symbols)
+        seen["factor_store"] = factor_store
         return cross_sections(w)
 
     monkeypatch.setattr(loader, "load_cross_sections", fake_load)
     hist = build_factor_history(None, date(2015, 1, 2), date(2015, 2, 13), SMALL, symbols=["X"])  # type: ignore[arg-type]
     assert seen["args"] == (date(2015, 1, 2), date(2015, 2, 13), ["X"])
+    assert seen["factor_store"] is None  # Tier 3 item 4: the cache is opt-in
     assert len(hist.factor_returns) == 30 and hist.skipped == ()
 
 
@@ -386,3 +388,84 @@ def test_build_and_store_keeps_a_snapshot_whose_etfs_lack_history(
         (date(2023, 11, 30), ("SPY",)),
         (date(2023, 12, 29), ("SPY",)),
     ]
+
+
+# --- Phase 2 checkpoint, Tier 3 item 4: monthly anchors read from the factor cache --------------
+
+ANCHORS = (date(2023, 12, 29), date(2024, 1, 31), date(2024, 2, 29))
+"""The month-ends whose fundamental inputs the sessions of START..END use."""
+
+
+def _same_sections(got: list[CrossSection], want: list[CrossSection]) -> None:
+    assert [cs.day for cs in got] == [cs.day for cs in want]
+    for a, b in zip(got, want, strict=True):
+        pd.testing.assert_frame_equal(a.raw_styles, b.raw_styles, check_exact=False, rtol=1e-12)
+        pd.testing.assert_series_equal(a.caps, b.caps, check_exact=False, rtol=1e-12)
+        pd.testing.assert_series_equal(a.returns, b.returns)
+        pd.testing.assert_series_equal(a.sectors, b.sectors)
+
+
+def test_anchors_read_from_the_factor_cache_give_the_same_sections(
+    world_lake: Lake,
+    sections: list[CrossSection],
+    tmp_path_factory: pytest.TempPathFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from atlas.core.storage import DEFAULT_REGISTRY
+    from atlas.quant.factors import FactorStore, build_factor_cache
+
+    scratch = Lake(tmp_path_factory.mktemp("cache") / "lake", registry=DEFAULT_REGISTRY.copy())
+    store = FactorStore(scratch, CFG)
+    assert build_factor_cache(world_lake, ANCHORS, config=CFG, store=store) == ANCHORS
+    monkeypatch.setattr(
+        loader_module, "factor_panel", lambda *a, **k: pytest.fail("the cache was not used")
+    )
+    cached = load_cross_sections(world_lake, START, END, CFG, factor_store=store)
+    _same_sections(cached, sections)
+
+
+def test_an_anchor_missing_from_the_cache_is_computed(
+    world_lake: Lake,
+    sections: list[CrossSection],
+    tmp_path_factory: pytest.TempPathFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from atlas.core.storage import DEFAULT_REGISTRY
+    from atlas.quant.factors import FactorStore, build_factor_cache
+
+    scratch = Lake(tmp_path_factory.mktemp("cache") / "lake", registry=DEFAULT_REGISTRY.copy())
+    store = FactorStore(scratch, CFG)
+    build_factor_cache(world_lake, ANCHORS[:2], config=CFG, store=store)  # no February panel
+    computed: list[date] = []
+    fresh = loader_module.factor_panel
+
+    def counting(view: DataView, symbols: object = None) -> object:
+        computed.append(view.day)
+        return fresh(view, symbols)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(loader_module, "factor_panel", counting)
+    cached = load_cross_sections(world_lake, START, END, CFG, factor_store=store)
+    assert computed == [ANCHORS[2]]
+    _same_sections(cached, sections)
+
+
+def test_the_cache_is_not_used_for_a_custom_symbol_list(
+    world_lake: Lake, tmp_path_factory: pytest.TempPathFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from atlas.core.storage import DEFAULT_REGISTRY
+    from atlas.quant.factors import FactorStore, build_factor_cache
+
+    scratch = Lake(tmp_path_factory.mktemp("cache") / "lake", registry=DEFAULT_REGISTRY.copy())
+    store = FactorStore(scratch, CFG)
+    build_factor_cache(world_lake, ANCHORS, config=CFG, store=store)
+    computed: list[date] = []
+    fresh = loader_module.factor_panel
+
+    def counting(view: DataView, symbols: object = None) -> object:
+        computed.append(view.day)
+        return fresh(view, symbols)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(loader_module, "factor_panel", counting)
+    # a stored panel is cleaned over the whole universe: it does not describe a subset
+    load_cross_sections(world_lake, START, END, CFG, symbols=list(STOCKS[:9]), factor_store=store)
+    assert computed == list(ANCHORS)

@@ -1,0 +1,60 @@
+as-of 2024-01-31: members 502, universe+blocked 1.4 s, factor_panel 372.6 s, rows 502
+         732091278 function calls (713667612 primitive calls) in 372.538 seconds
+
+   Ordered by: cumulative time
+   List reduced from 2069 to 45 due to restriction <45>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.004    0.004  372.557  372.557 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/quant/factors/fundamental.py:442(factor_panel)
+     1015    0.001    0.000  367.992    0.363 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:279(_cached)
+2019/1015    0.037    0.000  367.985    0.363 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:124(get)
+        1    0.000    0.000  250.469  250.469 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:555(fundamentals_panel)
+        1    0.020    0.020  250.453  250.453 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:561(compute)
+      502    0.005    0.000  249.617    0.497 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:640(_fundamentals_detail)
+      502    0.024    0.000  248.042    0.494 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:648(<lambda>)
+      502    0.293    0.001  245.992    0.490 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/pit.py:384(concept_values)
+     6024    0.922    0.000  181.986    0.030 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/pit.py:211(ttm_values)
+     4518    0.289    0.000  153.957    0.034 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/pit.py:261(ttm)
+  1078064    3.007    0.000  126.052    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/frame.py:4283(__getitem__)
+     9538    0.527    0.000  120.695    0.013 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/mapping.py:272(resolve_concept)
+     5338    0.572    0.000  118.102    0.022 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/pit.py:163(quarterly_values)
+        1    0.000    0.000  114.817  114.817 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:584(fundamentals_history)
+        1    0.011    0.011  114.793  114.793 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:602(compute)
+      502    0.002    0.000  113.836    0.227 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:625(_history_of)
+      502    0.052    0.000  112.894    0.225 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/view.py:632(<lambda>)
+      502    0.159    0.000  110.291    0.220 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/pit.py:456(concept_history)
+    10040    0.336    0.000   78.146    0.008 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/mapping.py:263(_part)
+     1506    0.264    0.000   76.271    0.051 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/pit.py:427(_flow_history)
+   319114    3.359    0.000   56.556    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/internals/managers.py:817(reindex_indexer)
+    34554    0.113    0.000   55.988    0.002 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/frame.py:15963(merge)
+    34554    0.148    0.000   55.869    0.002 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/reshape/merge.py:151(merge)
+    22590    0.355    0.000   54.109    0.002 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/mapping.py:253(_alternative)
+   243619    0.526    0.000   48.988    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/internals/managers.py:1069(take)
+     5082    0.418    0.000   48.831    0.010 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/pit.py:129(_q4_from_three_quarters)
+   223394    0.905    0.000   45.240    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/generic.py:4048(take)
+    34554    0.271    0.000   44.207    0.001 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/reshape/merge.py:1130(get_result)
+  1448388    2.154    0.000   36.738    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/internals/blocks.py:1054(take_nd)
+   134754    0.774    0.000   36.467    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/indexes/base.py:6539(_get_indexer_strict)
+   134020    0.392    0.000   35.587    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/frame.py:4358(_getitem_bool_array)
+    34554    0.539    0.000   35.343    0.001 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/reshape/merge.py:1076(_reindex_and_concat)
+2405635/1835419    3.731    0.000   34.912    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/array_algos/take.py:60(take_nd)
+166976103/164035151   20.573    0.000   31.705    0.000 {built-in method builtins.isinstance}
+224691/222409    1.094    0.000   29.891    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/indexes/base.py:3831(get_indexer)
+633636/629072    3.832    0.000   29.656    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/indexes/base.py:484(__new__)
+    52761    0.505    0.000   27.914    0.001 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/frame.py:9086(sort_values)
+     5082    0.186    0.000   27.721    0.005 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/pit.py:107(_chain_differences)
+    72999    0.538    0.000   27.458    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/reshape/concat.py:162(concat)
+  1359166    7.184    0.000   27.371    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/construction.py:580(sanitize_array)
+404469/292123    0.439    0.000   25.711    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/ops/common.py:122(new_method)
+   191643    0.294    0.000   25.508    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/indexes/base.py:6477(get_indexer_for)
+    72999    0.506    0.000   25.041    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/reshape/concat.py:574(_get_result)
+     2282    0.081    0.000   24.277    0.011 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/data/fundamentals/mapping.py:226(_combine)
+551898/548885    3.183    0.000   23.961    0.000 ~/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/pandas/core/series.py:360(__init__)
+
+
+         732091278 function calls (713667612 primitive calls) in 372.538 seconds
+
+   Ordered by: internal time
+   List reduced from 2069 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)

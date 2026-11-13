@@ -32,6 +32,7 @@ from atlas.core.logging import configure_logging, reset_logging
 from atlas.core.run_context import run_context
 from atlas.core.storage import Lake
 from atlas.data.view import DataView
+from atlas.quant.factors import FactorStore
 from atlas.quant.risk_model.loader import build_and_store
 from atlas.quant.risk_model.store import RiskModelStore
 
@@ -72,6 +73,13 @@ def build_cmd(
             "--etfs/--no-etfs", help="Add the configured ETF universe's exposures to snapshots."
         ),
     ] = True,
+    cached_factors: Annotated[
+        bool,
+        typer.Option(
+            "--cached-factors",
+            help="Read the monthly fundamental inputs from the factor cache where it has them.",
+        ),
+    ] = False,
 ) -> None:
     """Fit the daily factor returns and store them with the month-end model snapshots."""
     console = Console(soft_wrap=False, highlight=False)
@@ -102,7 +110,15 @@ def build_cmd(
                 if etfs
                 else None
             )
-            history, snapshots = build_and_store(lake, target, first, stop, config, etfs=names)
+            history, snapshots = build_and_store(
+                lake,
+                target,
+                first,
+                stop,
+                config,
+                etfs=names,
+                factor_store=FactorStore(lake, config) if cached_factors else None,
+            )
     except (AtlasError, ValueError) as exc:
         console.print(f"[red]Risk model build failed:[/red] {type(exc).__name__}: {exc}")
         raise typer.Exit(1) from None
@@ -123,6 +139,11 @@ def build_cmd(
         f"risk_model_snapshots in {target.lake.root} (settings {target.config_hash}). "
         f"Run {run.run_id}."
     )
+    if cached_factors:
+        console.print(
+            "Monthly anchors read from the factor cache where it has them (the build log's "
+            "risk_model.anchor_loaded lines say which); the cache must match the lake's data."
+        )
 
 
 __all__ = ["build_cmd", "risk_model_app"]

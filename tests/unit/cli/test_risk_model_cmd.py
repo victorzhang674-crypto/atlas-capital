@@ -161,3 +161,38 @@ def test_a_failed_build_exits_1(
     result = invoke(lake, tmp_path, "build", "--from", "2024-01-02", "--to", "2024-02-29")
     assert result.exit_code == 1
     assert "Risk model build failed" in _plain(result.output)
+
+
+# --- Phase 2 checkpoint, Tier 3 item 4: `--cached-factors` ---------------------------------------
+
+
+def test_cached_factors_is_off_by_default(
+    lake: Lake, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    seen = _capture(monkeypatch)
+    result = invoke(lake, tmp_path, "build", "--from", "2024-01-02", "--to", "2024-02-29",
+                    "--store", str(tmp_path / "store"))  # fmt: skip
+    assert result.exit_code == 0, result.output
+    assert seen["factor_store"] is None
+    assert "factor cache" not in _plain(result.output)
+
+
+def test_cached_factors_passes_the_data_lakes_factor_store(
+    lake: Lake, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from atlas.quant.factors import FactorStore, factor_config_hash
+
+    seen = _capture(monkeypatch)
+    result = invoke(lake, tmp_path, "build", "--from", "2024-01-02", "--to", "2024-02-29",
+                    "--store", str(tmp_path / "store"), "--cached-factors")  # fmt: skip
+    assert result.exit_code == 0, result.output
+    store = seen["factor_store"]
+    assert isinstance(store, FactorStore) and store.lake.root == lake.root
+    assert store.config_hash == factor_config_hash(CFG)
+    text = " ".join(_plain(result.output).split())
+    assert "Monthly anchors read from the factor cache where it has them" in text
+
+
+def test_help_lists_cached_factors() -> None:
+    result = CliRunner().invoke(app, ["risk-model", "build", "--help"], env=BASE_ENV)
+    assert result.exit_code == 0 and "--cached-factors" in _plain(result.output)

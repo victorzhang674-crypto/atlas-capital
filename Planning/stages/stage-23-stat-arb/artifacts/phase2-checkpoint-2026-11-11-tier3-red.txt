@@ -1,0 +1,34 @@
+# Tier 3 tests run against the source of HEAD 697b079 (PYTHONPATH=<git archive HEAD>/src)
+# Items 4 and 5: new behaviour, must fail. Item 3 (reference tests): the same results by design, must pass.
+## tests/unit/quant/factors/test_factor_store.py
+FAILED tests/unit/quant/factors/test_factor_store.py::test_read_on_gives_only_the_panel_computed_that_day
+1 failed, 11 passed in 24.64s
+## tests/unit/quant/risk_model/test_factor_risk_loader.py
+FAILED tests/unit/quant/risk_model/test_factor_risk_loader.py::test_anchors_read_from_the_factor_cache_give_the_same_sections
+FAILED tests/unit/quant/risk_model/test_factor_risk_loader.py::test_an_anchor_missing_from_the_cache_is_computed
+FAILED tests/unit/quant/risk_model/test_factor_risk_loader.py::test_the_cache_is_not_used_for_a_custom_symbol_list
+3 failed, 14 passed in 63.55s (0:01:03)
+## tests/unit/quant/alpha/test_alpha_multifactor.py
+FAILED tests/unit/quant/alpha/test_alpha_multifactor.py::test_predict_from_the_factor_cache_equals_a_fresh_prediction
+FAILED tests/unit/quant/alpha/test_alpha_multifactor.py::test_predict_without_a_panel_of_that_day_computes_it
+2 failed, 20 passed in 51.43s
+## tests/unit/quant/research/test_research_signals.py
+FAILED tests/unit/quant/research/test_research_signals.py::test_signal_panel_fundamental_from_the_factor_cache
+1 failed, 8 passed in 20.99s
+## tests/unit/quant/research/test_research_tearsheet.py
+FAILED tests/unit/quant/research/test_research_tearsheet.py::test_tearsheet_records_the_factor_cache_use
+1 failed, 10 passed in 3.92s
+## tests/unit/cli/test_research_cmd.py
+FAILED tests/unit/cli/test_research_cmd.py::test_research_signal_help - Asser...
+FAILED tests/unit/cli/test_research_cmd.py::test_cached_factors_reads_the_stored_panels
+FAILED tests/unit/cli/test_research_cmd.py::test_cached_factors_is_refused_for_a_price_feature
+3 failed, 23 passed in 26.86s
+## tests/unit/cli/test_risk_model_cmd.py
+FAILED tests/unit/cli/test_risk_model_cmd.py::test_cached_factors_is_off_by_default
+FAILED tests/unit/cli/test_risk_model_cmd.py::test_cached_factors_passes_the_data_lakes_factor_store
+FAILED tests/unit/cli/test_risk_model_cmd.py::test_help_lists_cached_factors
+3 failed, 7 passed in 4.65s
+## tests/unit/data/fundamentals/test_fundamentals_reference.py
+7 passed in 41.54s
+## tests/unit/test_toolchain.py (Makefile and pyproject of HEAD: seen failing before the Makefile change)
+FAILED tests/unit/test_toolchain.py::test_make_test_runs_in_parallel_one_file_per_worker - AssertionError: uv run pytest -q

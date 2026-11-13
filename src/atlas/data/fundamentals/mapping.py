@@ -10,11 +10,14 @@ written with `tags:` has one part; one written with `sum_of:` has several.
 Tags are `(taxonomy, name)` pairs: a bare name in the file is `us-gaap`, `dei:Name` is `dei`.
 """
 
+import math
 import re
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, Sequence
+from datetime import date
 from pathlib import Path
 from typing import Literal, Self
 
+import numpy as np
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator, model_validator
 
@@ -223,50 +226,185 @@ def _empty_periods() -> pd.DataFrame:
     )
 
 
-def _combine(frames: list[pd.DataFrame], label: str, *, strict: bool) -> pd.DataFrame:
-    """Add up per-period values of several inputs (each with `PERIOD_COLUMNS`).
+# One company has a few thousand facts and sixteen concepts, each resolved from a handful of
+# rows. As pandas frames that is thousands of tiny filters, sorts and merges per company
+# (about 0.2 s; minutes for a 500-name cross-section), so the work is done on plain rows and
+# only the public functions build frames. `tests/unit/data/fundamentals/pandas_reference.py`
+# keeps the frame-based implementation; the two are compared value for value.
 
-    `strict`: only periods every input has; else every period at least one input has (a
-    missing input counts as 0). The row carries the latest `available_at` and its `accn`.
-    """
-    stacked = pd.concat(frames, ignore_index=True)
-    grouped = stacked.groupby(PERIOD_KEY, sort=True)
-    out = grouped.agg(
-        period_start=("period_start", "first"),
-        value=("value", "sum"),
-        inputs=("value", "size"),
-        available_at=("available_at", "max"),
-    ).reset_index()
-    latest = stacked.sort_values(["available_at", "accn"], kind="stable").drop_duplicates(
-        subset=PERIOD_KEY, keep="last"
-    )
-    out = out.merge(latest[[*PERIOD_KEY, "accn", "tag"]], on=PERIOD_KEY, how="left")
-    if strict:
-        out = out[out["inputs"] == len(frames)]
-        out["tag"] = label
-    else:
-        present = stacked.groupby(PERIOD_KEY, sort=True)["tag"].agg("; ".join).reset_index()
-        out = out.drop(columns="tag").merge(present, on=PERIOD_KEY, how="left")
-    return out[list(PERIOD_COLUMNS)].reset_index(drop=True)
+PeriodRow = tuple[date | None, date, int, float, int, str, str]
+"""One resolved period as a plain row: `(period_start, period_end, duration_days, value,
+available_at, accn, tag)`, `available_at` in microseconds since the epoch (UTC)."""
+
+_PeriodKey = tuple[date, int]
+_Fact = tuple[date | None, date, int, float, int, str]
 
 
-def _alternative(facts: pd.DataFrame, alt: Alternative) -> pd.DataFrame:
-    frames = []
-    for namespace, name in alt:
-        rows = facts[(facts["taxonomy"] == namespace) & (facts["tag"] == name)]
-        frames.append(rows.assign(tag=_label((namespace, name)))[list(PERIOD_COLUMNS)])
+def _null(value: object) -> bool:
+    return value is None or value is pd.NaT or (isinstance(value, float) and math.isnan(value))
+
+
+def stamps_us(column: pd.Series) -> list[int]:
+    """A tz-aware timestamp column as microseconds since the epoch (UTC)."""
+    stamps = pd.to_datetime(column, utc=True).dt.tz_localize(None)
+    values: list[int] = stamps.to_numpy(dtype="datetime64[us]").astype("int64").tolist()
+    return values
+
+
+def stamps_column(values: Sequence[int]) -> pd.Series:
+    """Microseconds since the epoch as a `datetime64[us, UTC]` column."""
+    array = np.asarray(list(values), dtype="int64").astype("datetime64[us]")
+    return pd.Series(pd.DatetimeIndex(array).tz_localize("UTC")).astype("datetime64[us, UTC]")
+
+
+def kahan_sum(values: Sequence[float]) -> float:
+    """The compensated sum pandas' grouped `sum` computes (the same operations in the same
+    order, so the same float)."""
+    total, comp = 0.0, 0.0
+    for value in values:
+        y = value - comp
+        t = total + y
+        comp = t - total - y
+        total = t
+    return total
+
+
+class FactIndex:
+    """One company's facts, ready for `resolve_rows`: the latest filing per tag, unit and
+    period (`latest_filings`: greatest `available_at`, then accession number, then the later
+    row), grouped by `(taxonomy, tag, unit, instant or duration)`."""
+
+    __slots__ = ("_groups",)
+
+    def __init__(self, facts: pd.DataFrame) -> None:
+        groups: dict[tuple[str, str, str, bool], dict[_PeriodKey, _Fact]] = {}
+        if len(facts):
+            taxonomy = facts["taxonomy"].tolist()
+            tag = facts["tag"].tolist()
+            unit = facts["unit"].tolist()
+            start = facts["period_start"].tolist()
+            end = facts["period_end"].tolist()
+            duration = facts["duration_days"].tolist()
+            value = facts["value"].tolist()
+            available = stamps_us(facts["available_at"])
+            accn = facts["accn"].tolist()
+            order = sorted(range(len(taxonomy)), key=lambda i: (available[i], accn[i]))
+            for i in reversed(order):  # the latest filing of a period is met first
+                days = int(duration[i])
+                group = groups.setdefault((taxonomy[i], tag[i], unit[i], days == 0), {})
+                key = (end[i], days)
+                if key not in group:
+                    first = None if _null(start[i]) else start[i]
+                    group[key] = (first, end[i], days, float(value[i]), available[i], accn[i])
+        self._groups = groups
+
+    def tag_rows(self, tag: TaxTag, unit: str, *, instant: bool) -> dict[_PeriodKey, PeriodRow]:
+        """The periods one tag reports in `unit` (instants or durations), by period."""
+        label = _label(tag)
+        found = self._groups.get((tag[0], tag[1], unit, instant), {})
+        return {key: (*fact, label) for key, fact in found.items()}
+
+
+def _combine_rows(
+    frames: Sequence[Mapping[_PeriodKey, PeriodRow]], label: str | None
+) -> dict[_PeriodKey, PeriodRow]:
+    """Add up per-period rows of several inputs. With a `label` (a strict sum, `A + B`): only
+    periods every input has, tagged `label`. Without: every period at least one input has (a
+    missing input counts as 0), tagged with the inputs' tags joined by `; `. The row carries
+    the first known `period_start`, the latest `available_at` and the `accn` of the input
+    filed last (ties: the later input)."""
+    members: dict[_PeriodKey, list[PeriodRow]] = {}
+    for frame in frames:
+        for key, row in frame.items():
+            members.setdefault(key, []).append(row)
+    out: dict[_PeriodKey, PeriodRow] = {}
+    for key in sorted(members):
+        rows = members[key]
+        if label is not None and len(rows) != len(frames):
+            continue
+        start = next((r[0] for r in rows if r[0] is not None), None)
+        latest = rows[0]
+        for row in rows[1:]:
+            if (row[4], row[5]) >= (latest[4], latest[5]):
+                latest = row
+        tag = label if label is not None else "; ".join(r[6] for r in rows)
+        out[key] = (
+            start,
+            key[0],
+            key[1],
+            kahan_sum([r[3] for r in rows]),
+            max(r[4] for r in rows),
+            latest[5],
+            tag,
+        )
+    return out
+
+
+def _alternative_rows(
+    index: FactIndex, alt: Alternative, unit: str, instant: bool
+) -> dict[_PeriodKey, PeriodRow]:
+    frames = [index.tag_rows(tag, unit, instant=instant) for tag in alt]
     if len(frames) == 1:
         return frames[0]
-    return _combine(frames, " + ".join(_label(t) for t in alt), strict=True)
+    return _combine_rows(frames, " + ".join(_label(t) for t in alt))
 
 
-def _part(facts: pd.DataFrame, part: Part) -> pd.DataFrame:
-    frames = [_alternative(facts, alt).assign(priority=i) for i, alt in enumerate(part)]
-    stacked = pd.concat(frames, ignore_index=True).sort_values(
-        [*PERIOD_KEY, "priority"], kind="stable"
+def _part_rows(
+    index: FactIndex, part: Part, unit: str, instant: bool
+) -> dict[_PeriodKey, PeriodRow]:
+    out: dict[_PeriodKey, PeriodRow] = {}
+    for alt in part:  # the first alternative with a value for the period wins
+        for key, row in _alternative_rows(index, alt, unit, instant).items():
+            out.setdefault(key, row)
+    return out
+
+
+def resolve_rows(index: FactIndex, concept: Concept) -> list[PeriodRow]:
+    """`resolve_concept` on a `FactIndex`, as plain rows sorted by period (end, then length)."""
+    instant = concept.kind == "stock"
+    parts = [_part_rows(index, part, concept.unit, instant) for part in concept.parts]
+    parts = [p for p in parts if p]
+    if not parts:
+        return []
+    found = parts[0] if len(parts) == 1 else _combine_rows(parts, None)
+    return [found[key] for key in sorted(found)]
+
+
+def periods_frame(rows: Sequence[PeriodRow]) -> pd.DataFrame:
+    """Plain rows as a `PERIOD_COLUMNS` frame."""
+    if not rows:
+        return _empty_periods()
+    starts, ends, days, values, stamps, accns, tags = zip(*rows, strict=True)
+    return pd.DataFrame(
+        {
+            "period_start": pd.Series(list(starts), dtype="object"),
+            "period_end": pd.Series(list(ends), dtype="object"),
+            "duration_days": pd.Series(list(days), dtype="int64"),
+            "value": pd.Series(list(values), dtype="float64"),
+            "available_at": stamps_column(stamps),
+            "accn": pd.Series(list(accns), dtype="str"),
+            "tag": pd.Series(list(tags), dtype="str"),
+        }
     )
-    first = stacked.drop_duplicates(subset=PERIOD_KEY, keep="first")
-    return first[list(PERIOD_COLUMNS)].reset_index(drop=True)
+
+
+def period_rows(periods: pd.DataFrame) -> list[PeriodRow]:
+    """A `PERIOD_COLUMNS` frame as plain rows (in the frame's order)."""
+    if periods.empty:
+        return []
+    starts = [None if _null(s) else s for s in periods["period_start"].tolist()]
+    return list(
+        zip(
+            starts,
+            periods["period_end"].tolist(),
+            [int(d) for d in periods["duration_days"].tolist()],
+            [float(v) for v in periods["value"].tolist()],
+            stamps_us(periods["available_at"]),
+            periods["accn"].tolist(),
+            periods["tag"].tolist(),
+            strict=True,
+        )
+    )
 
 
 def resolve_concept(facts: pd.DataFrame, concept: Concept) -> pd.DataFrame:
@@ -279,16 +417,4 @@ def resolve_concept(facts: pd.DataFrame, concept: Concept) -> pd.DataFrame:
     for a strict sum, `A; B` for parts), `available_at`/`accn` the latest input. A concept no
     tag reports gives an empty frame (not an error).
     """
-    is_instant = facts["duration_days"] == 0
-    usable = facts[(facts["unit"] == concept.unit) & (is_instant == (concept.kind == "stock"))]
-    usable = latest_filings(usable[usable["taxonomy"].isin({t[0] for t in concept.tags()})])
-    parts = [_part(usable, part) for part in concept.parts]
-    parts = [p for p in parts if not p.empty]
-    if not parts:
-        return _empty_periods()
-    out = parts[0] if len(parts) == 1 else _combine(parts, "", strict=False)
-    out = out.sort_values(PERIOD_KEY, kind="stable").reset_index(drop=True)
-    out["duration_days"] = out["duration_days"].astype("int64")
-    out["value"] = out["value"].astype("float64")
-    out["available_at"] = out["available_at"].astype("datetime64[us, UTC]")
-    return out[list(PERIOD_COLUMNS)]
+    return periods_frame(resolve_rows(FactIndex(facts), concept))

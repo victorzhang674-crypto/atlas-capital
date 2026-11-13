@@ -60,6 +60,7 @@ def test_research_signal_help() -> None:
         "--out",
         "--allow-holdout",
         "--regimes",
+        "--cached-factors",
     ):
         assert option in text
 
@@ -313,6 +314,73 @@ def test_header_is_plain_when_every_date_has_an_ic(world: ResearchWorld, tmp_pat
     assert result.exit_code == 0, result.output
     text = " ".join(_plain(result.output).split())
     assert "21 dates with an IC" in text and "requested" not in text
+
+
+# --- Phase 2 checkpoint, Tier 3 item 4: `--cached-factors` -------------------------------------
+
+
+FACTOR_SETTINGS = {
+    "backtest": {"in_sample_end": "2030-12-31"},
+    "quant": {"factors": {"min_names": 5}, "research": {"min_names": 5}},
+}
+"""The Stage 16 factor world has 12 names: the default 20-name minimums would leave every
+factor NaN."""
+
+
+@pytest.fixture(scope="module")
+def factor_lake(tmp_path_factory: pytest.TempPathFactory) -> Lake:
+    """The factor world (bars to 2024-02-29) with its December and January month-end panels
+    cached in the lake itself."""
+    from factor_world import build_factor_world
+
+    from atlas.core.config import AtlasConfig
+    from atlas.quant.factors import build_factor_cache
+
+    lake = Lake(tmp_path_factory.mktemp("cli_factors") / "lake", registry=DEFAULT_REGISTRY.copy())
+    build_factor_world(lake)
+    config = AtlasConfig.model_validate(FACTOR_SETTINGS)
+    build_factor_cache(lake, [date(2023, 12, 29), date(2024, 1, 31)], config=config)
+    return lake
+
+
+def _factor_signal(lake: Lake, tmp_path: Path, out: Path, *extra: str) -> object:
+    import yaml
+
+    config_dir = tmp_path / "config"
+    config_dir.mkdir(exist_ok=True)
+    (config_dir / "fund.yaml").write_text(yaml.safe_dump(FACTOR_SETTINGS))
+    args = ["--config-dir", str(config_dir), "research", "signal", "--name", "earnings_yield",
+            "--from", "2024-01-03", "--to", "2024-02-01", "--frequency", "monthly",
+            "--out", str(out), *extra]  # fmt: skip
+    env = {**BASE_ENV, "ATLAS__DATA__LAKE_PATH": str(lake.root)}
+    return CliRunner().invoke(app, args, env=env)
+
+
+def test_cached_factors_reads_the_stored_panels(factor_lake: Lake, tmp_path: Path) -> None:
+    out = tmp_path / "sheet"
+    result = _factor_signal(factor_lake, tmp_path, out, "--cached-factors")
+    assert result.exit_code == 0, result.output
+    summary = json.loads((out / "tearsheet.json").read_text())
+    assert summary["factor_cache"] == {
+        "dates_from_cache": 2,
+        "dates_computed": 0,
+        "oldest_panel_sessions": 2,  # 2023-12-29 for the 2024-01-03 date
+        "newest_panel_sessions": 1,  # 2024-01-31 for the 2024-02-01 date
+    }
+    assert summary["n_symbols"] >= 10  # real values, not an all-NaN panel
+    text = " ".join(_plain(result.output).split())
+    assert "Factor cache: 2 of 2 dates read stored panels (1 to 2 sessions old)" in text
+    plain = tmp_path / "plain"
+    result = _factor_signal(factor_lake, tmp_path, plain)
+    assert result.exit_code == 0, result.output
+    assert json.loads((plain / "tearsheet.json").read_text())["factor_cache"] is None
+    assert "Factor cache" not in _plain(result.output)
+
+
+def test_cached_factors_is_refused_for_a_price_feature(world: ResearchWorld) -> None:
+    result = invoke(world.lake.root, *_signal_args(world), "--cached-factors")
+    assert result.exit_code == 2
+    assert "fundamental factor" in " ".join(_plain(result.output).split())
 
 
 # --- Stage 23: `atlas research pairs --as-of` -------------------------------------------------
