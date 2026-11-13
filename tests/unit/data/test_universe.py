@@ -23,12 +23,14 @@ from atlas.core.storage import Lake
 from atlas.core.types.instruments import AssetClass, Instrument
 from atlas.data.prices import ingest_prices
 from atlas.data.reference import (
+    GICS_SECTORS,
     INSTRUMENTS,
     TickerChange,
     TickerMap,
     build_instruments,
     fetch_sp500_pages,
     instruments_frame,
+    load_former_sectors,
     load_ticker_map,
     parse_changes,
     parse_constituents,
@@ -870,3 +872,89 @@ def test_members_see_writes_from_another_lake_object(tmp_lake: Lake) -> None:
     _membership(writer, ["B"])
     assert tmp_lake.generation == 1  # this Lake object made only the first write
     assert universe.members(D(2020, 1, 2)) == ["B"]
+
+
+# --- Phase 2 checkpoint, Tier 3 item 1: reviewed sectors for former members -------------------
+
+
+def test_build_instruments_gives_former_members_their_reviewed_sector(
+    fixture_build: MembershipBuild, repo_ticker_map: TickerMap
+) -> None:
+    insts = build_instruments(
+        parse_constituents(constituents_html()),
+        parse_changes(changes_html()),
+        fixture_build.intervals,
+        etf_symbols=["SPY"],
+        ticker_map=repo_ticker_map,
+        former_sectors={"AIV": "Real Estate", "AAPL": "Utilities", "SPY": "Energy"},
+    )
+    by = {i.symbol: i for i in insts}
+    aiv = by["AIV"]  # removed 2020-12-21: the reviewed sector, still no industry or exchange
+    assert (aiv.sector, aiv.industry, aiv.exchange) == ("Real Estate", None, None)
+    assert by["AAPL"].sector == "Information Technology"  # a current member keeps the page's
+    assert by["SPY"].sector is None  # an ETF has none
+    former = [i for i in insts if i.symbol not in ("AIV", "SPY") and i.sector is None]
+    assert len(former) > 300  # the others stay unknown: never guessed
+
+
+def test_refresh_reads_the_former_sectors_file_from_config(tmp_lake: Lake, tmp_path: Path) -> None:
+    path = tmp_path / "former.yaml"
+    path.write_text("sectors:\n  AIV: Real Estate\n  XEC: Energy\n")
+    reference = ReferenceDataConfig(former_sectors_file=path)
+    cfg = AtlasConfig().model_copy(
+        update={"data": AtlasConfig().data.model_copy(update={"reference": reference})}
+    )
+    refresh_universe_reference(tmp_lake, constituents_html(), changes_html(), config=cfg)
+    by = {i.symbol: i for i in read_instruments(tmp_lake)}
+    assert by["AIV"].sector == "Real Estate" and by["XEC"].sector == "Energy"
+    assert by["AAPL"].sector == "Information Technology"
+    # without the file nothing is filled (a missing file gives none)
+    reference = ReferenceDataConfig(former_sectors_file=tmp_path / "absent.yaml")
+    cfg = AtlasConfig().model_copy(
+        update={"data": AtlasConfig().data.model_copy(update={"reference": reference})}
+    )
+    refresh_universe_reference(tmp_lake, constituents_html(), changes_html(), config=cfg)
+    assert {i.symbol: i for i in read_instruments(tmp_lake)}["AIV"].sector is None
+
+
+def test_load_former_sectors(tmp_path: Path) -> None:
+    path = tmp_path / "former.yaml"
+    path.write_text("sectors:\n  aiv: Real Estate\n  BRK.B: Financials\n")
+    assert load_former_sectors(path) == {"AIV": "Real Estate", "BRK.B": "Financials"}
+    assert load_former_sectors(tmp_path / "absent.yaml") == {}
+    assert len(GICS_SECTORS) == 11 and "Real Estate" in GICS_SECTORS
+
+
+@pytest.mark.parametrize(
+    ("body", "message"),
+    [
+        ("sectors:\n  AIV: Property\n", "Property"),
+        ("sectors:\n  AIV: Real Estate\n  aiv: Real Estate\n", "twice"),
+        ("sectors:\n  '': Energy\n", "symbol"),
+        ("sectors: [AIV]\n", "sectors"),
+        ("sector:\n  AIV: Energy\n", "sector"),
+    ],
+    ids=["unknown-sector", "duplicate", "empty-symbol", "not-a-mapping", "unknown-key"],
+)
+def test_bad_former_sectors_file(tmp_path: Path, body: str, message: str) -> None:
+    path = tmp_path / "former.yaml"
+    path.write_text(body)
+    with pytest.raises(ConfigError, match=message):
+        load_former_sectors(path)
+
+
+def test_repo_former_sectors_file(repo_root: Path, fixture_build: MembershipBuild) -> None:
+    sectors = load_former_sectors(repo_root / "config" / "former_sectors.yaml")
+    assert AtlasConfig().data.reference.former_sectors_file == Path("config/former_sectors.yaml")
+    assert len(sectors) == 180 and set(sectors.values()) == set(GICS_SECTORS)
+    # every entry is a symbol of the membership history
+    known = set(fixture_build.intervals["symbol"])
+    assert sectors["KSS"] == "Consumer Discretionary" and sectors["CE"] == "Materials"
+    assert len(set(sectors) & known) >= 170
+    assert set(AtlasConfig().quant.risk_model.factor_model.sectors) == set(GICS_SECTORS)
+    # an entry that is (again) on the constituents page must not contradict it: the page wins
+    # in `build_instruments`, and a disagreement would mean the entry is wrong. (None of the
+    # 180 is on the recorded page, so today this guards future snapshots.)
+    on_page = parse_constituents(constituents_html()).set_index("symbol")["sector"]
+    both = sorted(set(sectors) & set(on_page.index))
+    assert [s for s in both if sectors[s] != on_page[s]] == []

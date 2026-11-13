@@ -13,7 +13,7 @@ here: `atlas.data.universe` normalises them and records failures as anomalies.
 """
 
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from datetime import date, timedelta
 from io import StringIO
 from pathlib import Path
@@ -21,7 +21,7 @@ from typing import Self
 
 import httpx
 import pandas as pd
-from pydantic import ValidationError, model_validator
+from pydantic import Field, ValidationError, model_validator
 
 from atlas.core.config import ReferenceDataConfig, read_config_file
 from atlas.core.errors import ConfigError, DataError
@@ -318,6 +318,58 @@ def _log_names(changes: pd.DataFrame, ticker_map: TickerMap) -> dict[str, str]:
     return names
 
 
+GICS_SECTORS: tuple[str, ...] = (
+    "Communication Services",
+    "Consumer Discretionary",
+    "Consumer Staples",
+    "Energy",
+    "Financials",
+    "Health Care",
+    "Industrials",
+    "Information Technology",
+    "Materials",
+    "Real Estate",
+    "Utilities",
+)
+"""The eleven GICS sector names, as the constituents page writes them."""
+
+
+class _FormerSectorsFile(AtlasModel):
+    """Body of `config/former_sectors.yaml`."""
+
+    sectors: dict[str, str] = Field(default_factory=dict)
+
+
+def load_former_sectors(path: Path) -> dict[str, str]:
+    """The reviewed GICS sectors of former index members in `path` (`sectors: {SYMBOL:
+    sector}`; see `config/former_sectors.yaml`), by canonical symbol. A missing file gives
+    none; an unknown sector name, an empty symbol or a symbol listed twice raises
+    `ConfigError` naming the file."""
+    data = read_config_file(path)
+    try:
+        body = _FormerSectorsFile.model_validate(data)
+    except ValidationError as exc:
+        problems = "; ".join(
+            f"{'.'.join(str(p) for p in err['loc']) or '<root>'}: {err['msg']}"
+            for err in exc.errors()
+        )
+        raise ConfigError(f"{path}: {problems}") from None
+    out: dict[str, str] = {}
+    for raw, sector in body.sectors.items():
+        try:
+            symbol = normalize_symbol(raw)
+        except ValueError as exc:
+            raise ConfigError(f"{path}: bad symbol {raw!r}: {exc}") from None
+        if symbol in out:
+            raise ConfigError(f"{path}: {symbol} is listed twice")
+        if sector not in GICS_SECTORS:
+            raise ConfigError(
+                f"{path}: {symbol}: {sector!r} is not a GICS sector ({', '.join(GICS_SECTORS)})"
+            )
+        out[symbol] = sector
+    return out
+
+
 def build_instruments(
     constituents: pd.DataFrame,
     changes: pd.DataFrame,
@@ -326,14 +378,19 @@ def build_instruments(
     etf_symbols: Sequence[str],
     ticker_map: TickerMap | None = None,
     trade_dates: pd.DataFrame | None = None,
+    former_sectors: Mapping[str, str] | None = None,
 ) -> list[Instrument]:
     """One `Instrument` per symbol in `intervals` (membership) or `etf_symbols`, by symbol.
 
     Current constituents carry name, GICS sector and sub-industry and exchange; former
-    members carry the name from their latest change-log row only; ETFs are `AssetClass.ETF`
-    with no sector. All are shortable (S&P 500 stocks and liquid ETFs; borrow is checked by
-    later stages). `trade_dates` (`trade_date_ranges` shape) fills first and last trade dates.
+    members carry the name from their latest change-log row and, when `former_sectors`
+    (`load_former_sectors`) lists them, that reviewed sector (no sub-industry or exchange);
+    the others have no sector. A current constituent always keeps the page's sector. ETFs
+    are `AssetClass.ETF` with no sector. All are shortable (S&P 500 stocks and liquid ETFs;
+    borrow is checked by later stages). `trade_dates` (`trade_date_ranges` shape) fills first
+    and last trade dates.
     """
+    reviewed = former_sectors if former_sectors is not None else {}
     tmap = ticker_map if ticker_map is not None else TickerMap()
     current = {normalize_symbol(str(r.symbol)): r for r in constituents.itertuples(index=False)}
     names = _log_names(changes, tmap)
@@ -356,7 +413,7 @@ def build_instruments(
             symbol=symbol,
             asset_class=AssetClass.EQUITY,
             name=row.name if row is not None else names.get(symbol),
-            sector=row.sector if row is not None else None,
+            sector=row.sector if row is not None else reviewed.get(symbol),
             industry=row.industry if row is not None else None,
             exchange=row.exchange if row is not None else None,
             first_trade_date=first,

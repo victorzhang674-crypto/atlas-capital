@@ -1,0 +1,42 @@
+== 2019-06-28: 502 names, 94 without a market cap; market columns ['price', 'price_date', 'shares', 'shares_date', 'market_cap', 'enterprise_value']
+    60  no recent price: ['ABMD', 'ADS', 'AGN', 'ALXN', 'ANSS', 'APC', 'ARNC', 'ATVI', 'AVB', 'CELG', 'CERN', 'CMA', 'CTRA', 'CTXS', 'CXO', 'DFS', 'DISCA', 'DISCK', 'DISH', 'DRE', 'EA', 'ETFC']
+    17  share count stale: ['ACN', 'AOS', 'BKR', 'BRK.B', 'CHTR', 'CMCSA', 'CME', 'F', 'MA', 'NKE', 'NWS', 'NWSA', 'REGN', 'SPG', 'TAP', 'UPS', 'V']
+    17  no share count in the facts: ['APA', 'BLK', 'EL', 'EXPE', 'HRL', 'LEN', 'META', 'MKC', 'RL', 'SKYD', 'STZ', 'TSN', 'UA', 'UAA', 'UHS', 'VTRS', 'XOM']
+== 2024-01-31: 502 names, 38 without a market cap; market columns ['price', 'price_date', 'shares', 'shares_date', 'market_cap', 'enterprise_value']
+    20  share count stale: ['ACN', 'AOS', 'BIO', 'BRK.B', 'CHTR', 'CMCSA', 'CME', 'F', 'FOX', 'FOXA', 'MA', 'NKE', 'NWS', 'NWSA', 'REGN', 'SCHW', 'SPG', 'TAP', 'UPS', 'V']
+    14  no share count in the facts: ['ABNB', 'BG', 'BLK', 'EL', 'HRL', 'LEN', 'META', 'MKC', 'RL', 'SKYD', 'STZ', 'TSN', 'UHS', 'XOM']
+     4  no recent price: ['DAY', 'EA', 'QRVO', 'WBD']
+          market_cap  cap_bn
+symbol                      
+GOOGL   1.887192e+12  1887.2
+GOOG    1.907003e+12  1907.0
+BRK.B            NaN     NaN
+FOXA             NaN     NaN
+FOX              NaN     NaN
+NWSA             NaN     NaN
+NWS              NaN     NaN
+META             NaN     NaN
+V                NaN     NaN
+MA               NaN     NaN
+
+# share-count tags in the stored raw companyfacts (latest period end, value in millions, number of facts)
+XOM    2026-06-30 4,112m (1) | 2026-06-30 4,112m (6) | 2026-06-30 8,019m (6) | - | 2026-06-30 4,188m (4)
+META   - | - | - | 2026-09-30 2,568m (193) | 2026-09-30 2,543m (190)
+BLK    2025-04-30 155m (3) | 2026-06-30 155m (16) | 2026-06-30 156m (16) | 2026-06-30 165m (26) | 2026-06-30 155m (26)
+V      2010-01-27 469m (2) | - | - | - | -
+MA     2010-10-27 123m (4) | - | - | 2026-09-30 884m (309) | 2026-09-30 883m (309)
+BRK.B  2011-04-29 1m (7) | - | - | - | 2015-09-30 2m (82)
+CMCSA  2009-12-31 2,063m (2) | - | - | 2026-09-30 3,583m (219) | 2026-09-30 3,572m (215)
+NKE    2015-07-17 855m (18) | - | - | 2026-08-31 1,484m (210) | 2026-08-31 1,484m (210)
+F      2011-04-28 3,727m (8) | - | 2009-12-31 3,266m (2) | 2026-09-30 4,071m (218) | 2026-09-30 3,989m (224)
+UPS    2010-02-17 714m (2) | - | - | 2026-06-30 851m (212) | 2026-06-30 850m (212)
+ACN    2010-03-19 637m (2) | - | - | 2026-08-31 617m (368) | 2026-08-31 612m (368)
+SCHW   2026-07-31 1,729m (53) | - | 2022-03-31 1,995m (106) | 2026-06-30 1,745m (324) | 2026-06-30 1,740m (263)
+GOOGL  - | 2026-09-30 12,294m (90) | 2026-09-30 12,294m (90) | 2026-09-30 12,324m (34) | 2026-09-30 12,169m (34)
+AAPL   2026-07-17 14,594m (70) | 2026-06-27 14,609m (144) | 2026-06-27 14,609m (144) | 2026-06-27 14,750m (234) | 2026-06-27 14,693m (234)
+of the 34 members without a share count at 2024-01-31, a fact with period end >= 2023-06-30 exists for:
+   dei:EntityCommonStockSharesOutstanding: 5
+   us-gaap:CommonStockSharesOutstanding: 3
+   us-gaap:CommonStockSharesIssued: 3
+   us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding: 30
+   us-gaap:WeightedAverageNumberOfSharesOutstandingBasic: 30

@@ -1,0 +1,206 @@
+# Reviewed GICS sectors of former S&P 500 members (Stage 08; added in the Phase 2 checkpoint,
+# 2026-11-13), read by atlas.data.reference.load_former_sectors; not part of load_config.
+#
+# Why: the constituents page gives a sector to current members only, so a former member had
+# none: it was scored against the whole market instead of its sector, and the risk model left
+# it out. This file gives a sector to the 180 former members that have price bars in the lake.
+# A current member always keeps the page's sector; an entry here is used only while the symbol
+# is not on the page. The 177 former members without price bars are not listed (they cannot
+# enter a panel).
+#
+# How each entry was chosen: the company's GICS sector as the assistant knows it (the sector
+# today for a company that still trades, else the one it had when it left the index, updated
+# for the 2018 and 2023 GICS changes), checked against its EDGAR SIC code. For 134 of the 180
+# the sector that most current members with the same SIC code have is the same; for the other
+# 46 the SIC code points elsewhere or nowhere (department stores and car dealers land in
+# Consumer Staples, chemicals in Health Care) and the entry follows the company, not the code.
+# These are sectors as of now, not point in time, like the page's.
+#
+# THIS LIST IS NOT FROM A DATA PROVIDER. The comment on each line gives the company, its SIC
+# code and, where the choice is less certain, why. Correct a line by editing it; the next
+# `atlas data sync --datasets universe` applies the file, and the factor cache and the risk
+# model must then be rebuilt (`atlas factors build --refresh`, `atlas risk-model build`).
+# Review table with the SIC comparison: Planning/stages/stage-08-universe/artifacts/
+# phase2-checkpoint-tier3-former-sectors-review.md
+
+sectors:  # symbol: GICS sector (180 entries, by symbol)
+  AA: Materials  # Alcoa; SIC 3350 Rolling Drawing & Extruding of  Nonferrous Metals
+  AAL: Industrials  # American Airlines Group; SIC 4512 Air Transportation, Scheduled
+  AAP: Consumer Discretionary  # Advance Auto Parts; SIC 5531 Retail-Auto & Home Supply Stores
+  ABMD: Health Care  # Abiomed; SIC 3841 Surgical & Medical Instruments & Apparatus
+  ADS: Financials  # Alliance Data Systems; SIC 6141 Personal Credit Institutions; Information Technology when it left the index; Financials since the 2023 GICS change (as Bread Financial)
+  ADT: Industrials  # ADT; SIC 7381 Services-Detective, Guard & Armored Car Services; the 2012-2016 index member (ADT Corp); today's ADT Inc is Consumer Discretionary
+  AIV: Real Estate  # Aimco; SIC 6798 Real Estate Investment Trusts
+  ALK: Industrials  # Alaska Air Group; SIC 4512 Air Transportation, Scheduled
+  ALTR: Information Technology  # Altera; SIC 3674 Semiconductors & Related Devices
+  ALXN: Health Care  # Alexion Pharmaceuticals; SIC 2834 Pharmaceutical Preparations
+  AMG: Financials  # Affiliated Managers Group; SIC 6282 Investment Advice
+  AMTM: Industrials  # Amentum; SIC 7389 Services-Business Services, NEC; spun off from Jacobs in 2024
+  AN: Consumer Discretionary  # AutoNation; SIC 5500 Retail-Auto Dealers & Gasoline Stations
+  ANSS: Information Technology  # Ansys; SIC 7372 Services-Prepackaged Software
+  APC: Energy  # Anadarko Petroleum; SIC 1311 Crude Petroleum & Natural Gas
+  ARNC: Industrials  # Arconic; SIC 3350 Rolling Drawing & Extruding of  Nonferrous Metals
+  ATI: Materials  # Allegheny Technologies; SIC 3317 Steel Pipe & Tubes
+  ATVI: Communication Services  # Activision Blizzard; SIC 7372 Services-Prepackaged Software
+  AYI: Industrials  # Acuity Brands; SIC 3640 Electric Lighting & Wiring Equipment
+  BBBY: Consumer Discretionary  # Bed Bath & Beyond; SIC 5700 Retail-Home Furniture, Furnishings & Equipment Stores
+  BBWI: Consumer Discretionary  # Bath & Body Works, Inc.; SIC 5990 Retail-Retail Stores, NEC
+  BHF: Financials  # Brighthouse Financial; SIC 6311 Life Insurance
+  BIO: Health Care  # Bio-Rad Laboratories; SIC 3826 Laboratory Analytical Instruments
+  BLDR: Industrials  # Builders FirstSource; SIC 5211 Retail-Lumber & Other Building Materials Dealers
+  BWA: Consumer Discretionary  # BorgWarner; SIC 3714 Motor Vehicle Parts & Accessories
+  CA: Information Technology  # CA Technologies; SIC 7372 Services-Prepackaged Software
+  CAG: Consumer Staples  # Conagra Brands; SIC 2000 Food and Kindred Products
+  CAM: Energy  # Cameron International; SIC 3533 Oil & Gas Field Machinery & Equipment
+  CE: Materials  # Celanese; SIC 2820 Plastic Material, Synth Resin/Rubber, Cellulos (No Glass)
+  CERN: Health Care  # Cerner; SIC 7373 Services-Computer Integrated Systems Design
+  CHK: Energy  # Chesapeake Energy; SIC 1311 Crude Petroleum & Natural Gas
+  CMA: Financials  # Comerica; SIC 6021 National Commercial Banks
+  CNX: Energy  # Consol Energy; SIC 1311 Crude Petroleum & Natural Gas
+  COTY: Consumer Staples  # Coty; SIC 2844 Perfumes, Cosmetics & Other Toilet Preparations
+  CPB: Consumer Staples  # Campbell's; SIC 2000 Food and Kindred Products
+  CPRI: Consumer Discretionary  # Capri Holdings; SIC 3100 Leather & Leather Products
+  CSRA: Information Technology  # CSRA; SIC 7373 Services-Computer Integrated Systems Design; IT services
+  CTLT: Health Care  # Catalent; SIC 2834 Pharmaceutical Preparations
+  CTRA: Energy  # Coterra Energy; SIC 1311 Crude Petroleum & Natural Gas
+  CTVA: Materials  # Corteva; SIC 0100 Agricultural Production-Crops
+  CTXS: Information Technology  # Citrix Systems; SIC 7372 Services-Prepackaged Software
+  CXO: Energy  # Concho Resources; SIC 1311 Crude Petroleum & Natural Gas
+  CZR: Consumer Discretionary  # Caesars Entertainment; SIC 7011 Hotels & Motels
+  DAY: Industrials  # Dayforce; SIC 7372 Services-Prepackaged Software; Information Technology until the 2023 GICS change moved payroll and HR software to Industrials
+  DFS: Financials  # Discover Financial; SIC 6141 Personal Credit Institutions
+  DISCA: Communication Services  # Discovery, Inc.; SIC 4841 Cable & Other Pay Television Services
+  DISCK: Communication Services  # Discovery, Inc.; SIC 4841 Cable & Other Pay Television Services
+  DISH: Communication Services  # Dish Network; SIC 4841 Cable & Other Pay Television Services
+  DNB: Industrials  # Dun & Bradstreet; SIC 7320 Services-Consumer Credit Reporting, Collection Agencies; research and consulting services
+  DNR: Energy  # Denbury Resources; SIC 1311 Crude Petroleum & Natural Gas
+  DO: Energy  # Diamond Offshore Drilling; SIC 1381 Drilling Oil & Gas Wells
+  DRE: Real Estate  # Duke Realty; SIC 6798 Real Estate Investment Trusts
+  DXC: Information Technology  # DXC Technology; SIC 7374 Services-Computer Processing & Data Preparation
+  EA: Communication Services  # Electronic Arts; SIC 7372 Services-Prepackaged Software
+  EMC: Information Technology  # EMC Corporation; SIC 3572 Computer Storage Devices
+  EMN: Materials  # Eastman Chemical Co.; SIC 2821 Plastic Materials, Synth Resins & Nonvulcan Elastomers
+  ENDP: Health Care  # Endo International; SIC 2834 Pharmaceutical Preparations
+  ENPH: Information Technology  # Enphase Energy; SIC 3674 Semiconductors & Related Devices
+  EPAM: Information Technology  # EPAM Systems; SIC 7371 Services-Computer Programming Services
+  ETFC: Financials  # E-Trade; SIC 6035 Savings Institution, Federally Chartered
+  ETSY: Consumer Discretionary  # Etsy; SIC 7389 Services-Business Services, NEC
+  FBHS: Industrials  # Fortune Brands Home & Security; SIC 2430 Millwood, Veneer, Plywood, & Structural Wood Members
+  FL: Consumer Discretionary  # Foot Locker; SIC 5661 Retail-Shoe Stores
+  FLIR: Information Technology  # FLIR Systems; SIC 3812 Search, Detection, Navigation, Guidance, Aeronautical Sys; electronic equipment; some lists showed it under Industrials (aerospace and defense)
+  FLR: Industrials  # Fluor Corporation; SIC 1600 Heavy Construction Other Than Bldg Const - Contractors
+  FLS: Industrials  # Flowserve; SIC 3561 Pumps & Pumping Equipment
+  FMC: Materials  # FMC Corporation; SIC 2800 Chemicals & Allied Products
+  FOSL: Consumer Discretionary  # Fossil Group; SIC 3873 Watches, Clocks, Clockwork Operated Devices/Parts
+  FRC: Financials  # First Republic Bank; no SIC code stored
+  FTI: Energy  # TechnipFMC; SIC 3533 Oil & Gas Field Machinery & Equipment
+  GME: Consumer Discretionary  # GameStop; SIC 5734 Retail-Computer & Computer Software Stores
+  GNW: Financials  # Genworth Financial; SIC 6311 Life Insurance
+  GPS: Consumer Discretionary  # Gap; SIC 5651 Retail-Family Clothing Stores
+  GT: Consumer Discretionary  # The Goodyear Tire & Rubber Company; SIC 3011 Tires & Inner Tubes
+  HBI: Consumer Discretionary  # Hanesbrands; SIC 5600 Retail-Apparel & Accessory Stores
+  HES: Energy  # Hess Corporation; SIC 2911 Petroleum Refining
+  HFC: Energy  # HollyFrontier; SIC 2911 Petroleum Refining
+  HOG: Consumer Discretionary  # Harley-Davidson; SIC 3751 Motorcycles, Bicycles & Parts
+  HOLX: Health Care  # Hologic; SIC 3844 X-Ray Apparatus & Tubes & Related Irradiation Apparatus
+  HP: Energy  # Helmerich & Payne; SIC 1381 Drilling Oil & Gas Wells
+  HRB: Consumer Discretionary  # H&R Block; SIC 7200 Services-Personal Services
+  INFO: Industrials  # IHS Markit; SIC 7370 Services-Computer Programming, Data Processing, Etc.; research and consulting services
+  IPG: Communication Services  # Interpublic Group; SIC 7311 Services-Advertising Agencies
+  IPGP: Information Technology  # IPG Photonics; SIC 3674 Semiconductors & Related Devices
+  JEF: Financials  # Jefferies Financial Group; SIC 6211 Security Brokers, Dealers & Flotation Companies
+  JNPR: Information Technology  # Juniper Networks; SIC 3576 Computer Communications Equipment
+  JWN: Consumer Discretionary  # Nordstrom; SIC 5651 Retail-Family Clothing Stores
+  K: Consumer Staples  # Kellanova; SIC 2040 Grain Mill Products
+  KMX: Consumer Discretionary  # CarMax; SIC 5500 Retail-Auto Dealers & Gasoline Stations
+  KSS: Consumer Discretionary  # Kohl's; SIC 5311 Retail-Department Stores
+  KSU: Industrials  # Kansas City Southern; SIC 4011 Railroads, Line-Haul Operating
+  LEG: Consumer Discretionary  # Leggett & Platt; SIC 2510 Household Furniture
+  LKQ: Consumer Discretionary  # LKQ Corporation; SIC 5010 Wholesale-Motor Vehicles & Motor Vehicle Parts & Supplies
+  LLL: Industrials  # L3 Technologies; SIC 3663 Radio & Tv Broadcasting & Communications Equipment
+  LM: Financials  # Legg Mason; SIC 6282 Investment Advice
+  LNC: Financials  # Lincoln National Corporation; SIC 6311 Life Insurance
+  LUMN: Communication Services  # Lumen Technologies; SIC 4813 Telephone Communications (No Radiotelephone)
+  LW: Consumer Staples  # Lamb Weston; SIC 2030 Canned, Frozen & Preservd Fruit, Veg & Food Specialties
+  M: Consumer Discretionary  # Macy's; SIC 5311 Retail-Department Stores
+  MAC: Real Estate  # Macerich; SIC 6798 Real Estate Investment Trusts
+  MAT: Consumer Discretionary  # Mattel; SIC 3942 Dolls & Stuffed Toys
+  MBC: Industrials  # MasterBrand; SIC 2511 Wood Household Furniture, (No Upholstered); spun off from Fortune Brands in 2022; never an index member itself
+  MHK: Consumer Discretionary  # Mohawk Industries; SIC 2273 Carpets & Rugs
+  MKTX: Financials  # MarketAxess; SIC 6211 Security Brokers, Dealers & Flotation Companies
+  MNK: Health Care  # Mallinckrodt; SIC 2834 Pharmaceutical Preparations
+  MOH: Health Care  # Molina Healthcare; SIC 6324 Hospital & Medical Service Plans
+  MON: Materials  # Monsanto; SIC 2870 Agricultural Chemicals
+  MRO: Energy  # Marathon Oil; SIC 1311 Crude Petroleum & Natural Gas
+  MTCH: Communication Services  # Match Group; SIC 7370 Services-Computer Programming, Data Processing, Etc.
+  MUR: Energy  # Murphy Oil; SIC 1311 Crude Petroleum & Natural Gas
+  MXIM: Information Technology  # Maxim Integrated; SIC 3674 Semiconductors & Related Devices
+  NAVI: Financials  # Navient; SIC 6211 Security Brokers, Dealers & Flotation Companies
+  NBL: Energy  # Noble Energy; SIC 1311 Crude Petroleum & Natural Gas
+  NBR: Energy  # Nabors Industries; SIC 1381 Drilling Oil & Gas Wells
+  NE: Energy  # Noble Corporation; SIC 1381 Drilling Oil & Gas Wells
+  NFX: Energy  # Newfield Exploration; SIC 1311 Crude Petroleum & Natural Gas
+  NKTR: Health Care  # Nektar Therapeutics; SIC 2834 Pharmaceutical Preparations
+  NLSN: Industrials  # Nielsen Holdings; SIC 7389 Services-Business Services, NEC
+  NOV: Energy  # Nov; SIC 3533 Oil & Gas Field Machinery & Equipment
+  NWL: Consumer Discretionary  # Newell Brands; SIC 3089 Plastics Products, NEC
+  OGN: Health Care  # Organon & Co.; SIC 2834 Pharmaceutical Preparations
+  OI: Materials  # Owens-Illinois; SIC 3221 Glass Containers
+  PAYC: Industrials  # Paycom; SIC 7372 Services-Prepackaged Software; Information Technology until the 2023 GICS change moved payroll and HR software to Industrials
+  PBCT: Financials  # People's United Financial; SIC 6035 Savings Institution, Federally Chartered
+  PBI: Industrials  # Pitney Bowes; SIC 3579 Office Machines, NEC; office services and supplies
+  PCL: Real Estate  # Plum Creek Timber; SIC 6798 Real Estate Investment Trusts
+  PDCO: Health Care  # Patterson Companies; SIC 5047 Wholesale-Medical, Dental & Hospital Equipment & Supplies
+  PENN: Consumer Discretionary  # Penn Entertainment; SIC 7011 Hotels & Motels
+  PLL: Industrials  # Pall Corporation; SIC 3569 General Industrial Machinery & Equipment, NEC
+  POM: Utilities  # Pepco Holdings; SIC 4931 Electric & Other Services Combined
+  POOL: Consumer Discretionary  # Pool Corporation; SIC 5090 Wholesale-Misc Durable Goods
+  PRGO: Health Care  # Perrigo; SIC 2834 Pharmaceutical Preparations
+  PVH: Consumer Discretionary  # PVH; SIC 2320 Men's & Boys' Furnishgs, Work Clothg, & Allied Garments
+  PXD: Energy  # Pioneer Natural Resources; SIC 1311 Crude Petroleum & Natural Gas
+  QEP: Energy  # QEP Resources; SIC 1311 Crude Petroleum & Natural Gas
+  QRVO: Information Technology  # Qorvo; SIC 3674 Semiconductors & Related Devices
+  R: Industrials  # Ryder System; SIC 7510 Services-Auto Rental & Leasing (No Drivers)
+  RHI: Industrials  # Robert Half; SIC 7363 Services-Help Supply Services
+  RIG: Energy  # Transocean; SIC 1381 Drilling Oil & Gas Wells
+  RRC: Energy  # Range Resources; SIC 1311 Crude Petroleum & Natural Gas
+  SBNY: Financials  # Signature Bank; no SIC code stored
+  SE: Energy  # Spectra Energy; SIC 4923 Natural Gas Transmisison & Distribution
+  SEDG: Information Technology  # SolarEdge; SIC 3674 Semiconductors & Related Devices
+  SEE: Materials  # Sealed Air; SIC 2820 Plastic Material, Synth Resin/Rubber, Cellulos (No Glass)
+  SIG: Consumer Discretionary  # Signet Jewelers; SIC 5944 Retail-Jewelry Stores
+  SIVB: Financials  # SVB Financial Group; SIC 6022 State Commercial Banks
+  SLG: Real Estate  # SL Green Realty; SIC 6798 Real Estate Investment Trusts
+  SOLS: Materials  # Solstice Advanced Materials; SIC 2800 Chemicals & Allied Products
+  SPLS: Consumer Discretionary  # Staples; SIC 5940 Retail-Miscellaneous Shopping Goods Stores
+  SRCL: Industrials  # Stericycle; SIC 4955 Hazardous Waste Management; environmental and facilities services
+  STI: Financials  # SunTrust Banks; SIC 6021 National Commercial Banks
+  SWN: Energy  # Southwestern Energy; SIC 1311 Crude Petroleum & Natural Gas
+  TAP: Consumer Staples  # Molson Coors; SIC 2082 Malt Beverages
+  TDC: Information Technology  # Teradata; SIC 7372 Services-Prepackaged Software
+  TE: Utilities  # TECO Energy; SIC 4911 Electric Services
+  TFX: Health Care  # Teleflex; SIC 3841 Surgical & Medical Instruments & Apparatus
+  TGNA: Communication Services  # Tegna; SIC 4833 Television Broadcasting Stations; Consumer Discretionary before the 2018 GICS change created Communication Services
+  THC: Health Care  # Tenet Healthcare; SIC 8062 Services-General Medical & Surgical Hospitals, NEC
+  TIF: Consumer Discretionary  # Tiffany & Co; SIC 5944 Retail-Jewelry Stores
+  TRIP: Communication Services  # TripAdvisor; SIC 7370 Services-Computer Programming, Data Processing, Etc.
+  TTD: Communication Services  # The Trade Desk; SIC 7370 Services-Computer Programming, Data Processing, Etc.; advertising; often thought of as software
+  TWTR: Communication Services  # Twitter; SIC 7370 Services-Computer Programming, Data Processing, Etc.
+  UA: Consumer Discretionary  # Under Armour (Class C); SIC 2300 Apparel & Other Finishd Prods of  Fabrics & Similar Matl
+  UAA: Consumer Discretionary  # Under Armour (Class A); SIC 2300 Apparel & Other Finishd Prods of  Fabrics & Similar Matl
+  UNM: Financials  # Unum; SIC 6321 Accident & Health Insurance
+  URBN: Consumer Discretionary  # Urban Outfitters; SIC 5651 Retail-Family Clothing Stores
+  VAR: Health Care  # Varian Medical Systems; SIC 3845 Electromedical & Electrotherapeutic Apparatus
+  VFC: Consumer Discretionary  # VF Corporation; SIC 2320 Men's & Boys' Furnishgs, Work Clothg, & Allied Garments
+  VNO: Real Estate  # Vornado Realty Trust; SIC 6798 Real Estate Investment Trusts
+  VNT: Information Technology  # Vontier; SIC 3824 Totalizing Fluid Meters & Counting Devices; electronic equipment
+  WBA: Consumer Staples  # Walgreens Boots Alliance; SIC 5912 Retail-Drug Stores and Proprietary Stores; drug retail is in Consumer Staples
+  WBD: Communication Services  # Warner Bros. Discovery; SIC 4841 Cable & Other Pay Television Services
+  WHR: Consumer Discretionary  # Whirlpool Corporation; SIC 3630 Household Appliances
+  WU: Financials  # Western Union; SIC 7389 Services-Business Services, NEC; Information Technology until the 2023 GICS change moved payment processors to Financials
+  XEC: Energy  # Cimarex Energy; SIC 1311 Crude Petroleum & Natural Gas
+  XL: Financials  # XL Group; SIC 6331 Fire, Marine & Casualty Insurance
+  XLNX: Information Technology  # Xilinx; SIC 3674 Semiconductors & Related Devices
+  XRAY: Health Care  # Dentsply Sirona; SIC 3843 Dental Equipment & Supplies
+  XRX: Information Technology  # Xerox; SIC 3577 Computer Peripheral Equipment, NEC
+  ZION: Financials  # Zions Bancorporation; SIC 6021 National Commercial Banks

@@ -39,6 +39,7 @@ data:
     request_timeout_seconds: 30  # timeout of one HTTP request, in seconds
     ticker_changes_file: config/ticker_changes.yaml  # manual ticker renames, relative to the repo root
     known_anomalies_file: config/membership_anomalies.yaml  # reviewed change-log anomalies, logged at info
+    former_sectors_file: config/former_sectors.yaml  # reviewed GICS sectors of former members (the page lists current ones only)
   # SEC EDGAR fundamentals (Stage 09). The User-Agent comes from the SEC_USER_AGENT secret (.env).
   fundamentals:
     company_tickers_url: https://www.sec.gov/files/company_tickers.json  # ticker -> CIK list

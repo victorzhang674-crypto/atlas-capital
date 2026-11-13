@@ -54,7 +54,11 @@ so a 2019 backtest sees AIV, CELG, ETFC, …, not today's list), but not all of 
    (2018: Communication Services created from Telecom, Technology and Consumer
    Discretionary; 2023: payments companies moved to Financials), so sector-neutral or
    sector-tilted backtests before those dates use the later sectors. Former members have no
-   sector or exchange at all (the change log names the security only).
+   exchange, and no sector from the source (the change log names the security only). The
+   180 former members that have price bars get a sector from `config/former_sectors.yaml`: a
+   list reviewed by hand against EDGAR SIC codes (Phase 2 checkpoint, 2026-11-13), **not from
+   a data provider**, also as of now and not point in time. The other former members (no
+   price bars) have no sector.
    `first_trade_date` / `last_trade_date` come from the prices in the lake **when the
    reference data was last refreshed**: null if prices were ingested later, and stale until
    the next `refresh_universe_reference`. `tradable()` reads `prices_daily` directly, so it

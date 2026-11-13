@@ -324,9 +324,10 @@ class ReferenceDataConfig(_Frozen):
     The two URLs are the Wikipedia pages holding the S&P 500 constituents table and change
     log; `user_agent` is sent with every request (Wikimedia's robot policy wants a
     descriptive one); `request_timeout_seconds` bounds one HTTP request. `ticker_changes_file`
-    is the manual ticker-rename list and `known_anomalies_file` the reviewed change-log
-    anomalies (logged at info, not as warnings), both relative to the repo root and not
-    resolved here.
+    is the manual ticker-rename list, `known_anomalies_file` the reviewed change-log
+    anomalies (logged at info, not as warnings) and `former_sectors_file` the reviewed GICS
+    sectors of former members (the constituents page lists current members only), all
+    relative to the repo root and not resolved here.
     """
 
     sp500_constituents_url: str = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
@@ -335,6 +336,7 @@ class ReferenceDataConfig(_Frozen):
     request_timeout_seconds: Annotated[float, Field(gt=0)] = 30.0
     ticker_changes_file: Path = Path("config/ticker_changes.yaml")
     known_anomalies_file: Path = Path("config/membership_anomalies.yaml")
+    former_sectors_file: Path = Path("config/former_sectors.yaml")
 
 
 class FundamentalsConfig(_Frozen):

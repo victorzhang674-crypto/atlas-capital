@@ -38,6 +38,7 @@ from atlas.data.reference import (
     TickerMap,
     build_instruments,
     instruments_frame,
+    load_former_sectors,
     load_ticker_map,
     parse_changes,
     parse_constituents,
@@ -276,7 +277,8 @@ def refresh_universe_reference(
     `ticker_map` defaults to `load_ticker_map(config.data.reference.ticker_changes_file)`,
     `known_anomalies` to `load_known_anomalies(config.data.reference.known_anomalies_file)`;
     ETFs are the tickers of every ticker-list universe in `config.data.universes`; first and
-    last trade dates come from `prices_daily` when the lake has prices.
+    last trade dates come from `prices_daily` when the lake has prices; former members get
+    the reviewed sector of `config.data.reference.former_sectors_file` when it lists them.
     """
     cfg = config if config is not None else AtlasConfig()
     tmap = (
@@ -300,6 +302,7 @@ def refresh_universe_reference(
         etf_symbols=etfs,
         ticker_map=tmap,
         trade_dates=trade_date_ranges(lake),
+        former_sectors=load_former_sectors(cfg.data.reference.former_sectors_file),
     )
     lake.write_table(
         INDEX_MEMBERSHIP.name, _replace_index(lake, build.intervals, "SP500"), mode="overwrite"

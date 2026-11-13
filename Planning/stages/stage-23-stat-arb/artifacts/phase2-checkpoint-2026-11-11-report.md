@@ -226,5 +226,15 @@ PCA risk model (briefs' Out of scope).
     outside load. Still over the protocol's 60 s: the statarb acceptance tests remain.
   - A rebuild of both stores on the main lake now costs under an hour (it cost about 9 h):
     about 7 s per month-end for factors, 89 s per year for the risk model.
-  - Items 1 and 2: see the lines that follow.
+  - Item 1: done in code, not applied to the main lake. SIC codes alone would have been
+    wrong for about one name in five, so each of the 180 former members with price bars has
+    a reviewed line in `config/former_sectors.yaml` (134 agree with their SIC code, 46 do
+    not; not from a data provider). With it, members with a sector rise from 324 to 447 of
+    498 in mid-2015 and from 390 to 494 of 502 in mid-2019. Applying it needs the owner's
+    review of the list, a universe sync and a rebuild of both stores.
+  - Item 2: investigated, not implemented. 34 members have no share count (mostly
+    companies with several share classes); the raw filings hold weighted-average counts
+    for 30 of them. Using an average as the count is an approximation and Berkshire's is
+    in class-A equivalents: the owner's decision. It shares a fundamentals re-ingest with
+    Tier 2 item 7.
 - Tier 4: not started; waits for the owner's word, as in Phase 1.

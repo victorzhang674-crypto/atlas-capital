@@ -1,0 +1,8 @@
+# members of the factor universe with a sector, main lake (read only): today, and with config/former_sectors.yaml applied
+as-of       members  with sector today  with the file  still without
+2015-06-30      498                324            447             51  ['ACE', 'AET', 'AGN', 'ANDV', 'ARG', 'AVB', 'BCR', 'BHI', 'BRCM', 'CCE', 'CELG', 'COL']
+2017-06-30      502                365            477             25  ['AET', 'AGN', 'ANDV', 'AVB', 'BCR', 'BHI', 'CELG', 'COL', 'DPS', 'ESRX', 'EVHC', 'GGP']
+2019-06-28      502                390            494              8  ['AGN', 'AVB', 'CELG', 'RHT', 'RTN', 'TSS', 'VIAB', 'WCG']
+2021-06-30      504                421            503              1  ['AVB']
+2023-06-30      501                445            500              1  ['AVB']
+2026-10-30      503                503            503              0  []

@@ -1,0 +1,3 @@
+# Tier 3 item 1: tests/unit/data/test_universe.py against the source of HEAD f6db79c (PYTHONPATH=<git archive HEAD>/src): red
+E   ImportError: cannot import name 'GICS_SECTORS' from 'atlas.data.reference' ($TMPDIR/t3/head2/src/atlas/data/reference.py)
+ERROR tests/unit/data/test_universe.py
