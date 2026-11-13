@@ -1,0 +1,188 @@
+=== before: main 849143c
+=== git merge --ff-only claude/phase-two-checkpoint-stages-a4dbeb
+Updating 849143c..2c2d5e2
+Fast-forward
+ Planning/PROGRESS.md                               |  15 +-
+ ...phase2-checkpoint-tier3-apply-former-sectors.py |  27 ++
+ Planning/stages/stage-08-universe/verification.md  |   7 +
+ Planning/stages/stage-08-universe/worklog.md       |   6 +
+ .../phase2-checkpoint-tier3-extend-fixtures.py     |  56 +++
+ .../phase2-checkpoint-tier3-extend-fixtures.txt    |  18 +
+ ...phase2-checkpoint-tier3-reparse-fundamentals.py |  82 +++++
+ .../phase2-checkpoint-tier3-reparse-trial.txt      |  20 ++
+ .../phase2-checkpoint-tier3-tag-survey.py          |  92 +++++
+ .../phase2-checkpoint-tier3-tag-survey.txt         |  65 ++++
+ .../stages/stage-09-fundamentals/verification.md   |   8 +
+ Planning/stages/stage-09-fundamentals/worklog.md   |   9 +
+ .../phase2-checkpoint-onepass-implied-shares.py    |  42 +++
+ .../phase2-checkpoint-onepass-implied-shares.txt   |  50 +++
+ ...ase2-checkpoint-onepass-panel-compare-trial.txt | 165 +++++++++
+ .../phase2-checkpoint-onepass-panel-compare.py     |  99 +++++
+ .../phase2-checkpoint-onepass-panel-compare.txt    | 164 +++++++++
+ .../stage-16-fundamental-factors/verification.md   |   7 +
+ .../stages/stage-16-fundamental-factors/worklog.md |   9 +
+ ...e2-checkpoint-onepass-factor-returns-compare.py |  14 +
+ ...2-checkpoint-onepass-factor-returns-compare.txt |  25 ++
+ .../stage-19-factor-risk-model/verification.md     |   7 +
+ .../stages/stage-19-factor-risk-model/worklog.md   |   6 +
+ ...-checkpoint-2026-11-11-onepass-final-checks.txt |  84 +++++
+ ...point-2026-11-11-onepass-main-lake-readback.txt |  45 +++
+ ...e2-checkpoint-2026-11-11-onepass-make-check.txt |  78 ++++
+ .../phase2-checkpoint-2026-11-11-onepass-red.txt   |  75 ++++
+ ...ckpoint-2026-11-11-onepass-scratch-readback.txt |  45 +++
+ ...eckpoint-2026-11-11-onepass-scratch-rebuild.txt |  28 ++
+ .../phase2-checkpoint-2026-11-11-onepass-swap.sh   |  35 ++
+ .../phase2-checkpoint-2026-11-11-onepass-swap.txt  |  15 +
+ .../phase2-checkpoint-2026-11-11-report.md         |  15 +-
+ .../phase2-checkpoint-2026-11-11-tier3-ci.txt      |   4 +
+ Planning/stages/stage-23-stat-arb/verification.md  |   9 +
+ Planning/stages/stage-23-stat-arb/worklog.md       |  21 ++
+ config/fund.yaml                                   |   3 +
+ config/xbrl_map.yaml                               |  11 +
+ docs/data-limitations.md                           |  19 +-
+ src/atlas/core/config.py                           |  20 +-
+ src/atlas/data/fundamentals/__init__.py            |   2 +
+ src/atlas/data/fundamentals/mapping.py             |  11 +-
+ src/atlas/data/fundamentals/pit.py                 |  79 +++-
+ src/atlas/data/universe.py                         |  35 ++
+ src/atlas/quant/factors/__init__.py                |   6 +
+ src/atlas/quant/factors/fundamental.py             | 156 ++++++--
+ tests/fixtures/fundamentals/README.md              |   2 +-
+ .../fundamentals/companyfacts/CIK0000019617.json   |   2 +-
+ .../fundamentals/companyfacts/CIK0000320193.json   |   2 +-
+ .../fundamentals/companyfacts/CIK0000789019.json   |   2 +-
+ tests/unit/core/test_config.py                     |   2 +
+ .../data/fundamentals/test_fundamentals_average.py | 206 +++++++++++
+ .../data/fundamentals/test_fundamentals_guards.py  |   2 +-
+ .../data/fundamentals/test_fundamentals_parser.py  |   4 +-
+ .../data/fundamentals/test_fundamentals_pit.py     |   2 +
+ .../fundamentals/test_fundamentals_reference.py    |   5 +-
+ tests/unit/data/test_universe.py                   |  68 ++++
+ tests/unit/quant/factors/factor_world.py           |  44 ++-
+ tests/unit/quant/factors/test_factor_raw.py        |  24 +-
+ .../quant/factors/test_factor_share_fallback.py    | 397 +++++++++++++++++++++
+ 59 files changed, 2484 insertions(+), 67 deletions(-)
+ create mode 100644 Planning/stages/stage-08-universe/artifacts/phase2-checkpoint-tier3-apply-former-sectors.py
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase2-checkpoint-tier3-extend-fixtures.py
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase2-checkpoint-tier3-extend-fixtures.txt
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase2-checkpoint-tier3-reparse-fundamentals.py
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase2-checkpoint-tier3-reparse-trial.txt
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase2-checkpoint-tier3-tag-survey.py
+ create mode 100644 Planning/stages/stage-09-fundamentals/artifacts/phase2-checkpoint-tier3-tag-survey.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/phase2-checkpoint-onepass-implied-shares.py
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/phase2-checkpoint-onepass-implied-shares.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/phase2-checkpoint-onepass-panel-compare-trial.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/phase2-checkpoint-onepass-panel-compare.py
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/phase2-checkpoint-onepass-panel-compare.txt
+ create mode 100644 Planning/stages/stage-19-factor-risk-model/artifacts/phase2-checkpoint-onepass-factor-returns-compare.py
+ create mode 100644 Planning/stages/stage-19-factor-risk-model/artifacts/phase2-checkpoint-onepass-factor-returns-compare.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-final-checks.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-main-lake-readback.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-make-check.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-red.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-scratch-readback.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-scratch-rebuild.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-swap.sh
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-onepass-swap.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier3-ci.txt
+ create mode 100644 tests/unit/data/fundamentals/test_fundamentals_average.py
+ create mode 100644 tests/unit/quant/factors/test_factor_share_fallback.py
+merge exit 0
+2c2d5e2 phase-2 checkpoint: one pass (EBITDA, share-count fallback, former sectors applied)
+2b8ed9c phase-2 checkpoint: push and CI records (Tier 3)
+849143c phase-2 checkpoint: merged-main check records (Tier 3)
+tree main: 9ff64764ba4dcbaff14fe3cecb00b7930669bb8b  tree branch: 9ff64764ba4dcbaff14fe3cecb00b7930669bb8b
+=== make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+386 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 157 source files
+uv run pytest -q -n auto --dist loadfile
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  1%]
+........................................................................ [  3%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 17%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 38%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 46%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 55%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 67%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 72%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 77%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 82%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+4168 passed in 158.58s (0:02:38)
+make check exit 0
+=== uv run pytest -m integration -q -rs (main lake)
+.................................ssss........sssssssssss                 [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:61: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:76: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:91: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:119: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:59: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:65: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:75: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:82: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:110: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:123: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:86: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:96: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:116: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:129: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:143: set ATLAS_RISK_MODEL_FULL=1 for the 2018-2024 calibration
+41 passed, 15 skipped, 4183 deselected in 127.29s (0:02:07)
+integration exit 0
+=== git branch --merged main
++ claude/phase-two-checkpoint-stages-a4dbeb
+=== after
+## main...origin/main [ahead 2]
