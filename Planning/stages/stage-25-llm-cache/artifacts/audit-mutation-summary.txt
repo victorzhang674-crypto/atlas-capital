@@ -1,0 +1,9 @@
+# Stage 25 audit: mutmut 3.8.1 over src/atlas/llm/cache.py + src/atlas/llm/gateway.py, tests tests/unit/llm
+## run 1 (after the A1-A5 fixes, before the A6 tests)
+865 🫥 0  ⏰ 0  🤔 0  🙁 102  🔇 0  🧙 0
+35.48 mutations/second
+
+## run 2 (after the A6 tests)
+ 910 🫥 0  ⏰ 0  🤔 0  🙁 57  🔇 0  🧙 0
+36.43 mutations/second
+

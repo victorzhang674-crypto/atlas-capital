@@ -30,7 +30,7 @@ from atlas.llm.schemas import ProviderRequest, ToolCall, Usage
 CacheMode = LLMCacheMode
 """`off`, `read_write`, `replay_only` or `record` (see `LLMCacheConfig`)."""
 
-KEY_VERSION = 1
+KEY_VERSION = 2
 """Version of the key payload's shape: bump it if `key_payload` changes (every key changes)."""
 
 PROMPT_VERSION_LABEL = "prompt_version"
@@ -44,13 +44,14 @@ def schema_fingerprint(schema: type[BaseModel]) -> str:
 
 
 def key_payload(request: ProviderRequest, *, provider: str) -> dict[str, Any]:
-    """What the key hashes: the provider, the model, the messages as sent, the schema name and
-    fingerprint, the temperature, the tools, the thinking mode and the prompt template
-    version (`request.metadata["prompt_version"]`, empty when absent).
+    """What the key hashes: everything the provider is sent that can change the answer — the
+    provider, the model, the messages as sent, the schema name and fingerprint, the
+    temperature (as a float: 1 and 1.0 are one value), the output token cap (an answer cut at
+    one cap is not the answer to a larger one), the tools, the thinking mode — and the prompt
+    template version (`request.metadata["prompt_version"]`, empty when absent).
 
-    Not in it: the labels `agent` / `step`, the token cap and the timeout. They do not change
-    what the model is asked, so two agents with the same question share an answer and a config
-    change of the cap does not void a recorded backtest.
+    Not in it: the labels `agent` / `step` and the timeout. They do not change what the model
+    is asked, so two agents with the same question share an answer.
     """
     schema = request.schema
     return {
@@ -63,7 +64,8 @@ def key_payload(request: ProviderRequest, *, provider: str) -> dict[str, Any]:
             if schema is None
             else {"name": schema.__name__, "fingerprint": schema_fingerprint(schema)}
         ),
-        "temperature": request.temperature,
+        "temperature": float(request.temperature),
+        "max_tokens": request.max_tokens,
         "tools": [t.model_dump(mode="json") for t in request.tools],
         "thinking": request.thinking,
         "prompt_version": request.metadata.get(PROMPT_VERSION_LABEL, ""),
@@ -206,7 +208,10 @@ class LLMCache:
         return tuple(_entry_from_row(r) for r in frame.to_dict(orient="records"))
 
     def stats(self) -> CacheStats:
-        """Counts, size and age range of the stored entries."""
+        """Counts, size and age range of the stored entries (computed in DuckDB when the
+        cache has a database, without reading the stored JSON into memory)."""
+        if self._database is not None:
+            return self._database_stats(self._database)
         found = self.entries()
         models: dict[str, int] = {}
         for e in found:
@@ -222,6 +227,27 @@ class LLMCache:
             models=FrozenDict(models),
             oldest=found[0].created_at if found else None,
             newest=max(e.created_at for e in found) if found else None,
+        )
+
+    @staticmethod
+    def _database_stats(database: Database) -> CacheStats:
+        totals = database.query(
+            "SELECT count(*) AS n, coalesce(sum(octet_length(encode(request_json)) "
+            "+ octet_length(encode(response_json)) + octet_length(encode(usage))), 0) AS size, "
+            "min(created_at) AS oldest, max(created_at) AS newest FROM llm_cache"
+        ).iloc[0]
+        per_model = database.query(
+            "SELECT model, count(*) AS n FROM llm_cache GROUP BY model ORDER BY model"
+        )
+        n = int(totals["n"])
+        return CacheStats(
+            entries=n,
+            bytes=int(totals["size"]),
+            models=FrozenDict(
+                {str(m): int(c) for m, c in zip(per_model["model"], per_model["n"], strict=True)}
+            ),
+            oldest=totals["oldest"].to_pydatetime() if n else None,
+            newest=totals["newest"].to_pydatetime() if n else None,
         )
 
     def prune(self, before: datetime) -> int:

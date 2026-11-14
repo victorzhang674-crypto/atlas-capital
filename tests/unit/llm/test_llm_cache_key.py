@@ -59,8 +59,9 @@ def test_key_is_a_sha256_hex_digest_and_is_stable() -> None:
 
 
 def test_the_key_is_pinned() -> None:
-    # Changing how keys are built silently voids every recorded backtest: bump deliberately.
-    assert key() == ("fbbf2c4ba2b0886eb97ae23ffc5e4f76cf8bd50c18afc4aaf8d2817e0227af4b")
+    # Changing how keys are built silently voids every recorded backtest: bump deliberately
+    # (KEY_VERSION 2 since the Stage 25 audit: the token cap and a float temperature).
+    assert key() == ("811c14fce624a02ce17e2d46e9cb77b1c7036c75a355364ce1dd8a38046910d1")
 
 
 def test_dict_order_is_irrelevant() -> None:
@@ -122,15 +123,24 @@ def test_tool_order_changes_the_key() -> None:
     assert key(make(tools=(a, b))) != key(make(tools=(b, a)))
 
 
-def test_labels_and_caps_do_not_change_the_key() -> None:
-    # agent / step / run labels and the token cap do not change what the model is asked.
+def test_labels_and_the_timeout_do_not_change_the_key() -> None:
+    # agent / step / run labels and the timeout do not change what the model is asked.
     other = make(
         metadata=FrozenDict({"agent": "pm", "step": "other", "prompt_version": "v1", "x": "y"}),
-        max_tokens=100,
         timeout_seconds=5.0,
         tier="deep",
     )
     assert key(other) == key()
+
+
+def test_the_token_cap_changes_the_key() -> None:  # audit A2
+    # The cap is sent to the provider: an answer cut at 100 tokens is not the answer at 800.
+    assert key(make(max_tokens=100)) != key()
+
+
+def test_an_int_temperature_is_the_same_value_as_its_float() -> None:  # audit A3
+    assert key(make(temperature=1)) == key(make(temperature=1.0))
+    assert key_payload(make(temperature=1), provider="fake")["temperature"] == 1.0
 
 
 def test_tool_call_turns_are_part_of_the_key() -> None:
@@ -164,7 +174,7 @@ def test_the_key_without_a_prompt_version_is_pinned() -> None:  # audit (mutatio
     # An absent prompt_version hashes as "" (not null): recordings made before Stage 26's
     # prompt registry must keep their keys.
     assert key(make(metadata=FrozenDict({}))) == (
-        "61c9cc1258cad4edf6adcfb5d99ae7ec6bc10f27aa36dfc444e38526fef2bd9e"
+        "268f04f669a8be8ac9b8fd41420a2dd8f05be09514104b9a1587e21dd82518c9"
     )
     assert key_payload(make(metadata=FrozenDict({})), provider="fake")["prompt_version"] == ""
 

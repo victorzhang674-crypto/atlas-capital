@@ -19,6 +19,7 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Annotated
 
+import duckdb
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -89,7 +90,7 @@ def _open(ctx: typer.Context, store: Path | None, console: Console, *, read_only
         raise typer.Exit(1)
     try:
         return Database(Lake(root), read_only=read_only)
-    except AtlasError as exc:  # pragma: no cover - defensive: an unreadable database file
+    except (AtlasError, duckdb.Error) as exc:  # corrupt, or held open by another process
         console.print(f"[red]Cannot open the cache:[/red] {exc}")
         raise typer.Exit(1) from None
 

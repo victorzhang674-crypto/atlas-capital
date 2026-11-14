@@ -29,4 +29,13 @@ Output of commands run in this stage's chat (Project.md Rule 1). Raw output is u
 - Merge into `main`: fast-forward 2eaf072 → **d1ef62d** (2026-11-14, run in the owner's Terminal panel: the sandbox cannot write the main checkout); trees equal. Merged result: `uv run pytest -q` → 4348 passed, 71 deselected, exit 0 · `make check` → exit 0 (ruff clean, 401 files formatted, mypy clean, 4345 passed + 3 timing passed) · `git branch --merged main` lists the stage branch · raw: [merged-main-check.txt](artifacts/merged-main-check.txt), script [merged-main-check.sh](artifacts/merged-main-check.sh). pushed (next line)
 - Pushed 2026-11-14 on the owner's go-ahead ("Yes, push"): `main` 2eaf072..c50a541 and the stage branch. CI (GitHub Actions, `make check` + `make test-integration`) on c50a541: **`main` run 43593079634 success**, stage-branch run 43593079719 success · raw: [ci-runs-c50a541.json](artifacts/ci-runs-c50a541.json)
 
+#### Post-DONE audit — 2026-11-14
+Owner: "please fully audit this stage". Five defects fixed test-first (A1 replay fidelity under concurrency and in `record` mode, A2 token cap in the key, A3 int/float temperature, A4 CLI crash on an unreadable database, A5 `attempts`/`cache_hit` consistency) and one test gap closed (A6) — [audit report](artifacts/audit-2026-11-14-report.md).
+- Probes: 9 failed before the fixes → 14 passed after (incl. both acceptance tests) · [red](artifacts/audit-probes-red.txt), [green](artifacts/audit-probes-green.txt)
+- `make check` → exit 0 (ruff clean, 402 files formatted, mypy clean on 159 files, 4359 passed + 3 timing) · [audit-make-check.txt](artifacts/audit-make-check.txt)
+- `uv run pytest -q` → **4362 passed, 71 deselected**, exit 0 · [audit-pytest.txt](artifacts/audit-pytest.txt)
+- Verify `uv run pytest tests/unit/llm -q` → **281 passed, 2 deselected**, exit 0 · [audit-verify-pytest-unit-llm.txt](artifacts/audit-verify-pytest-unit-llm.txt)
+- Coverage 100% on every touched module; mutation `cache.py` + `gateway.py` 910 / 967 killed, survivors reviewed · [audit-coverage.txt](artifacts/audit-coverage.txt), [audit-mutation-summary.txt](artifacts/audit-mutation-summary.txt)
+- Acceptance criteria re-checked: both still hold (`test_the_same_scripted_agent_twice_in_read_write_makes_one_provider_call`, `test_replay_only_with_a_miss_fails_loudly_and_never_calls`)
+
 **Result:** ALL CRITERIA VERIFIED

@@ -1,0 +1,59 @@
+_database_stats__mutmut_4: - "SELECT count(*) AS n, coalesce(sum(octet_length(encode(request_json)) " + "select count(*) as n, coalesce(sum(octet_length(encode(request_json)) " 
+_database_stats__mutmut_7: - "+ octet_length(encode(response_json)) + octet_length(encode(usage))), 0) AS size, " + "+ octet_length(encode(response_json)) + octet_length(encode(usage))), 0) as size, " 
+_database_stats__mutmut_10: - "min(created_at) AS oldest, max(created_at) AS newest FROM llm_cache" + "min(created_at) as oldest, max(created_at) as newest from llm_cache" 
+_database_stats__mutmut_16: - "SELECT model, count(*) AS n FROM llm_cache GROUP BY model ORDER BY model" + "select model, count(*) as n from llm_cache group by model order by model" 
+_database_stats__mutmut_40: - {str(m): int(c) for m, c in zip(per_model["model"], per_model["n"], strict=True)} + {str(m): int(c) for m, c in zip(per_model["model"], per_model["n"], strict=None)} 
+_database_stats__mutmut_43: - {str(m): int(c) for m, c in zip(per_model["model"], per_model["n"], strict=True)} + {str(m): int(c) for m, c in zip(per_model["model"], per_model["n"], )} 
+_database_stats__mutmut_48: - {str(m): int(c) for m, c in zip(per_model["model"], per_model["n"], strict=True)} + {str(m): int(c) for m, c in zip(per_model["model"], per_model["n"], strict=False)} 
+_cached__mutmut_20: - with self._key_locks[int(key[:8], 16) % KEY_LOCK_STRIPES]: + with self._key_locks[int(16) % KEY_LOCK_STRIPES]: 
+_cached__mutmut_22: - with self._key_locks[int(key[:8], 16) % KEY_LOCK_STRIPES]: + with self._key_locks[int(key[:9], 16) % KEY_LOCK_STRIPES]: 
+_cached__mutmut_23: - with self._key_locks[int(key[:8], 16) % KEY_LOCK_STRIPES]: + with self._key_locks[int(key[:8], 17) % KEY_LOCK_STRIPES]: 
+_cached_locked__mutmut_19: - "llm.cache_miss", + None, 
+_cached_locked__mutmut_20: - agent=request.metadata.get("agent"), + agent=None, 
+_cached_locked__mutmut_21: - step=request.metadata.get("step"), + step=None, 
+_cached_locked__mutmut_22: - key=key, + key=None, 
+_cached_locked__mutmut_23: - "llm.cache_miss", 
+_cached_locked__mutmut_24: - agent=request.metadata.get("agent"), 
+_cached_locked__mutmut_25: - step=request.metadata.get("step"), 
+_cached_locked__mutmut_26: - key=key, - ) + ) 
+_cached_locked__mutmut_27: - "llm.cache_miss", + "XXllm.cache_missXX", 
+_cached_locked__mutmut_28: - "llm.cache_miss", + "LLM.CACHE_MISS", 
+_cached_locked__mutmut_29: - agent=request.metadata.get("agent"), + agent=request.metadata.get(None), 
+_cached_locked__mutmut_30: - agent=request.metadata.get("agent"), + agent=request.metadata.get("XXagentXX"), 
+_cached_locked__mutmut_31: - agent=request.metadata.get("agent"), + agent=request.metadata.get("AGENT"), 
+_cached_locked__mutmut_32: - step=request.metadata.get("step"), + step=request.metadata.get(None), 
+_cached_locked__mutmut_33: - step=request.metadata.get("step"), + step=request.metadata.get("XXstepXX"), 
+_cached_locked__mutmut_34: - step=request.metadata.get("step"), + step=request.metadata.get("STEP"), 
+_cached_locked__mutmut_39: - f"{request.metadata.get('agent')!r}, step={request.metadata.get('step')!r}); " + f"{request.metadata.get(None)!r}, step={request.metadata.get('step')!r}); " 
+_cached_locked__mutmut_40: - f"{request.metadata.get('agent')!r}, step={request.metadata.get('step')!r}); " + f"{request.metadata.get('XXagentXX')!r}, step={request.metadata.get('step')!r}); " 
+_cached_locked__mutmut_41: - f"{request.metadata.get('agent')!r}, step={request.metadata.get('step')!r}); " + f"{request.metadata.get('AGENT')!r}, step={request.metadata.get('step')!r}); " 
+_cached_locked__mutmut_42: - f"{request.metadata.get('agent')!r}, step={request.metadata.get('step')!r}); " + f"{request.metadata.get('agent')!r}, step={request.metadata.get(None)!r}); " 
+_cached_locked__mutmut_43: - f"{request.metadata.get('agent')!r}, step={request.metadata.get('step')!r}); " + f"{request.metadata.get('agent')!r}, step={request.metadata.get('XXstepXX')!r}); " 
+_cached_locked__mutmut_44: - f"{request.metadata.get('agent')!r}, step={request.metadata.get('step')!r}); " + f"{request.metadata.get('agent')!r}, step={request.metadata.get('STEP')!r}); " 
+_cached_locked__mutmut_45: - "the prompt or the data changed, or the call was never recorded " + "XXthe prompt or the data changed, or the call was never recorded XX" 
+_cached_locked__mutmut_46: - "the prompt or the data changed, or the call was never recorded " + "THE PROMPT OR THE DATA CHANGED, OR THE CALL WAS NEVER RECORDED " 
+_cached_locked__mutmut_47: - "(record it with llm.cache.mode read_write or record)", + "XX(record it with llm.cache.mode read_write or record)XX", 
+_cached_locked__mutmut_48: - "(record it with llm.cache.mode read_write or record)", + "(RECORD IT WITH LLM.CACHE.MODE READ_WRITE OR RECORD)", 
+_cached_locked__mutmut_86: - created_at=self._clock.now().astimezone(UTC), + created_at=self._clock.now().astimezone(None), 
+_replay__mutmut_14: - now = self._clock.now().astimezone(UTC) + now = self._clock.now().astimezone(None) 
+_replay__mutmut_45: - call_id=str(ULID()), + call_id=str(None), 
+_replay__mutmut_58: - "llm.cache_hit", + None, 
+_replay__mutmut_59: - agent=record.agent, + agent=None, 
+_replay__mutmut_60: - step=record.step, + step=None, 
+_replay__mutmut_61: - tier=record.tier, + tier=None, 
+_replay__mutmut_62: - model=record.model, + model=None, 
+_replay__mutmut_63: - key=entry.key, + key=None, 
+_replay__mutmut_64: - recorded_at=entry.created_at.isoformat(), + recorded_at=None, 
+_replay__mutmut_65: - saved_usd=stored.cost_usd, + saved_usd=None, 
+_replay__mutmut_66: - latency_ms=latency_ms, + latency_ms=None, 
+_replay__mutmut_67: - "llm.cache_hit", 
+_replay__mutmut_68: - agent=record.agent, 
+_replay__mutmut_69: - step=record.step, 
+_replay__mutmut_70: - tier=record.tier, 
+_replay__mutmut_71: - model=record.model, 
+_replay__mutmut_72: - key=entry.key, 
+_replay__mutmut_73: - recorded_at=entry.created_at.isoformat(), 
+_replay__mutmut_74: - saved_usd=stored.cost_usd, 
+_replay__mutmut_75: - latency_ms=latency_ms, - ) + ) 
+_replay__mutmut_76: - "llm.cache_hit", + "XXllm.cache_hitXX", 
+_replay__mutmut_77: - "llm.cache_hit", + "LLM.CACHE_HIT", 

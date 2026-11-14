@@ -2,6 +2,7 @@
 
 import math
 import re
+import threading
 import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import replace
@@ -46,6 +47,10 @@ REPAIR_RETRIES = 1
 
 MAX_ERROR_CHARS = 2000
 """A validation error is cut to this many characters in the repair message and in errors."""
+
+KEY_LOCK_STRIPES = 64
+"""Number of locks that serialise calls with the same cache key (keys share a stripe by
+their leading hex digits)."""
 
 _log = get_logger(__name__)
 
@@ -118,6 +123,8 @@ class LLMGateway:
             raise ConfigError(f"cache mode {mode!r} needs a cache: pass `cache=LLMCache(...)`")
         self._cache = cache
         self._cache_mode: CacheMode = mode
+        self._key_locks = tuple(threading.Lock() for _ in range(KEY_LOCK_STRIPES))
+        self._recorded: set[str] = set()
         self._provider = provider
         self._llm = config.llm
         self._ledger = ledger if ledger is not None else CostLedger()
@@ -210,13 +217,32 @@ class LLMGateway:
             raise
 
     def _cached(self, request: ProviderRequest, price: ModelPrice) -> LLMResult:
-        """`_run` behind the record/replay cache (see `cache_mode`)."""
+        """`_run` behind the record/replay cache (see `cache_mode`).
+
+        Calls with the same key are serialised, so concurrent identical misses make one
+        provider call and all get the recorded answer. In `record` mode each key is re-recorded
+        once per gateway; later identical calls replay that fresh recording. Both keep the
+        spec's promise (§3 principle 3) that a replay gives the results the recording run saw.
+        """
         cache, mode = self._cache, self._cache_mode
         if cache is None or mode == "off":
             return self._run(request, price)
         provider = self._provider.name
         key = cache_key(request, provider=provider)
-        if mode in ("read_write", "replay_only"):
+        with self._key_locks[int(key[:8], 16) % KEY_LOCK_STRIPES]:
+            return self._cached_locked(request, price, cache, mode, provider, key)
+
+    def _cached_locked(
+        self,
+        request: ProviderRequest,
+        price: ModelPrice,
+        cache: LLMCache,
+        mode: CacheMode,
+        provider: str,
+        key: str,
+    ) -> LLMResult:
+        """`_cached` with the key's lock held."""
+        if mode != "record" or key in self._recorded:
             started = self._timer()
             entry = cache.get(key)
             if entry is not None:
@@ -254,6 +280,8 @@ class LLMGateway:
             ),
             replace=mode == "record",
         )
+        if mode == "record":
+            self._recorded.add(key)
         return result
 
     def _replay(self, request: ProviderRequest, entry: CacheEntry, started: float) -> LLMResult:

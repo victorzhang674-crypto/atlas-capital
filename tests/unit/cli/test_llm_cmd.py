@@ -194,3 +194,14 @@ def test_a_bad_config_dir_without_store_exits_1(tmp_path: Path) -> None:
     )
     assert result.exit_code == 1
     assert "Configuration error" in _plain(result.output)
+
+
+def test_an_unreadable_database_exits_1_without_a_traceback(tmp_path: Path) -> None:
+    # Audit A4: DuckDB refuses a corrupt file (or one another process holds open).
+    root = tmp_path / "broken"
+    root.mkdir()
+    (root / "atlas.duckdb").write_bytes(b"not a duckdb file" * 100)
+    result = invoke("stats", "--store", str(root))
+    assert result.exit_code == 1
+    assert "Cannot open the cache" in _plain(result.output)
+    assert result.exception is None or isinstance(result.exception, SystemExit)

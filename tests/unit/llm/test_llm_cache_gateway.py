@@ -97,11 +97,13 @@ def test_replay_only_replays_what_was_recorded(make_gateway: MakeGateway) -> Non
     assert (replayed.content, replayed.cache_hit, fake.calls) == ("buy", True, [])
 
 
-def test_record_always_calls_and_replaces_the_stored_answer(make_gateway: MakeGateway) -> None:
+def test_record_calls_again_and_replaces_the_stored_answer(make_gateway: MakeGateway) -> None:
+    # Each recording gateway calls the provider for a key once and replaces the stored answer
+    # (audit A1: later identical calls of the same gateway replay that fresh answer).
     fake = FakeLLM({"analyst": ["one", "two"]})
     cache = LLMCache()
-    recorder = make_gateway(fake, cache=cache, cache_mode="record")
-    assert [agent_run(recorder).content, agent_run(recorder).content] == ["one", "two"]
+    assert agent_run(make_gateway(fake, cache=cache, cache_mode="record")).content == "one"
+    assert agent_run(make_gateway(fake, cache=cache, cache_mode="record")).content == "two"
     assert len(fake.calls) == 2 and cache.stats().entries == 1
     replay = make_gateway(FakeLLM(), cache=cache, cache_mode="replay_only")
     assert agent_run(replay).content == "two"  # the newest recording wins

@@ -147,6 +147,15 @@ class LLMResult(AtlasModel):
     finish_reason: str = "stop"
     attempts: Annotated[int, Field(ge=0)] = 1
 
+    @model_validator(mode="after")
+    def _attempts_match_cache_hit(self) -> Self:
+        if (self.attempts == 0) != self.cache_hit:
+            raise ValueError(
+                f"attempts ({self.attempts}) must be 0 exactly when the cache answered "
+                f"(cache_hit={self.cache_hit})"
+            )
+        return self
+
 
 @dataclass(frozen=True)
 class ProviderRequest:
