@@ -1074,6 +1074,7 @@ def test_quality_defaults() -> None:  # Stage 13 D1
     assert (q.outlier_vol_window, q.outlier_min_returns, q.outlier_min_daily_vol) == (63, 20, 0.005)
     assert q.split_ratios == (2.0, 3.0, 4.0, 5.0, 8.0, 10.0, 15.0, 20.0, 1.5)
     assert (q.split_ratio_tolerance, q.fundamentals_jump_ratio) == (0.03, 10.0)
+    assert (q.tick_size, q.stale_min_move_ticks) == (0.01, 2.0)
     assert q.macro_max_gap_days.model_dump() == {
         "daily": 7, "weekly": 14, "monthly": 45, "quarterly": 135, "annual": 400
     }  # fmt: skip
@@ -1300,7 +1301,7 @@ def test_quant_risk_model_defaults() -> None:  # Stage 18 D1
     assert r == RiskModelConfig()
     assert r.model_dump() == {
         "min_history": 63, "missing": "pairwise", "max_condition": 1.0e5,
-        "default_method": "ledoit_wolf", "ewma_lambda": 0.94,
+        "default_method": "ledoit_wolf", "ewma_lambda": 0.94, "lookback": 252,
         "volatility": {
             "method": "blend", "realised_window": 21, "garch_min_obs": 252,
             "blend_weights": {"ewma": 0.4, "garch": 0.4, "realised": 0.2},

@@ -116,3 +116,8 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Code files changed: `src/atlas/data/quality.py`, `src/atlas/data/view.py`. Tests: `tests/unit/data/test_quality.py`, `tests/unit/data/test_view_pit.py`.
 - Still open (Backlog): the full report itself is as slow as before (`atlas data quality`, the sync's `quality` step); making `resolve_concept` / `quarterly_values` cheaper is Tier 3 of the report.
 - Commit `2f81f0e` (phase-2 checkpoint); merged into `main` by fast-forward from `f0b4d01` in the owner's Terminal panel; on merged `main`: `make check` → exit 0, 4068 passed, 38 deselected; integration → 8 passed, 15 skipped · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-merged-main-check.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-merged-main-check.txt). Not pushed yet (owner's go-ahead pending).
+
+## 2026-11-14 — Phase 2 checkpoint, Tier 4 (owner: "Start Tier 4 and fix the gaps like what is being opened in the backlog."): tick-aware stale price; DataView.ciks
+
+- Backlog (BIL false alarm): `stale_price` flags a run of unchanged closes only for a symbol whose median nonzero daily close change in the window is at least `stale_min_move_ticks` (2) ticks of `tick_size` (0.01 USD); a symbol that never moves is still flagged. On the main lake's month-end decisions 2015-2026 it removes exactly BIL's 14 issues and keeps every real frozen feed (SBNY 6, SW 2, STI 1, FERG 1) · [artifacts/phase2-checkpoint-tier4-stale-price-compare.txt](artifacts/phase2-checkpoint-tier4-stale-price-compare.txt).
+- `DataView.ciks(symbols)` (issuer CIK from facts known at the as-of; for share classes), in the view's API, leak and block tables.

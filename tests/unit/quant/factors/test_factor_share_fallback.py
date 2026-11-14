@@ -395,3 +395,94 @@ def test_panel_excludes_the_listed_symbols_from_the_fallback(lake_without: Lake)
     assert math.isnan(p.market.loc["EEE", "market_cap"])
     assert p.market.loc["EEE", "shares_source"] is None
     assert p.market.loc["CCC", "shares_source"] == "average"
+
+
+# --- Tier 4 / backlog: a wrong cover-page count, and averages without net income / EPS -------
+
+
+def test_a_count_far_from_a_confirmed_average_is_replaced_by_it() -> None:
+    """HBAN's cover count was stated in thousands (x934 against net income / EPS) while its
+    weighted average was right: with `max_ratio`, a fresh count more than that factor from
+    a fresh confirmed average (both in today's shares) is the wrong one."""
+    panel = panel_frame(
+        {
+            "AAA": {"total_debt": 0.0, "cash_and_equivalents": 0.0},  # count 1000x too small
+            "BBB": {"total_debt": 0.0, "cash_and_equivalents": 0.0},  # count 2x the average
+        }
+    )
+    prices = prices_frame([(s, date(2024, 2, 29), 10.0) for s in ("AAA", "BBB")])
+    splits = splits_frame(SESSIONS, symbols=["AAA", "BBB"])
+    counts = adjusted_shares(
+        _counts(("AAA", date(2024, 1, 20), 0.8), ("BBB", date(2024, 1, 20), 2000.0)), splits
+    )
+    averages = average_shares(
+        _averages(("AAA", Q4, 800.0, date(2024, 1, 22)), ("BBB", Q4, 1000.0, date(2024, 1, 22))),
+        splits,
+    )
+    m = compute_market(
+        prices, counts, splits, panel, day=DAY, max_staleness_days=400, fallback=averages,
+        max_ratio=3.0,
+    )  # fmt: skip
+    assert (m.loc["AAA", "shares"], m.loc["AAA", "shares_source"]) == (800.0, "average")
+    assert m.loc["AAA", "market_cap"] == 8000.0
+    assert (m.loc["BBB", "shares"], m.loc["BBB", "shares_source"]) == (2000.0, "reported")
+    plain = compute_market(  # without max_ratio a fresh count is never replaced
+        prices, counts, splits, panel, day=DAY, max_staleness_days=400, fallback=averages
+    )
+    assert plain.loc["AAA", "shares"] == 0.8 and plain.loc["AAA", "shares_source"] == "reported"
+
+
+def test_replacing_a_count_is_logged() -> None:
+    from structlog.testing import capture_logs
+
+    panel = panel_frame({"AAA": {"total_debt": 0.0, "cash_and_equivalents": 0.0}})
+    prices = prices_frame([("AAA", date(2024, 2, 29), 10.0)])
+    splits = splits_frame(SESSIONS, symbols=["AAA"])
+    counts = adjusted_shares(_counts(("AAA", date(2024, 1, 20), 0.8)), splits)
+    averages = average_shares(_averages(("AAA", Q4, 800.0, date(2024, 1, 22))), splits)
+    with capture_logs() as logs:
+        compute_market(
+            prices, counts, splits, panel, day=DAY, max_staleness_days=400, fallback=averages,
+            max_ratio=3.0,
+        )  # fmt: skip
+    events = [e for e in logs if e["event"] == "factors.share_count_replaced"]
+    assert len(events) == 1 and events[0]["symbols"] == ["AAA"]
+
+
+def test_an_average_without_net_income_eps_is_confirmed_by_an_old_count() -> None:
+    """Molson Coors and Airbnb have no TTM net income / EPS at some dates; their latest cover
+    count, however old (in today's shares), can confirm the average instead."""
+    splits = splits_frame(SESSIONS, symbols=["TAP", "ABNB", "BAD"])
+    hist = _averages(
+        ("TAP", Q4, 210.0, date(2024, 1, 22)),
+        ("ABNB", Q4, 640.0, date(2024, 1, 22)),
+        ("BAD", Q4, 0.21, date(2024, 1, 22)),  # in millions: a unit error
+    )
+    old_counts = {"TAP": 200.0, "BAD": 210.0}  # no count at all for ABNB
+    out = average_shares(hist, splits, confirm={}, counts=old_counts, max_ratio=3.0)
+    assert [(r.symbol, r.shares) for r in out.itertuples()] == [("TAP", 210.0)]
+    # an implied count, when there is one, decides (the old count is not consulted)
+    out = average_shares(hist, splits, confirm={"BAD": 0.2}, counts=old_counts, max_ratio=3.0)
+    assert [r.symbol for r in out.itertuples()] == ["BAD", "TAP"]
+
+
+def test_panel_replaces_a_wrong_count_and_confirms_by_old_counts(tmp_path: Path) -> None:
+    """Through `factor_panel`: FFF's latest cover count is filed a thousand times too small
+    (its weighted average and net income / EPS agree): the cap uses the average."""
+    world = build_factor_world(_lake(tmp_path))
+    facts = world.lake.read_table("fundamentals_facts")
+    latest = (
+        facts[(facts["symbol"] == "FFF") & (facts["tag"] == "EntityCommonStockSharesOutstanding")]
+        .sort_values("period_end")
+        .tail(1)
+    )
+    world.lake.write_table(
+        "fundamentals_facts", latest.assign(value=latest["value"] / 1000), mode="upsert"
+    )
+    fff = next(c for c in world.companies if c.symbol == "FFF")
+    p = factor_panel(DataView(world.lake, AS_OF), config=CFG)
+    row = p.market.loc["FFF"]
+    assert row["shares_source"] == "average"
+    assert row["shares"] == pytest.approx(fff.shares * (1 + fff.share_drift) ** 15, rel=1e-12)
+    others = p.market.drop(index="FFF")
+    assert (others["shares_source"] == "reported").all()

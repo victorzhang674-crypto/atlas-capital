@@ -1,0 +1,48 @@
+=== former members (not current) whose price bars all start after their index exit: main lake, read only, 2026-11-14T06:01Z
+symbol member_from  member_to  first_bar   last_bar  bars  actions                      name
+   ADS  2013-12-23 2020-06-22 2020-07-27 2022-04-01   424       21     Alliance Data Systems
+   ADT  2012-10-01 2016-05-03 2018-01-19 2026-10-30  2208       35                       ADT
+  ALTR  1957-03-04 2015-12-29 2020-07-27 2025-03-25  1172        0                    Altera
+   APC  1957-03-04 2019-08-09 2026-02-12 2026-10-30   181        2        Anadarko Petroleum
+  ARNC  2016-11-01 2020-04-01 2020-07-27 2023-08-17   768       14                   Arconic
+  BBBY  1957-03-04 2017-07-26 2026-07-17 2026-10-30    75        0         Bed Bath & Beyond
+    CA  1957-03-04 2018-11-06 2024-01-05 2026-05-06   585       39           CA Technologies
+   CAM  1957-03-04 2016-04-04 2025-10-06 2026-10-30   270       12     Cameron International
+   CHK  1957-03-04 2018-03-19 2021-02-10 2024-10-01   916       15         Chesapeake Energy
+  CSRA  2015-12-01 2018-04-04 2026-08-12 2026-10-30    57        1                      CSRA
+   DNB  1957-03-04 2017-04-05 2020-07-27 2025-08-25  1274       22          Dun & Bradstreet
+   DNR  1957-03-04 2015-03-23 2020-07-27 2020-07-28     2        0         Denbury Resources
+    DO  1957-03-04 2016-09-30 2022-03-30 2024-09-03   610        0 Diamond Offshore Drilling
+   EMC  1957-03-04 2016-09-08 2023-05-15 2026-10-30   870        6           EMC Corporation
+  ENDP  2015-01-27 2017-03-02 2020-07-27 2022-08-25   526        0        Endo International
+    FL  2016-04-04 2019-08-09 2020-07-27 2025-09-05  1282       31               Foot Locker
+  INFO  2017-06-02 2022-03-02 2024-10-10 2026-10-30   516        2                IHS Markit
+   JWN  1957-03-04 2020-06-22 2020-07-27 2025-05-20  1208       31                 Nordstrom
+   LEG  1957-03-04 2021-12-20 2026-08-26 2026-08-26     1        0           Leggett & Platt
+   LLL  1957-03-04 2019-07-01 2021-10-13 2022-10-06   191       14           L3 Technologies
+    LM  1957-03-04 2016-12-02 2020-07-27 2020-07-31     5       18                Legg Mason
+   MNK  2014-08-18 2017-07-26 2020-07-27 2023-08-28   262        0              Mallinckrodt
+   MON  1957-03-04 2018-06-07 2021-03-18 2022-12-23   197       10                  Monsanto
+    NE  1957-03-04 2015-07-20 2021-06-09 2026-10-30  1356       13         Noble Corporation
+   NFX  2010-12-17 2019-02-15 2026-07-07 2026-10-30    83        0      Newfield Exploration
+   PCL  1957-03-04 2016-02-22 2025-08-05 2026-10-30   313       15         Plum Creek Timber
+  PDCO  1957-03-04 2018-03-19 2020-07-27 2025-04-17  1189       36       Patterson Companies
+   PLL  1957-03-04 2015-08-28 2020-07-27 2025-08-29  1269        0          Pall Corporation
+   POM  1957-03-04 2016-03-30 2025-10-08 2026-10-30   268        1            Pepco Holdings
+   QEP  2010-06-30 2015-07-01 2020-07-27 2021-03-16   161        3             QEP Resources
+  QRVO  2015-06-11 2024-12-23 2026-10-02 2026-10-02     1        0                     Qorvo
+  SBNY  2021-12-20 2023-03-15 2024-08-15 2026-10-30   555        0            Signature Bank
+    SE  1957-03-04 2017-02-28 2017-10-20 2026-10-30  2269        0            Spectra Energy
+  SPLS  1957-03-04 2017-09-18 2026-01-16 2026-10-30   199        3                   Staples
+  SRCL  1957-03-04 2018-12-03 2020-07-27 2024-11-01  1076        0                Stericycle
+   STI  1957-03-04 2019-12-09 2022-05-02 2026-10-30  1130        1            SunTrust Banks
+   SWN  1957-03-04 2017-04-04 2020-07-27 2024-09-30  1049        0       Southwestern Energy
+    TE  1957-03-04 2016-07-01 2020-01-10 2026-10-30  1711        0               TECO Energy
+  TGNA  1957-03-04 2017-06-02 2020-07-27 2026-03-20  1417       42                     Tegna
+   XEC  2014-06-20 2020-03-02 2020-07-27 2021-09-30   298       24            Cimarex Energy
+    XL  1957-03-04 2018-09-14 2020-12-22 2022-11-11   474       11                  XL Group
+total bars 28418 actions 422
+CA membership: [[datetime.date(1957, 3, 4), datetime.date(2018, 11, 6)]] bars: [datetime.date(2024, 1, 5), datetime.date(2026, 5, 6), np.int64(585)]
+POM membership: [[datetime.date(1957, 3, 4), datetime.date(2016, 3, 30)]] bars: [datetime.date(2025, 10, 8), datetime.date(2026, 10, 30), np.int64(268)]
+AA membership: [[datetime.date(1957, 3, 4), datetime.date(2016, 11, 1)]] bars: [datetime.date(2015, 1, 2), datetime.date(2026, 10, 30), np.int64(2975)]
+AVB membership: [[datetime.date(2007, 1, 10), datetime.date(2026, 8, 18)]] bars: [datetime.date(2020, 7, 27), datetime.date(2026, 8, 14), np.int64(1518)]

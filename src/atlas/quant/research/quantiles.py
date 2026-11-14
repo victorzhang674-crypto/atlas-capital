@@ -160,7 +160,7 @@ def quantile_analysis(
         counts=counts,
         spread=spread,
         spread_mean=float(spread.mean()),
-        spread_t=newey_west_tstat(spread, lag),
+        spread_t=newey_west_tstat(spread, lag, keep_gaps=True),  # rows are evaluation dates
         lags=lag,
         monotonicity=monotonicity(mean),
         daily=daily,

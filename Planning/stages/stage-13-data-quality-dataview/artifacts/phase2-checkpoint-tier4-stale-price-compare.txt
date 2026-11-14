@@ -1,0 +1,29 @@
+=== stale_price issues on the main lake, old rule against the tick-aware rule (read only), 2026-11-14T05:36Z
+2015-01-30: old ['BIL'] new []  REMOVED ['BIL']
+2015-03-31: old ['BIL'] new []  REMOVED ['BIL']
+2015-10-30: old ['BIL'] new []  REMOVED ['BIL']
+2015-11-30: old ['BIL'] new []  REMOVED ['BIL']
+2016-04-29: old ['BIL'] new []  REMOVED ['BIL']
+2016-08-31: old ['BIL'] new []  REMOVED ['BIL']
+2016-09-30: old ['BIL'] new []  REMOVED ['BIL']
+2017-04-28: old ['BIL'] new []  REMOVED ['BIL']
+2017-07-31: old ['BIL'] new []  REMOVED ['BIL']
+2017-08-31: old ['BIL'] new []  REMOVED ['BIL']
+2017-09-29: old ['BIL'] new []  REMOVED ['BIL']
+2019-08-30: old ['FERG', 'SW'] new ['FERG', 'SW']
+2020-11-30: old ['BIL'] new []  REMOVED ['BIL']
+2021-07-30: old ['SW'] new ['SW']
+2021-10-29: old ['BIL'] new []  REMOVED ['BIL']
+2022-03-31: old ['BIL'] new []  REMOVED ['BIL']
+2023-10-31: old ['STI'] new ['STI']
+2025-02-28: old ['SBNY'] new ['SBNY']
+2025-03-31: old ['SBNY'] new ['SBNY']
+2025-04-30: old ['SBNY'] new ['SBNY']
+2025-06-30: old ['SBNY'] new ['SBNY']
+2025-10-31: old ['SBNY'] new ['SBNY']
+2026-02-27: old ['SBNY'] new ['SBNY']
+
+month-end decisions with a stale_price issue: old rule 24, tick-aware 10
+removed by symbol: {'BIL': 14}
+kept by symbol: {'FERG': 1, 'SW': 2, 'STI': 1, 'SBNY': 6}
+exit 0

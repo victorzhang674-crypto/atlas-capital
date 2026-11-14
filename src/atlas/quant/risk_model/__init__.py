@@ -44,6 +44,7 @@ from atlas.quant.risk_model.covariance import (
     corr_from_cov,
     cov_from_corr,
     covariance_estimator,
+    covariance_from_view,
 )
 from atlas.quant.risk_model.etf_mapping import EtfExposures, etf_exposures, extend_model
 from atlas.quant.risk_model.factor_model import (
@@ -150,6 +151,7 @@ __all__ = [
     "corr_from_cov",
     "cov_from_corr",
     "covariance_estimator",
+    "covariance_from_view",
     "deannualise_vol",
     "etf_exposures",
     "etf_exposures_from_view",

@@ -106,10 +106,12 @@ FACTORS: tuple[FactorSpec, ...] = (
 FACTOR_NAMES: tuple[str, ...] = tuple(f.name for f in FACTORS)
 """Names of `FACTORS`, the columns of `raw_factors`."""
 
-FACTOR_DEFINITIONS_VERSION = 2
+FACTOR_DEFINITIONS_VERSION = 3
 """Part of `factor_config_hash`: raise it whenever the formula of a factor changes, so that
 panels stored under the old formula are no longer read (2: net debt / EBITDA instead of
-net debt / EBIT; the share-count fallback)."""
+net debt / EBIT; the share-count fallback. 3: a cover-page count far from a confirmed
+average is replaced by it; an average without net income / EPS is confirmed by an old
+count)."""
 
 HISTORY_CONCEPTS = (
     "revenue",
@@ -195,6 +197,7 @@ def average_shares(
     *,
     exclude: Sequence[str] = (),
     confirm: Mapping[str, float] | None = None,
+    counts: Mapping[str, float] | None = None,
     max_ratio: float = 3.0,
 ) -> pd.DataFrame:
     """The `shares_weighted_average` values of `history` (`DataView.fundamentals_history`
@@ -202,8 +205,10 @@ def average_shares(
     symbol and period end.
 
     With `confirm` (`implied_shares`), an average is kept only if, as filed, it lies within
-    a factor of `max_ratio` of its symbol's implied count (edges included); a symbol with no
-    implied count keeps none. Each kept average is divided by `splits`' factor
+    a factor of `max_ratio` of its symbol's implied count (edges included); for a symbol with
+    no implied count, within that factor of its count in `counts` (the latest cover-page
+    count of any age, in today's shares) compared in today's shares; with neither, none is
+    kept. Each kept average is divided by `splits`' factor
     (`DataView.split_factors`) on the New York day its filing became public, not at its
     period end: a filing made after a split states every share figure in the new shares,
     also for periods that ended before the split. An average is not the count on a date
@@ -211,21 +216,25 @@ def average_shares(
     rows = history[history["concept"] == "shares_weighted_average"]
     if exclude:
         rows = rows[~rows["symbol"].isin(list(exclude))]
-    if confirm is not None:
-        keep = []
-        for symbol, value in zip(rows["symbol"], rows["value"], strict=True):
-            implied = confirm.get(str(symbol))
-            keep.append(
-                implied is not None
-                and float(value) * max_ratio >= implied
-                and float(value) <= implied * max_ratio
-            )
-        rows = rows[np.asarray(keep, dtype=bool)]
     filed = [market_date(stamp.to_pydatetime()) for stamp in rows["available_at"]]
     shares = [
         float(v) / _factor_at(splits, s, d)
         for s, d, v in zip(rows["symbol"], filed, rows["value"], strict=True)
     ]
+    if confirm is not None:
+        old = counts if counts is not None else {}
+        keep = []
+        for symbol, value, today in zip(rows["symbol"], rows["value"], shares, strict=True):
+            implied = confirm.get(str(symbol))
+            if implied is not None:
+                keep.append(_within(float(value), implied, max_ratio))
+            elif str(symbol) in old:
+                keep.append(_within(today, old[str(symbol)], max_ratio))
+            else:
+                keep.append(False)
+        mask = np.asarray(keep, dtype=bool)
+        rows = rows[mask]
+        shares = [s for s, k in zip(shares, keep, strict=True) if k]
     out = pd.DataFrame(
         {
             "symbol": rows["symbol"].astype("str").to_numpy(),
@@ -234,6 +243,11 @@ def average_shares(
         }
     )
     return out.sort_values(["symbol", "period_end"], kind="stable", ignore_index=True)
+
+
+def _within(a: float, b: float, ratio: float) -> bool:
+    """`a` and `b` (positive) are within a factor of `ratio` of each other (edges included)."""
+    return a * ratio >= b and a <= b * ratio
 
 
 def _floats(column: pd.Series) -> dict[str, float]:
@@ -264,6 +278,7 @@ def compute_market(
     day: date,
     max_staleness_days: int,
     fallback: pd.DataFrame | None = None,
+    max_ratio: float | None = None,
 ) -> pd.DataFrame:
     """Market cap and EV of each symbol of `panel` (`MARKET_COLUMNS`, index `symbol`).
 
@@ -271,7 +286,11 @@ def compute_market(
     the recent window), `shares` = its latest count in `shares` (`adjusted_shares`, today's
     shares) dated within `max_staleness_days` of `day` (`shares_source` = `reported`). A
     symbol with no such count takes its latest one in `fallback` (`average_shares`), under
-    the same age rule (`shares_source` = `average`); a count in `shares` is never replaced.
+    the same age rule (`shares_source` = `average`). A count in `shares` is replaced only
+    with `max_ratio`: when a fresh average differs from it by more than that factor (both in
+    today's shares; `fallback` holds confirmed averages only, so the count is the one that is
+    wrong), the average is used (`shares_source` = `average`, logged
+    `factors.share_count_replaced`).
     Market cap = price x the count in the price session's shares (today's count x the split
     factor at the price's session, so a split after the last bar does not double the cap);
     EV = market cap + `total_debt` - `cash_and_equivalents` (NaN when either is missing). NaN
@@ -293,11 +312,21 @@ def compute_market(
     averages, average_days = latest(fallback) if fallback is not None else ({}, {})
     debts, cashes = _floats(panel["total_debt"]), _floats(panel["cash_and_equivalents"])
     rows = []
+    replaced: list[str] = []
     for symbol in panel.index:
         price, price_date = closes.get(symbol, math.nan), bar_days.get(symbol)
         count, count_date, source = math.nan, None, None
         if symbol in counts:
             count, count_date, source = counts[symbol], count_days[symbol], "reported"
+            wrong = (
+                max_ratio is not None
+                and symbol in averages
+                and _positive(count)
+                and not _within(count, averages[symbol], max_ratio)
+            )
+            if wrong:
+                count, count_date, source = averages[symbol], average_days[symbol], "average"
+                replaced.append(str(symbol))
         elif symbol in averages:
             count, count_date, source = averages[symbol], average_days[symbol], "average"
         cap = math.nan
@@ -306,6 +335,8 @@ def compute_market(
         debt, cash = debts[symbol], cashes[symbol]
         ev = cap + debt - cash if not (math.isnan(debt) or math.isnan(cash)) else math.nan
         rows.append((price, price_date, count, count_date, source, cap, ev))
+    if replaced:
+        _log.warning("factors.share_count_replaced", day=day.isoformat(), symbols=replaced)
     index = pd.Index(panel.index, name="symbol")
     out = pd.DataFrame(rows, columns=list(MARKET_COLUMNS), index=index)
     for col in ("price", "shares", "market_cap", "enterprise_value"):
@@ -568,19 +599,27 @@ def factor_panel(
     splits = view.split_factors(names, _split_lookback(view, fc, staleness))
     prices = view.prices(names, fc.max_price_age_sessions)
     shares = adjusted_shares(history, splits)
-    fallback = (
-        average_shares(
+    fallback = None
+    if fc.share_count_fallback:
+        known = shares[shares["period_end"] <= view.day]
+        latest_counts = _floats(known.groupby("symbol", sort=False)["shares"].last())
+        fallback = average_shares(
             history,
             splits,
             exclude=fc.share_count_fallback_excluded,
             confirm=implied_shares(panel, min_abs_eps=fc.min_abs_eps),
+            counts=latest_counts,
             max_ratio=fc.share_count_fallback_max_ratio,
         )
-        if fc.share_count_fallback
-        else None
-    )
     market = compute_market(
-        prices, shares, splits, panel, day=view.day, max_staleness_days=staleness, fallback=fallback
+        prices,
+        shares,
+        splits,
+        panel,
+        day=view.day,
+        max_staleness_days=staleness,
+        fallback=fallback,
+        max_ratio=fc.share_count_fallback_max_ratio if fc.share_count_fallback else None,
     )
     raw = raw_factors(
         panel,

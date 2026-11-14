@@ -19,6 +19,7 @@ from datetime import date
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 NAN = math.nan
 FIXTURES = Path(__file__).resolve().parents[3] / "fixtures" / "features"
@@ -118,13 +119,20 @@ def make_ohlcv(seed: int = 1515) -> list[dict[str, object]]:
 @dataclass(frozen=True)
 class Series:
     """One symbol on the session grid (NaN where there is no bar): adjusted open/high/low/
-    close (USD), raw dollar volume (USD)."""
+    close (USD), raw dollar volume (USD), share volume in today's shares (`None`: unknown)."""
 
     o: list[float]
     h: list[float]
     lo: list[float]
     c: list[float]
     dv: list[float]
+    sv: list[float] | None = None
+
+
+def split_factor(symbol: str, t: int) -> float:
+    """The fixture's split factor of session `t`: AAA's bars before its 2:1 split are in
+    pre-split shares (factor 1/2), every other bar in today's (1)."""
+    return 0.5 if symbol == "AAA" and t < SPLIT_AT else 1.0
 
 
 def to_series(rows: Sequence[dict[str, object]], days: Sequence[date]) -> dict[str, Series]:
@@ -132,7 +140,8 @@ def to_series(rows: Sequence[dict[str, object]], days: Sequence[date]) -> dict[s
     pos = {d: i for i, d in enumerate(days)}
     out: dict[str, Series] = {}
     for symbol in SYMBOLS:
-        cols: dict[str, list[float]] = {k: [NAN] * len(days) for k in ("o", "h", "lo", "c", "dv")}
+        keys = ("o", "h", "lo", "c", "dv", "sv")
+        cols: dict[str, list[float]] = {k: [NAN] * len(days) for k in keys}
         for row in rows:
             if row["symbol"] != symbol:
                 continue
@@ -144,6 +153,7 @@ def to_series(rows: Sequence[dict[str, object]], days: Sequence[date]) -> dict[s
             cols["lo"][t] = float(row["low"]) * f  # type: ignore[arg-type]
             cols["c"][t] = adj
             cols["dv"][t] = close * float(row["volume"])  # type: ignore[arg-type]
+            cols["sv"][t] = float(row["volume"]) / split_factor(symbol, t)  # type: ignore[arg-type]
         out[symbol] = Series(**cols)
     return out
 
@@ -321,6 +331,16 @@ def features(s: Series, bench: Series) -> dict[str, list[float]]:
         sd = std(w, 1)
         vz[t] = (logdv[t] - mean(w)) / sd if sd > FLAT_EPS else NAN
     out["volume_z_21d"] = vz
+    sv = s.sv if s.sv is not None else [NAN] * len(c)
+    logsv = [math.log(v) if ok(v) and v > 0 else NAN for v in sv]
+    svz = [NAN] * len(c)
+    for t in range(len(c)):
+        w = window(logsv, t - 1, 21) if t >= 1 else None
+        if w is None or not ok(logsv[t]):
+            continue
+        sd = std(w, 1)
+        svz[t] = (logsv[t] - mean(w)) / sd if sd > FLAT_EPS else NAN
+    out["share_volume_z_21d"] = svz
     illiq = binary(r, dv, lambda a, b: abs(a) / b * 1e6 if b > 0 else NAN)
     out["amihud_21d"] = rolling(illiq, 21, mean)
     gap = [NAN] + [
@@ -333,7 +353,7 @@ def features(s: Series, bench: Series) -> dict[str, list[float]]:
 
 
 FEATURE_NAMES = tuple(features(Series(*([[1.0] * 3] * 5)), Series(*([[1.0] * 3] * 5))))
-"""The 40 feature names, in the reference's order."""
+"""The 41 feature names, in the reference's order."""
 
 
 # --- fixture files ------------------------------------------------------------------------------
@@ -388,6 +408,14 @@ def expected_rows(rows: Sequence[dict[str, object]]) -> list[tuple[date, str, li
         for s in TARGETS:
             out.append((days[t], s, [computed[s][name][t] for name in FEATURE_NAMES]))  # type: ignore[misc]
     return out
+
+
+def split_frame(days: Sequence[date], symbols: Sequence[str] = TARGETS) -> pd.DataFrame:
+    """`split_factor` as a `DataView.split_factors`-shaped frame on `days` (for the tests of
+    the production code; the reference itself uses `split_factor`)."""
+    index = pd.DatetimeIndex(pd.to_datetime(list(days)), name="date")
+    data = {s: [split_factor(s, t) for t in range(len(days))] for s in symbols}
+    return pd.DataFrame(data, index=index)
 
 
 def read_expected() -> list[tuple[date, str, list[float]]]:

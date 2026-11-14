@@ -25,15 +25,18 @@ from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
-from hmmlearn.hmm import GaussianHMM
 from threadpoolctl import threadpool_limits
 
 from atlas.core.config import RegimeHMMConfig
 from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
+
+if TYPE_CHECKING:  # hmmlearn (and scikit-learn) load in `fit_hmm`, not at import
+    from hmmlearn.hmm import GaussianHMM
 
 _log = get_logger(__name__)
 
@@ -164,6 +167,8 @@ def fit_hmm(
         flat = [c for c, s in zip(columns, scale, strict=True) if s <= 0 or not np.isfinite(s)]
         raise DataError(f"constant feature(s) cannot be standardised: {flat or columns}")
     z = (x - mean) / scale
+    from hmmlearn.hmm import GaussianHMM
+
     best: tuple[float, int, GaussianHMM] | None = None
     for i in range(n_init):
         model = GaussianHMM(
@@ -208,7 +213,7 @@ def fit_hmm(
     )
 
 
-def _degenerate(model: GaussianHMM, z: np.ndarray, min_state_share: float) -> str:
+def _degenerate(model: "GaussianHMM", z: np.ndarray, min_state_share: float) -> str:
     """Why a fitted start is unusable ('' when it is fine): a covariance that is not
     positive definite, or a state with a mean posterior share below `min_state_share`."""
     for k, cov in enumerate(np.asarray(model.covars_)):

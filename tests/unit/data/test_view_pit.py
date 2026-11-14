@@ -420,6 +420,7 @@ METHODS: dict[str, Callable[[DataView], Any]] = {
     "split_factors": lambda v: v.split_factors(UNIVERSE, 60),
     "macro_vintages": lambda v: v.macro_vintages(["DGS10", "CPIAUCSL"], 120),  # Stage 21
     "members_on": lambda v: v.members_on(v.day),  # Stage 21
+    "ciks": lambda v: v.ciks(["AAA", "BBB"]),  # Phase 2 checkpoint
 }
 """Every public data method of `DataView`, called as strategy or agent code would."""
 
@@ -471,6 +472,8 @@ def test_future_rows_never_leak(world: World, method: str) -> None:
 STATIC = {
     "instrument": "instruments is static reference data (no knowledge time to inject)",
     "sessions": "the session grid moves with the as-of and the calendar, not with lake rows",
+    "ciks": "an issuer's CIK never changes: a later fact carries the same one (the leak and "
+    "future-row suites still cover the method)",
 }
 
 
@@ -546,6 +549,12 @@ def _leak_fundamentals(mp: pytest.MonkeyPatch) -> None:
     _wrap(mp, view_module, "assemble_detail", _late_frame)
 
 
+def _leak_ciks(mp: pytest.MonkeyPatch) -> None:  # Phase 2 checkpoint
+    import atlas.data.view as view_module
+
+    mp.setattr(view_module, "pit_filter", lambda frame, *_a, **_k: _late_frame(frame))
+
+
 def _leak_history(mp: pytest.MonkeyPatch) -> None:  # Stage 16
     import atlas.data.view as view_module
 
@@ -574,6 +583,7 @@ LEAKS: dict[str, Callable[[pytest.MonkeyPatch], None]] = {
     "fundamentals_history": _leak_history,
     "split_factors": _leak_bars,
     "macro_vintages": lambda mp: _wrap(mp, Macro, "vintages", _late_frame),  # Stage 21
+    "ciks": _leak_ciks,
 }
 """How to make each method's delegate leak a row from after the cutoff."""
 
@@ -626,6 +636,7 @@ MULTI: dict[str, Callable[[DataView], Any]] = {
     "universe": lambda v: set(v.universe()),
     "tradable": lambda v: set(v.tradable()),
     "members_on": lambda v: set(v.members_on(v.day)),  # Stage 21
+    "ciks": lambda v: set(v.ciks(["AAA", "BAD"]).index),  # Phase 2 checkpoint
 }
 NOT_PER_SYMBOL = {
     "macro": "series, not symbols: see test_macro_drops_blocked_series",

@@ -60,7 +60,9 @@ def test_build_fills_the_cache_and_skips_stored_dates(lake: Lake, tmp_path: Path
     assert result.exit_code == 0, result.output
     text = _plain(result.output)
     assert "2 month-ends" in text and "2 written" in text and "0 already stored" in text
-    store = FactorStore(Lake(store_root), CFG)
+    # a store on another lake is read with the lake its panels were computed from: the
+    # fingerprint of that data is checked on every read
+    store = FactorStore(Lake(store_root), CFG, data_lake=lake)
     assert store.dates() == (JAN, FEB)
     got = store.read(FEB)
     want = factor_panel(DataView(lake, FEB, CFG))

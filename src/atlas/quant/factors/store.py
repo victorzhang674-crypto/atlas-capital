@@ -10,13 +10,23 @@ reader at that as-of, and later, may use the row; one before it may not).
 `FactorStore.read(as_of)` returns the latest stored rebalance date on or before the as-of
 day whose rows are known at its cutoff and carry the current settings' hash; the rows are
 checked with `assert_no_lookahead`. Writing a date replaces all of its rows.
+
+`data_fingerprint` (schema version 2) is `input_fingerprint` of the data lake at the panel's
+cutoff: how many facts, price bars and corporate actions were known then, and the instruments'
+sectors and the index membership up to its day. A reader recomputes it; a panel whose data
+changed since it was stored (a re-ingest, a sector review, a restated split), or one stored
+without a fingerprint, is treated as not stored (`factors.cache_stale`), so the cache is safe
+to read by default. Data known only after the cutoff (later filings, new bars) changes nothing.
 """
 
+import hashlib
+import json
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import date, datetime
 
 import pandas as pd
+import pyarrow.dataset as ds
 
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
@@ -31,6 +41,10 @@ from atlas.core.storage import (
     Lake,
     TableSchema,
 )
+from atlas.data.fundamentals.parser import FUNDAMENTALS_FACTS
+from atlas.data.prices import CORPORATE_ACTIONS, PRICES_DAILY
+from atlas.data.reference import INSTRUMENTS
+from atlas.data.universe import INDEX_MEMBERSHIP
 from atlas.data.view import DataView
 from atlas.quant.factors.fundamental import (
     FACTOR_NAMES,
@@ -53,14 +67,69 @@ FACTOR_EXPOSURES = DEFAULT_REGISTRY.register(
             Column(name="filled", dtype=ColumnType.BOOL),
             Column(name="config_hash", dtype=ColumnType.STRING),
             Column(name=AVAILABLE_AT, dtype=ColumnType.TIMESTAMP),
+            Column(name="data_fingerprint", dtype=ColumnType.STRING, nullable=True),
         ),
         primary_key=("date", "symbol", "factor"),
         partition_by=(YEAR,),
         year_column="date",
         description="Fundamental factor exposures per rebalance date (z-scores + raw); Stage 16",
+        version=2,
     )
 )
 """`factor_exposures`: the cached factor panels (module docstring)."""
+
+
+def _add_fingerprint(frame: pd.DataFrame) -> pd.DataFrame:
+    """Version 1 -> 2: the rows get an empty `data_fingerprint` (never read as current)."""
+    return frame.assign(data_fingerprint=None)
+
+
+DEFAULT_REGISTRY.add_migration(FACTOR_EXPOSURES.name, 1, _add_fingerprint)
+
+_COUNTED = (FUNDAMENTALS_FACTS, PRICES_DAILY, CORPORATE_ACTIONS)
+
+
+def input_fingerprint(lake: Lake, as_of: AsOf) -> str:
+    """A 16-hex-char fingerprint of the data a factor panel at `as_of` is computed from, as
+    known at its cutoff: the number of rows of `fundamentals_facts`, `prices_daily` and
+    `corporate_actions` with `available_at` before the cutoff, the instruments' sectors and
+    ETF flags, and the index membership as dated up to `as_of.day` (an end after the day
+    counts as open)."""
+    cutoff = pd.Timestamp(as_of.cutoff)
+    payload: dict[str, object] = {}
+    for schema in _COUNTED:
+        files = lake.table_files(schema.name) if lake.has_table(schema.name) else ()
+        if files:
+            dataset = ds.dataset(
+                [str(f) for f in files], format="parquet", schema=schema.arrow_schema()
+            )
+            payload[schema.name] = dataset.count_rows(filter=ds.field(AVAILABLE_AT) < cutoff)
+        else:
+            payload[schema.name] = 0
+    if lake.has_table(INSTRUMENTS.name):
+        inst = lake.read_table(INSTRUMENTS.name, columns=["symbol", "sector", "is_etf"])
+        payload[INSTRUMENTS.name] = [
+            [str(s), None if pd.isna(sec) else str(sec), bool(etf)]
+            for s, sec, etf in zip(inst["symbol"], inst["sector"], inst["is_etf"], strict=True)
+        ]
+    if lake.has_table(INDEX_MEMBERSHIP.name):
+        day = as_of.day
+        rows = lake.read_table(INDEX_MEMBERSHIP.name)
+        rows = rows[rows["start_date"] <= day]
+        payload[INDEX_MEMBERSHIP.name] = sorted(
+            [
+                str(i),
+                str(s),
+                start.isoformat(),
+                None if end is None or pd.isna(end) or end > day else end.isoformat(),
+            ]
+            for i, s, start, end in zip(
+                rows["index_id"], rows["symbol"], rows["start_date"], rows["end_date"], strict=True
+            )
+        )
+    text = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(text.encode()).hexdigest()[:16]
+
 
 _EPSILON = pd.Timedelta(microseconds=1)
 
@@ -94,10 +163,15 @@ def _point(as_of: date | AsOf, config: AtlasConfig) -> AsOf:
 class FactorStore:
     """Read and write cached factor panels in `lake` for the factor settings of `config`
     (default `AtlasConfig()`): only rows with `factor_config_hash(config)` are read, and only
-    panels computed with it are written (`ValueError` otherwise)."""
+    panels computed with it are written (`ValueError` otherwise). `data_lake` (default `lake`)
+    is the lake the panels are computed from: its `input_fingerprint` is stored with each
+    panel and checked on every read (module docstring)."""
 
-    def __init__(self, lake: Lake, config: AtlasConfig | None = None) -> None:
+    def __init__(
+        self, lake: Lake, config: AtlasConfig | None = None, *, data_lake: Lake | None = None
+    ) -> None:
         self._lake = lake
+        self._data = data_lake if data_lake is not None else lake
         self._cfg = config if config is not None else AtlasConfig()
         self.config_hash = factor_config_hash(self._cfg)
 
@@ -123,6 +197,7 @@ class FactorStore:
             date=day,
             config_hash=self.config_hash,
             available_at=pd.Timestamp(panel.as_of.cutoff) - _EPSILON,
+            data_fingerprint=input_fingerprint(self._data, panel.as_of),
         )
         frame["symbol"] = frame["symbol"].astype("str")
         frame["factor"] = frame["factor"].astype("str")
@@ -159,7 +234,8 @@ class FactorStore:
         if known.empty:
             return None
         day = max(known["date"])
-        return self._stored(day, known[known["date"] == day])
+        own = known[known["date"] == day]
+        return self._stored(day, own) if self._fresh(day, own) else None
 
     def read_on(self, as_of: date | AsOf) -> StoredExposures | None:
         """The cached panel computed on `as_of.day` itself, if its rows are known at `as_of`
@@ -172,9 +248,39 @@ class FactorStore:
         rows = self._rows([("date", "==", point.day)])
         known = pit_filter(rows, point)
         assert_no_lookahead(known, point)
-        if known.empty:
+        if known.empty or not self._fresh(point.day, known):
             return None
         return self._stored(point.day, known)
+
+    def _fresh(self, day: date, own: pd.DataFrame) -> bool:
+        """Whether the panel of `day` (its rows `own`) was computed from the data lake as it
+        is now (its stored `data_fingerprint` equals the current one); logged when not."""
+        stored = set(own["data_fingerprint"].dropna())
+        cutoff = pd.Timestamp(own["available_at"].iloc[0]) + _EPSILON
+        current = input_fingerprint(self._data, AsOf(day=day, cutoff=cutoff.to_pydatetime()))
+        if stored == {current} and not own["data_fingerprint"].isna().any():
+            return True
+        _log.warning(
+            "factors.cache_stale",
+            day=day.isoformat(),
+            stored=sorted(stored),
+            current=current,
+            reason="data changed since the panel was stored" if stored else "no fingerprint",
+        )
+        return False
+
+    def fresh_dates(self) -> tuple[date, ...]:
+        """The stored rebalance dates with the current settings whose data has not changed
+        since (`data_fingerprint` still current), ascending."""
+        if not self._lake.has_table(FACTOR_EXPOSURES.name):
+            return ()
+        rows = self._rows([])
+        out: list[date] = []
+        for day in sorted(set(rows["date"])):
+            own = rows[rows["date"] == day]
+            if self._fresh(day, own):  # a stale date is logged (and recomputed by a build)
+                out.append(day)
+        return tuple(out)
 
     def _stored(self, day: date, own: pd.DataFrame) -> StoredExposures:
         def wide(column: str) -> pd.DataFrame:
@@ -221,13 +327,13 @@ def build_factor_cache(
 ) -> tuple[date, ...]:
     """Compute `factor_panel` at each of `dates` (ascending; one `DataView` of `lake` advanced
     date by date) and store it in `store` (default: a `FactorStore` on `lake` itself; pass
-    one on another lake to leave `lake` read-only); dates already stored with the current
-    settings are skipped unless `refresh`. Each date is logged (`factors.cache_written`).
-    Returns the dates written."""
+    one on another lake, with `data_lake=lake`, to leave `lake` read-only); dates already
+    stored with the current settings and unchanged data are skipped unless `refresh`. Each
+    date is logged (`factors.cache_written`). Returns the dates written."""
     cfg = config if config is not None else AtlasConfig()
     target = store if store is not None else FactorStore(lake, cfg)
     days = sorted(set(dates))
-    stored = set() if refresh else set(target.dates())
+    stored = set() if refresh else set(target.fresh_dates())
     todo = [d for d in days if d not in stored]
     written: list[date] = []
     view: DataView | None = None

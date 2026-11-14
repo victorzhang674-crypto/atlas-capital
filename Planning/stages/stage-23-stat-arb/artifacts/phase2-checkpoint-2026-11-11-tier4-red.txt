@@ -1,0 +1,118 @@
+=== red, Tier 4 item 1: CLI start-up (before the lazy imports), 2026-11-14T05:10Z
+tests/unit/cli/test_cli_startup.py:29: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/cli/test_cli_startup.py::test_cli_imports_no_heavy_library
+FAILED tests/unit/cli/test_cli_startup.py::test_quant_packages_import_no_heavy_library
+2 failed in 11.74s
+exit 1
+
+=== red, Tier 4 item 4: an empty dot-folder in src/atlas; the layout test as it was (git HEAD, copied into tests/unit for its fixtures), then the new one
+--- old test:
+E         Left contains one more item: PosixPath('/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/.tier4-probe')
+E         Use -v to get more diff
+1 failed, 18 deselected in 0.43s
+--- new test:
+1 passed, 18 deselected in 0.38s
+
+=== red, Tier 4 item 3: covariance_from_view, lookback setting, hashable VolForecast (before the code)
+=========================== short test summary info ============================
+ERROR tests/unit/quant/risk_model/test_risk_view_helpers.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.56s
+exit 2
+
+=== red, Tier 4 item 5: split-adjusted share volume (before the code)
+FAILED tests/unit/quant/features/test_feature_share_volume.py::test_from_bars_restates_share_volume_by_the_split_factor
+FAILED tests/unit/quant/features/test_feature_share_volume.py::test_without_split_factors_there_is_no_share_volume
+FAILED tests/unit/quant/features/test_feature_share_volume.py::test_volume_must_be_aligned
+FAILED tests/unit/quant/features/test_feature_share_volume.py::test_share_volume_feature_is_registered_and_needs_volume
+FAILED tests/unit/quant/features/test_feature_share_volume.py::test_share_volume_z_known_value
+FAILED tests/unit/quant/features/test_feature_share_volume.py::test_compute_features_restates_volume_across_a_known_split
+6 failed, 1 passed in 1.71s
+exit 1
+
+=== red, Tier 4 item 2: pairs_backtest_from_lake (before the code)
+E   ImportError: cannot import name 'pairs_backtest_from_lake' from 'atlas.quant.statarb' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/quant/statarb/__init__.py)
+ERROR tests/unit/quant/statarb/test_statarb_backtest_lake.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.59s
+exit 2
+
+=== red, Tier 4 item 2: CLI signal options and pairs --backtest (before the CLI change)
+FAILED tests/unit/cli/test_research_cmd.py::test_signal_help_lists_the_research_options
+FAILED tests/unit/cli/test_research_cmd.py::test_signal_horizons_rebalance_and_weighting
+FAILED tests/unit/cli/test_research_cmd.py::test_longer_horizons_move_the_holdout_limit
+FAILED tests/unit/cli/test_research_cmd.py::test_research_pairs_help_lists_backtest
+FAILED tests/unit/cli/test_research_cmd.py::test_research_pairs_backtest_writes_its_results
+FAILED tests/unit/cli/test_research_cmd.py::test_research_pairs_backtest_default_output_dir
+FAILED tests/unit/cli/test_research_cmd.py::test_research_pairs_backtest_refuses_the_holdout
+7 failed, 10 passed, 26 deselected in 1.41s
+exit 1
+
+=== red, backlog (Stage 19): an ETF withheld by the view is reported (before the code)
+E       KeyError: 'BBB'
+FAILED tests/unit/quant/risk_model/test_factor_risk_loader.py::test_etf_withheld_by_the_view_is_dropped_and_logged
+1 failed, 17 deselected in 0.79s
+exit 1
+
+
+=== red, backlog (Stage 17): t-statistics keep the gaps (before the code)
+E       assert 1.8879189301237584 == 1.8651574649820637 ± 1.9e-06
+E         
+E         comparison failed
+E         Obtained: 1.8879189301237584
+E         Expected: 1.8651574649820637 ± 1.9e-06
+FAILED tests/unit/quant/research/test_research_tearsheet.py::test_t_statistics_keep_the_gaps_between_dates
+exit 1
+
+=== red, backlog (Stage 13): tick-aware stale-price rule (before the code)
+FAILED tests/unit/data/test_quality.py::test_stale_price_ignores_a_price_that_moves_less_than_its_tick
+FAILED tests/unit/data/test_quality.py::test_stale_price_move_threshold_is_inclusive
+FAILED tests/unit/core/test_config.py::test_quality_defaults - AttributeError...
+3 failed, 11 passed, 362 deselected in 0.65s
+exit 1
+
+=== red, backlog (Stage 16): a wrong cover count replaced by a confirmed average; averages confirmed by old counts (before the code)
+FAILED tests/unit/quant/factors/test_factor_share_fallback.py::test_a_count_far_from_a_confirmed_average_is_replaced_by_it
+FAILED tests/unit/quant/factors/test_factor_share_fallback.py::test_replacing_a_count_is_logged
+FAILED tests/unit/quant/factors/test_factor_share_fallback.py::test_an_average_without_net_income_eps_is_confirmed_by_an_old_count
+FAILED tests/unit/quant/factors/test_factor_share_fallback.py::test_panel_replaces_a_wrong_count_and_confirms_by_old_counts
+4 failed, 17 deselected in 0.99s
+exit 1
+
+=== red, backlog (Stage 19): a company listed under several classes counts once (before the code)
+E   ImportError: cannot import name 'listed_classes' from 'atlas.quant.risk_model.loader' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/quant/risk_model/loader.py)
+ERROR tests/unit/quant/risk_model/test_factor_risk_classes.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.55s
+exit 2
+
+=== red, backlog (Stage 16): the factor cache's data fingerprint (before the code)
+E   ImportError: cannot import name 'input_fingerprint' from 'atlas.quant.factors' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-two-checkpoint-stages-a4dbeb/src/atlas/quant/factors/__init__.py)
+ERROR tests/unit/quant/factors/test_factor_store_fingerprint.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.52s
+exit 2
+
+=== red (Stage 03 code, found by Tier 4 item 1): a record from a helper thread of the only open run carries its run id (before the code)
+FAILED tests/unit/core/test_logging.py::test_a_helper_thread_of_the_run_is_tagged_with_it
+1 failed, 11 passed in 0.77s
+exit 1
+
+=== red, backlog (Stages 07/08): reused tickers (before the code)
+ERROR tests/unit/data/test_price_ingest.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.44s
+exit 2
+
+=== red, backlog (Stage 08): KVUE, a member until 2026-10-30, gets a reviewed sector (before the line)
+E       AssertionError: assert (180 == 181)
+E        +  where 180 = len({'AA': 'Materials', 'AAL': 'Industrials', 'AAP': 'Consumer Discretionary', 'ABMD': 'Health Care', ...})
+FAILED tests/unit/data/test_universe.py::test_repo_former_sectors_file - Asse...
+exit 
+
+=== red after the fact: the sync test of the reused-ticker list (written after its code) against the source of HEAD f19bdaa (PYTHONPATH on a git archive)
+E       assert ([None] and False)
+E        +  where False = all(<generator object test_prices_step_applies_the_reused_ticker_list.<locals>.<genexpr> at 0x11c6435b0>)
+FAILED tests/unit/data/test_sync_datasets.py::test_prices_step_applies_the_reused_ticker_list
+1 failed, 23 deselected in 0.60s

@@ -144,3 +144,54 @@ def test_console_level_quiets_console_only(tmp_path: Path) -> None:  # Stage 14 
     assert [line["event"] for line in _json_lines(tmp_path / "a.log")] == ["detail", "problem"]
     assert "problem" in console.getvalue()
     assert "detail" not in console.getvalue()
+
+
+def test_a_helper_thread_of_the_run_is_tagged_with_it(tmp_path: Path) -> None:
+    """Phase 2 checkpoint: a library logging from a thread it started (matplotlib's "building
+    the font cache" timer) has no run context of its own; while exactly one run is open in the
+    process, its records belong to that run."""
+    import threading
+
+    log = tmp_path / "run.log"
+    with run_context(stage="probe") as ctx:
+        configure_logging(level="INFO", log_file=log, console_level="WARNING")
+        thread = threading.Thread(
+            target=lambda: logging.getLogger("thirdparty").warning("from a thread")
+        )
+        thread.start()
+        thread.join()
+    reset_logging()
+    records = _json_lines(log)
+    assert records and all(r["run_id"] == ctx.run_id for r in records)
+    assert records[-1]["event"] == "from a thread" and records[-1]["stage"] == "probe"
+
+
+def test_a_thread_is_not_tagged_when_several_runs_are_open(tmp_path: Path) -> None:
+    """With two runs open at once (in two threads), a record from a third thread cannot be
+    attributed: it carries no run id rather than a guessed one."""
+    import threading
+
+    log = tmp_path / "run.log"
+    configure_logging(level="INFO", log_file=log, console_level="WARNING")
+    entered, release = threading.Barrier(3), threading.Event()
+
+    def hold() -> None:
+        with run_context(stage="held"):
+            entered.wait()
+            release.wait()
+
+    holders = [threading.Thread(target=hold) for _ in range(2)]
+    for h in holders:
+        h.start()
+    entered.wait()
+    third = threading.Thread(target=lambda: logging.getLogger("thirdparty").warning("orphan"))
+    third.start()
+    third.join()
+    release.set()
+    for h in holders:
+        h.join()
+    with run_context(stage="after"):
+        pass
+    reset_logging()
+    orphan = [r for r in _json_lines(log) if r["event"] == "orphan"]
+    assert len(orphan) == 1 and "run_id" not in orphan[0]

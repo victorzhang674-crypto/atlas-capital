@@ -38,11 +38,11 @@ Policy shared by every estimator (`quant.risk_model`):
 """
 
 from abc import ABC, abstractmethod
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from types import MappingProxyType
-from typing import ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 import numpy as np
 import pandas as pd
@@ -52,6 +52,9 @@ from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.quant.risk_model.psd import condition_number, floor_condition, is_psd, nearest_psd
 from atlas.quant.risk_model.volatility import ewma_lambda
+
+if TYPE_CHECKING:
+    from atlas.data.view import DataView
 
 _log = get_logger(__name__)
 
@@ -473,3 +476,20 @@ def covariance_estimator(
     if name not in _ESTIMATORS:
         raise ValueError(f"unknown covariance method {name!r}; expected one of {METHODS}")
     return _ESTIMATORS[name](config=cfg, **kwargs)  # type: ignore[arg-type]
+
+
+def covariance_from_view(
+    view: "DataView",
+    symbols: Sequence[str],
+    *,
+    method: str | None = None,
+    lookback: int | None = None,
+    **kwargs: object,
+) -> CovResult:
+    """The covariance of `symbols`' daily returns known to `view`: `view.returns(symbols,
+    lookback)` (default `quant.risk_model.lookback` sessions of the view's config) estimated
+    by `covariance_estimator(method, config=view.config, **kwargs)`. Same units and rules as
+    the estimator (names with too little history are dropped and listed in `dropped`)."""
+    cfg = view.config
+    n = cfg.quant.risk_model.lookback if lookback is None else lookback
+    return covariance_estimator(method, config=cfg, **kwargs).estimate(view.returns(symbols, n))

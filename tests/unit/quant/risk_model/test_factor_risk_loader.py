@@ -256,6 +256,29 @@ def test_etf_exposures_from_view(world_lake: Lake) -> None:
         etf_exposures_from_view(view, hist, [])
 
 
+def test_etf_withheld_by_the_view_is_dropped_and_logged(tmp_lake: Lake) -> None:
+    """Phase 2 checkpoint: an ETF the view withholds (blocked by the data-quality checks: here
+    a zero close inside the window) is reported in `dropped` and logged, not lost silently."""
+    from structlog.testing import capture_logs
+
+    build_factor_world(tmp_lake)
+    bars = tmp_lake.read_table("prices_daily", filters=[("symbol", "==", "BBB")])
+    bad = bars[bars["date"] == date(2024, 2, 27)].copy()
+    bad[["open", "high", "low", "close", "adj_close"]] = 0.0
+    tmp_lake.write_table("prices_daily", bad, mode="upsert")
+    view = DataView(tmp_lake, AS_OF, CFG)
+    assert "BBB" in view.blocked
+    days = list(TradingCalendar().sessions(date(2022, 6, 1), date(2024, 2, 29)))
+    with capture_logs() as logs:
+        out = etf_exposures_from_view(view, _random_history(days), ["AAA", "BBB"])
+    assert list(out.betas.index) == ["AAA"]
+    assert "blocked" in out.dropped["BBB"]
+    events = [e for e in logs if e["event"] == "risk_model.etf_withheld"]
+    assert len(events) == 1 and events[0]["symbols"] == ["BBB"]
+    with pytest.raises(DataError, match="blocked"):
+        etf_exposures_from_view(view, _random_history(days), ["BBB"])
+
+
 def test_build_and_store_writes_returns_and_month_end_snapshots(
     monkeypatch: pytest.MonkeyPatch, tmp_lake: Lake
 ) -> None:

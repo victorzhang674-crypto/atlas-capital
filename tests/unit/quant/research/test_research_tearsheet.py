@@ -268,3 +268,37 @@ def test_tearsheet_records_the_factor_cache_use(
         "oldest_panel_sessions": 10,
         "newest_panel_sessions": 3,
     }
+
+
+def test_t_statistics_keep_the_gaps_between_dates(
+    inputs: tuple[pd.DataFrame, ForwardReturns],
+) -> None:
+    """Phase 2 checkpoint (backlog, Stage 17): a date without an IC between two others keeps
+    its place in the Newey-West sums of the headline IC, the IC by sector and the quantile
+    spread (the rows are evaluation dates, equally spaced); squeezing it out would pair ICs
+    that are not neighbours."""
+    from atlas.quant.research import ic_series, newey_west_tstat, nw_lags, quantile_analysis
+
+    signal, labels = inputs
+    gapped = signal.copy()
+    gapped.iloc[[5, 6, 11]] = np.nan  # three dates without a signal, inside the window
+    sectors = pd.Series({s: "One" for s in gapped.columns}, dtype="object")
+    cfg = CFG.model_copy(
+        update={
+            "quant": CFG.quant.model_copy(
+                update={"research": CFG.quant.research.model_copy(update={"min_group_names": 3})}
+            )
+        }
+    )
+    sheet = build_tearsheet("gaps", gapped, labels, sectors=sectors, config=cfg)
+    h = labels.horizons[-1]  # the longest computed horizon: the most Newey-West lags
+    lags = nw_lags(h, list(gapped.index))
+    assert lags >= 1  # otherwise there is nothing to pair
+    series = ic_series(gapped, labels.horizon(h), method="spearman", config=cfg)
+    assert series.iloc[[5, 6, 11]].isna().all() and series.iloc[4:13].notna().sum() == 6
+    want = newey_west_tstat(series, lags, keep_gaps=True)
+    assert want != pytest.approx(newey_west_tstat(series, lags))  # the gaps matter here
+    assert sheet.summary["ic"][f"h{h}"]["spearman"]["t_stat"] == pytest.approx(want)
+    assert sheet.summary["by_sector"][f"h{h}"]["groups"]["One"]["t_stat"] == pytest.approx(want)
+    qa = quantile_analysis(gapped, labels, h, config=cfg)
+    assert qa.spread_t == pytest.approx(newey_west_tstat(qa.spread, qa.lags, keep_gaps=True))

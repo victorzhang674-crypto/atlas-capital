@@ -51,3 +51,10 @@ Owner-requested follow-up (see worklog, 2026-11-02): audit event ids come from t
 - On merged `main` (`d846205`, fast-forward from `e458f2f`; run in the owner's Terminal panel, the sandbox cannot write the main checkout; this run also covers a docstring-only wording fix to `audit.py` made after the working-tree runs): `uv run pytest -q` → 2108 passed; `ruff check .` → All checks passed!; `ruff format --check .` → 205 files already formatted; `mypy src/atlas` → Success (88 files); the three briefs' Verify commands → 788 passed (03), 275 passed + mypy core Success (04), 136 passed (06); 1M-row upsert → 1.12 s PASSED; `make check` → exit 0 (2108 passed); `git branch --merged main` lists `claude/phase-one-checkpoint-28fcd7`; checkout clean before and after; all 14 commands exit 0 · raw: [stage-03 artifacts/checkpoint-2026-11-02-tier3-merged-main-check.txt](artifacts/checkpoint-2026-11-02-tier3-merged-main-check.txt) (script: same name, `.sh`)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 2 checkpoint follow-up (Tier 4: a library's helper thread logs into its run) — 2026-11-14
+- Commands run (this chat): `make check` → exit 0 (ruff clean, 393 files formatted, mypy clean on 157 files, 4241 passed in parallel and 3 timing tests alone); `uv run pytest -q` → 4244 passed, 71 deselected; integration on the main lake → 55 passed, 1 skipped (the flag-gated 2018–2024 calibration) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-final-checks.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-final-checks.txt); red first: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-red.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-red.txt); mutants: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-mutate.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-mutate.txt)
+- `tests/unit/core/test_logging.py` and `test_run_context.py` pass; the research CLI test passes with an empty `MPLCONFIGDIR`.
+- Acceptance criteria unchanged and still evidenced.
+
+**Result:** ALL CRITERIA VERIFIED

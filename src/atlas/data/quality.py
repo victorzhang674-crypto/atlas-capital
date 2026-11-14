@@ -11,7 +11,9 @@ Checks (severities from `data.quality.severity`):
 - `missing_sessions` (`prices_daily`): a session with no bar between a symbol's first and
   last bar in the window;
 - `stale_price` (`prices_daily`): `stale_min_sessions` consecutive unchanged closes, each on
-  a bar with volume;
+  a bar with volume, for a symbol whose price normally moves: the median of its nonzero daily
+  close changes in the window is at least `stale_min_move_ticks` ticks of `tick_size` USD (a
+  T-bill ETF moving a cent or not at all is not frozen; a symbol that never moves is);
 - `return_outlier` (`prices_daily`): an adjusted return beyond `outlier_sigma` sigma on a
   session without a corporate action;
 - `ohlc_inconsistent` (`prices_daily`): a high or low not bounding the bar, a missing OHLC
@@ -330,12 +332,24 @@ def check_nonpositive_prices(
 
 
 def check_stale_prices(
-    bars: pd.DataFrame, *, since: date, min_sessions: int, severity: Severity
+    bars: pd.DataFrame,
+    *,
+    since: date,
+    min_sessions: int,
+    severity: Severity,
+    tick_size: float = 0.01,
+    min_move_ticks: float = 2.0,
 ) -> list[QualityIssue]:
     """Runs of at least `min_sessions` consecutive bars whose close equals the previous bar's
-    close, each with volume > 0 (a frozen feed: trading but no price change). One issue per
-    run, dated on its last bar, if that bar is on or after `since`."""
+    close, each with volume > 0 (a frozen feed: trading but no price change), for symbols
+    whose price normally moves: the median absolute nonzero change of consecutive closes in
+    `bars` is at least `min_move_ticks` x `tick_size` (USD), or there is no nonzero change at
+    all. One issue per run, dated on its last bar, if that bar is on or after `since`."""
     frame = _sorted(bars)
+    if frame.empty:
+        return []
+    still = _moves_below_tick(frame, tick_size * min_move_ticks)
+    frame = frame[~frame["symbol"].isin(still)].reset_index(drop=True)
     if frame.empty:
         return []
     same_symbol = frame["symbol"].eq(frame["symbol"].shift())
@@ -362,6 +376,15 @@ def check_stale_prices(
             )
         )
     return issues
+
+
+def _moves_below_tick(frame: pd.DataFrame, threshold: float) -> set[str]:
+    """Symbols of `frame` (sorted by symbol and date) whose median absolute nonzero change of
+    consecutive closes is below `threshold` USD (a symbol with no nonzero change is not)."""
+    change = frame["close"].diff().abs().where(frame["symbol"].eq(frame["symbol"].shift()))
+    moving = change[change > 0]
+    typical = moving.groupby(frame.loc[moving.index, "symbol"]).median()
+    return {str(s) for s, v in typical.items() if v < threshold}
 
 
 def check_vendor_mix(bars: pd.DataFrame, *, since: date, severity: Severity) -> list[QualityIssue]:
@@ -828,6 +851,8 @@ def quality_report(
                 since=since,
                 min_sessions=q.stale_min_sessions,
                 severity=Severity(sev.stale_price),
+                tick_size=q.tick_size,
+                min_move_ticks=q.stale_min_move_ticks,
             )
         if runs("vendor_mix"):
             issues += check_vendor_mix(bars, since=since, severity=Severity(sev.vendor_mix))

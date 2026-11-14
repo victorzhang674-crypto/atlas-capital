@@ -828,6 +828,30 @@ class DataView:
             lambda: [s for s in self._universe.tradable(self._as_of, name) if s not in blocked],
         )
 
+    def ciks(self, symbols: Sequence[str]) -> pd.Series:
+        """The SEC CIK of the issuer of each unblocked symbol of `symbols` (int, index symbol,
+        request order), from the `fundamentals_facts` rows known at `as_of`; a symbol with no
+        known fact is left out. Share classes of one company (GOOGL / GOOG) have the same CIK."""
+        wanted = self._allowed(symbols)
+
+        def compute() -> pd.Series:
+            lake = self._shared.lake
+            if not wanted or not lake.has_table(FUNDAMENTALS_FACTS.name):
+                return pd.Series(dtype="int64", index=pd.Index([], name="symbol"))
+            facts = lake.read_table(
+                FUNDAMENTALS_FACTS.name,
+                columns=["symbol", "cik", AVAILABLE_AT],
+                filters=[("symbol", "in", list(wanted))],
+            )
+            known = pit_filter(facts, self._as_of)
+            assert_no_lookahead(known, self._as_of)
+            last = known.groupby("symbol", sort=False)["cik"].last()
+            out = last.reindex([s for s in wanted if s in last.index]).astype("int64")
+            out.index.name = "symbol"
+            return out
+
+        return self._cached("ciks", (wanted,), compute).copy()
+
     def instrument(self, symbol: str) -> Instrument:
         """The reference data of `symbol` (static: names, sectors and exchanges are today's
         values). An unknown or blocked symbol raises `DataError`."""

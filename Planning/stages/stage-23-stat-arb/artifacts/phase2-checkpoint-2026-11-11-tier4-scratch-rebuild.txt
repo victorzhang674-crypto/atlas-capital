@@ -1,0 +1,26 @@
+=== Tier 4 rebuild on the scratch copy (purged reused tickers, synced universe, migrated factor table; Tier 4 code), sandbox
+--- atlas factors build --from 2015 --to 2026 --refresh, start 06:14:30Z
+│ 2024 │         12 │        502 │             0.178 │
+│ 2025 │         12 │        503 │             0.177 │
+│ 2026 │         10 │        503 │             0.176 │
+└──────┴────────────┴────────────┴───────────────────┘
+Factor cache: 142 month-ends from 2015-01-30 to 2026-10-30; 142 written, 0 
+already stored; table factor_exposures in /tmp/claude-501/tier4-lake (settings 
+675de8385d00). Run 01M7CB2YK5H5WV4GHT75STVYSY.
+real 1440.38
+user 1588.04
+sys 82.11
+factors exit 0
+--- atlas risk-model build --from 2017 --to 2026 --cached-factors, start 06:38:30Z
+Risk model: 2471 sessions fitted from 2017-01-03 to 2026-10-30, 0 skipped (too 
+few names), mean R2 0.306, mean names 464; 115 snapshots from 2017-04-28 to 
+2026-10-30 with 30 ETFs; tables factor_returns and risk_model_snapshots in 
+/tmp/claude-501/tier4-lake (settings 62592c37a19c). Run 
+01M7CCEXGX2XMWB4QYDVJTGNJC.
+Monthly anchors read from the factor cache where it has them (the build log's 
+risk_model.anchor_loaded lines say which); the cache must match the lake's data.
+real 1581.58
+user 1838.27
+sys 97.58
+risk exit 0
+--- end 07:04:52Z

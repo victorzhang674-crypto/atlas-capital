@@ -26,7 +26,10 @@ GROUPS = {
         "price_to_ema_200",
     ),
     "range": ("dist_52w_high", "dist_52w_low", "max_dd_252d"),
-    "liquidity": ("volume_z_21d", "amihud_21d", "gap_1d", "gap_mean_21d", "gap_std_63d"),
+    "liquidity": (
+        "volume_z_21d", "share_volume_z_21d", "amihud_21d", "gap_1d", "gap_mean_21d",
+        "gap_std_63d",
+    ),
     "market": ("beta_252d", "idio_vol_252d"),
 }  # fmt: skip
 CASES = [(group, name) for group, names in GROUPS.items() for name in names]
@@ -38,7 +41,9 @@ def reference_values() -> dict[str, pd.DataFrame]:
     """The production features on `ohlcv.csv`, last 60 sessions, AAA and BBB."""
     bars = pd.DataFrame(ref.read_ohlcv())
     days = sorted(set(bars["date"]))
-    panel = PricePanel.from_bars(bars, days, list(ref.TARGETS), benchmark=ref.BENCHMARK)
+    panel = PricePanel.from_bars(
+        bars, days, list(ref.TARGETS), benchmark=ref.BENCHMARK, splits=ref.split_frame(days)
+    )
     names = [name for _, name in CASES if name in REGISTRY]
     return {k: v.iloc[-ref.EXPECTED_SESSIONS :] for k, v in compute_panel(panel, names).items()}
 
@@ -261,7 +266,8 @@ def test_feature_specs_match_the_plan() -> None:
         "price_to_sma_50": 50, "price_to_sma_200": 200, "price_to_ema_20": 20,
         "price_to_ema_50": 50, "price_to_ema_200": 200, "dist_52w_high": 252,
         "dist_52w_low": 252, "max_dd_252d": 252, "beta_252d": 253, "idio_vol_252d": 253,
-        "volume_z_21d": 22, "amihud_21d": 22, "gap_1d": 2, "gap_mean_21d": 22, "gap_std_63d": 64,
+        "volume_z_21d": 22, "share_volume_z_21d": 22, "amihud_21d": 22, "gap_1d": 2,
+        "gap_mean_21d": 22, "gap_std_63d": 64,
     }  # fmt: skip
     assert {s.name: s.lookback for s in REGISTRY} == lookbacks
     usd = {

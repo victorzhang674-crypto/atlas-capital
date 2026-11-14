@@ -3,7 +3,8 @@
 #
 # Why: the constituents page gives a sector to current members only, so a former member had
 # none: it was scored against the whole market instead of its sector, and the risk model left
-# it out. This file gives a sector to the 180 former members that have price bars in the lake.
+# it out. This file gives a sector to the 181 former members that have price bars in the lake
+# (KVUE added 2026-11-14: it left the index on 2026-10-30).
 # A current member always keeps the page's sector; an entry here is used only while the symbol
 # is not on the page. The 177 former members without price bars are not listed (they cannot
 # enter a panel).
@@ -23,7 +24,7 @@
 # Review table with the SIC comparison: Planning/stages/stage-08-universe/artifacts/
 # phase2-checkpoint-tier3-former-sectors-review.md
 
-sectors:  # symbol: GICS sector (180 entries, by symbol)
+sectors:  # symbol: GICS sector (181 entries, by symbol)
   AA: Materials  # Alcoa; SIC 3350 Rolling Drawing & Extruding of  Nonferrous Metals
   AAL: Industrials  # American Airlines Group; SIC 4512 Air Transportation, Scheduled
   AAP: Consumer Discretionary  # Advance Auto Parts; SIC 5531 Retail-Auto & Home Supply Stores
@@ -115,6 +116,7 @@ sectors:  # symbol: GICS sector (180 entries, by symbol)
   KMX: Consumer Discretionary  # CarMax; SIC 5500 Retail-Auto Dealers & Gasoline Stations
   KSS: Consumer Discretionary  # Kohl's; SIC 5311 Retail-Department Stores
   KSU: Industrials  # Kansas City Southern; SIC 4011 Railroads, Line-Haul Operating
+  KVUE: Consumer Staples  # Kenvue (consumer health); the constituents page's sector while it was a member
   LEG: Consumer Discretionary  # Leggett & Platt; SIC 2510 Household Furniture
   LKQ: Consumer Discretionary  # LKQ Corporation; SIC 5010 Wholesale-Motor Vehicles & Motor Vehicle Parts & Supplies
   LLL: Industrials  # L3 Technologies; SIC 3663 Radio & Tv Broadcasting & Communications Equipment

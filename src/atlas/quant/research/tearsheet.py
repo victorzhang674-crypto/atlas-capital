@@ -21,11 +21,10 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
-from matplotlib.figure import Figure
 
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
@@ -50,7 +49,18 @@ from atlas.quant.research.quantiles import QuantileAnalysis, quantile_analysis
 from atlas.quant.research.signals import Frequency, evaluation_dates, signal_panel
 from atlas.quant.research.vector_backtest import BacktestResult, vector_backtest
 
+if TYPE_CHECKING:  # matplotlib loads when a figure is drawn, not at import
+    from matplotlib.figure import Figure
+
 _log = get_logger(__name__)
+
+
+def _figure() -> "Figure":
+    """A 10 x 4 inch matplotlib `Figure` (no global pyplot state)."""
+    from matplotlib.figure import Figure
+
+    return Figure(figsize=(10, 4))
+
 
 FIGURES = ("ic", "quantiles", "cumulative_spread", "decay", "backtest")
 """Figures of a tear sheet, saved as `<name>.png`."""
@@ -95,7 +105,7 @@ class SignalTearSheet:
         """A deep copy of `summary`."""
         return copy.deepcopy(self.summary)
 
-    def figures(self) -> dict[str, Figure]:
+    def figures(self) -> dict[str, "Figure"]:
         """The figures of `FIGURES` (matplotlib `Figure`s, no global pyplot state)."""
         return {
             "ic": self._ic_figure(),
@@ -137,10 +147,10 @@ class SignalTearSheet:
 
     # --- figures ---------------------------------------------------------------------------------
 
-    def _ic_figure(self) -> Figure:
+    def _ic_figure(self) -> "Figure":
         h = self.headline_horizon
         series = self.ic[f"h{h}_{HEADLINE_METHOD}"]
-        fig = Figure(figsize=(10, 4))
+        fig = _figure()
         ax = fig.add_subplot()
         ax.bar(series.index, series.to_numpy(), width=3, color="#7a9cc6", label="IC per date")
         rolling = series.rolling(self.rolling_window, min_periods=1).mean()
@@ -150,8 +160,8 @@ class SignalTearSheet:
         ax.legend(loc="upper left")
         return fig
 
-    def _quantile_figure(self) -> Figure:
-        fig = Figure(figsize=(10, 4))
+    def _quantile_figure(self) -> "Figure":
+        fig = _figure()
         ax = fig.add_subplot()
         horizons = sorted(self.quantiles)
         width = 0.8 / len(horizons)
@@ -167,9 +177,9 @@ class SignalTearSheet:
         ax.legend()
         return fig
 
-    def _spread_figure(self) -> Figure:
+    def _spread_figure(self) -> "Figure":
         spread = self.quantiles[min(self.quantiles)].cumulative_spread
-        fig = Figure(figsize=(10, 4))
+        fig = _figure()
         ax = fig.add_subplot()
         ax.plot(spread.index, spread.to_numpy() * 100, color="#1f3b73")
         ax.axhline(0, color="black", linewidth=0.6)
@@ -177,8 +187,8 @@ class SignalTearSheet:
         ax.set_title(f"{self.name}: cumulative daily quantile spread (equal weight, no costs)")
         return fig
 
-    def _decay_figure(self) -> Figure:
-        fig = Figure(figsize=(10, 4))
+    def _decay_figure(self) -> "Figure":
+        fig = _figure()
         left, right = fig.subplots(1, 2)
         decay = self.summary["decay"]["ic_by_horizon"]
         for method in METHODS:
@@ -198,9 +208,9 @@ class SignalTearSheet:
         fig.suptitle(f"{self.name}: decay")
         return fig
 
-    def _backtest_figure(self) -> Figure:
+    def _backtest_figure(self) -> "Figure":
         bt = self.backtest
-        fig = Figure(figsize=(10, 4))
+        fig = _figure()
         ax = fig.add_subplot()
         for series, label in ((bt.gross_returns, "gross"), (bt.returns, "net of costs")):
             wealth = (1.0 + series).cumprod() - 1.0
@@ -266,7 +276,7 @@ def build_tearsheet(
         for method in METHODS:
             series = ic_series(signal, target, method=method, config=cfg)
             ic_cols[f"h{h}_{method}"] = series
-            ic_summary[f"h{h}"][method] = summarize_ic(series, lags).to_dict()
+            ic_summary[f"h{h}"][method] = summarize_ic(series, lags, keep_gaps=True).to_dict()
         if sectors is not None:
             table = ic_by_group(
                 signal, target, sectors, lags=lags, method=HEADLINE_METHOD, config=cfg

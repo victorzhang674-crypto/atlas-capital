@@ -22,20 +22,34 @@ fundamental factor from the stored month-end panels (`atlas factors build`) inst
 computing a panel per date: faster, but each date then uses the latest panel stored on or
 before it, so the signal is older; the tear sheet records how old (`factor_cache`).
 
+`--horizons 1,5,21`, `--rebalance signal|weekly|monthly|quarterly` and `--weighting
+equal|signal` override `quant.research.horizons` and the long-short backtest's settings for
+the run (the hold-out guard uses the run's horizons).
+
 `atlas research pairs --as-of 2021-12-01` (Stage 23) selects the cointegrated same-sector
 pairs at the as-of (point in time: the universe's members on that day, closes through the
 session before) and lists them with their current spread z-score and the signal a flat pair
 would take now (a stateless snapshot), writing `pairs.csv` and `pairs.json` to
 `<lake>/<quant.research.out_dir>/pairs/<as-of>/` or `--out`. It only reads the lake.
+
+`atlas research pairs --backtest --from 2017 --to 2021` runs the pairs backtest over the
+window (`pairs_backtest_from_view`: one view at the session after `--to`, nothing later is
+read) and writes `summary.json`, `trades.csv`, `selections.csv` and `daily.csv` to
+`<lake>/<quant.research.out_dir>/pairs/backtest-<from>-<to>/` or `--out`. A `--to` after
+`backtest.in_sample_end` reads the hold-out and is refused (exit 2) unless `--allow-holdout`
+is given; the override is written to the run's audit log, as for `signal`.
 """
 
 import json
+import math
 import re
 from datetime import date
 from pathlib import Path
 from typing import Annotated, Any, cast
 
+import pandas as pd
 import typer
+from pydantic import ValidationError
 from rich.console import Console
 from rich.progress import BarColumn, MofNCompleteColumn, Progress, TextColumn, TimeElapsedColumn
 from rich.table import Table
@@ -60,7 +74,12 @@ from atlas.quant.research import (
     research_signal,
     signal_kind,
 )
-from atlas.quant.statarb import PairsSnapshot, pairs_snapshot
+from atlas.quant.statarb import (
+    PairsBacktestResult,
+    PairsSnapshot,
+    pairs_backtest_from_view,
+    pairs_snapshot,
+)
 
 research_app = typer.Typer(
     help="Signal research: information coefficients, quantiles, decay, long-short backtest.",
@@ -160,6 +179,41 @@ def _regime_table(sheet: SignalTearSheet) -> Table:
     return table
 
 
+def _with_research_options(
+    config: AtlasConfig, horizons: str | None, rebalance: str | None, weighting: str | None
+) -> AtlasConfig:
+    """`config` with the run's `--horizons`, `--rebalance` and `--weighting` (validated by the
+    config models; `typer.BadParameter` naming the option otherwise)."""
+    research = config.quant.research
+    update: dict[str, Any] = {}
+    if horizons is not None:
+        try:
+            update["horizons"] = tuple(int(h) for h in horizons.split(","))
+        except ValueError:
+            raise typer.BadParameter(
+                f"{horizons!r}: give whole numbers of sessions, e.g. 1,5,21",
+                param_hint="--horizons",
+            ) from None
+    backtest: dict[str, Any] = {}
+    if rebalance is not None:
+        backtest["rebalance"] = rebalance
+    if weighting is not None:
+        backtest["weighting"] = weighting
+    if backtest:
+        update["backtest"] = {**research.backtest.model_dump(), **backtest}
+    if not update:
+        return config
+    try:
+        new = type(research).model_validate({**research.model_dump(), **update})
+    except ValidationError as exc:
+        error = exc.errors()[0]
+        field = str(error["loc"][-1]) if error["loc"] else "horizons"
+        hint = {"rebalance": "--rebalance", "weighting": "--weighting"}.get(field, "--horizons")
+        raise typer.BadParameter(error["msg"], param_hint=hint) from None
+    quant = config.quant.model_copy(update={"research": new})
+    return config.model_copy(update={"quant": quant})
+
+
 def _refuse_holdout(check: HoldoutCheck) -> typer.BadParameter:
     return typer.BadParameter(
         f"the labels of {check.last_decision} close on {check.last_label_session}, after "
@@ -205,6 +259,17 @@ def signal_cmd(
             help="Read a fundamental factor from the stored month-end panels (older, faster).",
         ),
     ] = False,
+    horizons: Annotated[
+        str | None,
+        typer.Option(help="Forward-return horizons in sessions, e.g. 1,5,21 (default: config)."),
+    ] = None,
+    rebalance: Annotated[
+        str | None,
+        typer.Option(help="Backtest rebalance: signal, weekly, monthly or quarterly."),
+    ] = None,
+    weighting: Annotated[
+        str | None, typer.Option(help="Backtest weights: equal or signal (default: config).")
+    ] = None,
 ) -> None:
     """Evaluate a signal (IC, quantiles, decay, long-short backtest) and save its tear sheet."""
     console = _console()
@@ -228,7 +293,7 @@ def signal_cmd(
         )
     if first > last:
         raise typer.BadParameter(f"--from {first} is after --to {last}", param_hint="--from")
-    config = _config(ctx, console)
+    config = _with_research_options(_config(ctx, console), horizons, rebalance, weighting)
     freq = config.quant.research.frequency if frequency is None else cast(Frequency, frequency)
     dates = evaluation_dates(first, last, freq, TradingCalendar(config=config.calendar))
     if not dates:
@@ -331,22 +396,28 @@ def signal_cmd(
 def _record_holdout_override(
     config: AtlasConfig, run_id: str, name: str, first: date, last: date, check: HoldoutCheck
 ) -> None:
-    """Write the `--allow-holdout` override to the run's audit log (needs the run context).
-    `AtlasError` when the log cannot be written: an override that leaves no record must not
-    run."""
+    """Write the `--allow-holdout` override of `research signal` to the run's audit log."""
+    _record_override(
+        config,
+        run_id,
+        {
+            "command": "research signal",
+            "override": "allow_holdout",
+            "signal": name,
+            "from": first,
+            "to": last,
+            "in_sample_end": check.in_sample_end,
+            "last_label_session": check.last_label_session,
+        },
+    )
+
+
+def _record_override(config: AtlasConfig, run_id: str, payload: dict[str, Any]) -> None:
+    """Write an override to the run's audit log (needs the run context). `AtlasError` when
+    the log cannot be written: an override that leaves no record must not run."""
     try:
         AuditLog(audit_path(config.data.lake_path, run_id)).record(
-            EventType.OVERRIDE,
-            AUDIT_ACTOR,
-            {
-                "command": "research signal",
-                "override": "allow_holdout",
-                "signal": name,
-                "from": first,
-                "to": last,
-                "in_sample_end": check.in_sample_end,
-                "last_label_session": check.last_label_session,
-            },
+            EventType.OVERRIDE, AUDIT_ACTOR, payload
         )
     except OSError as exc:
         raise AtlasError(
@@ -390,30 +461,55 @@ def _pairs_table(snap: PairsSnapshot) -> Table:
 @research_app.command("pairs")
 def pairs_cmd(
     ctx: typer.Context,
-    as_of: Annotated[str, typer.Option("--as-of", help="The as-of date: YYYY-MM-DD.")],
+    as_of: Annotated[
+        str | None, typer.Option("--as-of", help="The as-of date of a snapshot: YYYY-MM-DD.")
+    ] = None,
     universe: Annotated[
         str | None, typer.Option(help="Universe whose members are paired (default: config).")
     ] = None,
     out: Annotated[
         Path | None,
         typer.Option(
-            help="Output directory (default: <lake>/<quant.research.out_dir>/pairs/<as-of>)."
+            help="Output directory (default: <lake>/<quant.research.out_dir>/pairs/<as-of>, "
+            "or pairs/backtest-<from>-<to>)."
         ),
     ] = None,
+    backtest: Annotated[
+        bool, typer.Option("--backtest", help="Backtest the strategy over --from .. --to.")
+    ] = False,
+    start: Annotated[
+        str | None, typer.Option("--from", help="Backtest: first date, YYYY or YYYY-MM-DD.")
+    ] = None,
+    end: Annotated[
+        str | None, typer.Option("--to", help="Backtest: last date, YYYY or YYYY-MM-DD.")
+    ] = None,
+    allow_holdout: Annotated[
+        bool,
+        typer.Option(
+            "--allow-holdout",
+            help="Backtest although --to is after backtest.in_sample_end (audited).",
+        ),
+    ] = False,
 ) -> None:
-    """List the cointegrated pairs selected at the as-of with their current z-scores."""
+    """List the pairs selected at the as-of with their z-scores, or backtest the strategy."""
     console = _console()
+    if backtest:
+        if as_of is not None:
+            raise typer.BadParameter("give --as-of or --backtest, not both", param_hint="--as-of")
+        if start is None or end is None:
+            raise typer.BadParameter("--backtest needs --from and --to", param_hint="--from")
+        _pairs_backtest(ctx, console, start, end, universe, out, allow_holdout)
+        return
+    if start is not None or end is not None or allow_holdout:
+        raise typer.BadParameter("--from, --to and --allow-holdout need --backtest")
+    if as_of is None:
+        raise typer.BadParameter("give --as-of (a snapshot) or --backtest", param_hint="--as-of")
     try:
         day = date.fromisoformat(as_of.strip())
     except ValueError:
         raise typer.BadParameter(f"{as_of!r} is not a date (YYYY-MM-DD)") from None
     config = _config(ctx, console)
-    cfg = config.quant.statarb
-    if universe is not None:
-        if universe not in config.data.universes:
-            known = ", ".join(sorted(config.data.universes))
-            raise typer.BadParameter(f"unknown universe (known: {known})", param_hint="--universe")
-        cfg = cfg.model_copy(update={"universe": universe})
+    cfg = _statarb_settings(config, universe)
     target = (
         out
         if out is not None
@@ -455,6 +551,133 @@ def pairs_cmd(
     else:
         console.print(f"No pairs selected at {day.isoformat()} (universe {cfg.universe}).")
     console.print(f"Run {run.run_id}. Output: {target}")
+
+
+def _statarb_settings(config: AtlasConfig, universe: str | None) -> Any:
+    """`quant.statarb`, with `--universe` when given (`typer.BadParameter` if unknown)."""
+    cfg = config.quant.statarb
+    if universe is None:
+        return cfg
+    if universe not in config.data.universes:
+        known = ", ".join(sorted(config.data.universes))
+        raise typer.BadParameter(f"unknown universe (known: {known})", param_hint="--universe")
+    return cfg.model_copy(update={"universe": universe})
+
+
+def _pairs_backtest(
+    ctx: typer.Context,
+    console: Console,
+    start: str,
+    end: str,
+    universe: str | None,
+    out: Path | None,
+    allow_holdout: bool,
+) -> None:
+    first, last = parse_bound(start), parse_bound(end, end=True)
+    if first > last:
+        raise typer.BadParameter(f"--from {first} is after --to {last}", param_hint="--from")
+    config = _config(ctx, console)
+    cfg = _statarb_settings(config, universe)
+    cal = TradingCalendar(config=config.calendar)
+    window = cal.sessions(first, last)
+    if not window:
+        raise typer.BadParameter(
+            f"no trading session between {first} and {last}", param_hint="--from"
+        )
+    in_sample_end = config.backtest.in_sample_end
+    reads_holdout = window[-1] > in_sample_end
+    if reads_holdout and not allow_holdout:
+        raise typer.BadParameter(
+            f"the backtest reads returns to {window[-1]}, after backtest.in_sample_end "
+            f"({in_sample_end}): this window reads the hold-out (spec A7). The last --to that "
+            f"stays in sample is {in_sample_end}. Pass --allow-holdout to run anyway; the "
+            "override is written to the audit log.",
+            param_hint="--to",
+        )
+    target = (
+        out
+        if out is not None
+        else Path(config.data.lake_path)
+        / config.quant.research.out_dir
+        / "pairs"
+        / f"backtest-{first.isoformat()}-{last.isoformat()}"
+    )
+    try:
+        with run_context(config=config, stage="research.pairs_backtest") as run:
+            configure_logging(
+                level="INFO", log_file=target / "research.log", console_level="WARNING"
+            )
+            if reads_holdout:
+                _record_override(
+                    config,
+                    run.run_id,
+                    {
+                        "command": "research pairs --backtest",
+                        "override": "allow_holdout",
+                        "from": first,
+                        "to": last,
+                        "in_sample_end": in_sample_end,
+                        "last_session": window[-1],
+                    },
+                )
+            view = DataView(Lake(config.data.lake_path), cal.next_session(window[-1]), config)
+            result = pairs_backtest_from_view(view, first, last, statarb=cfg)
+            _write_pairs_backtest(result, target, run, cfg, first, last)
+    except AtlasError as exc:
+        console.print(f"[red]Pairs backtest failed:[/red] {type(exc).__name__}: {exc}")
+        raise typer.Exit(1) from None
+    finally:
+        reset_logging()
+    s = result.summary
+    if reads_holdout:
+        console.print(
+            f"[yellow]Hold-out:[/yellow] this run read returns to {window[-1]}, after "
+            f"backtest.in_sample_end ({in_sample_end}); the override is in the audit log of "
+            f"run {run.run_id}."
+        )
+    console.print(
+        f"Pairs backtest {s['start']} .. {s['end']} ({cfg.universe}): {s['n_formations']} "
+        f"formations, {s['n_trades']} trades, hit rate {_fmt(s['hit_rate'], '.1%')}; net "
+        f"Sharpe {_fmt(s['sharpe'], '.2f')}, annual return {_fmt(s['ann_return'], '.2%')}, "
+        f"max drawdown {_fmt(s['max_drawdown'], '.2%')}, total cost {_fmt(s['total_cost'], '.2%')}"
+    )
+    console.print(f"Run {run.run_id}. Output: {target}")
+
+
+def _write_pairs_backtest(
+    result: PairsBacktestResult, target: Path, run: Any, cfg: Any, first: date, last: date
+) -> None:
+    """`summary.json` (the backtest summary, the window, the run and the settings), and the
+    trades, selections and daily CSVs."""
+    target.mkdir(parents=True, exist_ok=True)
+
+    def clean(value: object) -> object:
+        if isinstance(value, float) and not math.isfinite(value):
+            return None
+        if isinstance(value, dict):
+            return {str(k): clean(v) for k, v in value.items()}
+        return value
+
+    bt = result.backtest
+    summary = {
+        **result.summary,
+        "from": first.isoformat(),
+        "to": last.isoformat(),
+        "run": {
+            "run_id": run.run_id,
+            "stage": run.stage,
+            "mode": run.mode,
+            "config_fingerprint": run.config_fingerprint,
+        },
+        "config": cfg.model_dump(),
+    }
+    (target / "summary.json").write_text(json.dumps(clean(summary), indent=2, default=str) + "\n")
+    result.trades.to_csv(target / "trades.csv", index=False)
+    result.selections.to_csv(target / "selections.csv", index=False)
+    daily = pd.DataFrame(
+        {"net_return": bt.returns, "gross_return": bt.gross_returns, "cost": bt.costs}
+    ).join(result.daily)
+    daily.to_csv(target / "daily.csv")
 
 
 __all__ = ["pairs_cmd", "parse_bound", "research_app", "signal_cmd"]

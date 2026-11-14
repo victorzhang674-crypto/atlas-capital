@@ -119,6 +119,11 @@ class VolForecast:
     def __post_init__(self) -> None:
         object.__setattr__(self, "params", MappingProxyType(dict(self.params)))
 
+    def __hash__(self) -> int:
+        """By value, like `==`: usable in sets and as a dict key (`params` as sorted items)."""
+        params = tuple(sorted(self.params.items()))
+        return hash((self.variance, self.method, self.n_obs, params, self.fallback))
+
     @property
     def vol(self) -> float:
         """Daily volatility (standard deviation of the next session's return)."""

@@ -1,0 +1,2 @@
+migrated factor_exposures to version 2
+1212389 rows; 1212389 without a fingerprint; 142 dates

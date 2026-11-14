@@ -1,0 +1,19 @@
+=== swap into /Users/zzjsmacbookair/Projects/atlas-capital/data from /private/tmp/claude-501/tier4-lake, 2026-11-14T07:11:37Z
+backed up prices_daily:  49M digest e4440cc6a5fe04b5
+backed up corporate_actions: 136K digest bd1657dde1e8abbf
+backed up index_membership:  12K digest 596679b40021958f
+backed up instruments:  28K digest 9150ad697e6bb1dd
+backed up factor_exposures:  16M digest e0d96f9b52166766
+backed up factor_returns: 580K digest df49f1a95cb8b51f
+backed up risk_model_snapshots: 6.0M digest f6d44d9cd59abac7
+replaced prices_daily: digest now b23f81e5fcff56c8 (scratch b23f81e5fcff56c8)
+replaced corporate_actions: digest now e4817861d4519a3f (scratch e4817861d4519a3f)
+replaced index_membership: digest now 9ad3a7b8fb2c8807 (scratch 9ad3a7b8fb2c8807)
+replaced instruments: digest now 0c1832d1740a1605 (scratch 0c1832d1740a1605)
+replaced factor_exposures: digest now 02ac6f830f290f15 (scratch 02ac6f830f290f15)
+replaced factor_returns: digest now 7037d62a64a6916a (scratch 7037d62a64a6916a)
+replaced risk_model_snapshots: digest now 23394e7a6e71d34a (scratch 23394e7a6e71d34a)
+_meta.json: replaced by the scratch copy's (old one in the backup)
+build log kept: runs/factors/build-tier4-2026-11-14.log
+build log kept: runs/risk_model/build-tier4-2026-11-14.log
+swap exit 0

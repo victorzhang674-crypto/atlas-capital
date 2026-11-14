@@ -1,0 +1,29 @@
+=== hand-written mutants on a copy of src/ (worktree untouched), 2026-11-14T06:02Z
+CAUGHT   hold-out read at the in-sample end itself: 1 failed in 0.51s
+CAUGHT   hold-out uses the shortest horizon: 1 failed in 0.48s
+CAUGHT   in-sample end on a closed day not moved back: 1 failed, 3 passed in 0.49s
+CAUGHT   keep_gaps squeezes the gaps anyway: 1 failed, 13 passed in 1.70s
+CAUGHT   Bartlett weight off by one: 1 failed, 7 passed in 1.53s
+CAUGHT   a -100% day does not stop the backtest: 1 failed, 13 passed, 1 warning in 0.69s
+CAUGHT   horizon check never fires: 1 failed, 53 passed in 3.55s
+CAUGHT   headline t-statistic squeezes the gaps: 1 failed, 11 passed in 3.28s
+CAUGHT   stale rule ignores the tick: 1 failed, 14 passed in 0.51s
+SURVIVED stale rule threshold exclusive: 66 passed in 1.38s
+CAUGHT   a wrong cover count is kept: 1 failed, 17 passed in 1.86s
+CAUGHT   old counts never confirm an average: 1 failed, 19 passed in 1.92s
+CAUGHT   fingerprint counts rows known after the cutoff: 1 failed, 3 passed in 1.55s
+CAUGHT   a stale panel is read: 1 failed, 2 passed in 1.19s
+CAUGHT   a company's listings weigh sqrt(n) too much: 1 failed in 0.50s
+CAUGHT   share volume not restated: 1 failed in 0.46s
+CAUGHT   reused-ticker bars kept: 1 failed, 20 passed in 0.90s
+CAUGHT   pairs backtest view one session too late: 1 failed in 0.91s
+CAUGHT   withheld ETFs not reported: 1 failed, 11 passed in 3.65s
+CAUGHT   helper threads get no run: 1 failed, 10 passed in 0.42s
+19/20 mutants caught
+
+=== after the survivor: test_stale_price_move_threshold_is_inclusive rewritten with binary-exact prices (quarter-dollar steps, tick 0.125); the mutant re-run on a fresh copy
+CAUGHT   stale rule threshold exclusive: 1 failed, 15 passed in 0.51s
+20/20 mutants caught (19 in the first run, the 20th after the test fix)
+
+=== after the statarb rule fix (pairs_backtest_from_lake became pairs_backtest_from_view): its mutant redefined and re-run
+pairs backtest accepts a view that sees past the window: CAUGHT ['1 failed, 3 passed in 20.60s']

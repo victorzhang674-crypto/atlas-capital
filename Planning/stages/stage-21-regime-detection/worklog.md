@@ -90,3 +90,7 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Main lake, read only: 1,448 decision days 2016-01-04 .. 2021-10-01 for each kind (vol: NORMAL 598, HIGH 489, LOW 279, CRISIS 82; trend: UP 1,157, DOWN 172, NEUTRAL 119; quadrant: Reflation 439, Goldilocks 387, Deflation 345, Stagflation 277).
 - Ran: brief's Verify `uv run pytest tests/unit/quant/regime -q` → 675 passed; `make check` → exit 0 (ruff clean, 381 files formatted, mypy clean on 157 files, 4099 passed, 38 deselected) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-verify.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-verify.txt), [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-make-check.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-make-check.txt)
 - Code files: `src/atlas/quant/regime/store.py`, `src/atlas/quant/regime/__init__.py`; tests: `tests/unit/quant/regime/test_regime_store.py`, `test_regime_package.py`.
+
+## 2026-11-14 — Phase 2 checkpoint, Tier 4 (owner: "Start Tier 4 and fix the gaps like what is being opened in the backlog."): hmmlearn loads in the fit
+
+- Tier 4 item 1: `atlas.quant.regime.hmm` imports hmmlearn (and scikit-learn) in `fit_hmm`, not at import.

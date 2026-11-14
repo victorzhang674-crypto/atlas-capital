@@ -12,7 +12,9 @@ sessions long, and returns the last `history` sessions of every feature.
 
 Units: prices are USD, adjusted for splits and dividends with the actions known at `as_of`
 (the view's `adj_close`; open, high and low are scaled by the same factor); dollar volume is
-the raw close times the raw volume (USD; split-invariant); returns are simple daily returns.
+the raw close times the raw volume (USD; split-invariant); share volume is the raw volume in
+today's shares (raw volume / the session's split factor, `DataView.split_factors`); returns
+are simple daily returns.
 """
 
 import re
@@ -56,7 +58,8 @@ class PricePanel:
     `open`, `high`, `low`, `close` are adjusted prices (USD); `dollar_volume` is raw close x
     raw volume (USD). A missing bar is a NaN row entry. `benchmark_close` is the benchmark's
     adjusted close on the same index (`None` when no feature needs it). `sessions_per_year`
-    annualises volatilities.
+    annualises volatilities. `volume` is the share volume in today's shares (raw volume / the
+    session's split factor; `None` when no feature needs it).
     """
 
     open: pd.DataFrame
@@ -66,11 +69,14 @@ class PricePanel:
     dollar_volume: pd.DataFrame
     benchmark_close: pd.Series | None = None
     sessions_per_year: int = 252
+    volume: pd.DataFrame | None = None
     _memo: dict[Hashable, pd.DataFrame] = field(default_factory=dict, repr=False)
 
     def __post_init__(self) -> None:
-        for name in ("open", "high", "low", "dollar_volume"):
+        for name in ("open", "high", "low", "dollar_volume", "volume"):
             frame = getattr(self, name)
+            if frame is None:
+                continue
             if not (frame.index.equals(self.close.index) and frame.columns.equals(self.symbols)):
                 raise ValueError(f"PricePanel.{name} is not aligned with close")
         if self.benchmark_close is not None and not self.benchmark_close.index.equals(
@@ -116,11 +122,14 @@ class PricePanel:
         *,
         benchmark: str | None = None,
         sessions_per_year: int = 252,
+        splits: pd.DataFrame | None = None,
     ) -> "PricePanel":
         """The panel of `bars` (rows of `DataView.prices`: raw OHLC, raw volume, our
         `adj_close`) on the session grid `sessions` with columns `symbols`. Open, high and low
         are scaled by each bar's `adj_close / close`. `benchmark` names the symbol whose
-        adjusted close becomes `benchmark_close` (all NaN if it has no bars)."""
+        adjusted close becomes `benchmark_close` (all NaN if it has no bars). With `splits`
+        (`DataView.split_factors` on the same grid), `volume` is each bar's raw volume divided
+        by its session's split factor (a symbol without a column has none: 1.0)."""
         index = pd.DatetimeIndex(pd.to_datetime(list(sessions)), name="date")
         columns = pd.Index(list(symbols))
         frame = bars.assign(
@@ -147,7 +156,23 @@ class PricePanel:
             dollar_volume=wide(frame["dollar_volume"], columns),
             benchmark_close=bench,
             sessions_per_year=sessions_per_year,
+            volume=None if splits is None else _share_volume(wide, frame, columns, splits, index),
         )
+
+
+def _share_volume(
+    wide: Callable[[pd.Series, pd.Index], pd.DataFrame],
+    frame: pd.DataFrame,
+    columns: pd.Index,
+    splits: pd.DataFrame,
+    index: pd.DatetimeIndex,
+) -> pd.DataFrame:
+    """Raw volume (wide) / the split factor of its session and symbol (1.0 where `splits`
+    has no column for the symbol)."""
+    raw = wide(frame["volume"].astype("float64"), columns)
+    factors = splits.reindex(index=index, columns=columns).fillna(1.0)
+    factors.columns.name = None
+    return raw.div(factors)
 
 
 FeatureFunc = Callable[[PricePanel], pd.DataFrame]
@@ -156,8 +181,9 @@ FeatureFunc = Callable[[PricePanel], pd.DataFrame]
 @dataclass(frozen=True)
 class FeatureSpec:
     """A registered feature: `name` (snake_case), `lookback` (sessions of bars needed for the
-    first value), `kind` (`ts`/`xs`), `unit` (`FeatureUnit`), `description`, the function and
-    whether it needs the benchmark's bars (`benchmark`)."""
+    first value), `kind` (`ts`/`xs`), `unit` (`FeatureUnit`), `description`, the function,
+    whether it needs the benchmark's bars (`benchmark`) and the split-adjusted share volume
+    (`volume`)."""
 
     name: str
     lookback: int
@@ -166,6 +192,7 @@ class FeatureSpec:
     description: str
     func: FeatureFunc
     benchmark: bool = False
+    volume: bool = False
 
     def __post_init__(self) -> None:
         if not isinstance(self.name, str) or not _NAME.match(self.name):
@@ -209,6 +236,7 @@ class FeatureRegistry:
         unit: FeatureUnit,
         description: str | None = None,
         benchmark: bool = False,
+        volume: bool = False,
     ) -> Callable[[FeatureFunc], FeatureFunc]:
         """Decorator registering the function as feature `name` (the description defaults to
         the first paragraph of its docstring)."""
@@ -218,7 +246,7 @@ class FeatureRegistry:
             if text is None:
                 text = (func.__doc__ or "").strip().split("\n\n")[0]
                 text = " ".join(text.split())
-            self.register(FeatureSpec(name, lookback, kind, unit, text, func, benchmark))
+            self.register(FeatureSpec(name, lookback, kind, unit, text, func, benchmark, volume))
             return func
 
         return register
@@ -276,9 +304,15 @@ def compute_panel(
     """Every feature in `names` (all registered, for `None`) on `panel`, in request order: one
     float64 frame per feature aligned with the panel (sessions x symbols). Infinite values
     (a division by zero) become NaN. Pure: reads no data. A feature that returns a frame not
-    aligned with the panel raises `ValueError`."""
+    aligned with the panel, or one that needs share volume on a panel without it, raises
+    `ValueError`."""
     out: dict[str, pd.DataFrame] = {}
     for spec in registry.specs(names):
+        if spec.volume and panel.volume is None:
+            raise ValueError(
+                f"feature {spec.name!r} needs the split-adjusted share volume: build the "
+                "panel with PricePanel.from_bars(..., splits=DataView.split_factors(...))"
+            )
         result = spec.func(panel)
         if not (
             isinstance(result, pd.DataFrame)
@@ -356,12 +390,15 @@ def compute_features(
     request = [*wanted, benchmark] if benchmark and benchmark not in wanted else wanted
     bars = view.prices(request, n)
     blocked = view.blocked
+    usable = [s for s in wanted if s not in blocked]
+    needs_volume = any(spec.volume for spec in specs)
     panel = PricePanel.from_bars(
         bars,
         view.sessions(n),
-        [s for s in wanted if s not in blocked],
+        usable,
         benchmark=benchmark,
         sessions_per_year=settings.sessions_per_year,
+        splits=view.split_factors(usable, n) if needs_volume and usable else None,
     )
     values = compute_panel(panel, [spec.name for spec in specs], registry=registry)
     tail = {name: frame.iloc[-history:] for name, frame in values.items()}

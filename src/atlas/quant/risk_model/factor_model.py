@@ -167,13 +167,27 @@ def prepare_exposures(
 class CrossSection:
     """One session for the regression: `returns` of session `day` (simple, NaN = none) and,
     known at the previous close, `raw_styles` (the `STYLE_NAMES` columns), `sectors` (GICS
-    name) and `caps` (USD), all indexed by symbol."""
+    name) and `caps` (USD), all indexed by symbol. `classes` (optional): the number of
+    listed share classes of each name's company in the cross-section (missing = 1); a
+    company listed `n` times, each listing carrying the whole company's cap, then counts once:
+    `cap / n` in the cap-weighted sums and `sqrt(cap) / n` as each listing's regression
+    weight."""
 
     day: date
     returns: pd.Series
     raw_styles: pd.DataFrame
     sectors: pd.Series
     caps: pd.Series
+    classes: pd.Series | None = None
+
+
+def _per_listing(caps: pd.Series, classes: pd.Series | None) -> tuple[pd.Series, pd.Series]:
+    """`(caps / n, n)` per name, `n` = `classes` (1 where missing or without `classes`)."""
+    n = pd.Series(1.0, index=caps.index)
+    if classes is not None:
+        given = classes.reindex(caps.index).astype("float64")
+        n = given.where(given >= 1, 1.0).fillna(1.0)
+    return caps / n, n
 
 
 @dataclass(frozen=True)
@@ -229,17 +243,17 @@ def fit_factor_history(
         last = cs.day
         returns = cs.returns[np.isfinite(cs.returns.to_numpy(dtype="float64"))]
         names = returns.index.intersection(cs.raw_styles.index)
+        caps, n_classes = _per_listing(cs.caps, cs.classes)
         try:
-            prep = prepare_exposures(cs.raw_styles.loc[names], cs.sectors, cs.caps, factors, config)
+            prep = prepare_exposures(cs.raw_styles.loc[names], cs.sectors, caps, factors, config)
             if len(prep.design) < config.min_cross_section:
                 raise DataError(
                     f"{cs.day}: {len(prep.design)} usable names < min_cross_section "
                     f"({config.min_cross_section}) in the cross-section"
                 )
             constraint = sector_constraint(prep.design, prep.caps, factors.sectors)
-            res = constrained_wls(
-                returns.loc[prep.design.index], prep.design, np.sqrt(prep.caps), constraint
-            )
+            weights = np.sqrt(prep.caps) / np.sqrt(n_classes.loc[prep.design.index])
+            res = constrained_wls(returns.loc[prep.design.index], prep.design, weights, constraint)
         except DataError as exc:
             if on_short == "skip":
                 _log.warning(
@@ -463,10 +477,13 @@ def build_risk_model(
     caps: pd.Series,
     as_of: date,
     config: AtlasConfig | None = None,
+    *,
+    classes: pd.Series | None = None,
 ) -> RiskModel:
     """The risk model at `as_of` from the factor returns and residuals up to that day
     (`history`) and the as-of exposure inputs (`raw_styles`, `sectors`, `caps`, known at
-    `as_of`'s close; index symbol). Names without an exposure row or enough residual history
+    `as_of`'s close; index symbol; `classes` as in `CrossSection`: the cap-weighted centring
+    of the styles uses `cap / n`). Names without an exposure row or enough residual history
     are left out and listed in `RiskModel.dropped` (`cap`, `sector`, `exposures`, `history`).
     A history ending more than `max_stale_sessions` sessions before `as_of` -> `DataError`.
     """
@@ -484,7 +501,7 @@ def build_risk_model(
             f"(max_stale_sessions {fm.max_stale_sessions})"
         )
     factors = history.factors
-    prep = prepare_exposures(raw_styles, sectors, caps, factors, fm)
+    prep = prepare_exposures(raw_styles, sectors, _per_listing(caps, classes)[0], factors, fm)
     fcov = factor_covariance(
         hist.factor_returns,
         half_life=fm.factor_half_life,

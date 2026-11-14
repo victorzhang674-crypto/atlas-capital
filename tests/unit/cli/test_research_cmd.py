@@ -467,3 +467,150 @@ def test_research_pairs_no_members_says_so(tmp_path: Path) -> None:
     result = invoke(root, "pairs", "--as-of", "2024-03-01")
     assert result.exit_code == 0, result.output
     assert "No pairs selected at 2024-03-01" in _plain(result.output)
+
+
+# --- Phase 2 checkpoint, Tier 4 item 2: signal options and `pairs --backtest` -----------------
+
+
+def test_signal_help_lists_the_research_options() -> None:
+    result = CliRunner().invoke(app, ["research", "signal", "--help"], env=BASE_ENV)
+    text = _plain(result.output)
+    for option in ("--horizons", "--rebalance", "--weighting"):
+        assert option in text
+
+
+def test_signal_horizons_rebalance_and_weighting(world: ResearchWorld, tmp_path: Path) -> None:
+    out = tmp_path / "sheet"
+    args = [
+        "signal", "--name", "reversal_5d", "--from", str(world.day(75)), "--to",
+        str(world.day(110)), "--frequency", "weekly", "--out", str(out),
+        "--horizons", "1,5,10", "--rebalance", "weekly", "--weighting", "signal",
+    ]  # fmt: skip
+    result = invoke(world.lake.root, *args)
+    assert result.exit_code == 0, result.output
+    summary = json.loads((out / "tearsheet.json").read_text())
+    assert summary["labels"]["horizons"] == [1, 5, 10]
+    assert summary["backtest"]["rebalance"] == "weekly"
+    assert summary["backtest"]["weighting"] == "signal"
+    text = " ".join(_plain(result.output).split())
+    assert "(signal, weekly," in text
+
+
+@pytest.mark.parametrize(
+    ("option", "value"),
+    [
+        ("--horizons", "5,1"),  # not ascending
+        ("--horizons", "1,x"),
+        ("--horizons", "0"),
+        ("--rebalance", "daily"),
+        ("--weighting", "cap"),
+    ],
+)
+def test_signal_bad_research_options_exit_2(world: ResearchWorld, option: str, value: str) -> None:
+    result = invoke(world.lake.root, *_signal_args(world), option, value)
+    assert result.exit_code == 2, result.output
+    assert option in _plain(result.output)
+
+
+def test_longer_horizons_move_the_holdout_limit(world: ResearchWorld) -> None:
+    """The guard uses the horizons of the run: with 126 sessions the last in-sample --to is
+    earlier than with the configured 63."""
+    result = invoke(world.lake.root, *_signal_args(world), "--horizons", "1,126", holdout=True)
+    assert result.exit_code == 2
+    text = " ".join(_plain(result.output).split())
+    assert "2021-07-02" in text  # 126 sessions before 2021-12-31
+
+
+def _pairs_window() -> tuple[date, date]:
+    from statarb_world import CAL, LAST
+
+    return CAL.offset(LAST, -70), CAL.offset(LAST, -10)
+
+
+def test_research_pairs_help_lists_backtest() -> None:
+    result = CliRunner().invoke(app, ["research", "pairs", "--help"], env=BASE_ENV)
+    text = _plain(result.output)
+    for option in ("--backtest", "--from", "--to", "--allow-holdout"):
+        assert option in text
+
+
+def test_research_pairs_backtest_writes_its_results(
+    pairs_lake: tuple[Path, object], tmp_path: Path
+) -> None:
+    from statarb_world import CAL
+
+    from atlas.core.config import AtlasConfig
+    from atlas.data.view import DataView
+    from atlas.quant.statarb import pairs_backtest_from_view
+
+    root, _ = pairs_lake
+    start, end = _pairs_window()
+    out = tmp_path / "bt"
+    args = ["pairs", "--backtest", "--from", str(start), "--to", str(end), "--out", str(out)]
+    result = invoke(root, *args)
+    assert result.exit_code == 0, result.output
+    view = DataView(Lake(root), CAL.next_session(end), AtlasConfig())
+    want = pairs_backtest_from_view(view, start, end)
+    summary = json.loads((out / "summary.json").read_text())
+    assert summary["start"] == start.isoformat() and summary["end"] == end.isoformat()
+    assert summary["n_trades"] == want.summary["n_trades"] > 0
+    assert summary["run"]["stage"] == "research.pairs_backtest"
+    assert summary["config"]["formation"] == 504
+    trades = pd.read_csv(out / "trades.csv")
+    assert len(trades) == len(want.trades)
+    daily = pd.read_csv(out / "daily.csv", index_col=0)
+    assert len(daily) == len(want.backtest.returns)
+    assert (out / "selections.csv").is_file()
+    text = " ".join(_plain(result.output).split())
+    assert "Sharpe" in text and f"{want.summary['n_trades']} trades" in text
+
+
+def test_research_pairs_backtest_default_output_dir(pairs_lake: tuple[Path, object]) -> None:
+    root, _ = pairs_lake
+    start, end = _pairs_window()
+    result = invoke(root, "pairs", "--backtest", "--from", str(start), "--to", str(end))
+    assert result.exit_code == 0, result.output
+    out = root / "runs" / "research" / "pairs" / f"backtest-{start}-{end}"
+    assert (out / "summary.json").is_file()
+
+
+def test_research_pairs_backtest_refuses_the_holdout(
+    pairs_lake: tuple[Path, object], tmp_path: Path
+) -> None:
+    root, _ = pairs_lake
+    start, end = _pairs_window()
+    out = tmp_path / "bt"
+    args = ["pairs", "--backtest", "--from", str(start), "--to", str(end), "--out", str(out)]
+    result = invoke(root, *args, holdout=True)
+    assert result.exit_code == 2
+    text = " ".join(_plain(result.output).split())
+    assert "2021-12-31" in text and "--allow-holdout" in text
+    assert not out.exists()
+    result = invoke(root, *args, "--allow-holdout", holdout=True)
+    assert result.exit_code == 0, result.output
+    summary = json.loads((out / "summary.json").read_text())
+    events = _audit_events(root, summary["run"]["run_id"])
+    assert [e["event_type"] for e in events] == ["OVERRIDE"]
+    payload = events[0]["payload"]
+    assert isinstance(payload, dict)
+    assert payload["command"] == "research pairs --backtest"
+    assert payload["override"] == "allow_holdout"
+    assert payload["to"] == str(end) and payload["in_sample_end"] == "2021-12-31"
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ["pairs", "--backtest", "--to", "2024-01-31"],  # no --from
+        ["pairs", "--backtest", "--from", "2024-01-02"],  # no --to
+        ["pairs", "--backtest", "--from", "2024-01-02", "--to", "2024-01-31", "--as-of",
+         "2024-03-01"],  # both modes
+        ["pairs", "--from", "2024-01-02", "--to", "2024-01-31"],  # a window without --backtest
+        ["pairs", "--backtest", "--from", "2024-02-01", "--to", "2024-01-02"],  # reversed
+    ],
+)  # fmt: skip
+def test_research_pairs_backtest_bad_arguments_exit_2(
+    pairs_lake: tuple[Path, object], args: list[str]
+) -> None:
+    root, _ = pairs_lake
+    assert invoke(root, *args).exit_code == 2

@@ -43,3 +43,10 @@ Output from commands run in this stage's chat (Project.md Rule 1); raw outputs u
 - Red first, then `test_labels_by_kind` passes; brief's Verify `uv run pytest tests/unit/quant/regime -q` → 675 passed · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-verify.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-verify.txt); `make check` → exit 0 (ruff clean, 381 files formatted, mypy clean on 157 files, 4099 passed, 38 deselected) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-make-check.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier2-make-check.txt)
 - Main lake (read only): 1,448 labelled decision days per kind, 2016-01-04 .. 2021-10-01. Details in [worklog.md](worklog.md).
 - Acceptance criteria unchanged and still evidenced (in the brief's Verify).
+
+#### Phase 2 checkpoint follow-up (Tier 4: hmmlearn loads in the fit) — 2026-11-14
+- Commands run (this chat): `make check` → exit 0 (ruff clean, 393 files formatted, mypy clean on 157 files, 4241 passed in parallel and 3 timing tests alone); `uv run pytest -q` → 4244 passed, 71 deselected; integration on the main lake → 55 passed, 1 skipped (the flag-gated 2018–2024 calibration) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-final-checks.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-final-checks.txt); red first: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-red.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-red.txt); mutants: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-mutate.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-mutate.txt)
+- `tests/unit/quant/regime/` passes.
+- Acceptance criteria unchanged and still evidenced.
+
+**Result:** ALL CRITERIA VERIFIED

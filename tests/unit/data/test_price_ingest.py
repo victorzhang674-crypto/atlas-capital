@@ -1,12 +1,15 @@
 """Stage 07 Task 6: ingesting prices and corporate actions into the lake."""
 
 from datetime import UTC, date, datetime
+from pathlib import Path
 
 import pandas as pd
 import pytest
 from price_helpers import FakePriceProvider, FakeYFinance, daily_rows, load_yf_symbol
 
 from atlas.core.calendar import TradingCalendar
+from atlas.core.config import PriceDataConfig
+from atlas.core.errors import ConfigError
 from atlas.core.pit import AsOf, pit_filter
 from atlas.core.storage import Lake
 from atlas.data.prices import (
@@ -14,6 +17,8 @@ from atlas.data.prices import (
     PRICES_DAILY,
     IngestReport,
     ingest_prices,
+    load_reused_tickers,
+    purge_reused_tickers,
 )
 from atlas.data.providers.yfinance_provider import YFinanceProvider
 
@@ -236,3 +241,83 @@ def test_available_at_never_before_the_session_close(tmp_lake: Lake) -> None:
             stamp.tzinfo is not None
             and stamp.utcoffset() == datetime(2020, 1, 1, tzinfo=UTC).utcoffset()
         )
+
+
+# --- Phase 2 checkpoint (backlog, Stages 07/08): reused tickers ------------------------------
+
+
+def _reused_provider() -> FakePriceProvider:
+    """SE before and after 2020-08-31: a member until then, another company's listing later."""
+    days = [d for d in TradingCalendar().sessions(START, END)]
+    daily = pd.concat(
+        [
+            daily_rows("SE", [(d, 50.0 + i, 1000) for i, d in enumerate(days)]),
+            daily_rows("AAPL", [(d, 100.0, 1000) for d in days]),
+        ],
+        ignore_index=True,
+    )
+    actions = pd.DataFrame(
+        {
+            "symbol": ["SE", "SE"],
+            "ex_date": [date(2020, 8, 14), date(2020, 9, 15)],
+            "type": ["dividend", "dividend"],
+            "ratio": [None, None],
+            "amount": [0.5, 0.7],
+            "vendor": ["fake", "fake"],
+        }
+    )
+    return FakePriceProvider(daily, actions)
+
+
+def test_reused_ticker_bars_after_the_member_are_not_stored(tmp_lake: Lake) -> None:
+    until = date(2020, 8, 31)
+    report = _ingest(tmp_lake, _reused_provider(), ["SE", "AAPL"], reused={"SE": until})
+    assert report.symbols_ok == ("SE", "AAPL")
+    prices = tmp_lake.read_table("prices_daily")
+    se = prices[prices["symbol"] == "SE"]
+    assert se["date"].max() == until and len(se) == 21
+    assert (prices["symbol"] == "AAPL").sum() == 42  # other symbols untouched
+    actions = tmp_lake.read_table("corporate_actions")
+    assert list(actions["ex_date"]) == [date(2020, 8, 14)]
+
+
+def test_a_reused_ticker_with_only_later_bars_has_no_data(tmp_lake: Lake) -> None:
+    report = _ingest(tmp_lake, _reused_provider(), ["SE"], reused={"SE": date(2017, 2, 27)})
+    assert report.symbols_failed == ("SE",)
+    assert report.failure_reasons["SE"] == "no price data returned"
+    assert not tmp_lake.has_table("prices_daily") or tmp_lake.read_table("prices_daily").empty
+
+
+def test_purge_reused_tickers(tmp_lake: Lake) -> None:
+    _ingest(tmp_lake, _reused_provider(), ["SE", "AAPL"])
+    removed = purge_reused_tickers(tmp_lake, {"SE": date(2020, 8, 31), "ZZZ": date(2020, 1, 2)})
+    assert removed == {"SE": (21, 1), "ZZZ": (0, 0)}
+    prices = tmp_lake.read_table("prices_daily")
+    assert prices.loc[prices["symbol"] == "SE", "date"].max() == date(2020, 8, 31)
+    assert (prices["symbol"] == "AAPL").sum() == 42
+    assert purge_reused_tickers(tmp_lake, {"SE": date(2020, 8, 31)}) == {"SE": (0, 0)}
+
+
+def test_load_reused_tickers(tmp_path: Path, repo_root: Path) -> None:
+    path = tmp_path / "reused.yaml"
+    path.write_text(
+        "tickers:\n"
+        "  - {symbol: se, until: 2017-02-27, note: Spectra Energy acquired by Enbridge}\n"
+        "  - {symbol: BRK-B, until: 2020-01-02, note: x}\n"
+    )
+    assert load_reused_tickers(path) == {"SE": date(2017, 2, 27), "BRK.B": date(2020, 1, 2)}
+    assert load_reused_tickers(tmp_path / "none.yaml") == {}
+    path.write_text(
+        "tickers:\n  - {symbol: SE, until: 2017-02-27}\n  - {symbol: se, until: 2018-01-02}\n"
+    )
+    with pytest.raises(ConfigError, match="twice"):
+        load_reused_tickers(path)
+    path.write_text("tickers:\n  - {symbol: SE}\n")
+    with pytest.raises(ConfigError, match="until"):
+        load_reused_tickers(path)
+    repo = load_reused_tickers(repo_root / "config" / "reused_tickers.yaml")
+    assert len(repo) == 26
+    assert repo["SE"] == date(2017, 2, 27) and repo["STI"] == date(2019, 12, 6)
+    for genuine in ("JWN", "FL", "TGNA", "PDCO", "SWN", "AVB", "AA"):
+        assert genuine not in repo, genuine
+    assert PriceDataConfig().reused_tickers_file == Path("config/reused_tickers.yaml")

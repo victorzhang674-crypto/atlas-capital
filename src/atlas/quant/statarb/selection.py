@@ -31,7 +31,6 @@ from itertools import combinations
 
 import numpy as np
 import pandas as pd
-from statsmodels.tsa.stattools import coint
 
 from atlas.core.config import StatArbConfig
 from atlas.core.logging import get_logger
@@ -109,6 +108,8 @@ def coint_pvalue(
     """Order-free Engle-Granger p-value: the larger of statsmodels `coint(a, b)` and
     `coint(b, a)` (constant, lag length by AIC); NaN when the test cannot be run (e.g. a
     perfect fit)."""
+    from statsmodels.tsa.stattools import coint  # loaded when first needed, not at import
+
     x, y = _as_array(a), _as_array(b)
     if len(x) != len(y):
         raise ValueError(f"coint_pvalue needs equal lengths, got {len(x)} and {len(y)}")

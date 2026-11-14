@@ -9,7 +9,9 @@ or a constant signal or label, has no IC (NaN, dropped from summaries).
 evaluation period, not annualised), the hit rate (share of dates with IC > 0) and a
 Newey-West t-statistic of the mean: overlapping forward windows (a horizon longer than the
 spacing of the evaluation dates) make consecutive ICs correlated, so the variance of the mean
-uses Bartlett-weighted autocovariances up to `nw_lags(horizon, dates)` lags.
+uses Bartlett-weighted autocovariances up to `nw_lags(horizon, dates)` lags. The tear sheet's
+t-statistics keep a date without an IC in its place (`keep_gaps=True`): the rows are the
+evaluation dates, so only ICs that really are `l` dates apart are paired at lag `l`.
 
 Decay: `ic_decay` gives the mean IC per horizon; `rank_autocorrelation` the mean Spearman
 correlation between the signal on a date and `k` evaluation dates earlier (a persistence and
@@ -216,7 +218,8 @@ def ic_by_group(
     for group in sorted({g for g in mapped if isinstance(g, str)}):
         cols = [c for c, g in mapped.items() if g == group]
         series = ic_series(signal[cols], labels, method=method, min_names=min_names)
-        rows[group] = {**summarize_ic(series, lags).to_dict(), "names": len(cols)}
+        summary = summarize_ic(series, lags, keep_gaps=True)  # rows are evaluation dates
+        rows[group] = {**summary.to_dict(), "names": len(cols)}
     columns = [*SUMMARY_FIELDS, "names"]
     return pd.DataFrame.from_dict(rows, orient="index", columns=columns).rename_axis("group")
 

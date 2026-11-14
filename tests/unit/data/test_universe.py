@@ -1014,7 +1014,8 @@ def test_bad_former_sectors_file(tmp_path: Path, body: str, message: str) -> Non
 def test_repo_former_sectors_file(repo_root: Path, fixture_build: MembershipBuild) -> None:
     sectors = load_former_sectors(repo_root / "config" / "former_sectors.yaml")
     assert AtlasConfig().data.reference.former_sectors_file == Path("config/former_sectors.yaml")
-    assert len(sectors) == 180 and set(sectors.values()) == set(GICS_SECTORS)
+    assert len(sectors) == 181 and set(sectors.values()) == set(GICS_SECTORS)
+    assert sectors["KVUE"] == "Consumer Staples"  # left the index 2026-10-30 (Tier 4)
     # every entry is a symbol of the membership history
     known = set(fixture_build.intervals["symbol"])
     assert sectors["KSS"] == "Consumer Discretionary" and sectors["CE"] == "Materials"

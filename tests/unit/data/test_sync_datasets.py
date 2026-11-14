@@ -428,3 +428,26 @@ def test_live_sources_are_lazy_and_fail_safe(tmp_lake: Lake, cfg: AtlasConfig) -
     news = SyncSources.live(keyed, tmp_lake).news_provider()
     assert isinstance(news.inner, AlpacaNewsProvider)  # Alpaca alone: no recent-only fallback
     news.close()
+
+
+def test_prices_step_applies_the_reused_ticker_list(
+    tmp_lake: Lake, cfg: AtlasConfig, world: World, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Phase 2 checkpoint: the sync passes `data.prices.reused_tickers_file` to the price
+    ingest, so a later sync cannot bring another company's bars back."""
+    import atlas.data.sync.steps as steps
+
+    listed = tmp_path / "reused.yaml"
+    listed.write_text("tickers:\n  - {symbol: AAA, until: 2024-01-02, note: test}\n")
+    prices = cfg.data.prices.model_copy(update={"reused_tickers_file": listed})
+    cfg = cfg.model_copy(update={"data": cfg.data.model_copy(update={"prices": prices})})
+    seen: list[object] = []
+    real = steps.ingest_prices
+
+    def spy(*args: object, **kwargs: object) -> object:
+        seen.append(kwargs.get("reused"))
+        return real(*args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(steps, "ingest_prices", spy)
+    run_sync(tmp_lake, cfg, world.sources(), start=START, datasets=["universe", "prices"])
+    assert seen and all(r == {"AAA": date(2024, 1, 2)} for r in seen)

@@ -1,9 +1,10 @@
-"""The technical feature library (Stage 15): 40 features registered in `REGISTRY`.
+"""The technical feature library (Stage 15): 41 features registered in `REGISTRY`.
 
 Every feature is a function of a `PricePanel` (adjusted OHLC in USD, raw dollar volume in USD,
-simple daily returns), vectorised across symbols. Notation in the docstrings: `C`, `O`, `H`,
-`L` adjusted close/open/high/low, `r` the daily simple return of `C`, `m` the benchmark's,
-`DV` = raw close x raw volume (USD). A feature at session `t` uses bars at or before `t` only.
+split-adjusted share volume, simple daily returns), vectorised across symbols. Notation in the
+docstrings: `C`, `O`, `H`, `L` adjusted close/open/high/low, `r` the daily simple return of
+`C`, `m` the benchmark's, `DV` = raw close x raw volume (USD), `V` = share volume in today's
+shares. A feature at session `t` uses bars at or before `t` only.
 
 Missing data: rows are trading sessions, so a missing bar is NaN. A window statistic needs
 every value in its window (NaN until the gap leaves the window); point-to-point returns need
@@ -101,8 +102,11 @@ def _register(
     description: str | None = None,
     *,
     benchmark: bool = False,
+    volume: bool = False,
 ) -> Callable[[Callable[[PricePanel], pd.DataFrame]], Callable[[PricePanel], pd.DataFrame]]:
-    return feature(name, lookback, unit=unit, description=description, benchmark=benchmark)
+    return feature(
+        name, lookback, unit=unit, description=description, benchmark=benchmark, volume=volume
+    )
 
 
 # --- returns and momentum ------------------------------------------------------------------------
@@ -354,6 +358,19 @@ def volume_z_21d(panel: PricePanel) -> pd.DataFrame:
     past = _rolling(log_dv.shift(1), 21)
     mean, sd = past.mean(), past.std(ddof=1)
     return ((log_dv - mean) / sd).mask(sd <= FLAT_EPS)
+
+
+@_register("share_volume_z_21d", 22, "zscore", volume=True)
+def share_volume_z_21d(panel: PricePanel) -> pd.DataFrame:
+    """Share-volume z-score: (ln V_t - mean) / std (ddof 1) of ln V over the previous 21
+    sessions, V = share volume in today's shares (split-adjusted; unlike dollar volume it does
+    not move with the price)."""
+    assert panel.volume is not None  # compute_panel checks it
+    v = panel.volume
+    log_v = _frame(np.log(v.where(v > 0).to_numpy()), v)
+    past = _rolling(log_v.shift(1), 21)
+    mean, sd = past.mean(), past.std(ddof=1)
+    return ((log_v - mean) / sd).mask(sd <= FLAT_EPS)
 
 
 @_register("amihud_21d", 22, "return_per_usd_mm")

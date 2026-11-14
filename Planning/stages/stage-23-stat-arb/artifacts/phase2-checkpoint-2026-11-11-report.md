@@ -248,4 +248,15 @@ PCA risk model (briefs' Out of scope).
   market cap at 2024-01-31 464 → 489 of 502; with a sector 390 → 494 of 502 in mid-2019; the
   risk model's daily cross-section 392 → 463 names on average; mean R² 0.339 → 0.317; bias
   of single names 1.067 → 1.076. Every other factor value unchanged.
-- Tier 4: not started; waits for the owner's word, as in Phase 1.
+- Tier 4, 2026-11-14 (owner: "Start Tier 4 and fix the gaps like what is being opened in the
+  backlog."): items 1–5 done (CLI starts in about 2 s instead of 16; `research signal`
+  options and `research pairs --backtest` with the hold-out guard; `covariance_from_view`
+  and a hashable `VolForecast`; dot-folders ignored by the layout test; split-adjusted share
+  volume). Fifteen backlog gaps closed, among them a tick-aware stale-price rule (BIL),
+  reused tickers (26 reviewed, purged from the main lake), share-count cross-checks that
+  correct caps about 1,000 times wrong (EIX, AJG, CCL, RMD), share classes counted once, a
+  data fingerprint for the factor cache and 20 of 20 mutants caught. The main lake was
+  rebuilt and read back. With the caps corrected the 2020 under-prediction shows in full
+  (pooled equal-weighted bias 1.159): the Stage 42 item. Left for the owner or later stages:
+  the gate command, the vol-regime adjustment, the hold-out guard in library code, the
+  statarb acceptance sweeps' run time.

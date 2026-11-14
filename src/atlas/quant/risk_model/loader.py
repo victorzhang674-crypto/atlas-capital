@@ -14,6 +14,7 @@ styles and caps through the close of `t-1`, and the returns of `t`. Everything i
 `DataView`, so each piece is point-in-time.
 """
 
+import dataclasses
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -65,12 +66,31 @@ TECHNICAL_FEATURES: dict[str, str] = {
 @dataclass(frozen=True)
 class StyleInputs:
     """The exposure inputs of a model at the close of `data_date`: `raw_styles` (names x
-    `STYLE_NAMES`), `sectors` (GICS name or None) and `caps` (USD)."""
+    `STYLE_NAMES`), `sectors` (GICS name or None), `caps` (USD; each listing of a company
+    carries the company's cap) and `classes` (listings of each name's company among the
+    names, `listed_classes`)."""
 
     data_date: date
     raw_styles: pd.DataFrame
     sectors: pd.Series
     caps: pd.Series
+    classes: pd.Series | None = None
+
+
+def listed_classes(view: DataView, names: Sequence[str]) -> pd.Series:
+    """For each of `names`, how many of `names` share its issuer's SEC CIK
+    (`DataView.ciks`; a name without a known CIK counts as its own company): 2 for GOOGL and
+    GOOG when both are in `names`, else 1. Index symbol, in `names` order."""
+    return _class_counts(view.ciks(list(names)), names)
+
+
+def _class_counts(ciks: pd.Series, names: Sequence[str]) -> pd.Series:
+    """Per name of `names`, how many of `names` have its CIK in `ciks` (1 without one)."""
+    known = ciks.reindex(list(names)).dropna()
+    counts = known.map(known.value_counts())
+    out = counts.reindex(list(names)).fillna(1).astype("int64")
+    out.index.name = "symbol"
+    return out
 
 
 def _log_cap(caps: pd.Series) -> pd.Series:
@@ -119,6 +139,7 @@ def style_inputs(view: DataView, symbols: Sequence[str] | None = None) -> StyleI
         raw_styles=raw[list(STYLE_NAMES)],
         sectors=sectors.reindex(names),
         caps=caps.reindex(names),
+        classes=listed_classes(view, names),
     )
 
 
@@ -129,7 +150,13 @@ def build_model_from_view(
     factor returns up to its `data_date` from `history`."""
     inputs = style_inputs(view, symbols)
     return build_risk_model(
-        history, inputs.raw_styles, inputs.sectors, inputs.caps, inputs.data_date, view.config
+        history,
+        inputs.raw_styles,
+        inputs.sectors,
+        inputs.caps,
+        inputs.data_date,
+        view.config,
+        classes=inputs.classes,
     )
 
 
@@ -151,6 +178,7 @@ class _Anchor:
     styles: pd.DataFrame
     sectors: pd.Series
     caps: pd.Series
+    ciks: pd.Series
 
 
 def load_cross_sections(
@@ -201,7 +229,12 @@ def load_cross_sections(
         else:
             styles, sectors, caps = _fundamental(view, symbols)
         anchors[a] = _Anchor(
-            day=a, data_date=view.sessions(1)[-1], styles=styles, sectors=sectors, caps=caps
+            day=a,
+            data_date=view.sessions(1)[-1],
+            styles=styles,
+            sectors=sectors,
+            caps=caps,
+            ciks=view.ciks(list(styles.index)),
         )
         _log.info(
             "risk_model.anchor_loaded",
@@ -253,6 +286,7 @@ def load_cross_sections(
         raw["size"] = _log_cap(caps)
         for style, feature in TECHNICAL_FEATURES.items():
             raw[style] = _row(tech[feature], prev, members)
+        classes = _class_counts(anchor.ciks, members)
         out.append(
             CrossSection(
                 day=day,
@@ -260,6 +294,7 @@ def load_cross_sections(
                 raw_styles=raw[list(STYLE_NAMES)],
                 sectors=anchor.sectors.reindex(members),
                 caps=caps,
+                classes=classes,
             )
         )
     return out
@@ -291,18 +326,29 @@ def etf_exposures_from_view(
 ) -> EtfExposures:
     """ETF exposures for the decision at `view`: the last `etf.window` daily returns of
     `etfs` (default: the members of `etf.universe`) read through `view`, regressed on the
-    factor returns of `history` up to the view's latest known session."""
+    factor returns of `history` up to the view's latest known session. A requested ETF the
+    view withholds (blocked by the data-quality checks) is in `dropped` (`blocked`) and
+    logged (`risk_model.etf_withheld`); `DataError` when every one is withheld."""
     cfg = view.config
     ec = cfg.quant.risk_model.factor_model.etf
     names = list(etfs) if etfs is not None else view.universe(ec.universe)
     if not names:
         raise DataError(f"no ETFs to estimate (universe {ec.universe!r} is empty at {view.day})")
+    blocked = view.blocked
+    withheld = [n for n in names if n in blocked]
+    if withheld:
+        _log.warning("risk_model.etf_withheld", date=view.day.isoformat(), symbols=withheld)
+    served = [n for n in names if n not in blocked]
+    if not served:
+        raise DataError(f"every requested ETF is blocked by the data-quality checks: {withheld}")
     data_date = view.sessions(1)[-1]
     hist = history.up_to(data_date)
     if hist.factor_returns.empty:
         raise DataError(f"no factor returns on or before {data_date}")
-    returns = view.returns(names, ec.window)
-    return etf_exposures(returns, hist.factor_returns, cfg)
+    returns = view.returns(served, ec.window)
+    out = etf_exposures(returns, hist.factor_returns, cfg)
+    reason = "blocked by the data-quality checks at the decision"
+    return dataclasses.replace(out, dropped={**out.dropped, **dict.fromkeys(withheld, reason)})
 
 
 def build_and_store(

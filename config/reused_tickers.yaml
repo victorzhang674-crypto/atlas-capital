@@ -1,0 +1,42 @@
+# Former S&P 500 members whose ticker a later company took (Phase 2 checkpoint, Tier 4;
+# reviewed 2026-11-14 from the main lake: Planning/stages/stage-07-price-data/artifacts/
+# phase2-checkpoint-tier4-reused-tickers-review.md). Read by atlas.data.prices.load_reused_tickers
+# through data.prices.reused_tickers_file. The price ingest does not store a listed symbol's
+# bars or corporate actions dated after `until`: they are another security (the member was
+# acquired, merged, failed or replaced by new post-bankruptcy equity on or before that date);
+# purge_reused_tickers deletes such rows already stored.
+#
+# `until`: the last date the member's own shares could have traded (its last trading day, or
+# its index exit when it left the market then; approximate where the note says so). Not from a
+# data provider: each line was checked against the lake (no bar of the symbol during its
+# membership; the first bar months or years after the company ceased to trade). A symbol not
+# listed here whose bars continue after it left the index is the same company still trading.
+
+# The list, by symbol (26 entries).
+tickers:
+  - {symbol: ADT, until: 2016-05-02, note: "ADT Corp taken private by Apollo 2016-05-02; ADT Inc (new company) listed 2018-01-19"}
+  - {symbol: ALTR, until: 2015-12-28, note: "Altera acquired by Intel 2015-12-28; ALTR later Altair Engineering"}
+  - {symbol: APC, until: 2019-08-08, note: "Anadarko acquired by Occidental 2019-08-08"}
+  - {symbol: ARNC, until: 2020-03-31, note: "Arconic Inc became Howmet Aerospace (HWM) 2020-04-01; ARNC then Arconic Corp, a spin-off"}
+  - {symbol: BBBY, until: 2023-05-02, note: "Bed Bath & Beyond delisted in bankruptcy 2023-05 (approximate); BBBY later another listing"}
+  - {symbol: CA, until: 2018-11-05, note: "CA Technologies acquired by Broadcom 2018-11-05"}
+  - {symbol: CAM, until: 2016-04-01, note: "Cameron International acquired by Schlumberger 2016-04-01"}
+  - {symbol: CHK, until: 2021-02-09, note: "old Chesapeake shares cancelled in bankruptcy; new equity from 2021-02-10 (approximate)"}
+  - {symbol: CSRA, until: 2018-04-03, note: "CSRA acquired by General Dynamics 2018-04-03"}
+  - {symbol: DNB, until: 2019-02-08, note: "Dun & Bradstreet taken private 2019-02-08; D&B Holdings (new company) listed 2020-07-01"}
+  - {symbol: DO, until: 2021-04-23, note: "old Diamond Offshore shares cancelled in bankruptcy 2021-04 (approximate); new equity 2022"}
+  - {symbol: EMC, until: 2016-09-07, note: "EMC acquired by Dell 2016-09-07"}
+  - {symbol: INFO, until: 2022-02-28, note: "IHS Markit merged into S&P Global 2022-02-28"}
+  - {symbol: LLL, until: 2019-06-28, note: "L3 Technologies merged with Harris (L3Harris, LHX) 2019-06-29"}
+  - {symbol: MON, until: 2018-06-07, note: "Monsanto acquired by Bayer 2018-06-07"}
+  - {symbol: NE, until: 2021-02-04, note: "old Noble Corp shares cancelled in bankruptcy 2021-02 (approximate); new equity 2021"}
+  - {symbol: NFX, until: 2019-02-13, note: "Newfield Exploration acquired by Encana 2019-02-13"}
+  - {symbol: PCL, until: 2016-02-19, note: "Plum Creek merged into Weyerhaeuser 2016-02-19"}
+  - {symbol: PLL, until: 2015-08-31, note: "Pall acquired by Danaher 2015-08-31; PLL later Piedmont Lithium"}
+  - {symbol: POM, until: 2016-03-23, note: "Pepco Holdings acquired by Exelon 2016-03-23"}
+  - {symbol: SBNY, until: 2023-03-10, note: "Signature Bank failed 2023-03-12; the later bars are a frozen feed"}
+  - {symbol: SE, until: 2017-02-27, note: "Spectra Energy acquired by Enbridge 2017-02-27; SE later Sea Ltd (listed 2017-10-20)"}
+  - {symbol: SPLS, until: 2017-09-12, note: "Staples taken private by Sycamore 2017-09-12"}
+  - {symbol: STI, until: 2019-12-06, note: "SunTrust merged with BB&T into Truist 2019-12-06"}
+  - {symbol: TE, until: 2016-07-01, note: "TECO Energy acquired by Emera 2016-07-01"}
+  - {symbol: XL, until: 2018-09-12, note: "XL Group acquired by AXA 2018-09-12"}

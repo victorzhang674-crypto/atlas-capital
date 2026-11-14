@@ -39,3 +39,10 @@ Owner's request: "can you help me to audit this stage: check for completion, mis
 - On merged `main` (`5c021a3`, fast-forward of `69baf9f` via the owner's Terminal panel): `uv run pytest -q` → 2535 passed; brief's Verify → 90 passed; `make check` → exit 0; pushed `main` and the branch · raw: [artifacts/merged-main-check-followup.txt](artifacts/merged-main-check-followup.txt)
 - GitHub Actions CI on `69baf9f`: success on `main` (41872886155) and the branch (41872885674) · raw: [artifacts/ci-runs.txt](artifacts/ci-runs.txt)
 - GitHub Actions CI on `5c021a3`: success on `main` (41877181474) and the branch (41877181454) · raw: [artifacts/ci-runs-followup.txt](artifacts/ci-runs-followup.txt)
+
+#### Phase 2 checkpoint follow-up (Tier 4: covariance_from_view; hashable VolForecast) — 2026-11-14
+- Commands run (this chat): `make check` → exit 0 (ruff clean, 393 files formatted, mypy clean on 157 files, 4241 passed in parallel and 3 timing tests alone); `uv run pytest -q` → 4244 passed, 71 deselected; integration on the main lake → 55 passed, 1 skipped (the flag-gated 2018–2024 calibration) · raw: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-final-checks.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-final-checks.txt); red first: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-red.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-red.txt); mutants: [../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-mutate.txt](../stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-mutate.txt)
+- `tests/unit/quant/risk_model/test_risk_view_helpers.py` passes.
+- Acceptance criteria unchanged and still evidenced.
+
+**Result:** ALL CRITERIA VERIFIED

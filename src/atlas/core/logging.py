@@ -14,19 +14,23 @@ from typing import TextIO
 import structlog
 from structlog.typing import EventDict, Processor, WrappedLogger
 
-from atlas.core.run_context import current_run_context
+from atlas.core.run_context import current_run_context, process_run_context
 
 _installed: list[logging.Handler] = []
 
 
 def add_run_context(logger: WrappedLogger, method_name: str, event_dict: EventDict) -> EventDict:
     """structlog processor: copy the current run's `run_id` and `mode` into the record, plus
-    `as_of` (ISO date) and `stage` when set. Does nothing outside a run.
+    `as_of` (ISO date) and `stage` when set. A record from a thread without a run context of
+    its own (a helper thread a library started) gets the process's only open run
+    (`process_run_context`). Does nothing outside a run.
 
     The run's values win, so every line is tagged with its run. A caller's own value under one
     of these keys that differs is kept in `shadowed` (`{"mode": "upsert"}`), not dropped.
     """
     ctx = current_run_context()
+    if ctx is None:
+        ctx = process_run_context()
     if ctx is None:
         return event_dict
     run_values = {"run_id": ctx.run_id, "mode": ctx.mode}

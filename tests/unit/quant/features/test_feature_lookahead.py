@@ -20,7 +20,9 @@ CUTS = (260, 300, 320)  # session indices of the 330-session reference series
 def panel() -> PricePanel:
     bars = pd.DataFrame(ref.read_ohlcv())
     days = sorted(set(bars["date"]))
-    return PricePanel.from_bars(bars, days, list(ref.TARGETS), benchmark=ref.BENCHMARK)
+    return PricePanel.from_bars(
+        bars, days, list(ref.TARGETS), benchmark=ref.BENCHMARK, splits=ref.split_frame(days)
+    )
 
 
 @pytest.fixture(scope="module")
@@ -38,7 +40,7 @@ def _perturbed(panel: PricePanel, cut: int, seed: int) -> PricePanel:
         return out
 
     bench = panel.benchmark_close
-    assert bench is not None
+    assert bench is not None and panel.volume is not None
     new_bench = bench.copy()
     new_bench.iloc[cut + 1 :] = rng.uniform(1.0, 500.0, len(bench) - cut - 1)
     return PricePanel(
@@ -48,12 +50,13 @@ def _perturbed(panel: PricePanel, cut: int, seed: int) -> PricePanel:
         scramble(panel.close),
         scramble(panel.dollar_volume, 1e6),
         new_bench,
+        volume=scramble(panel.volume, 1e4),
     )
 
 
 def _truncated(panel: PricePanel, cut: int) -> PricePanel:
     bench = panel.benchmark_close
-    assert bench is not None
+    assert bench is not None and panel.volume is not None
     rows = slice(None, cut + 1)
     return PricePanel(
         panel.open.iloc[rows],
@@ -62,6 +65,7 @@ def _truncated(panel: PricePanel, cut: int) -> PricePanel:
         panel.close.iloc[rows],
         panel.dollar_volume.iloc[rows],
         bench.iloc[rows],
+        volume=panel.volume.iloc[rows],
     )
 
 
@@ -105,7 +109,9 @@ def clean_panel() -> PricePanel:
     high = np.maximum(open_, close) * 1.004
     low = np.minimum(open_, close) * 0.996
     dv = pd.DataFrame(rng.lognormal(18, 0.4, (n, 2)), index=idx, columns=["X", "Y"])
-    return PricePanel(open_, high, low, close, dv, pd.Series(closes[:, 2], index=idx))
+    shares = pd.DataFrame(rng.lognormal(13, 0.4, (n, 2)), index=idx, columns=["X", "Y"])
+    bench = pd.Series(closes[:, 2], index=idx)
+    return PricePanel(open_, high, low, close, dv, bench, volume=shares)
 
 
 @pytest.mark.parametrize("name", NAMES)
@@ -124,15 +130,16 @@ def test_ts_features_ignore_other_symbols(clean_panel: PricePanel, name: str) ->
     assert REGISTRY.get(name).kind == "ts"
     both = compute_panel(clean_panel, [name])[name]
     p = clean_panel
+    assert p.volume is not None
     alone = PricePanel(
         p.open[["X"]], p.high[["X"]], p.low[["X"]], p.close[["X"]], p.dollar_volume[["X"]],
-        p.benchmark_close,
+        p.benchmark_close, volume=p.volume[["X"]],
     )  # fmt: skip
     np.testing.assert_array_equal(compute_panel(alone, [name])[name]["X"], both["X"])
 
 
-def test_forty_features_registered() -> None:
-    assert len(REGISTRY) == 40
+def test_every_feature_registered() -> None:
+    assert len(REGISTRY) == 41
     assert set(NAMES) == set(ref.FEATURE_NAMES)
 
 

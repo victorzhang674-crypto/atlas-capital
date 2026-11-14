@@ -28,7 +28,7 @@ from atlas.data.fundamentals import (
 )
 from atlas.data.macro import ingest_macro, load_macro_series
 from atlas.data.news import NEWS, ingest_news
-from atlas.data.prices import ingest_prices
+from atlas.data.prices import ingest_prices, load_reused_tickers
 from atlas.data.quality import (
     quality_report,
 )
@@ -207,6 +207,7 @@ def _prices_step(run: _Run) -> StepSpec:
     now = get_clock().now()
     last = last_published_session(run.calendar, run.end, now, floor=run.start)
     pool: Provider = "alpaca" if run.config.data.providers.prices == "alpaca" else "yahoo"
+    reused = load_reused_tickers(run.config.data.prices.reused_tickers_file)
 
     def fetch(keys: tuple[str, ...], start: date, end: date) -> ChunkOutcome:
         report = ingest_prices(
@@ -217,6 +218,7 @@ def _prices_step(run: _Run) -> StepSpec:
             end,
             calendar=run.calendar,
             config=run.config.data.prices,
+            reused=reused,
         )
         outcome = _classify(
             keys, report.symbols_ok, report.failure_reasons, lambda r: r == "no price data returned"

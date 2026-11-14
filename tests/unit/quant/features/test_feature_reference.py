@@ -33,7 +33,7 @@ def test_ohlcv_fixture_has_the_designed_events() -> None:
     assert aaa[-1]["adj_close"] == aaa[-1]["close"]  # relative to the last bar
     assert ("BBB", days[ref.MISSING_AT]) not in by
     assert sum(1 for r in rows if r["symbol"] == "BBB") == ref.N_SESSIONS - 1
-    assert len(ref.FEATURE_NAMES) == 40
+    assert len(ref.FEATURE_NAMES) == 41
 
 
 def test_reference_building_blocks_hand_values() -> None:

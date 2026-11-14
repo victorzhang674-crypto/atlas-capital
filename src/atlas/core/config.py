@@ -276,8 +276,9 @@ class PriceDataConfig(_Frozen):
     is the fraction above which our recomputed adjusted close and the vendor's are recorded
     as a mismatch (0.005 = 0.5%). `memo_size` bounds the yfinance adapter's memo of downloaded
     (symbol, window) bar sets; the least recently used is dropped first. `yahoo_no_data_file`
-    lists symbols Yahoo has no bars for, which the yfinance adapter does not request (relative
-    to the repo root).
+    lists symbols Yahoo has no bars for, which the yfinance adapter does not request;
+    `reused_tickers_file` lists former members whose ticker a later company took, with the
+    last date their bars belong to the member (both relative to the repo root).
     """
 
     batch_size: Annotated[int, Field(gt=0)] = 50
@@ -290,6 +291,7 @@ class PriceDataConfig(_Frozen):
     adj_mismatch_tolerance: _OpenFrac = 0.005
     memo_size: Annotated[int, Field(gt=0)] = 1000
     yahoo_no_data_file: Path = Path("config/yahoo_no_data.yaml")
+    reused_tickers_file: Path = Path("config/reused_tickers.yaml")
 
 
 class TradableConfig(_Frozen):
@@ -623,12 +625,13 @@ class QualityConfig(_Frozen):
 
     A report covers the last `window_sessions` sessions whose bars are known at the as-of
     cutoff. `stale_min_sessions`: consecutive unchanged closes (each bar with volume > 0)
-    that make a stale price. A return outlier is a simple daily return whose magnitude
-    exceeds `outlier_sigma` times the standard deviation of the previous
-    `outlier_vol_window` returns (at least `outlier_min_returns` of them), floored at
-    `outlier_min_daily_vol` (a daily fraction). An outlier on a session without a corporate
-    action whose gross move is within `split_ratio_tolerance` (relative) of `1/k` or `k` for
-    a ratio `k` in `split_ratios` is an unrecorded split. `fundamentals_jump_ratio`: quarter
+    that make a stale price, for a symbol whose median nonzero daily close change in the
+    window is at least `stale_min_move_ticks` ticks of `tick_size` USD. A return outlier is a
+    simple daily return whose magnitude exceeds `outlier_sigma` times the standard deviation
+    of the previous `outlier_vol_window` returns (at least `outlier_min_returns` of them),
+    floored at `outlier_min_daily_vol` (a daily fraction). An outlier on a session without a
+    corporate action whose gross move is within `split_ratio_tolerance` (relative) of `1/k` or
+    `k` for a ratio `k` in `split_ratios` is an unrecorded split. `fundamentals_jump_ratio`: quarter
     over quarter change factor of a fundamental value that is flagged (either way). Macro
     series: `macro_max_gap_days` between consecutive observations and `macro_max_age_days`
     of the last observation on the as-of day, by inferred frequency (calendar days).
@@ -636,6 +639,8 @@ class QualityConfig(_Frozen):
 
     window_sessions: Annotated[int, Field(ge=1)] = 21
     stale_min_sessions: Annotated[int, Field(ge=2)] = 5
+    tick_size: Annotated[float, Field(gt=0)] = 0.01
+    stale_min_move_ticks: Annotated[float, Field(ge=0)] = 2.0
     outlier_sigma: Annotated[float, Field(gt=0)] = 8.0
     outlier_vol_window: Annotated[int, Field(ge=2)] = 63
     outlier_min_returns: Annotated[int, Field(ge=2)] = 20
@@ -1302,7 +1307,8 @@ class RiskModelConfig(_Frozen):
     nearest PSD matrix) or `complete` (only sessions where every name has a return). A
     covariance whose condition number exceeds `max_condition` has its small eigenvalues
     floored. `default_method` is the estimator `covariance_estimator()` builds by default;
-    `ewma_lambda` is the EWMA decay per session (RiskMetrics daily 0.94).
+    `ewma_lambda` is the EWMA decay per session (RiskMetrics daily 0.94); `lookback` is the
+    number of sessions of returns `covariance_from_view` reads (at least `min_history`).
     """
 
     min_history: Annotated[int, Field(ge=2)] = 63
@@ -1310,8 +1316,17 @@ class RiskModelConfig(_Frozen):
     max_condition: Annotated[float, Field(gt=1, allow_inf_nan=False)] = 1.0e5
     default_method: Literal["sample", "ewma", "ledoit_wolf", "oas"] = "ledoit_wolf"
     ewma_lambda: _OpenFrac = 0.94
+    lookback: Annotated[int, Field(ge=2)] = 252
     volatility: VolatilityConfig = Field(default_factory=VolatilityConfig)
     factor_model: FactorModelConfig = Field(default_factory=FactorModelConfig)
+
+    @model_validator(mode="after")
+    def _lookback_covers_min_history(self) -> Self:
+        if self.lookback < self.min_history:
+            raise ValueError(
+                f"lookback ({self.lookback}) must be at least min_history ({self.min_history})"
+            )
+        return self
 
 
 class MetricsConfig(_Frozen):

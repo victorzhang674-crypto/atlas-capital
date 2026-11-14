@@ -31,6 +31,7 @@ data:
     adj_mismatch_tolerance: 0.005  # record recomputed vs vendor adj_close gaps above 0.5%
     memo_size: 1000  # yfinance: downloaded (symbol, window) bar sets kept per provider (LRU)
     yahoo_no_data_file: config/yahoo_no_data.yaml  # symbols Yahoo has no bars for: not requested
+    reused_tickers_file: config/reused_tickers.yaml  # former members whose ticker a later company took: their bars after the date are not stored
   # Universe reference data sources (Stage 08).
   reference:
     sp500_constituents_url: https://en.wikipedia.org/wiki/List_of_S%26P_500_companies  # constituents table
@@ -135,6 +136,8 @@ data:
   quality:
     window_sessions: 21  # a report covers the last this many sessions whose bars are known
     stale_min_sessions: 5  # this many consecutive unchanged closes (each with volume > 0) make a stale price
+    tick_size: 0.01  # USD; the price increment of a US-listed stock or ETF
+    stale_min_move_ticks: 2.0  # only a symbol whose median nonzero daily close change is at least this many ticks can be stale (a T-bill ETF is not)
     outlier_sigma: 8.0  # a daily return beyond this many standard deviations is an outlier
     outlier_vol_window: 63  # trailing returns in the standard deviation (the day itself excluded)
     outlier_min_returns: 20  # fewer trailing returns than this: the day is not checked
@@ -245,6 +248,7 @@ quant:
     max_condition: 1.0e+5  # largest condition number of a covariance; above it the small eigenvalues are floored
     default_method: ledoit_wolf  # sample | ewma | ledoit_wolf (constant-correlation target) | oas
     ewma_lambda: 0.94  # EWMA decay per session (RiskMetrics daily)
+    lookback: 252  # sessions of returns covariance_from_view reads (at least min_history)
     # Next-session volatility forecasts of single names.
     volatility:
       method: blend  # default next-session vol forecast: ewma | garch | realised | blend

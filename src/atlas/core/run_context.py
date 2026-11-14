@@ -2,9 +2,12 @@
 
 `RunContext` lives in a `ContextVar`, so it follows the code path (and asyncio tasks) without
 being passed around. A new `threading.Thread` starts with no run context; run its target via
-`contextvars.copy_context().run(...)` to carry the current one across.
+`contextvars.copy_context().run(...)` to carry the current one across. A thread a library
+starts on its own (matplotlib's font-cache timer) cannot be given one: `process_run_context`
+names the run it belongs to while exactly one run is open in the process.
 """
 
+import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -18,6 +21,8 @@ from atlas.core.config import AtlasConfig, Profile, config_fingerprint
 from atlas.core.errors import AtlasError
 
 _CURRENT: ContextVar["RunContext | None"] = ContextVar("atlas_run_context", default=None)
+_OPEN: list["RunContext"] = []  # top-level runs open in this process, in opening order
+_OPEN_LOCK = threading.Lock()
 
 
 class RunContext(BaseModel):
@@ -41,6 +46,14 @@ class RunContext(BaseModel):
 def current_run_context() -> RunContext | None:
     """The innermost active run context, or `None` outside any run."""
     return _CURRENT.get()
+
+
+def process_run_context() -> RunContext | None:
+    """The top-level run open in this process when there is exactly one (whatever thread
+    opened it), else `None`: the run a record from a thread without its own context belongs
+    to. Never a guess between two runs."""
+    with _OPEN_LOCK:
+        return _OPEN[0] if len(_OPEN) == 1 else None
 
 
 @contextmanager
@@ -88,10 +101,16 @@ def run_context(
             }
         )
     token = _CURRENT.set(ctx)
+    if parent is None:
+        with _OPEN_LOCK:
+            _OPEN.append(ctx)
     try:
         yield ctx
     finally:
         _CURRENT.reset(token)
+        if parent is None:
+            with _OPEN_LOCK:
+                _OPEN.remove(ctx)
 
 
 def run_dir(lake_path: Path, run_id: str) -> Path:

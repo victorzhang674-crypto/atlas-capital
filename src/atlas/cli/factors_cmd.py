@@ -106,7 +106,7 @@ def build_cmd(
         raise typer.BadParameter(f"--from {first} is after --to {last}", param_hint="--from")
     config = _config(ctx, console)
     lake = Lake(config.data.lake_path)
-    target = FactorStore(Lake(store) if store is not None else lake, config)
+    target = FactorStore(Lake(store) if store is not None else lake, config, data_lake=lake)
     try:
         with run_context(config=config, stage="factors.build") as run:
             configure_logging(

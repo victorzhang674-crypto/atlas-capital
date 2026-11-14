@@ -45,6 +45,16 @@ def test_no_unexpected_subpackages() -> None:
 
 def test_every_source_dir_has_init(repo_root: Path) -> None:
     src = repo_root / "src" / "atlas"
-    dirs = [src, *(d for d in src.rglob("*") if d.is_dir() and d.name != "__pycache__")]
+    # Dot-folders are not packages (tools leave e.g. `.cc-writes` behind; Tier 4 item 4).
+    dirs = [
+        src,
+        *(
+            d
+            for d in src.rglob("*")
+            if d.is_dir()
+            and d.name != "__pycache__"
+            and not any(part.startswith(".") for part in d.relative_to(src).parts)
+        ),
+    ]
     missing = [d for d in dirs if not (d / "__init__.py").is_file()]
     assert missing == []

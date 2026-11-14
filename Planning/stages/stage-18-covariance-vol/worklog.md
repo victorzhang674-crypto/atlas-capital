@@ -126,3 +126,7 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Ran in the owner's Terminal panel `zsh artifacts/merged-main-check.sh` → fast-forward 69baf9f → **5c021a3**; on merged `main`: `uv lock --check` ok; `uv run pytest -q` → 2535 passed, 14 deselected; brief's Verify → 90 passed; `make check` → exit 0; pushed `main` and the branch (`69baf9f..5c021a3`); `## main...origin/main` · raw: [artifacts/merged-main-check-followup.txt](artifacts/merged-main-check-followup.txt)
 - GitHub Actions CI on `69baf9f` (the stage commit): **success** on `main` (41872886155, 4m56s) and the branch (41872885674, 7m0s) · raw: [artifacts/ci-runs.txt](artifacts/ci-runs.txt). CI on `5c021a3`: main 41877181474, branch 41877181454 (result below).
 - GitHub Actions CI on `5c021a3`: **success** on `main` (41877181474, 19m45s) and the branch (41877181454, 20m42s) · raw: [artifacts/ci-runs-followup.txt](artifacts/ci-runs-followup.txt). Then this records-only commit (hashes, CI), fast-forwarded and pushed the same way.
+
+## 2026-11-14 — Phase 2 checkpoint, Tier 4 (owner: "Start Tier 4 and fix the gaps like what is being opened in the backlog."): covariance_from_view; hashable VolForecast
+
+- Tier 4 item 3: `covariance_from_view(view, symbols, method=, lookback=, **kw)` (`quant.risk_model.lookback`, 252, at least `min_history`); `VolForecast` hashes by value.

@@ -1,0 +1,61 @@
+=== atlas data sync --datasets universe on the scratch copy (after the purge), 2026-11-14T06:05Z
+2026-11-14T06:05:42.557926Z [warning  ] universe.membership_anomaly    [atlas.data.universe] day=2015-09-18 detail='Twenty-First Century Fox Class B' index_id=SP500 kind=added_not_member known=False mode=dev run_id=01M7CAJJ0DE95AY5WVQECXPV90 stage=data.sync symbol=FOX
+universe         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1/1 0:00:07
+Run 01M7CAJJ0DE95AY5WVQECXPV90: log and audit trail in $TMPDIR//tier4-lake/runs/01M7CAJJ0DE95AY5WVQECXPV90
+                    Sync summary (sync 2015-01-01 .. 2026-11-14)                     
+┏━━━━━━━━━━┳━━━━━━┳━━━━━━━━━┳━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━┳━━━━━━┓
+┃ step     ┃ keys ┃ skipped ┃ ok ┃ empty ┃ failed ┃  rows ┃ chunks ┃ seconds ┃ note ┃
+┡━━━━━━━━━━╇━━━━━━╇━━━━━━━━━╇━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━┩
+│ universe │    1 │       0 │  1 │     0 │      0 │ 1,771 │      1 │     7.8 │      │
+└──────────┴──────┴─────────┴────┴───────┴────────┴───────┴────────┴─────────┴──────┘
+exit 0
+--- compared with the main lake
+== index_membership: main 879 rows, scratch 880 rows; columns ['index_id', 'symbol', 'start_date', 'end_date']
+{'both': 878, 'right_only': 2, 'left_only': 1}
+    index_id symbol  start_date      _merge
+427    SP500     IR  2020-03-02   left_only
+428    SP500     IR  2020-03-03  right_only
+604    SP500   OKTA  2026-10-30  right_only
+-- end_date: 2 rows differ
+    index_id symbol  start_date end_date_main end_date_new
+471    SP500   KVUE  2023-08-25          None   2026-10-30
+865    SP500    XEC  2014-06-20    2020-03-02   2020-03-03
+== instruments: main 890 rows, scratch 891 rows; columns ['symbol', 'name', 'asset_class', 'sector', 'industry', 'exchange', 'currency', 'first_trade_date', 'last_trade_date', 'is_etf', 'is_shortable'
+{'both': 890, 'right_only': 1, 'left_only': 0}
+    symbol      _merge
+600   OKTA  right_only
+-- industry: 1 rows differ
+    symbol           industry_main industry_new
+468   KVUE  Personal Care Products          NaN
+-- exchange: 1 rows differ
+    symbol exchange_main exchange_new
+468   KVUE          XNYS          NaN
+-- first_trade_date: 27 rows differ
+    symbol first_trade_date_main first_trade_date_new
+22     ADT            2018-01-19                 None
+40    ALTR            2020-07-27                 None
+61     APC            2026-02-12                 None
+71    ARNC            2020-07-27                 None
+76     AVB                  None           2020-07-27
+90    BBBY            2026-07-17                 None
+128     CA            2024-01-05                 None
+131    CAM            2025-10-06                 None
+155    CHK            2021-02-10                 None
+198   CSRA            2026-08-12                 None
+238    DNB            2020-07-27                 None
+240     DO            2022-03-30                 None
+-- last_trade_date: 27 rows differ
+    symbol last_trade_date_main last_trade_date_new
+22     ADT           2026-10-30                None
+40    ALTR           2025-03-25                None
+61     APC           2026-10-30                None
+71    ARNC           2023-08-17                None
+76     AVB                 None          2026-08-14
+90    BBBY           2026-10-30                None
+128     CA           2026-05-06                None
+131    CAM           2026-10-30                None
+155    CHK           2024-10-01                None
+198   CSRA           2026-10-30                None
+238    DNB           2025-08-25                None
+240     DO           2024-09-03                None
+instruments with a sector: 684 of 891 (main: 683 )

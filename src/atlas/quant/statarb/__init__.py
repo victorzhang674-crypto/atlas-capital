@@ -14,6 +14,7 @@ from atlas.quant.statarb.backtest import (
     TRADE_COLUMNS,
     PairsBacktestResult,
     pairs_backtest,
+    pairs_backtest_from_view,
 )
 from atlas.quant.statarb.selection import (
     FILTERS,
@@ -78,6 +79,7 @@ __all__ = [
     "log_price_panel",
     "pair_id",
     "pairs_backtest",
+    "pairs_backtest_from_view",
     "pairs_snapshot",
     "rolling_coint_pvalue",
     "rolling_std",

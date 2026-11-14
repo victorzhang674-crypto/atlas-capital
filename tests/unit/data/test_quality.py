@@ -203,6 +203,62 @@ def test_stale_price_short_run_ok() -> None:
     assert check_stale_prices(bars, since=SINCE, min_sessions=5, severity=C) == []
 
 
+def test_stale_price_ignores_a_price_that_moves_less_than_its_tick() -> None:
+    """Phase 2 checkpoint (backlog, Stage 13): a T-bill ETF near 91.50 moves a cent or not at
+    all from day to day, so a week of unchanged closes with volume is normal trading, not a
+    frozen feed (BIL was blocked on three month-ends of 2020-2022)."""
+    steps = [0.0, 0.01, 0.0, -0.01, 0.0, 0.01] * 4
+    closes = [91.45]
+    for step in steps[:23]:
+        closes.append(round(closes[-1] + step, 2))
+    closes += [closes[-1]] * 7  # 7 equal closes = 6 unchanged sessions
+    bars = make_bars("BIL", closes, end=END)
+    assert check_stale_prices(bars, since=SINCE, min_sessions=5, severity=C) == []
+    assert (
+        check_stale_prices(  # a tick of a tenth of a cent: one cent is ten ticks, so flagged
+            bars, since=SINCE, min_sessions=5, severity=C, tick_size=0.001
+        )
+        != []
+    )
+
+
+def test_stale_price_move_threshold_is_inclusive() -> None:
+    """The median of the nonzero daily moves must reach `min_move_ticks` ticks; a move of
+    exactly that size counts (quarter-dollar steps and a 1/8 tick: exact in binary)."""
+    moves = [0.25, -0.25] * 12  # every move two ticks of 0.125
+    closes = [50.0]
+    for step in moves[:23]:
+        closes.append(closes[-1] + step)
+    closes += [closes[-1]] * 7
+    bars = make_bars("AAA", closes, end=END)
+    flagged = check_stale_prices(
+        bars, since=SINCE, min_sessions=5, severity=C, tick_size=0.125, min_move_ticks=2.0
+    )
+    assert [i.symbol for i in flagged] == ["AAA"]
+    assert (
+        check_stale_prices(
+            bars, since=SINCE, min_sessions=5, severity=C, tick_size=0.125, min_move_ticks=2.5
+        )
+        == []
+    )
+
+
+def test_stale_price_never_moving_is_flagged() -> None:
+    """A feed with no nonzero move in the window at all is frozen, whatever its tick."""
+    bars = make_bars("AAA", [55.5] * 30, end=END)
+    issues = check_stale_prices(bars, since=SINCE, min_sessions=5, severity=C)
+    assert [(i.symbol, i.date) for i in issues] == [("AAA", END)]
+
+
+def test_stale_price_long_frozen_run_still_flagged() -> None:
+    """The move size is the median of the nonzero moves: a run longer than the moving part
+    of the window does not hide itself."""
+    closes = walk(30)[:8] + [55.5] * 22
+    bars = make_bars("AAA", closes, end=END)
+    issues = check_stale_prices(bars, since=SINCE, min_sessions=5, severity=C)
+    assert [(i.symbol, i.date) for i in issues] == [("AAA", END)]
+
+
 def test_vendor_mix() -> None:
     vendors = ["yfinance"] * 25 + ["alpaca"] * 5
     bars = make_bars("AAA", walk(30), end=END, vendor=vendors)

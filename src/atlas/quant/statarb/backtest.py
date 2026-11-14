@@ -31,9 +31,13 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig, StatArbConfig
+from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.core.pit import guard_not_label
+from atlas.data.view import DataView
+from atlas.quant.alpha.multifactor import member_sectors
 from atlas.quant.research.vector_backtest import (
     BacktestResult,
     rebalance_dates,
@@ -330,3 +334,62 @@ __all__ = [
     "PairsBacktestResult",
     "pairs_backtest",
 ]
+
+
+def pairs_backtest_from_view(
+    view: DataView,
+    start: date,
+    end: date,
+    *,
+    statarb: StatArbConfig | None = None,
+    progress: Callable[[date, int], None] | None = None,
+) -> PairsBacktestResult:
+    """`pairs_backtest` over [`start`, `end`] with its inputs read point in time from `view`.
+
+    `view` must be the view of the session after the last session on or before `end`
+    (`DataView(lake, calendar.next_session(last), config)`): its latest known bar is that
+    session, so nothing later is read; another view raises `ValueError`. Returns of every
+    name that is a member of `statarb.universe` on a session of the window, over the window
+    plus `statarb.formation` sessions of history; members per formation
+    (`DataView.members_on`); sectors from the instruments table (today's values: a known
+    limitation). `statarb` defaults to the view's `quant.statarb`. `ValueError` for a window
+    without a session; `DataError` when the universe has no member in it."""
+    cfg_all = view.config
+    cfg = statarb if statarb is not None else cfg_all.quant.statarb
+    if start > end:
+        raise ValueError(f"start {start} is after end {end}")
+    cal = TradingCalendar(config=cfg_all.calendar)
+    window = cal.sessions(start, end)
+    if not window:
+        raise ValueError(f"no trading session between {start} and {end}")
+    last = window[-1]
+    if view.day != cal.next_session(last):
+        raise ValueError(
+            f"the view is at {view.day}; the backtest to {last} needs the view of "
+            f"{cal.next_session(last)} (its latest known bar is {last})"
+        )
+    names = sorted({m for day in window for m in view.members_on(day, cfg.universe)})
+    if not names:
+        raise DataError(f"universe {cfg.universe!r} has no member between {start} and {last}")
+    n = len(window) + cfg.formation + 1
+    returns = view.returns(names, n - 1)
+    returns = returns.loc[:, returns.notna().any()]
+    if returns.empty or returns.index[-1].date() != last:
+        raise DataError(f"the lake has no bars of the universe's members up to {last}")
+    _log.info(
+        "statarb.backtest_inputs",
+        start=start.isoformat(),
+        end=last.isoformat(),
+        names=int(returns.shape[1]),
+        sessions=int(returns.shape[0]),
+    )
+    return pairs_backtest(
+        returns,
+        member_sectors(view, list(returns.columns)),
+        start=start,
+        end=last,
+        members=lambda day: view.members_on(day, cfg.universe),
+        config=cfg,
+        sessions_per_year=cfg_all.quant.features.sessions_per_year,
+        progress=progress,
+    )

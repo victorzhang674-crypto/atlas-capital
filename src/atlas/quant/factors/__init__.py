@@ -42,6 +42,7 @@ from atlas.quant.factors.store import (
     FactorStore,
     StoredExposures,
     build_factor_cache,
+    input_fingerprint,
     monthly_rebalance_dates,
 )
 
@@ -71,6 +72,7 @@ __all__ = [
     "factor_panel",
     "fill_missing",
     "implied_shares",
+    "input_fingerprint",
     "monthly_rebalance_dates",
     "neutralize",
     "raw_factors",

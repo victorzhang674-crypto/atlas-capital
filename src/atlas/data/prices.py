@@ -12,17 +12,19 @@ value at fetch time, which embeds actions after D: use raw prices plus `corporat
 for anything that must not look ahead.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import date, datetime
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
 import pandas as pd
+from pydantic import ValidationError
 
 from atlas.core.calendar import TradingCalendar
-from atlas.core.config import PriceDataConfig
-from atlas.core.errors import DataError
+from atlas.core.config import PriceDataConfig, read_config_file
+from atlas.core.errors import ConfigError, DataError
 from atlas.core.logging import get_logger
 from atlas.core.pit import bar_available_at
 from atlas.core.storage import (
@@ -35,7 +37,8 @@ from atlas.core.storage import (
     TableSchema,
     validate_frame,
 )
-from atlas.core.types.base import FrozenDict
+from atlas.core.types.base import AtlasModel, FrozenDict
+from atlas.core.types.instruments import Symbol
 from atlas.data.providers.base import (
     PriceProvider,
     check_request,
@@ -133,6 +136,60 @@ class IngestReport:
     mismatches: tuple[AdjustmentMismatch, ...] = ()
 
 
+class _ReusedEntry(AtlasModel):
+    symbol: Symbol
+    until: date
+    note: str | None = None
+
+
+class _ReusedFile(AtlasModel):
+    """Body of `config/reused_tickers.yaml`."""
+
+    tickers: tuple[_ReusedEntry, ...] = ()
+
+
+def load_reused_tickers(path: Path) -> dict[str, date]:
+    """Former index members whose ticker a later company took, from `path` (`tickers:
+    [{symbol, until, note}]`; see `config/reused_tickers.yaml`): canonical symbol -> the last
+    date its bars belong to the member. A missing file gives none; invalid content or a
+    symbol listed twice raises `ConfigError` naming the file."""
+    data = read_config_file(path)
+    try:
+        body = _ReusedFile.model_validate(data)
+    except ValidationError as exc:
+        problems = "; ".join(
+            f"{'.'.join(str(p) for p in err['loc']) or '<root>'}: {err['msg']}"
+            for err in exc.errors()
+        )
+        raise ConfigError(f"{path}: {problems}") from None
+    out: dict[str, date] = {}
+    for entry in body.tickers:
+        if entry.symbol in out:
+            raise ConfigError(f"{path}: {entry.symbol} is listed twice")
+        out[entry.symbol] = entry.until
+    return out
+
+
+def purge_reused_tickers(lake: Lake, reused: Mapping[str, date]) -> dict[str, tuple[int, int]]:
+    """Delete from `lake` the `prices_daily` bars and `corporate_actions` of each symbol of
+    `reused` dated after its date (another company's listing under the member's ticker).
+    Returns symbol -> (bars, actions) deleted."""
+    out: dict[str, tuple[int, int]] = {}
+    for symbol, until in reused.items():
+        bars = actions = 0
+        if lake.has_table(PRICES_DAILY.name):
+            bars = lake.delete_rows(
+                PRICES_DAILY.name, [("symbol", "=", symbol), ("date", ">", until)]
+            )
+        if lake.has_table(CORPORATE_ACTIONS.name):
+            actions = lake.delete_rows(
+                CORPORATE_ACTIONS.name, [("symbol", "=", symbol), ("ex_date", ">", until)]
+            )
+        out[symbol] = (bars, actions)
+    _log.info("prices.reused_tickers_purged", removed={s: v for s, v in out.items() if any(v)})
+    return out
+
+
 def ingest_prices(
     lake: Lake,
     provider: PriceProvider,
@@ -142,6 +199,7 @@ def ingest_prices(
     *,
     calendar: TradingCalendar | None = None,
     config: PriceDataConfig | None = None,
+    reused: Mapping[str, date] | None = None,
 ) -> IngestReport:
     """Fetch `symbols` for `[start, end]` from `provider` and upsert them into the lake.
 
@@ -152,7 +210,9 @@ def ingest_prices(
     `prices.bars_dropped` warning); the Stage 13 `missing_sessions` check then flags the
     gap. Re-running is idempotent (upsert on the primary keys; the newest fetch wins). Pass
     the run's `TradingCalendar(config=cfg.calendar)` and `cfg.data.prices`; the defaults are
-    the built-in ones.
+    the built-in ones. `reused` (`load_reused_tickers`): bars and actions of a listed symbol
+    dated after its date belong to another company and are not stored (logged
+    `prices.reused_ticker_dropped`); one with nothing left has no price data.
     """
     cal = calendar if calendar is not None else TradingCalendar()
     tolerance = (config if config is not None else PriceDataConfig()).adj_mismatch_tolerance
@@ -162,6 +222,16 @@ def ingest_prices(
     daily = _fetch_each(provider.fetch_daily, "prices", wanted, start, end, failures)
     daily = daily[daily["symbol"].isin(wanted)]
     bars = {str(s): g.reset_index(drop=True) for s, g in daily.groupby("symbol", sort=False)}
+    later: dict[str, int] = {}
+    for symbol, until in (reused or {}).items():
+        if symbol in bars:
+            keep = bars[symbol]["date"] <= until
+            later[symbol] = int((~keep).sum())
+            bars[symbol] = bars[symbol][keep].reset_index(drop=True)
+            if bars[symbol].empty:
+                del bars[symbol]
+    if any(later.values()):
+        _log.warning("prices.reused_ticker_dropped", bars={s: n for s, n in later.items() if n})
     dropped: dict[str, tuple[date, ...]] = {}
     for symbol in wanted:
         if symbol not in failures and symbol not in bars:
@@ -182,6 +252,10 @@ def ingest_prices(
         if symbol in failures:
             continue
         own_actions = actions[actions["symbol"] == symbol].reset_index(drop=True)
+        if reused is not None and symbol in reused:
+            own_actions = own_actions[own_actions["ex_date"] <= reused[symbol]].reset_index(
+                drop=True
+            )
         try:
             price_rows = _with_available_at(bars[symbol], "date", cal, symbol)
             action_rows = _with_available_at(own_actions, "ex_date", cal, symbol)
