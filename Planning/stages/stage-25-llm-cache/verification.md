@@ -60,6 +60,7 @@ Owner: "can you complete what is left in the backlog?" The three Stage 25 backlo
 - Verify `uv run pytest tests/unit/llm -q` → **305 passed, 2 deselected**, exit 0 · [followup-verify-pytest-unit-llm.txt](artifacts/followup-verify-pytest-unit-llm.txt)
 - Coverage: `cache.py`, `gateway.py`, `openai_compat.py`, `cli/llm_cmd.py` 100%; every new `db.py` line covered · [followup-coverage.txt](artifacts/followup-coverage.txt)
 - Mutation (`cache.py` + `gateway.py`, 1107 mutants): 1021 → **1047** killed after the survivor tests; the follow-up survivors left are equivalent (zlib level, `"ASCII"` spelling, key text in error messages) · [followup-mutation-summary.txt](artifacts/followup-mutation-summary.txt)
+- Merge into `main`: fast-forward 635a91a → **d084753** (owner's Terminal panel); trees equal; merged result `uv run pytest -q` → 4391 passed, 71 deselected, exit 0 · `make check` → exit 0 (4388 + 3 passed) · `git branch --merged main` lists the stage branch · raw: [followup-merged-main-check.txt](artifacts/followup-merged-main-check.txt)
 - Acceptance criteria re-checked: both still hold
 
 **Result:** ALL CRITERIA VERIFIED
