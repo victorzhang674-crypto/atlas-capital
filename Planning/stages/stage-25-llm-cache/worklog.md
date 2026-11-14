@@ -60,6 +60,7 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Re-read the final code against the brief; re-checked records (checkbox, statuses, links, Stage 26 folder untouched) and CI of 168b858 (both runs success).
 - Found A7: the A1 striped locks serialised unrelated requests sharing a stripe. Probe `test_different_requests_run_in_parallel` failed with `BrokenBarrierError` ([final-audit-probe-red.txt](artifacts/final-audit-probe-red.txt)); replaced by one lock per key (`LLMGateway._key_lock`), `test_key_locks_are_released_after_use`; 30/30 stable runs.
 - Ran: mutation 906 / 960 (no survivor in the lock code); coverage 100%; `make check` exit 0 (4361 + 3); `uv run pytest -q` 4364 passed; Verify 283 passed.
+- Commit **5748d17**; fast-forwarded `main` 168b858 → 5748d17 in the owner's Terminal panel; merged result `uv run pytest -q` 4364 passed, `make check` exit 0 ([final-audit-merged-main-check.txt](artifacts/final-audit-merged-main-check.txt)). Pushed with the records commit.
 - Verdict: **COMPLETE**. Report: [final audit](artifacts/audit-2026-11-14-report.md#final-audit-2026-11-14)
 
 ## Code files created or changed

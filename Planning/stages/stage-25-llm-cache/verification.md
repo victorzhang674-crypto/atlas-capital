@@ -46,6 +46,7 @@ Owner: "please have a final audit and explicitly state whether it is completed o
 - `uv run pytest -q` → **4364 passed, 71 deselected**, exit 0 · [final-audit-pytest.txt](artifacts/final-audit-pytest.txt)
 - Verify `uv run pytest tests/unit/llm -q` → **283 passed, 2 deselected**, exit 0 · [final-audit-verify-pytest-unit-llm.txt](artifacts/final-audit-verify-pytest-unit-llm.txt)
 - Acceptance criteria re-checked on the final tree: both hold · [final-audit-acceptance.txt](artifacts/final-audit-acceptance.txt)
+- Final-audit merge into `main`: fast-forward 168b858 → **5748d17**; trees equal; merged result `uv run pytest -q` → 4364 passed, 71 deselected, exit 0 · `make check` → exit 0 (4361 + 3 passed) · `git branch --merged main` lists the stage branch · raw: [final-audit-merged-main-check.txt](artifacts/final-audit-merged-main-check.txt)
 - Verdict: **COMPLETE** — every acceptance criterion and In-scope item verified; no open defect
 
 **Result:** ALL CRITERIA VERIFIED
