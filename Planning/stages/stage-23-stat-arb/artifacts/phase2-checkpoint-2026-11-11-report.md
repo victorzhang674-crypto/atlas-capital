@@ -193,7 +193,8 @@ PCA risk model (briefs' Out of scope).
     - Seen, not changed (Backlog): `BIL` is absent from three snapshots because the Stage 13
       stale-price rule blocked it (a T-bill ETF's close can stay unchanged for days), with no
       log line; the snapshot loop rebuilds its inputs at about 103 s per month-end.
-- Tier 2 (owner's word 2026-11-12: "Start Tier 2"): items 1–6 done 2026-11-12; item 7 not started.
+- Tier 2 (owner's word 2026-11-12: "Start Tier 2"): items 1–6 done 2026-11-12; item 7 done 2026-11-13
+  in the one pass (see "One pass" below).
   - Item 1: `atlas research signal` refuses a window whose labels close after
     `backtest.in_sample_end` (exit 2, with the last `--to` that fits); `--allow-holdout` runs
     it and writes an `OVERRIDE` event to the run's audit log first; no record, no run. Every
@@ -210,7 +211,8 @@ PCA risk model (briefs' Out of scope).
   - **Item 7 waits for the owner's decision.** It needs no download (the raw filings are
     kept), but it changes the leverage factor, so `factor_exposures`, `factor_returns` and
     `risk_model_snapshots` on the main lake would be rebuilt (about 9 h).
-- Tier 3 (owner's word 2026-11-12: "Start Tier 3"): items 3, 4 and 5 done 2026-11-13.
+- Tier 3 (owner's word 2026-11-12: "Start Tier 3"): items 3, 4 and 5 done 2026-11-13; items 1
+  and 2 done 2026-11-13 in the one pass.
   - Item 3: the per-company fundamentals pipeline works on plain rows instead of small
     pandas frames. Same results: every company of the main lake at three dates is equal
     (742 companies, 70,752 frames, 1,279,687 history rows) and that work is 87 times faster
