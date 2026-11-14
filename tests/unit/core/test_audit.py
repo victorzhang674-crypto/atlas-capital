@@ -121,6 +121,7 @@ def test_seeded_event_types() -> None:
         "RUN_STARTED", "RUN_FINISHED", "DATA_SYNC", "ANALYST_REPORT", "THESIS", "PROPOSAL",
         "ALLOCATION", "RISK_DECISION", "COMPLIANCE", "ORDER", "FILL", "LIMIT_BREACH",
         "CIRCUIT_BREAKER", "OVERRIDE", "LESSON",
+        "AGENT_REPORT",  # Stage 26
     }  # fmt: skip
     assert all(e.value == e.name for e in EventType)
 

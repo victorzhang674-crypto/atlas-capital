@@ -1,0 +1,14 @@
+== deepseek-v4-pro enabled
+round1 200 
+has reasoning_content: True tool_calls: True
+round2-without-reasoning 200 
+answer: The close price of AAA is 101.5.
+round2-with-reasoning 200 
+answer: The close price of AAA is 101.5.
+== deepseek-flash disabled
+round1 200 
+has reasoning_content: False tool_calls: True
+round2-without-reasoning 200 
+answer: The closing price of AAA is 101.5.
+round2-with-reasoning 200 
+answer: The close price of AAA is 101.5.

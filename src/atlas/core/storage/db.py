@@ -1,7 +1,8 @@
 """DuckDB over the lake: session-only views of the curated tables and read-only queries.
 
 The database file is `<lake root>/atlas.duckdb`. It stores only native tables (the
-append-only `audit_events` mirror and `llm_usage`, one row per billed LLM response). Curated
+append-only `audit_events` mirror, `llm_usage` (one row per billed LLM response), `llm_cache`
+and `agent_runs` (one row per agent run, Stage 26)). Curated
 Parquet tables are exposed as views registered on this connection alone, never stored in the
 file, so moving the lake or opening the file read-only (the dashboard) never meets stale
 paths. The connection runs with `TimeZone = 'UTC'` and can touch no file outside the lake
@@ -134,6 +135,72 @@ _PUT_LLM_CACHE = (
     f"({', '.join(LLM_CACHE_COLUMNS)}) VALUES ({', '.join('?' for _ in LLM_CACHE_COLUMNS)})"
 )
 
+AGENT_RUNS_TABLE = "agent_runs"
+
+AGENT_RUNS_COLUMNS = (
+    "agent_run_id",
+    "run_id",
+    "agent",
+    "tier",
+    "as_of",
+    "cutoff",
+    "started_at",
+    "finished_at",
+    "status",
+    "prompt_name",
+    "prompt_version",
+    "prompt_digest",
+    "versions",
+    "inputs_digest",
+    "tool_calls",
+    "evidence_ids",
+    "cited_ids",
+    "unknown_ids",
+    "uncited_claims",
+    "output_json",
+    "usage",
+    "cost_usd",
+    "llm_calls",
+    "cache_hits",
+    "error",
+)
+"""Columns of `agent_runs`, in table order (see `Database.insert_agent_runs`)."""
+
+_AGENT_RUNS_DDL = """
+CREATE TABLE IF NOT EXISTS agent_runs (
+    agent_run_id   VARCHAR PRIMARY KEY,
+    run_id         VARCHAR,
+    agent          VARCHAR NOT NULL,
+    tier           VARCHAR NOT NULL,
+    as_of          DATE NOT NULL,
+    cutoff         TIMESTAMPTZ NOT NULL,
+    started_at     TIMESTAMPTZ NOT NULL,
+    finished_at    TIMESTAMPTZ NOT NULL,
+    status         VARCHAR NOT NULL,
+    prompt_name    VARCHAR NOT NULL,
+    prompt_version INTEGER NOT NULL,
+    prompt_digest  VARCHAR NOT NULL,
+    versions       VARCHAR NOT NULL,
+    inputs_digest  VARCHAR NOT NULL,
+    tool_calls     VARCHAR NOT NULL,
+    evidence_ids   VARCHAR NOT NULL,
+    cited_ids      VARCHAR NOT NULL,
+    unknown_ids    VARCHAR NOT NULL,
+    uncited_claims VARCHAR NOT NULL,
+    output_json    VARCHAR,
+    usage          VARCHAR NOT NULL,
+    cost_usd       DOUBLE NOT NULL,
+    llm_calls      INTEGER NOT NULL,
+    cache_hits     INTEGER NOT NULL,
+    error          VARCHAR
+)
+"""
+
+_INSERT_AGENT_RUNS = (
+    f"INSERT INTO agent_runs ({', '.join(AGENT_RUNS_COLUMNS)}) "
+    f"VALUES ({', '.join('?' for _ in AGENT_RUNS_COLUMNS)})"
+)
+
 _Params = Sequence[object] | Mapping[str, object] | None
 
 _log = get_logger(__name__)
@@ -150,8 +217,8 @@ class Database:
 
     def __init__(self, lake: Lake, *, read_only: bool = False) -> None:
         """Open (creating if needed, unless `read_only`) the lake's database file and create
-        `audit_events`, `llm_usage` and `llm_cache` if missing. `read_only` needs an existing
-        file."""
+        `audit_events`, `llm_usage`, `llm_cache` and `agent_runs` if missing. `read_only`
+        needs an existing file."""
         self._lake = lake
         self._path = lake.root / DB_FILENAME
         self._read_only = read_only
@@ -166,6 +233,7 @@ class Database:
                 self._con.execute(_AUDIT_DDL)
                 self._con.execute(_LLM_USAGE_DDL)
                 self._con.execute(_LLM_CACHE_DDL)
+                self._con.execute(_AGENT_RUNS_DDL)
             self._confine_to_lake()
             self.refresh()
         except BaseException:
@@ -321,25 +389,45 @@ class Database:
         column raises `DataError` and stores nothing. Raises `ValueError` for a row with
         missing or unknown columns and on a read-only database.
         """
+        return self._append("llm_usage", LLM_USAGE_COLUMNS, _INSERT_LLM_USAGE, rows)
+
+    def insert_agent_runs(self, rows: Sequence[Mapping[str, object]]) -> int:
+        """Append rows to `agent_runs` (one per agent run, Stage 26) and return how many.
+
+        Each row maps exactly `AGENT_RUNS_COLUMNS` to values (see `atlas.agents.trace`:
+        `trace_row`). The batch is one transaction: a duplicate `agent_run_id` or a null in a
+        required column raises `DataError` and stores nothing. Raises `ValueError` for a row
+        with missing or unknown columns and on a read-only database.
+        """
+        return self._append("agent_runs", AGENT_RUNS_COLUMNS, _INSERT_AGENT_RUNS, rows)
+
+    def _append(
+        self,
+        table: str,
+        columns: tuple[str, ...],
+        statement: str,
+        rows: Sequence[Mapping[str, object]],
+    ) -> int:
+        """Append `rows` (each mapping exactly `columns`) to `table` in one transaction."""
         if self._read_only:
-            raise ValueError(f"cannot insert LLM usage into read-only database {self._path}")
-        expected = set(LLM_USAGE_COLUMNS)
+            raise ValueError(f"cannot insert into {table} of read-only database {self._path}")
+        expected = set(columns)
         for row in rows:
             if set(row) != expected:
                 odd = sorted(expected.symmetric_difference(row))
-                raise ValueError(f"llm_usage row has missing or unknown columns: {odd}")
-        values = [[row[column] for column in LLM_USAGE_COLUMNS] for row in rows]
+                raise ValueError(f"{table} row has missing or unknown columns: {odd}")
+        values = [[row[column] for column in columns] for row in rows]
         if not values:
             return 0
         with self._lock:
             con = self._connection()
             con.execute("BEGIN TRANSACTION")
             try:
-                con.executemany(_INSERT_LLM_USAGE, values)
+                con.executemany(statement, values)
                 con.execute("COMMIT")
             except duckdb.ConstraintException as exc:
                 con.execute("ROLLBACK")
-                raise DataError(f"llm_usage rejected {len(values)} row(s): {exc}") from exc
+                raise DataError(f"{table} rejected {len(values)} row(s): {exc}") from exc
             except BaseException:
                 con.execute("ROLLBACK")
                 raise

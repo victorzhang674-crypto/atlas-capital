@@ -552,6 +552,19 @@ class DataView:
 
         return self._cached("fundamentals", (sym,), compute)
 
+    def fundamentals_detail(self, symbol: str) -> pd.DataFrame:
+        """`fundamentals` of `symbol` with where each value came from: one row per metric
+        (`DETAIL_COLUMNS`: `metric`, `value`, `period_start`, `period_end`, `available_at`,
+        `accn`, `tag`, `source`; `source` is `stale` for a value older than the staleness
+        rule, NaN value). The agents' fundamentals tool cites values by period (Stage 26).
+        A blocked symbol raises `DataError`."""
+        sym = self._one(symbol)
+
+        def compute() -> pd.DataFrame:  # `_fundamentals_detail` applies `guard_frame`
+            return self._fundamentals_detail(sym, self._fundamentals.facts(sym))
+
+        return self._cached("fundamentals_detail", (sym,), compute)
+
     def fundamentals_panel(self, symbols: Sequence[str]) -> pd.DataFrame:
         """`fundamentals` of each unblocked symbol of `symbols`: index `symbol` (request
         order), one float column per metric (all NaN for a symbol with no stored facts).

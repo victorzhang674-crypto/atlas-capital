@@ -1,0 +1,40 @@
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+unformatted: File would be reformatted
+  --> docs/agents.md:21:35
+   |
+20 | class FundamentalAnalyst(BaseAgent[AnalystReport]):
+   -     name = "fundamental_analyst"          # labels LLM calls, traces and audit events
+   -     tier = "quick"                        # quick | deep (spec §6)
+21 +     name = "fundamental_analyst"  # labels LLM calls, traces and audit events
+22 +     tier = "quick"  # quick | deep (spec §6)
+23 |     prompt_template = "fundamental_analyst.j2"
+24 |     output_schema = AnalystReport
+   -     tools = ("fundamentals", "news")      # names in the tool registry
+25 +     tools = ("fundamentals", "news")  # names in the tool registry
+26 |
+   -     def gather(self, ctx):                # evidence shown up front (optional)
+27 +     def gather(self, ctx):  # evidence shown up front (optional)
+28 |         return ctx.view.news(ctx.inputs["symbol"], limit=5)
+29 |
+   -     def prompt_inputs(self, ctx):         # template variables (default: ctx.inputs)
+30 +     def prompt_inputs(self, ctx):  # template variables (default: ctx.inputs)
+31 |         return {"symbol": ctx.inputs["symbol"]}
+32 |
+   - agent = FundamentalAnalyst(build_gateway(cfg, lake=lake), config=cfg,
+   -                            traces=TraceStore(get_database(lake)), audit=audit_log)
+33 +
+34 + agent = FundamentalAnalyst(
+35 +     build_gateway(cfg, lake=lake),
+36 +     config=cfg,
+37 +     traces=TraceStore(get_database(lake)),
+38 +     audit=audit_log,
+39 + )
+40 | out = agent.run(AgentContext(DataView(lake, day), inputs={"symbol": "AAPL"}))
+   |
+
+1 file would be reformatted, 427 files already formatted
+make: *** [fmt-check] Error 1
+
+exit 2

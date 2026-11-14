@@ -486,6 +486,12 @@ llm:
       output: 0.5  # generated tokens
       windows: []  # no time-of-day pricing
 
+# Agent framework (Stage 26).
+agents:
+  max_tool_rounds: 4  # model turns that may ask for tools in one agent run; then a wrap-up turn with no tools
+  evidence_repair_retries: 1  # extra turns asking the model to fix unknown evidence ids or uncited claims
+  low_quality_confidence_cap: 0.3  # highest confidence (0-1) kept by an output whose citations stay invalid
+
 # Backtest window and simulated costs.
 backtest:
   start: 2018-01-01  # first session (spec A7)

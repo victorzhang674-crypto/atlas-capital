@@ -77,6 +77,7 @@ def test_static_schema_may_omit_available_at() -> None:
         {"name": "audit_events"},  # reserved for the DuckDB audit mirror
         {"name": "llm_usage"},  # reserved for the native LLM usage table (Stage 24)
         {"name": "llm_cache"},  # reserved for the native LLM cache table (Stage 25)
+        {"name": "agent_runs"},  # reserved for the native agent trace table (Stage 26)
         {"version": 0},
     ],
 )

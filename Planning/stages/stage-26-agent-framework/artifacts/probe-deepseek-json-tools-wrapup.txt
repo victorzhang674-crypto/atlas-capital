@@ -1,0 +1,10 @@
+== deepseek-v4-pro enabled
+round1-json+tools 200 
+tool_calls: 1 content: 
+wrapup-without-tools 200 
+answer: {"ticker":"AAA","price":101.5}
+== deepseek-flash disabled
+round1-json+tools 200 
+tool_calls: 1 content: 
+wrapup-without-tools 200 
+answer: {"ticker": "AAA", "price": 101.5}

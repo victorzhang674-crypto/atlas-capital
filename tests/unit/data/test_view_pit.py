@@ -31,7 +31,7 @@ from atlas.core.pit import AsOf
 from atlas.core.storage import DEFAULT_REGISTRY, Lake
 from atlas.core.types.research import Evidence
 from atlas.data.events import Events
-from atlas.data.fundamentals import Fundamentals
+from atlas.data.fundamentals import DETAIL_COLUMNS, Fundamentals
 from atlas.data.macro import Macro
 from atlas.data.news import News
 from atlas.data.sentiment import Sentiment, Social
@@ -300,6 +300,22 @@ def test_fundamentals_matches_reader(world: World) -> None:
     assert view.fundamentals("AAA")["revenue_ttm"] == pytest.approx(430e6)
 
 
+def test_fundamentals_detail_matches_fundamentals(world: World) -> None:  # Stage 26
+    view = world.view(world.clean)
+    detail = view.fundamentals_detail("aaa")
+    assert list(detail.columns) == list(DETAIL_COLUMNS)
+    values = view.fundamentals("AAA")
+    assert list(detail["metric"]) == list(values.index)
+    pd.testing.assert_series_equal(
+        pd.Series(detail["value"].to_numpy(), index=list(detail["metric"]), name="AAA"), values
+    )
+    revenue = detail.set_index("metric").loc["revenue_ttm"]
+    assert revenue["period_end"] == date(2023, 12, 31)
+    assert AS_OF.knows(revenue["available_at"].to_pydatetime())
+    detail.loc[0, "value"] = -1.0  # a copy: the cached detail is unchanged
+    assert view.fundamentals_detail("AAA")["value"].iloc[0] != -1.0
+
+
 def test_fundamentals_panel_matches_reader(world: World) -> None:
     view = world.view(world.clean)
     panel = view.fundamentals_panel(["AAA", "BAD", "BBB", "ZZZ"])
@@ -421,6 +437,9 @@ METHODS: dict[str, Callable[[DataView], Any]] = {
     "macro_vintages": lambda v: v.macro_vintages(["DGS10", "CPIAUCSL"], 120),  # Stage 21
     "members_on": lambda v: v.members_on(v.day),  # Stage 21
     "ciks": lambda v: v.ciks(["AAA", "BBB"]),  # Phase 2 checkpoint
+    # Stage 26. `accn` is left out: the test world numbers accessions with one counter per
+    # process, so the dirty lake's extra filings shift them (same filings, other numbers).
+    "fundamentals_detail": lambda v: v.fundamentals_detail("AAA").drop(columns="accn"),
 }
 """Every public data method of `DataView`, called as strategy or agent code would."""
 
@@ -567,6 +586,7 @@ LEAKS: dict[str, Callable[[pytest.MonkeyPatch], None]] = {
     "adv": _leak_bars,
     "fundamentals": _leak_fundamentals,
     "fundamentals_panel": _leak_fundamentals,
+    "fundamentals_detail": _leak_fundamentals,  # Stage 26
     "macro": lambda mp: _wrap(mp, Macro, "pit_detail", _late_frame),
     "news": lambda mp: _wrap(mp, News, "pit", _late_evidence),
     "market_news": lambda mp: _wrap(mp, News, "market", _late_evidence),
@@ -612,6 +632,7 @@ def test_guard_raises_if_filter_bypassed(
 
 SINGLE = {
     "fundamentals": lambda v: v.fundamentals("BAD"),
+    "fundamentals_detail": lambda v: v.fundamentals_detail("BAD"),  # Stage 26
     "news": lambda v: v.news("BAD"),
     "sentiment": lambda v: v.sentiment("BAD"),
     "sentiment_daily": lambda v: v.sentiment_daily("BAD", 5),

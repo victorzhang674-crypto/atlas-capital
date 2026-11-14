@@ -992,6 +992,22 @@ class CostConfig(_Frozen):
     borrow_gc_annual: _NonNeg = 0.003
 
 
+class AgentsConfig(_Frozen):
+    """The agent framework (Stage 26).
+
+    `max_tool_rounds`: model turns that may ask for tools in one agent run; a model still
+    asking after the last one gets a wrap-up turn with no tools offered.
+    `evidence_repair_retries`: extra turns asking the model to fix citations that name
+    unknown evidence ids or claims that cite nothing.
+    `low_quality_confidence_cap`: the highest `confidence` (in [0, 1]) an output keeps when
+    its citations are still invalid after the repairs (it is then marked `low_quality`).
+    """
+
+    max_tool_rounds: Annotated[int, Field(ge=1)] = 4
+    evidence_repair_retries: Annotated[int, Field(ge=0)] = 1
+    low_quality_confidence_cap: Annotated[float, Field(ge=0, le=1)] = 0.3
+
+
 class BacktestConfig(_Frozen):
     """Backtest window (spec A7). `end=None` means the latest available session."""
 
@@ -1779,6 +1795,7 @@ class AtlasConfig(BaseSettings):
     data: DataConfig = Field(default_factory=DataConfig)
     quant: QuantConfig = Field(default_factory=QuantConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
+    agents: AgentsConfig = Field(default_factory=AgentsConfig)
     backtest: BacktestConfig = Field(default_factory=BacktestConfig)
     calendar: CalendarConfig = Field(default_factory=CalendarConfig)
     secrets: Secrets = Field(default_factory=Secrets)

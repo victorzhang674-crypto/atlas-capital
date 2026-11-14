@@ -1,0 +1,66 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.13, pytest-9.1.1, pluggy-1.7.0 -- /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-26-planning-execution-3bbe8a/.venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-26-planning-execution-3bbe8a
+configfile: pyproject.toml
+plugins: cov-7.1.0, xdist-3.8.0, hypothesis-6.170.11, anyio-4.15.1, respx-0.23.1, platformdirs-4.13.5
+collecting ... collected 54 items
+
+tests/unit/agents/test_agents_base.py::test_the_echo_analyst_runs_fully_offline PASSED [  1%]
+tests/unit/agents/test_agents_citations.py::test_an_unknown_id_is_repaired PASSED [  3%]
+tests/unit/agents/test_agents_citations.py::test_still_unknown_after_the_repair_is_low_quality PASSED [  5%]
+tests/unit/agents/test_agents_citations.py::test_an_uncited_claim_is_caught PASSED [  7%]
+tests/unit/agents/test_agents_citations.py::test_an_uncited_claim_can_be_repaired PASSED [  9%]
+tests/unit/agents/test_agents_citations.py::test_a_future_article_is_unknown PASSED [ 11%]
+tests/unit/agents/test_agents_citations.py::test_no_repair_when_retries_are_zero PASSED [ 12%]
+tests/unit/agents/test_agents_citations.py::test_the_cap_comes_from_config_and_lower_values_stay PASSED [ 14%]
+tests/unit/agents/test_agents_citations.py::test_a_valid_answer_makes_one_call PASSED [ 16%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[news-args0] PASSED [ 18%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[news-args1] PASSED [ 20%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[news-args2] PASSED [ 22%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[market_news-args3] PASSED [ 24%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[fundamentals-args4] PASSED [ 25%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[fundamentals-args5] PASSED [ 27%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[price_history-args6] PASSED [ 29%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[price_history-args7] PASSED [ 31%]
+tests/unit/agents/test_agents_tools_pit.py::test_tools_cannot_see_beyond_as_of[price_history-args8] PASSED [ 33%]
+tests/unit/agents/test_agents_tools_pit.py::test_the_leak_test_can_see_a_leak PASSED [ 35%]
+tests/unit/agents/test_agents_tools_pit.py::test_news_tool PASSED        [ 37%]
+tests/unit/agents/test_agents_tools_pit.py::test_market_news_tool PASSED [ 38%]
+tests/unit/agents/test_agents_tools_pit.py::test_fundamentals_tool PASSED [ 40%]
+tests/unit/agents/test_agents_tools_pit.py::test_price_history_tool PASSED [ 42%]
+tests/unit/agents/test_agents_tools_pit.py::test_blocked_symbol_is_an_error_text_or_no_data PASSED [ 44%]
+tests/unit/agents/test_agents_tools_pit.py::test_a_malformed_symbol_is_an_error_text[news] PASSED [ 46%]
+tests/unit/agents/test_agents_tools_pit.py::test_a_malformed_symbol_is_an_error_text[fundamentals] PASSED [ 48%]
+tests/unit/agents/test_agents_tools_pit.py::test_a_malformed_symbol_is_an_error_text[price_history] PASSED [ 50%]
+tests/unit/agents/test_agents_tools_pit.py::test_symbols_are_normalised PASSED [ 51%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[adv] PASSED [ 53%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[blocked] PASSED [ 55%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[ciks] PASSED [ 57%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[earnings_reactions] PASSED [ 59%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[events] PASSED [ 61%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[fundamentals] PASSED [ 62%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[fundamentals_detail] PASSED [ 64%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[fundamentals_history] PASSED [ 66%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[fundamentals_panel] PASSED [ 68%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[instrument] PASSED [ 70%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[macro] PASSED [ 72%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[macro_vintages] PASSED [ 74%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[market_news] PASSED [ 75%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[members_on] PASSED [ 77%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[news] PASSED [ 79%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[past_events] PASSED [ 81%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[prices] PASSED [ 83%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[quality_issues] PASSED [ 85%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[returns] PASSED [ 87%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[sentiment] PASSED [ 88%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[sentiment_daily] PASSED [ 90%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[sessions] PASSED [ 92%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[social] PASSED [ 94%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[split_factors] PASSED [ 96%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[tradable] PASSED [ 98%]
+tests/unit/data/test_view_pit.py::test_future_rows_never_leak[universe] PASSED [100%]
+
+============================== 54 passed in 2.26s ==============================
+exit 0

@@ -140,6 +140,7 @@ def test_views_are_not_persisted(lake: Lake, prices_frame: PricesFrame) -> None:
         con.close()
     assert views == []
     assert sorted(tables) == [
+        ("agent_runs",),  # Stage 26
         ("audit_events",),
         ("llm_cache",),
         ("llm_usage",),
