@@ -1,0 +1,248 @@
+=== before: main b2f30ed
+=== git merge --ff-only claude/phase-two-checkpoint-stages-a4dbeb
+Updating b2f30ed..27e6cda
+Fast-forward
+ Planning/PROGRESS.md                               |  38 +--
+ .../phase2-checkpoint-onepass-timing-ci.txt        |   4 +
+ .../stage-01-project-scaffolding/verification.md   |   8 +
+ .../stages/stage-01-project-scaffolding/worklog.md |   5 +
+ .../stages/stage-03-logging-audit/verification.md  |   7 +
+ Planning/stages/stage-03-logging-audit/worklog.md  |   4 +
+ ...phase2-checkpoint-tier4-purge-reused-tickers.py |  24 ++
+ .../phase2-checkpoint-tier4-purge-trial.txt        |  30 +++
+ ...hase2-checkpoint-tier4-reused-tickers-review.md |  51 ++++
+ .../phase2-checkpoint-tier4-reused-tickers-scan.py |  28 +++
+ ...phase2-checkpoint-tier4-reused-tickers-scan.txt |  48 ++++
+ .../stages/stage-07-price-data/verification.md     |   7 +
+ Planning/stages/stage-07-price-data/worklog.md     |   6 +
+ ...phase2-checkpoint-tier4-universe-sync-trial.txt |  61 +++++
+ Planning/stages/stage-08-universe/verification.md  |   7 +
+ Planning/stages/stage-08-universe/worklog.md       |   6 +
+ .../phase2-checkpoint-tier4-stale-price-compare.py |  49 ++++
+ ...phase2-checkpoint-tier4-stale-price-compare.txt |  29 +++
+ .../stage-13-data-quality-dataview/verification.md |   7 +
+ .../stage-13-data-quality-dataview/worklog.md      |   5 +
+ .../stage-15-technical-features/verification.md    |   7 +
+ .../stages/stage-15-technical-features/worklog.md  |   4 +
+ .../phase2-checkpoint-tier4-migrate-trial.txt      |   2 +
+ .../stage-16-fundamental-factors/verification.md   |   7 +
+ .../stages/stage-16-fundamental-factors/worklog.md |   5 +
+ .../stage-17-signal-research/verification.md       |   7 +
+ .../stages/stage-17-signal-research/worklog.md     |   5 +
+ .../stages/stage-18-covariance-vol/verification.md |   7 +
+ Planning/stages/stage-18-covariance-vol/worklog.md |   4 +
+ .../phase2-checkpoint-tier4-bias-by-year.py        |  50 ++++
+ .../phase2-checkpoint-tier4-bias-by-year.txt       |  25 ++
+ .../stage-19-factor-risk-model/verification.md     |   7 +
+ .../stages/stage-19-factor-risk-model/worklog.md   |   5 +
+ .../stage-21-regime-detection/verification.md      |   7 +
+ .../stages/stage-21-regime-detection/worklog.md    |   4 +
+ .../phase2-checkpoint-2026-11-11-report.md         |  13 +-
+ ...e2-checkpoint-2026-11-11-tier4-final-checks.txt |  89 +++++++
+ .../phase2-checkpoint-2026-11-11-tier4-gate.txt    |   6 +
+ ...ckpoint-2026-11-11-tier4-main-lake-readback.txt |  45 ++++
+ ...kpoint-2026-11-11-tier4-make-check-1-format.txt |  30 +++
+ ...-2026-11-11-tier4-make-check-2-statarb-rule.txt |  96 ++++++++
+ ...ase2-checkpoint-2026-11-11-tier4-make-check.txt |  76 ++++++
+ .../phase2-checkpoint-2026-11-11-tier4-mutate.py   | 131 ++++++++++
+ .../phase2-checkpoint-2026-11-11-tier4-mutate.txt  |  29 +++
+ .../phase2-checkpoint-2026-11-11-tier4-red.txt     | 118 +++++++++
+ ...heckpoint-2026-11-11-tier4-scratch-readback.txt |  45 ++++
+ ...checkpoint-2026-11-11-tier4-scratch-rebuild.txt |  26 ++
+ .../phase2-checkpoint-2026-11-11-tier4-swap.sh     |  38 +++
+ .../phase2-checkpoint-2026-11-11-tier4-swap.txt    |  19 ++
+ Planning/stages/stage-23-stat-arb/verification.md  |   7 +
+ Planning/stages/stage-23-stat-arb/worklog.md       |  18 ++
+ config/former_sectors.yaml                         |   6 +-
+ config/fund.yaml                                   |   4 +
+ config/reused_tickers.yaml                         |  42 ++++
+ src/atlas/cli/factors_cmd.py                       |   2 +-
+ src/atlas/cli/research_cmd.py                      | 273 +++++++++++++++++++--
+ src/atlas/core/config.py                           |  33 ++-
+ src/atlas/core/logging.py                          |   8 +-
+ src/atlas/core/run_context.py                      |  21 +-
+ src/atlas/data/prices.py                           |  84 ++++++-
+ src/atlas/data/quality.py                          |  33 ++-
+ src/atlas/data/sync/steps.py                       |   4 +-
+ src/atlas/data/view.py                             |  24 ++
+ src/atlas/quant/factors/__init__.py                |   2 +
+ src/atlas/quant/factors/fundamental.py             |  81 ++++--
+ src/atlas/quant/factors/store.py                   | 122 ++++++++-
+ src/atlas/quant/features/registry.py               |  55 ++++-
+ src/atlas/quant/features/technical.py              |  27 +-
+ src/atlas/quant/regime/hmm.py                      |   9 +-
+ src/atlas/quant/research/ic.py                     |   7 +-
+ src/atlas/quant/research/quantiles.py              |   2 +-
+ src/atlas/quant/research/tearsheet.py              |  38 +--
+ src/atlas/quant/risk_model/__init__.py             |   2 +
+ src/atlas/quant/risk_model/covariance.py           |  24 +-
+ src/atlas/quant/risk_model/factor_model.py         |  31 ++-
+ src/atlas/quant/risk_model/loader.py               |  58 ++++-
+ src/atlas/quant/risk_model/volatility.py           |   5 +
+ src/atlas/quant/statarb/__init__.py                |   2 +
+ src/atlas/quant/statarb/backtest.py                |  63 +++++
+ src/atlas/quant/statarb/selection.py               |   3 +-
+ tests/fixtures/features/expected.csv               | 242 +++++++++---------
+ tests/unit/cli/test_cli_startup.py                 |  27 ++
+ tests/unit/cli/test_factors_cmd.py                 |   4 +-
+ tests/unit/cli/test_research_cmd.py                | 147 +++++++++++
+ tests/unit/core/test_config.py                     |   3 +-
+ tests/unit/core/test_logging.py                    |  51 ++++
+ tests/unit/data/test_price_ingest.py               |  85 +++++++
+ tests/unit/data/test_quality.py                    |  56 +++++
+ tests/unit/data/test_sync_datasets.py              |  23 ++
+ tests/unit/data/test_universe.py                   |   3 +-
+ tests/unit/data/test_view_pit.py                   |  11 +
+ .../quant/factors/test_factor_share_fallback.py    |  91 +++++++
+ .../quant/factors/test_factor_store_fingerprint.py | 175 +++++++++++++
+ tests/unit/quant/features/conftest.py              |   9 +
+ tests/unit/quant/features/feature_reference.py     |  34 ++-
+ .../unit/quant/features/test_feature_lookahead.py  |  21 +-
+ .../unit/quant/features/test_feature_reference.py  |   2 +-
+ .../quant/features/test_feature_share_volume.py    | 136 ++++++++++
+ .../unit/quant/features/test_technical_features.py |  12 +-
+ .../unit/quant/research/test_research_tearsheet.py |  34 +++
+ .../quant/risk_model/test_factor_risk_classes.py   | 149 +++++++++++
+ .../quant/risk_model/test_factor_risk_loader.py    |  23 ++
+ .../quant/risk_model/test_risk_view_helpers.py     |  84 +++++++
+ .../quant/statarb/test_statarb_backtest_lake.py    |  96 ++++++++
+ tests/unit/test_package_layout.py                  |  12 +-
+ 105 files changed, 3667 insertions(+), 284 deletions(-)
+ create mode 100644 Planning/stages/stage-01-project-scaffolding/artifacts/phase2-checkpoint-onepass-timing-ci.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase2-checkpoint-tier4-purge-reused-tickers.py
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase2-checkpoint-tier4-purge-trial.txt
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase2-checkpoint-tier4-reused-tickers-review.md
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase2-checkpoint-tier4-reused-tickers-scan.py
+ create mode 100644 Planning/stages/stage-07-price-data/artifacts/phase2-checkpoint-tier4-reused-tickers-scan.txt
+ create mode 100644 Planning/stages/stage-08-universe/artifacts/phase2-checkpoint-tier4-universe-sync-trial.txt
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase2-checkpoint-tier4-stale-price-compare.py
+ create mode 100644 Planning/stages/stage-13-data-quality-dataview/artifacts/phase2-checkpoint-tier4-stale-price-compare.txt
+ create mode 100644 Planning/stages/stage-16-fundamental-factors/artifacts/phase2-checkpoint-tier4-migrate-trial.txt
+ create mode 100644 Planning/stages/stage-19-factor-risk-model/artifacts/phase2-checkpoint-tier4-bias-by-year.py
+ create mode 100644 Planning/stages/stage-19-factor-risk-model/artifacts/phase2-checkpoint-tier4-bias-by-year.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-final-checks.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-gate.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-main-lake-readback.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-make-check-1-format.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-make-check-2-statarb-rule.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-make-check.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-mutate.py
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-mutate.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-red.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-scratch-readback.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-scratch-rebuild.txt
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-swap.sh
+ create mode 100644 Planning/stages/stage-23-stat-arb/artifacts/phase2-checkpoint-2026-11-11-tier4-swap.txt
+ create mode 100644 config/reused_tickers.yaml
+ create mode 100644 tests/unit/cli/test_cli_startup.py
+ create mode 100644 tests/unit/quant/factors/test_factor_store_fingerprint.py
+ create mode 100644 tests/unit/quant/features/conftest.py
+ create mode 100644 tests/unit/quant/features/test_feature_share_volume.py
+ create mode 100644 tests/unit/quant/risk_model/test_factor_risk_classes.py
+ create mode 100644 tests/unit/quant/risk_model/test_risk_view_helpers.py
+ create mode 100644 tests/unit/quant/statarb/test_statarb_backtest_lake.py
+merge exit 0
+27e6cda phase-2 checkpoint: Tier 4 and the open backlog gaps
+f19bdaa phase-2 checkpoint: push and CI records (one pass, CI fix)
+b2f30ed phase-2 checkpoint: merged-main check records (CI fix)
+tree main: 9127af95128fa2342243516d3de3d1b408a256b7  tree branch: 9127af95128fa2342243516d3de3d1b408a256b7
+=== make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+393 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 157 source files
+uv run pytest -q -n auto --dist loadfile -m 'not live and not llm and not integration and not timing'
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  1%]
+........................................................................ [  3%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 32%]
+........................................................................ [ 33%]
+........................................................................ [ 35%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 64%]
+........................................................................ [ 66%]
+........................................................................ [ 67%]
+........................................................................ [ 69%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+........................................................................ [ 74%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+4241 passed in 150.28s (0:02:30)
+uv run pytest -q -m timing
+.
+compute_features: 41 features x 500 symbols x 2000 sessions in 3.60 s (limit 20 s)
+..                                                                      [100%]
+3 passed, 4312 deselected in 15.44s
+make check exit 0
+=== uv run pytest -m integration -q -rs (main lake)
+.................................ssss........sssssssssss                 [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:61: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:76: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:91: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_metrics_real_lake.py:119: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:59: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:65: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:75: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:82: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:110: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_regime_real_lake.py:123: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:86: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:96: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:116: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:129: ATLAS__DATA__LAKE_PATH does not point at a populated lake
+SKIPPED [1] tests/integration/test_risk_model_real_lake.py:143: set ATLAS_RISK_MODEL_FULL=1 for the 2018-2024 calibration
+41 passed, 15 skipped, 4259 deselected in 151.86s (0:02:31)
+integration exit 0
+=== git branch --merged main
++ claude/phase-two-checkpoint-stages-a4dbeb
+=== after
+## main...origin/main [ahead 2]
