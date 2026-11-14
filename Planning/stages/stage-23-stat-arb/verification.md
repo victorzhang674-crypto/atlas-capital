@@ -83,3 +83,4 @@ Filled only with output from commands run in this stage's chat (Project.md Rule 
 
 **Result:** ALL CRITERIA VERIFIED
 - Tier 4 merged: on merged `main` (`27e6cda`, fast-forward from `b2f30ed`; run alone through the owner-allowed connector): `make check` → exit 0 (4241 passed in parallel, 3 timing tests alone); integration → exit 0, 41 passed, 15 skipped (no lake path in that shell); trees equal; branch merged; checkout clean · raw: [artifacts/phase2-checkpoint-2026-11-11-tier4-merged-main-check.txt](artifacts/phase2-checkpoint-2026-11-11-tier4-merged-main-check.txt). Not pushed.
+- Pushed 2026-11-14 (owner: "Yes, push"): `origin/main` and the branch at `8c00e6f`; CI on that commit → success on `main` (run 43582392137, 17 min 41 s) and on the branch (run 43582392204, 16 min 1 s) · raw: [artifacts/phase2-checkpoint-2026-11-11-tier4-ci.txt](artifacts/phase2-checkpoint-2026-11-11-tier4-ci.txt)
