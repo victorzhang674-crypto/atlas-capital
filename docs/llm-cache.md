@@ -10,7 +10,7 @@ backtest is cheap to re-run and gives identical results (design spec §3.3, prin
 | `off` | not looked up | provider is called, nothing stored (the `paper` profile) |
 | `read_write` (default) | stored answer, cost 0 | provider is called, answer stored (first writer wins) |
 | `replay_only` | stored answer, cost 0 | `CacheMiss` (an `LLMError`); no provider is ever called |
-| `record` | the first call of a key in a gateway is re-recorded; later identical calls of that gateway replay it | provider is called, answer stored, replacing an older one |
+| `record` | the first call of a key in a gateway is re-recorded (an unreadable recording too); later identical calls of that gateway replay it | provider is called, answer stored, replacing an older one |
 
 A hit spends nothing: no budget is checked, the result has `cache_hit = True`, `cost_usd = 0`,
 empty `usage` and `attempts = 0`, and `llm_usage` gets a `cache_hit = true` row with cost 0.
@@ -18,7 +18,7 @@ Only answers that passed validation are stored; failures never are.
 
 ## What is in the key
 
-SHA-256 of the canonical JSON of: provider, model, the messages as sent (after the data-policy
+SHA-256 of the canonical JSON of: provider and its endpoint (the OpenAI-compatible base URL, so two vendors never share recordings), model, the messages as sent (after the data-policy
 system text), the schema's name and a fingerprint of its JSON Schema, temperature (as a
 float), the output token cap, tools, thinking mode, and the prompt template version
 (`metadata["prompt_version"]`). `agent`, `step` and the timeout are not part of it, so a
@@ -37,18 +37,22 @@ whose prompts or data moved fails with `CacheMiss` instead of quietly calling a 
 
 ## Replays give the recorded results
 
-Calls with the same key are serialised inside one gateway (one lock per key: different requests never wait for each other), so two threads that miss the same
-key make one provider call and both get the stored answer; in `record` mode a gateway re-records
-each key once and replays it afterwards. A run therefore sees exactly the answers a later
-replay of it will see, even when the model is not deterministic (spec §3, principle 3). Two
-processes recording into one lake at the same time are not coordinated: the first answer
-stored wins.
+Calls with the same key are serialised inside one gateway (one lock per key: different requests
+never wait for each other), so two threads that miss the same key make one provider call and
+both get the stored answer; in `record` mode a gateway re-records each key once and replays it
+afterwards. New answers are stored with a compare-and-set: when two gateways share a cache and
+another one stored the key first, this call (already paid) returns the stored answer instead of
+its own. A run therefore sees exactly the answers a later replay of it will see, even when the
+model is not deterministic (spec §3, principle 3). Two processes cannot share a lake at all:
+DuckDB lets one process open `atlas.duckdb` at a time.
 
 ## Storage and commands
 
 Entries live in the native DuckDB table `llm_cache` of the lake's `atlas.duckdb` (`key`,
 `created_at`, `provider`, `model`, `request_json`, `response_json`, `usage`). The cost of a hit
-is not in `llm_usage`: the cost of what it saved is in the entry's `usage` JSON.
+is not in `llm_usage`: the cost of what it saved is in the entry's `usage` JSON. Request and
+response bodies of at least `llm.cache.compress_min_bytes` (4096) UTF-8 bytes are stored
+zlib-compressed (`zlib:` + base64); every reader unpacks them, and `stats` reports stored bytes.
 
 ```bash
 atlas llm cache stats                      # entries, size, per model, hit rate

@@ -10,9 +10,12 @@ template change that the messages cannot show is a version bump); nothing else v
 recording. See `docs/llm-cache.md`.
 """
 
+import base64
+import binascii
 import hashlib
 import json
 import threading
+import zlib
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
@@ -30,8 +33,11 @@ from atlas.llm.schemas import ProviderRequest, ToolCall, Usage
 CacheMode = LLMCacheMode
 """`off`, `read_write`, `replay_only` or `record` (see `LLMCacheConfig`)."""
 
-KEY_VERSION = 2
+KEY_VERSION = 3
 """Version of the key payload's shape: bump it if `key_payload` changes (every key changes)."""
+
+COMPRESSED_PREFIX = "zlib:"
+"""Marks a stored body as base64 of zlib-compressed UTF-8 (a JSON body never starts so)."""
 
 PROMPT_VERSION_LABEL = "prompt_version"
 """The request metadata key that carries the prompt template version."""
@@ -43,9 +49,10 @@ def schema_fingerprint(schema: type[BaseModel]) -> str:
     return hashlib.sha256(canonical_json(schema.model_json_schema()).encode()).hexdigest()
 
 
-def key_payload(request: ProviderRequest, *, provider: str) -> dict[str, Any]:
+def key_payload(request: ProviderRequest, *, provider: str, endpoint: str = "") -> dict[str, Any]:
     """What the key hashes: everything the provider is sent that can change the answer — the
-    provider, the model, the messages as sent, the schema name and fingerprint, the
+    provider and its `endpoint` (the vendor's base URL, "" when the provider has none), the
+    model, the messages as sent, the schema name and fingerprint, the
     temperature (as a float: 1 and 1.0 are one value), the output token cap (an answer cut at
     one cap is not the answer to a larger one), the tools, the thinking mode — and the prompt
     template version (`request.metadata["prompt_version"]`, empty when absent).
@@ -57,6 +64,7 @@ def key_payload(request: ProviderRequest, *, provider: str) -> dict[str, Any]:
     return {
         "key_version": KEY_VERSION,
         "provider": provider,
+        "endpoint": endpoint,
         "model": request.model,
         "messages": [m.model_dump(mode="json") for m in request.messages],
         "schema": (
@@ -72,16 +80,38 @@ def key_payload(request: ProviderRequest, *, provider: str) -> dict[str, Any]:
     }
 
 
-def cache_key(request: ProviderRequest, *, provider: str) -> str:
-    """The cache key of `request` for `provider`: a 64-character SHA-256 hex digest."""
-    payload = canonical_json(key_payload(request, provider=provider))
+def cache_key(request: ProviderRequest, *, provider: str, endpoint: str = "") -> str:
+    """The cache key of `request` for `provider` at `endpoint`: a 64-character SHA-256 hex
+    digest."""
+    payload = canonical_json(key_payload(request, provider=provider, endpoint=endpoint))
     return hashlib.sha256(payload.encode()).hexdigest()
 
 
-def request_json(request: ProviderRequest, *, provider: str) -> str:
+def request_json(request: ProviderRequest, *, provider: str, endpoint: str = "") -> str:
     """The canonical JSON of `key_payload`, as stored next to the answer (readable; its
     SHA-256 is the key)."""
-    return canonical_json(key_payload(request, provider=provider))
+    return canonical_json(key_payload(request, provider=provider, endpoint=endpoint))
+
+
+def _pack(text: str, min_bytes: int | None) -> str:
+    """`text` as stored: compressed when it has at least `min_bytes` UTF-8 bytes."""
+    raw = text.encode()
+    if min_bytes is None or len(raw) < min_bytes:
+        return text
+    return COMPRESSED_PREFIX + base64.b64encode(zlib.compress(raw, 6)).decode("ascii")
+
+
+def _unpack(text: str, key: str) -> str:
+    """A stored body as text; `LLMError` when a compressed body cannot be read."""
+    if not text.startswith(COMPRESSED_PREFIX):
+        return text
+    try:
+        packed = base64.b64decode(text[len(COMPRESSED_PREFIX) :], validate=True)
+        return zlib.decompress(packed).decode()
+    except (binascii.Error, zlib.error, UnicodeDecodeError) as exc:
+        raise LLMError(
+            f"corrupt LLM cache entry {key}: unreadable compressed body ({exc})"
+        ) from exc
 
 
 class StoredResult(AtlasModel):
@@ -148,7 +178,8 @@ class CacheEntry:
 @dataclass(frozen=True)
 class CacheStats:
     """What the store holds: `entries`, their size in `bytes` (UTF-8 bytes of the three JSON
-    columns), `models` (entries per model id) and the `oldest` / `newest` `created_at`."""
+    columns as stored, so compressed bodies count compressed), `models` (entries per model id)
+    and the `oldest` / `newest` `created_at`."""
 
     entries: int
     bytes: int
@@ -165,10 +196,30 @@ class LLMCache:
     one-off scripts. Thread-safe.
     """
 
-    def __init__(self, database: Database | None = None) -> None:
+    def __init__(
+        self, database: Database | None = None, *, compress_min_bytes: int | None = None
+    ) -> None:
         self._database = database
+        self._compress = compress_min_bytes
         self._lock = threading.Lock()
         self._entries: dict[str, CacheEntry] = {}
+
+    @property
+    def compress_min_bytes(self) -> int | None:
+        """Bodies of at least this many UTF-8 bytes are stored compressed in DuckDB (`None`:
+        never). Reading unpacks either form, whatever this setting."""
+        return self._compress
+
+    def _row(self, entry: CacheEntry) -> dict[str, object]:
+        return {
+            "key": entry.key,
+            "created_at": entry.created_at,
+            "provider": entry.provider,
+            "model": entry.model,
+            "request_json": _pack(entry.request_json, self._compress),
+            "response_json": _pack(entry.response_json, self._compress),
+            "usage": entry.usage_json,
+        }
 
     def get(self, key: str) -> CacheEntry | None:
         """The entry stored under `key`, or `None`."""
@@ -187,16 +238,34 @@ class LLMCache:
                     return False
                 self._entries[entry.key] = entry
                 return True
-        row = {
-            "key": entry.key,
-            "created_at": entry.created_at,
-            "provider": entry.provider,
-            "model": entry.model,
-            "request_json": entry.request_json,
-            "response_json": entry.response_json,
-            "usage": entry.usage_json,
-        }
-        return self._database.put_llm_cache([row], replace=replace) == 1
+        return self._database.put_llm_cache([self._row(entry)], replace=replace) == 1
+
+    def swap(self, entry: CacheEntry, *, expected: CacheEntry | None) -> bool:
+        """Store `entry` only if what is stored under its key is still `expected` (`None`:
+        nothing); return whether it was stored. A writer that lost a race to another writer
+        gets `False` and should use the stored answer, so every caller and every later replay
+        see the same answer."""
+
+        def same(current: CacheEntry | None) -> bool:
+            return current == expected
+
+        if self._database is None:
+            with self._lock:
+                if not same(self._entries.get(entry.key)):
+                    return False
+                self._entries[entry.key] = entry
+                return True
+        return self._database.swap_llm_cache(
+            self._row(entry),
+            matches=lambda row: same(None if row is None else _entry_from_row(row)),
+        )
+
+    def delete(self, key: str) -> bool:
+        """Delete the entry of `key`; return whether there was one."""
+        if self._database is not None:
+            return self._database.delete_llm_cache(key)
+        with self._lock:
+            return self._entries.pop(key, None) is not None
 
     def entries(self) -> tuple[CacheEntry, ...]:
         """Every entry, oldest first (ties by key)."""
@@ -265,19 +334,20 @@ class LLMCache:
 
 
 def _entry_from_row(row: Mapping[Any, Any]) -> CacheEntry:
-    created = row["created_at"]
+    created, key = row["created_at"], str(row["key"])
     return CacheEntry(
-        key=str(row["key"]),
+        key=key,
         created_at=created.to_pydatetime() if hasattr(created, "to_pydatetime") else created,
         provider=str(row["provider"]),
         model=str(row["model"]),
-        request_json=str(row["request_json"]),
-        response_json=str(row["response_json"]),
+        request_json=_unpack(str(row["request_json"]), key),
+        response_json=_unpack(str(row["response_json"]), key),
         usage_json=str(row["usage"]),
     )
 
 
 __all__ = [
+    "COMPRESSED_PREFIX",
     "KEY_VERSION",
     "PROMPT_VERSION_LABEL",
     "CacheEntry",

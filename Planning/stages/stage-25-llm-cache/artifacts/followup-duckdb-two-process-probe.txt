@@ -1,0 +1,7 @@
+# Stage 25 backlog follow-up (2026-11-14): can two processes open one lake's atlas.duckdb at once?
+# Process A: Database(Lake(root)) held open for 6 s; process B tried to open the same file meanwhile.
+A open
+B failed read_only= False IOException IO Error: Could not set lock on file ".../lake/atlas.duckdb": Conflicting lock is held in /o
+B failed read_only= True IOException IO Error: Could not set lock on file ".../lake/atlas.duckdb": Conflicting lock is held in /o
+# Conclusion: DuckDB allows one process per database file, so two recording processes cannot share a
+# lake's llm_cache. The remaining race is two gateways (two LLMCache objects) in one process.

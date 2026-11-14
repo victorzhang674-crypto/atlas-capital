@@ -226,9 +226,10 @@ class LLMGateway:
         if cache is None or mode == "off":
             return self._run(request, price)
         provider = self._provider.name
-        key = cache_key(request, provider=provider)
+        endpoint = str(getattr(self._provider, "endpoint", "") or "")
+        key = cache_key(request, provider=provider, endpoint=endpoint)
         with self._key_lock(key):
-            return self._cached_locked(request, price, cache, mode, provider, key)
+            return self._cached_locked(request, price, cache, mode, provider, endpoint, key)
 
     @contextmanager
     def _key_lock(self, key: str) -> Iterator[None]:
@@ -255,10 +256,22 @@ class LLMGateway:
         cache: LLMCache,
         mode: CacheMode,
         provider: str,
+        endpoint: str,
         key: str,
     ) -> LLMResult:
-        """`_cached` with the key's lock held."""
-        if mode != "record" or key in self._recorded:
+        """`_cached` with the key's lock held.
+
+        A new answer is stored with a compare-and-set against what was stored before the call
+        (nothing, or in `record` mode the recording being replaced). If another writer sharing
+        the cache stored first, this call adopts the stored answer: every caller and every
+        later replay see one answer per key."""
+        expected: CacheEntry | None = None
+        if mode == "record" and key not in self._recorded:
+            try:
+                expected = cache.get(key)
+            except LLMError:  # an unreadable recording: record mode replaces it
+                cache.delete(key)
+        else:
             started = self._timer()
             entry = cache.get(key)
             if entry is not None:
@@ -278,27 +291,65 @@ class LLMGateway:
                     key=key,
                 )
         result = self._run(request, price)
-        cache.put(
-            CacheEntry.create(
-                key=key,
-                request_json=request_json(request, provider=provider),
-                provider=provider,
-                model=request.model,
-                result=StoredResult(
-                    content=result.content,
-                    tool_calls=result.tool_calls,
-                    finish_reason=result.finish_reason,
-                    usage=result.usage,
-                    cost_usd=result.cost_usd,
-                    attempts=result.attempts,
-                ),
-                created_at=self._clock.now().astimezone(UTC),
+        entry = CacheEntry.create(
+            key=key,
+            request_json=request_json(request, provider=provider, endpoint=endpoint),
+            provider=provider,
+            model=request.model,
+            result=StoredResult(
+                content=result.content,
+                tool_calls=result.tool_calls,
+                finish_reason=result.finish_reason,
+                usage=result.usage,
+                cost_usd=result.cost_usd,
+                attempts=result.attempts,
             ),
-            replace=mode == "record",
+            created_at=self._clock.now().astimezone(UTC),
         )
+        stored = cache.swap(entry, expected=expected)
         if mode == "record":
             self._recorded.add(key)
-        return result
+        if stored:
+            return result
+        return self._adopt(request, result, cache.get(key))
+
+    def _adopt(
+        self, request: ProviderRequest, result: LLMResult, winner: CacheEntry | None
+    ) -> LLMResult:
+        """`result` (a paid call) with the answer another writer stored first, so this caller
+        and later replays agree. Usage, cost and attempts stay this call's own."""
+        if winner is None:  # the winner's entry was pruned meanwhile: keep this answer
+            return result
+        stored = winner.result()
+        _log.info(
+            "llm.cache_adopted",
+            agent=request.metadata.get("agent"),
+            step=request.metadata.get("step"),
+            key=winner.key,
+            recorded_at=winner.created_at.isoformat(),
+        )
+        return result.model_copy(
+            update={
+                "content": stored.content,
+                "parsed": self._parse_stored(request, winner.key, stored),
+                "tool_calls": stored.tool_calls,
+                "finish_reason": stored.finish_reason,
+            }
+        )
+
+    @staticmethod
+    def _parse_stored(request: ProviderRequest, key: str, stored: StoredResult) -> BaseModel | None:
+        """The requested schema parsed from a stored answer (`None` without a schema or for
+        tool calls); `LLMError` when it no longer fits."""
+        schema = request.schema
+        if schema is None or stored.tool_calls:
+            return None
+        try:
+            return _parse(schema, stored.content)
+        except ValidationError as exc:
+            raise LLMError(
+                f"cached answer {key} does not match schema {schema.__name__}: {_error_text(exc)}"
+            ) from exc
 
     def _replay(self, request: ProviderRequest, entry: CacheEntry, started: float) -> LLMResult:
         """The stored answer of `entry` as a free result, with a `cache_hit` ledger row.
@@ -306,15 +357,7 @@ class LLMGateway:
         Raises `LLMError` when the entry is corrupt or no longer fits the requested schema:
         a cache never guesses, and never falls back to a provider call silently."""
         stored = entry.result()
-        schema, parsed = request.schema, None
-        if schema is not None and not stored.tool_calls:
-            try:
-                parsed = _parse(schema, stored.content)
-            except ValidationError as exc:
-                raise LLMError(
-                    f"cached answer {entry.key} does not match schema {schema.__name__}: "
-                    f"{_error_text(exc)}"
-                ) from exc
+        parsed = self._parse_stored(request, entry.key, stored)
         now = self._clock.now().astimezone(UTC)
         run = current_run_context()
         latency_ms = (self._timer() - started) * 1000.0
@@ -508,5 +551,9 @@ def build_gateway(config: AtlasConfig, *, lake: Lake | None = None) -> LLMGatewa
     cache is used; `off` builds no cache.
     """
     database = get_database(lake) if lake is not None else None
-    cache = LLMCache(database) if config.llm.cache.mode != "off" else None
+    cache = (
+        LLMCache(database, compress_min_bytes=config.llm.cache.compress_min_bytes)
+        if config.llm.cache.mode != "off"
+        else None
+    )
     return LLMGateway(build_provider(config), config, ledger=CostLedger(database), cache=cache)

@@ -146,9 +146,16 @@ class OpenAICompatibleProvider:
     ) -> None:
         if not api_key.get_secret_value():
             raise ValueError("the OpenAI-compatible provider needs an API key (DEEPSEEK_API_KEY)")
-        self._url = f"{base_url.rstrip('/')}/chat/completions"
+        self._endpoint = base_url.rstrip("/")
+        self._url = f"{self._endpoint}/chat/completions"
         self._api_key = api_key
         self._http = http or httpx.Client()
+
+    @property
+    def endpoint(self) -> str:
+        """The base URL without a trailing slash: which vendor answers (part of the cache key,
+        so two OpenAI-compatible vendors never share recordings)."""
+        return self._endpoint
 
     def __repr__(self) -> str:
         return f"OpenAICompatibleProvider(url={self._url!r})"

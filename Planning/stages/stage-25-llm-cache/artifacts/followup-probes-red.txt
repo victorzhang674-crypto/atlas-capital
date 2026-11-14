@@ -1,0 +1,14 @@
+                    # this is the current error
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_the_losing_writer_adopts_the_stored_answer[memory-read_write]
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_the_losing_writer_adopts_the_stored_answer[memory-record]
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_the_losing_writer_adopts_the_stored_answer[duckdb-read_write]
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_the_losing_writer_adopts_the_stored_answer[duckdb-record]
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_swap_is_compare_and_set[memory]
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_swap_is_compare_and_set[duckdb]
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_the_endpoint_changes_the_key
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_the_openai_compatible_endpoint_is_its_base_url
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_the_gateway_keys_by_the_providers_endpoint
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_large_bodies_are_compressed_in_duckdb_and_round_trip
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_a_corrupt_compressed_body_fails_safe
+FAILED tests/unit/llm/test_llm_cache_followups.py::test_compression_threshold_is_configured_and_wired
+12 failed, 2 passed in 0.75s

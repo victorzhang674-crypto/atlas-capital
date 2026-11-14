@@ -446,6 +446,7 @@ llm:
   # Record/replay cache (Stage 25): identical requests return the stored answer at cost 0.
   cache:
     mode: read_write  # off | read_write (hit: replay, miss: call and store) | replay_only (a miss raises CacheMiss) | record (always call and store)
+    compress_min_bytes: 4096  # request/response bodies of at least this many bytes are stored zlib-compressed (null: never)
   # USD per 1M tokens, checked 2026-11-09 (api-docs.deepseek.com/quick_start/pricing; Claude: platform.claude.com pricing).
   # input = uncached prompt, cached_input = prompt read from the provider cache, cache_write = prompt written to it
   # (null = charged as input), output = generated tokens incl. reasoning. windows = rates during those UTC hours.

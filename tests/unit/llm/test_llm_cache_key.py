@@ -60,8 +60,9 @@ def test_key_is_a_sha256_hex_digest_and_is_stable() -> None:
 
 def test_the_key_is_pinned() -> None:
     # Changing how keys are built silently voids every recorded backtest: bump deliberately
-    # (KEY_VERSION 2 since the Stage 25 audit: the token cap and a float temperature).
-    assert key() == ("811c14fce624a02ce17e2d46e9cb77b1c7036c75a355364ce1dd8a38046910d1")
+    # (KEY_VERSION 2 since the Stage 25 audit: the token cap and a float temperature;
+    # KEY_VERSION 3 since the backlog follow-up: the provider's endpoint).
+    assert key() == ("9ec76d4c20d736a8eb1a6649d6db914147646033d6e973e1ca1a106ffebf5889")
 
 
 def test_dict_order_is_irrelevant() -> None:
@@ -166,6 +167,7 @@ def test_payload_names_the_schema_and_carries_the_inputs() -> None:
     payload = key_payload(make(), provider="fake")
     assert payload["schema"] == {"name": "Verdict", "fingerprint": schema_fingerprint(Verdict)}
     assert payload["provider"] == "fake" and payload["model"] == "deepseek-flash"
+    assert payload["endpoint"] == ""
     assert payload["prompt_version"] == "v1" and payload["temperature"] == 0.0
     assert key_payload(make(schema=None), provider="fake")["schema"] is None
 
@@ -174,7 +176,7 @@ def test_the_key_without_a_prompt_version_is_pinned() -> None:  # audit (mutatio
     # An absent prompt_version hashes as "" (not null): recordings made before Stage 26's
     # prompt registry must keep their keys.
     assert key(make(metadata=FrozenDict({}))) == (
-        "268f04f669a8be8ac9b8fd41420a2dd8f05be09514104b9a1587e21dd82518c9"
+        "4c019a4ebc12c4f38663d4140c7100c13b6c234f09f468136e6698920623beeb"
     )
     assert key_payload(make(metadata=FrozenDict({})), provider="fake")["prompt_version"] == ""
 

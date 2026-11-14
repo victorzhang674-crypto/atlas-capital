@@ -49,4 +49,17 @@ Owner: "please have a final audit and explicitly state whether it is completed o
 - Final-audit merge into `main`: fast-forward 168b858 → **5748d17**; trees equal; merged result `uv run pytest -q` → 4364 passed, 71 deselected, exit 0 · `make check` → exit 0 (4361 + 3 passed) · `git branch --merged main` lists the stage branch · raw: [final-audit-merged-main-check.txt](artifacts/final-audit-merged-main-check.txt)
 - Verdict: **COMPLETE** — every acceptance criterion and In-scope item verified; no open defect
 
+#### Backlog follow-up — 2026-11-14
+Owner: "can you complete what is left in the backlog?" The three Stage 25 backlog items, done test-first as post-DONE follow-ups (the fourth, `prompt_version` in Stage 26's prompt registry, is Stage 26 scope and was not started, Rule 4):
+- F1 concurrent recorders: probe showed DuckDB lets one process open `atlas.duckdb` at a time ([followup-duckdb-two-process-probe.txt](artifacts/followup-duckdb-two-process-probe.txt)), so the remaining race is two gateways sharing a cache in one process; new answers are now stored by compare-and-set (`LLMCache.swap`, `Database.swap_llm_cache`) and a losing writer returns the stored answer (`llm.cache_adopted`); `record` replaces an unreadable recording (`LLMCache.delete`)
+- F2 the provider's endpoint (OpenAI-compatible base URL) is part of the key (`KEY_VERSION` 3; digests re-pinned)
+- F3 request/response bodies of at least `llm.cache.compress_min_bytes` (4096) bytes are stored zlib-compressed in DuckDB; every reader unpacks; corrupt bodies raise `LLMError`
+- Probes: 12 of 14 failed before the code ([followup-probes-red.txt](artifacts/followup-probes-red.txt)); after: follow-up + audit + acceptance tests 37 passed ([followup-tests-green.txt](artifacts/followup-tests-green.txt)), 20/20 stable runs ([followup-stability.txt](artifacts/followup-stability.txt))
+- `make check` → exit 0 (ruff clean, 403 files formatted, mypy clean on 159 files, 4388 passed + 3 timing) · [followup-make-check.txt](artifacts/followup-make-check.txt)
+- `uv run pytest -q` → **4391 passed, 71 deselected**, exit 0 · [followup-pytest.txt](artifacts/followup-pytest.txt)
+- Verify `uv run pytest tests/unit/llm -q` → **305 passed, 2 deselected**, exit 0 · [followup-verify-pytest-unit-llm.txt](artifacts/followup-verify-pytest-unit-llm.txt)
+- Coverage: `cache.py`, `gateway.py`, `openai_compat.py`, `cli/llm_cmd.py` 100%; every new `db.py` line covered · [followup-coverage.txt](artifacts/followup-coverage.txt)
+- Mutation (`cache.py` + `gateway.py`, 1107 mutants): 1021 → **1047** killed after the survivor tests; the follow-up survivors left are equivalent (zlib level, `"ASCII"` spelling, key text in error messages) · [followup-mutation-summary.txt](artifacts/followup-mutation-summary.txt)
+- Acceptance criteria re-checked: both still hold
+
 **Result:** ALL CRITERIA VERIFIED

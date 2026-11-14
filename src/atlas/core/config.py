@@ -925,9 +925,12 @@ LLMCacheMode = Literal["off", "read_write", "replay_only", "record"]
 class LLMCacheConfig(_Frozen):
     """The LLM record/replay cache (Stage 25). `mode`: `off` (no lookup, nothing stored),
     `read_write` (a hit is replayed, a miss is called and stored), `replay_only` (a miss
-    raises `CacheMiss`; no provider call ever) or `record` (always call, store and replace)."""
+    raises `CacheMiss`; no provider call ever) or `record` (call, store and replace).
+    `compress_min_bytes`: stored request and response bodies of at least this many UTF-8
+    bytes are zlib-compressed in DuckDB (`None`: never)."""
 
     mode: LLMCacheMode = "read_write"
+    compress_min_bytes: Annotated[int, Field(ge=1)] | None = 4096
 
     @field_validator("mode", mode="before")
     @classmethod

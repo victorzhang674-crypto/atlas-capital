@@ -100,3 +100,63 @@ def test_read_only_database_refuses_writes(lake: Lake) -> None:
             ro.put_llm_cache([row()], replace=False)
         with pytest.raises(ValueError, match="read-only"):
             ro.prune_llm_cache(T0)
+
+
+# Backlog follow-up F1: compare-and-set and single-key delete.
+
+
+def test_swap_writes_only_when_the_current_row_matches(db: Database) -> None:
+    seen: list[object] = []
+
+    def nothing_stored(current: dict[str, object] | None) -> bool:
+        seen.append(current)
+        return current is None
+
+    assert db.swap_llm_cache(row(response_json='{"content":"a"}'), matches=nothing_stored) is True
+    assert seen == [None]
+    assert db.swap_llm_cache(row(response_json='{"content":"b"}'), matches=nothing_stored) is False
+    assert seen[1] is not None and seen[1]["response_json"] == '{"content":"a"}'  # type: ignore[index]
+    assert db.swap_llm_cache(row(response_json='{"content":"c"}'), matches=lambda c: True) is True
+    assert db.query("select response_json from llm_cache")["response_json"].tolist() == [
+        '{"content":"c"}'
+    ]
+
+
+def test_swap_failures_store_nothing(db: Database) -> None:
+    db.put_llm_cache([row()], replace=False)
+    with pytest.raises(ValueError, match="missing or unknown"):
+        db.swap_llm_cache({"key": "k1"}, matches=lambda c: True)
+    with pytest.raises(DataError, match="llm_cache"):
+        db.swap_llm_cache(row(model=None), matches=lambda c: True)
+
+    def boom(current: dict[str, object] | None) -> bool:
+        raise RuntimeError("matcher failed")
+
+    with pytest.raises(RuntimeError, match="matcher failed"):
+        db.swap_llm_cache(row(response_json="{}"), matches=boom)
+    stored = db.query("select model, response_json from llm_cache").iloc[0].to_dict()
+    assert stored == {"model": "deepseek-flash", "response_json": '{"content":"hello"}'}
+
+
+def test_delete_one_key(db: Database) -> None:
+    db.put_llm_cache([row("a"), row("b")], replace=False)
+    assert db.delete_llm_cache("a") is True
+    assert db.delete_llm_cache("a") is False
+    assert db.query("select key from llm_cache")["key"].tolist() == ["b"]
+
+
+def test_read_only_database_refuses_swap_and_delete(lake: Lake) -> None:
+    Database(lake).close()
+    with Database(lake, read_only=True) as ro:
+        with pytest.raises(ValueError, match="read-only"):
+            ro.swap_llm_cache(row(), matches=lambda c: True)
+        with pytest.raises(ValueError, match="read-only"):
+            ro.delete_llm_cache("k1")
+
+
+def test_a_put_that_fails_midway_stores_nothing(db: Database) -> None:
+    import duckdb
+
+    with pytest.raises(duckdb.Error):
+        db.put_llm_cache([row("a"), row("b", created_at="not a timestamp")], replace=False)
+    assert len(db.query("select * from llm_cache")) == 0

@@ -1,0 +1,40 @@
+cache.x_key_payload__mutmut_13: - "messages": [m.model_dump(mode="json") for m in request.messages], + "messages": [m.model_dump(mode=None) for m in request.messages], 
+cache.x_key_payload__mutmut_14: - "messages": [m.model_dump(mode="json") for m in request.messages], + "messages": [m.model_dump(mode="XXjsonXX") for m in request.messages], 
+cache.x_key_payload__mutmut_15: - "messages": [m.model_dump(mode="json") for m in request.messages], + "messages": [m.model_dump(mode="JSON") for m in request.messages], 
+cache.x_key_payload__mutmut_33: - "tools": [t.model_dump(mode="json") for t in request.tools], + "tools": [t.model_dump(mode=None) for t in request.tools], 
+cache.x_key_payload__mutmut_34: - "tools": [t.model_dump(mode="json") for t in request.tools], + "tools": [t.model_dump(mode="XXjsonXX") for t in request.tools], 
+cache.x_key_payload__mutmut_35: - "tools": [t.model_dump(mode="json") for t in request.tools], + "tools": [t.model_dump(mode="JSON") for t in request.tools], 
+cache.x_request_json__mutmut_8: - return canonical_json(key_payload(request, provider=provider, endpoint=endpoint)) + return canonical_json(key_payload(request, provider=provider, )) 
+cache.x__pack__mutmut_4: - if min_bytes is None or len(raw) < min_bytes: + if min_bytes is None or len(raw) <= min_bytes: 
+cache.x__pack__mutmut_11: - return COMPRESSED_PREFIX + base64.b64encode(zlib.compress(raw, 6)).decode("ascii") + return COMPRESSED_PREFIX + base64.b64encode(zlib.compress(raw, )).decode("ascii") 
+cache.x__pack__mutmut_12: - return COMPRESSED_PREFIX + base64.b64encode(zlib.compress(raw, 6)).decode("ascii") + return COMPRESSED_PREFIX + base64.b64encode(zlib.compress(raw, 7)).decode("ascii") 
+cache.x__pack__mutmut_14: - return COMPRESSED_PREFIX + base64.b64encode(zlib.compress(raw, 6)).decode("ascii") + return COMPRESSED_PREFIX + base64.b64encode(zlib.compress(raw, 6)).decode("ASCII") 
+cache.x__unpack__mutmut_5: - packed = base64.b64decode(text[len(COMPRESSED_PREFIX) :], validate=True) + packed = base64.b64decode(text[len(COMPRESSED_PREFIX) :], validate=None) 
+cache.x__unpack__mutmut_7: - packed = base64.b64decode(text[len(COMPRESSED_PREFIX) :], validate=True) + packed = base64.b64decode(text[len(COMPRESSED_PREFIX) :], ) 
+cache.x__unpack__mutmut_8: - packed = base64.b64decode(text[len(COMPRESSED_PREFIX) :], validate=True) + packed = base64.b64decode(text[len(COMPRESSED_PREFIX) :], validate=False) 
+cache.x__entry_from_row__mutmut_36: - request_json=_unpack(str(row["request_json"]), key), + request_json=_unpack(str(row["request_json"]), None), 
+cache.x__entry_from_row__mutmut_43: - response_json=_unpack(str(row["response_json"]), key), + response_json=_unpack(str(row["response_json"]), None), 
+gateway.xǁLLMGatewayǁ_cached_locked__mutmut_49: - "the prompt or the data changed, or the call was never recorded " + "XXthe prompt or the data changed, or the call was never recorded XX" 
+gateway.xǁLLMGatewayǁ_cached_locked__mutmut_51: - "(record it with llm.cache.mode read_write or record)", + "XX(record it with llm.cache.mode read_write or record)XX", 
+gateway.xǁLLMGatewayǁ_cached_locked__mutmut_52: - "(record it with llm.cache.mode read_write or record)", + "(RECORD IT WITH LLM.CACHE.MODE READ_WRITE OR RECORD)", 
+gateway.xǁLLMGatewayǁ_cached_locked__mutmut_76: - request_json=request_json(request, provider=provider, endpoint=endpoint), + request_json=request_json(request, provider=provider, ), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_3: - "llm.cache_adopted", + None, 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_4: - agent=request.metadata.get("agent"), + agent=None, 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_5: - step=request.metadata.get("step"), + step=None, 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_6: - key=winner.key, + key=None, 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_7: - recorded_at=winner.created_at.isoformat(), + recorded_at=None, 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_8: - "llm.cache_adopted", 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_9: - agent=request.metadata.get("agent"), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_10: - step=request.metadata.get("step"), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_11: - key=winner.key, 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_12: - recorded_at=winner.created_at.isoformat(), - ) + ) 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_13: - "llm.cache_adopted", + "XXllm.cache_adoptedXX", 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_14: - "llm.cache_adopted", + "LLM.CACHE_ADOPTED", 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_15: - agent=request.metadata.get("agent"), + agent=request.metadata.get(None), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_16: - agent=request.metadata.get("agent"), + agent=request.metadata.get("XXagentXX"), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_17: - agent=request.metadata.get("agent"), + agent=request.metadata.get("AGENT"), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_18: - step=request.metadata.get("step"), + step=request.metadata.get(None), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_19: - step=request.metadata.get("step"), + step=request.metadata.get("XXstepXX"), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_20: - step=request.metadata.get("step"), + step=request.metadata.get("STEP"), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_27: - "parsed": self._parse_stored(request, winner.key, stored), + "parsed": self._parse_stored(request, None, stored), 
+gateway.xǁLLMGatewayǁ_adopt__mutmut_28: - "parsed": self._parse_stored(request, winner.key, stored), + "parsed": self._parse_stored(request, winner.key, None), 

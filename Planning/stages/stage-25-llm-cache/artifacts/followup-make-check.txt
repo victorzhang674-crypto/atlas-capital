@@ -1,0 +1,268 @@
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+403 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 159 source files
+uv run pytest -q -n auto --dist loadfile -m 'not live and not llm and not integration and not timing'
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  1%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [ 11%]
+........................................................................ [ 13%]
+........................................................................ [ 14%]
+........................................................................ [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 57%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 67%]
+........................................................................ [ 68%]
+........................................................................ [ 70%]
+........................................................................ [ 72%]
+........................................................................ [ 73%]
+........................................................................ [ 75%]
+........................................................................ [ 77%]
+........................................................................ [ 78%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 85%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+....................................................................     [100%]nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_register_collection"
+ - leaked function "__new__"
+ - leaked function "_bind"
+ - leaked function "get_profiling_information"
+ - leaked function "disable_profiling"
+ - leaked function "_result_as_arrow"
+ - leaked function "_register_source"
+ - leaked function "register"
+ - leaked function "__repr__"
+ - leaked function "_own_sources"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "remove_function"
+ - leaked function "list_type"
+ - leaked function "_register_values"
+ - leaked function "unregister_filesystem"
+ - leaked function "torch"
+ - leaked function "_prepare_script"
+ - leaked function "create_function"
+ - leaked function ""
+ - leaked function "interrupt"
+ - leaked function "get_table_names"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function ""
+ - leaked function "_register_source"
+ - leaked function "__hash__"
+ - leaked function "begin"
+ - leaked function "remove_function"
+ - leaked function "decimal_type"
+ - leaked function "_bind"
+ - leaked function "df"
+ - leaked function ""
+ - leaked function "register_filesystem"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "execute"
+ - leaked function "_submit"
+ - leaked function "_prepare_script"
+ - leaked function "decimal_type"
+ - leaked function "_catalog_version"
+ - leaked function "list_type"
+ - leaked function "query_progress"
+ - leaked function "abort"
+ - leaked function "_statement_count"
+ - leaked function "close"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "unregister_filesystem"
+ - leaked function "_name_scope"
+ - leaked function "struct_type"
+ - leaked function "_table_kind"
+ - leaked function "query_progress"
+ - leaked function "get_profiling_information"
+ - leaked function "sqltype"
+ - leaked function ""
+ - leaked function "interrupt"
+ - leaked function "complete"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "__eq__"
+ - leaked function "__enter__"
+ - leaked function "df"
+ - leaked function "list_filesystems"
+ - leaked function "appender"
+ - leaked function "df"
+ - leaked function "_register_map"
+ - leaked function "_bind"
+ - leaked function "sqltype"
+ - leaked function "extract_statements"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "torch"
+ - leaked function "_register_source"
+ - leaked function "get_table_names"
+ - leaked function "fetchone"
+ - leaked function "map_type"
+ - leaked function "_check_text"
+ - leaked function "decimal_type"
+ - leaked function "enum_type"
+ - leaked function "_name_scope"
+ - leaked function "interrupt"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "__repr__"
+ - leaked function "commit"
+ - leaked function "dtype"
+ - leaked function ""
+ - leaked function "abort"
+ - leaked function "union_type"
+ - leaked function "load_extension"
+ - leaked function "disable_profiling"
+ - leaked function "fetchdf"
+ - leaked function "__init__"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "fetchnumpy"
+ - leaked function "fetch_df_chunk"
+ - leaked function ""
+ - leaked function "_register_source"
+ - leaked function "__new__"
+ - leaked function ""
+ - leaked function "fetch_df"
+ - leaked function "dtype"
+ - leaked function "row_type"
+ - leaked function "enable_profiling"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.html
+4388 passed in 199.32s (0:03:19)
+uv run pytest -q -m timing
+.
+compute_features: 41 features x 500 symbols x 2000 sessions in 3.00 s (limit 20 s)
+..                                                                      [100%]
+3 passed, 4459 deselected in 20.05s
+
+exit 0

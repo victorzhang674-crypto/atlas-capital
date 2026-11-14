@@ -14,7 +14,7 @@ parameters, and views are created through the relation API.
 """
 
 import threading
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import datetime
 from pathlib import Path
 from types import TracebackType
@@ -382,6 +382,57 @@ class Database:
                 raise
             after = _count(con, LLM_CACHE_TABLE)
         return len(values) if replace else after - before
+
+    def swap_llm_cache(
+        self,
+        row: Mapping[str, object],
+        *,
+        matches: Callable[[dict[str, object] | None], bool],
+    ) -> bool:
+        """Store `row` in `llm_cache` only if `matches(current)` holds for the row stored under
+        its key now (`None` when there is none), in one transaction; return whether it was
+        stored. This is a compare-and-set: a writer that lost a race finds the winner's row,
+        `matches` says no, and nothing is overwritten. `row` maps exactly
+        `LLM_CACHE_COLUMNS`; `ValueError` on a read-only database or bad columns."""
+        if self._read_only:
+            raise ValueError(f"cannot write the LLM cache of read-only database {self._path}")
+        if set(row) != set(LLM_CACHE_COLUMNS):
+            odd = sorted(set(LLM_CACHE_COLUMNS).symmetric_difference(row))
+            raise ValueError(f"llm_cache row has missing or unknown columns: {odd}")
+        with self._lock:
+            con = self._connection()
+            con.execute("BEGIN TRANSACTION")
+            try:
+                found = con.execute("SELECT * FROM llm_cache WHERE key = ?", [row["key"]])
+                names = [d[0] for d in found.description or ()]
+                rows = found.fetchall()
+                current = dict(zip(names, rows[0], strict=True)) if rows else None
+                if not matches(current):
+                    con.execute("ROLLBACK")
+                    return False
+                con.execute("DELETE FROM llm_cache WHERE key = ?", [row["key"]])
+                con.execute(
+                    _PUT_LLM_CACHE.format(action="IGNORE"),
+                    [row[column] for column in LLM_CACHE_COLUMNS],
+                )
+                con.execute("COMMIT")
+            except duckdb.ConstraintException as exc:
+                con.execute("ROLLBACK")
+                raise DataError(f"llm_cache rejected the row for {row['key']}: {exc}") from exc
+            except BaseException:
+                con.execute("ROLLBACK")
+                raise
+        return True
+
+    def delete_llm_cache(self, key: str) -> bool:
+        """Delete the `llm_cache` row of `key`; return whether there was one."""
+        if self._read_only:
+            raise ValueError(f"cannot write the LLM cache of read-only database {self._path}")
+        with self._lock:
+            con = self._connection()
+            before = _count(con, LLM_CACHE_TABLE)
+            con.execute("DELETE FROM llm_cache WHERE key = ?", [key])
+            return _count(con, LLM_CACHE_TABLE) < before
 
     def prune_llm_cache(self, before: datetime) -> int:
         """Delete the `llm_cache` rows created strictly before the tz-aware instant `before`
