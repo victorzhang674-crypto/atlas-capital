@@ -1,0 +1,3 @@
+FAILED tests/unit/llm/test_llm_cache_audit.py::test_different_requests_run_in_parallel
+FAILED tests/unit/llm/test_llm_cache_audit.py::test_key_locks_are_released_after_use
+2 failed, 11 deselected in 2.47s

@@ -1,6 +1,6 @@
 # Stage 25 — post-DONE audit report (2026-11-14)
 
-Owner's words: "please fully audit this stage". Self-audit in the same session, inline (no subagents). Scope: the whole Stage 25 diff (`2eaf072..d1ef62d`, 37 files) read against the brief, the roadmap row, spec §3 principle 3 ("A backtest re-run in replay mode makes zero API calls and gives identical results"), the Stage 24 backlog note and Project.md; then probe tests, fixes, a mutation run over `cache.py` + `gateway.py`, and full re-verification.
+Owner's words: "please fully audit this stage". Followed by a final audit, below. Self-audit in the same session, inline (no subagents). Scope: the whole Stage 25 diff (`2eaf072..d1ef62d`, 37 files) read against the brief, the roadmap row, spec §3 principle 3 ("A backtest re-run in replay mode makes zero API calls and gives identical results"), the Stage 24 backlog note and Project.md; then probe tests, fixes, a mutation run over `cache.py` + `gateway.py`, and full re-verification.
 
 **Outcome:** the acceptance criteria still hold and the stage stays `DONE`. Five defects were found and fixed test-first (A1–A5); one test gap was closed (A6). Every finding had a failing test before its fix ([audit-probes-red.txt](audit-probes-red.txt): 9 failed) and passes after it ([audit-probes-green.txt](audit-probes-green.txt)).
 
@@ -38,3 +38,21 @@ Efficiency (no behaviour change): `LLMCache.stats()` on DuckDB now aggregates in
 - `make check` → exit 0 (ruff clean, 402 files formatted, mypy clean on 159 files, 4359 passed + 3 timing) · [audit-make-check.txt](audit-make-check.txt)
 - `uv run pytest -q` → 4362 passed, 71 deselected, exit 0 · [audit-pytest.txt](audit-pytest.txt)
 - Verify `uv run pytest tests/unit/llm -q` → 281 passed, 2 deselected, exit 0 · [audit-verify-pytest-unit-llm.txt](audit-verify-pytest-unit-llm.txt)
+
+## Final audit (2026-11-14)
+Owner's words: "please have a final audit and explicitly state whether it is completed or not." The final code was re-read against the brief, every acceptance criterion and In-scope item was re-checked, the records were cross-checked (checkbox, status lines, `ALL CRITERIA VERIFIED`, every link in the stage records resolves, the Stage 26 folder holds only `brief.md`), and verification was re-run on the final tree.
+
+| # | Severity | Finding | Fix | Test |
+|---|---|---|---|---|
+| A7 | Low (performance; answers were right) | The A1 fix serialised calls through 64 **striped** locks, so two *different* requests whose keys shared a stripe waited for each other: with 10 parallel agent calls (Stage 28's fan-out) that happens about half the time, silently turning parallel calls into sequential ones. | One lock per key, created on demand and removed when its last caller leaves (`LLMGateway._key_lock`); identical calls still wait for each other. | `test_different_requests_run_in_parallel` (two keys that share a stripe meet at a barrier: failed with `BrokenBarrierError` before the fix), `test_key_locks_are_released_after_use` · red: [final-audit-probe-red.txt](final-audit-probe-red.txt) |
+
+Final-audit evidence (all on the final tree):
+- `make check` → exit 0 (ruff clean, 402 files formatted, mypy clean on 159 files, 4361 passed + 3 timing) · [final-audit-make-check.txt](final-audit-make-check.txt)
+- `uv run pytest -q` → **4364 passed, 71 deselected**, exit 0 · [final-audit-pytest.txt](final-audit-pytest.txt)
+- Verify `uv run pytest tests/unit/llm -q` → **283 passed, 2 deselected**, exit 0 · [final-audit-verify-pytest-unit-llm.txt](final-audit-verify-pytest-unit-llm.txt)
+- Acceptance and audit tests → 16 passed · [final-audit-acceptance.txt](final-audit-acceptance.txt); the audit tests 30/30 stable runs · [final-audit-stability.txt](final-audit-stability.txt)
+- Coverage 100% on `cache.py`, `gateway.py`, `cost.py`, `schemas.py`, `cli/llm_cmd.py` · [final-audit-coverage.txt](final-audit-coverage.txt)
+- Mutation (`cache.py` + `gateway.py`, 960 mutants) → 906 killed; none of the 54 survivors is in the lock code; the Stage 25 survivors are message-text casing and `astimezone(None)` on an aware UTC clock · [final-audit-mutation-summary.txt](final-audit-mutation-summary.txt), [survivors](final-audit-mutation-survivors.txt)
+- CI on the audit push 168b858: `main` run 43607690087 success, branch run 43607690088 success
+
+**Verdict: Stage 25 is COMPLETE (`DONE`).** Every acceptance criterion and In-scope item of the brief is met with evidence; no defect found by either audit remains open; the items left in the Backlog (two recording processes on one lake, base URL not in the key, optional compressed blobs, `prompt_version` in Stage 26) are outside the brief's scope or explicitly optional.

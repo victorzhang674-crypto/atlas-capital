@@ -56,6 +56,12 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Commit **23696eb** `stage-25: post-DONE audit fixes` (staged diff reviewed: 26 files, stage folder, docs, `src/atlas/llm`, `src/atlas/cli/llm_cmd.py`, tests). Fast-forwarded `main` 2c4bbd7 → 23696eb in the owner's Terminal panel; merged result `uv run pytest -q` 4362 passed, `make check` exit 0 ([audit-merged-main-check.txt](artifacts/audit-merged-main-check.txt)). Records commit and push follow.
 - Report: [audit report](artifacts/audit-2026-11-14-report.md)
 
+## 2026-11-14 — Final audit (owner: "please have a final audit and explicitly state whether it is completed or not")
+- Re-read the final code against the brief; re-checked records (checkbox, statuses, links, Stage 26 folder untouched) and CI of 168b858 (both runs success).
+- Found A7: the A1 striped locks serialised unrelated requests sharing a stripe. Probe `test_different_requests_run_in_parallel` failed with `BrokenBarrierError` ([final-audit-probe-red.txt](artifacts/final-audit-probe-red.txt)); replaced by one lock per key (`LLMGateway._key_lock`), `test_key_locks_are_released_after_use`; 30/30 stable runs.
+- Ran: mutation 906 / 960 (no survivor in the lock code); coverage 100%; `make check` exit 0 (4361 + 3); `uv run pytest -q` 4364 passed; Verify 283 passed.
+- Verdict: **COMPLETE**. Report: [final audit](artifacts/audit-2026-11-14-report.md#final-audit-2026-11-14)
+
 ## Code files created or changed
 - Created: `src/atlas/llm/cache.py`, `src/atlas/cli/llm_cmd.py`, `docs/llm-cache.md`, `tests/unit/llm/test_llm_cache_key.py`, `tests/unit/llm/test_llm_cache_store.py`, `tests/unit/llm/test_llm_cache_gateway.py`, `tests/unit/cli/test_llm_cmd.py`, `tests/unit/core/storage/test_storage_llm_cache.py`
 - Audit: created `tests/unit/llm/test_llm_cache_audit.py`; changed `src/atlas/llm/cache.py`, `gateway.py`, `schemas.py`, `src/atlas/cli/llm_cmd.py`, `docs/llm-cache.md`, `tests/unit/llm/test_llm_cache_key.py`, `test_llm_cache_gateway.py`, `tests/unit/cli/test_llm_cmd.py`

@@ -4,7 +4,8 @@ import math
 import re
 import threading
 import time
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence
+from contextlib import contextmanager
 from dataclasses import replace
 from datetime import UTC
 
@@ -47,10 +48,6 @@ REPAIR_RETRIES = 1
 
 MAX_ERROR_CHARS = 2000
 """A validation error is cut to this many characters in the repair message and in errors."""
-
-KEY_LOCK_STRIPES = 64
-"""Number of locks that serialise calls with the same cache key (keys share a stripe by
-their leading hex digits)."""
 
 _log = get_logger(__name__)
 
@@ -123,7 +120,8 @@ class LLMGateway:
             raise ConfigError(f"cache mode {mode!r} needs a cache: pass `cache=LLMCache(...)`")
         self._cache = cache
         self._cache_mode: CacheMode = mode
-        self._key_locks = tuple(threading.Lock() for _ in range(KEY_LOCK_STRIPES))
+        self._key_locks_guard = threading.Lock()
+        self._key_locks: dict[str, tuple[threading.Lock, int]] = {}
         self._recorded: set[str] = set()
         self._provider = provider
         self._llm = config.llm
@@ -229,8 +227,26 @@ class LLMGateway:
             return self._run(request, price)
         provider = self._provider.name
         key = cache_key(request, provider=provider)
-        with self._key_locks[int(key[:8], 16) % KEY_LOCK_STRIPES]:
+        with self._key_lock(key):
             return self._cached_locked(request, price, cache, mode, provider, key)
+
+    @contextmanager
+    def _key_lock(self, key: str) -> Iterator[None]:
+        """Hold the lock of `key` only: identical calls wait for each other, different calls
+        never do. A key's lock exists while some call holds or waits for it."""
+        with self._key_locks_guard:
+            lock, users = self._key_locks.get(key, (threading.Lock(), 0))
+            self._key_locks[key] = (lock, users + 1)
+        try:
+            with lock:
+                yield
+        finally:
+            with self._key_locks_guard:
+                lock, users = self._key_locks[key]
+                if users == 1:
+                    del self._key_locks[key]
+                else:
+                    self._key_locks[key] = (lock, users - 1)
 
     def _cached_locked(
         self,

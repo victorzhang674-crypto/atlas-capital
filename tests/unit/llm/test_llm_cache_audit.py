@@ -170,3 +170,64 @@ def test_every_hit_gets_its_own_ledger_row(tmp_lake: Lake, make_gateway: MakeGat
         records = ledger.records()
     assert len({r.call_id for r in records}) == 3
     assert [r.cache_hit for r in records] == [False, True, True]
+
+
+# A7 (final audit): only identical calls wait for each other; different requests never do.
+
+
+def _two_asks_sharing_a_lock_stripe(make_gateway: MakeGateway) -> tuple[str, str]:
+    """Two prompts whose keys share a stripe of the A1 striped locks (pigeonhole: < 66 tries)."""
+    from atlas.llm.cache import cache_key
+
+    seen: dict[int, str] = {}
+    for i in range(200):
+        text = f"Rate T{i}."
+        fake = FakeLLM({"analyst": "x"})
+        make_gateway(fake).complete([Message.user(text)], metadata=META)
+        stripe = int(cache_key(fake.calls[0], provider="fake")[:8], 16) % 64
+        if stripe in seen:
+            return seen[stripe], text
+        seen[stripe] = text
+    raise AssertionError("unreachable: 200 keys over 64 stripes")
+
+
+class MeetingFake:
+    """Answers only after `parties` calls are in flight at once (fails if they are serialised)."""
+
+    name = "fake"
+
+    def __init__(self, parties: int) -> None:
+        self.barrier = threading.Barrier(parties, timeout=2.0)
+        self.calls = 0
+
+    def complete(self, request: ProviderRequest) -> ProviderResponse:
+        self.calls += 1
+        self.barrier.wait()  # BrokenBarrierError if the other call cannot run meanwhile
+        return ProviderResponse(content="ok", usage=Usage(input_tokens=1), model=request.model)
+
+
+def test_different_requests_run_in_parallel(make_gateway: MakeGateway) -> None:
+    first, second = _two_asks_sharing_a_lock_stripe(make_gateway)
+    provider = MeetingFake(parties=2)
+    gateway = make_gateway(provider, cache=LLMCache(), cache_mode="read_write")
+    errors: list[BaseException] = []
+
+    def ask(text: str) -> None:
+        try:
+            gateway.complete([Message.user(text)], metadata=META)
+        except BaseException as exc:  # reported by the assertion below
+            errors.append(exc)
+
+    threads = [threading.Thread(target=ask, args=(t,)) for t in (first, second)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert errors == [] and provider.calls == 2
+
+
+def test_key_locks_are_released_after_use(make_gateway: MakeGateway) -> None:
+    gateway = make_gateway(FakeLLM({"analyst": "buy"}), cache=LLMCache(), cache_mode="read_write")
+    for i in range(5):
+        gateway.complete([Message.user(f"ask {i}")], metadata=META)
+    assert gateway._key_locks == {}  # no lock kept per key once its calls are done

@@ -37,7 +37,7 @@ whose prompts or data moved fails with `CacheMiss` instead of quietly calling a 
 
 ## Replays give the recorded results
 
-Calls with the same key are serialised inside one gateway, so two threads that miss the same
+Calls with the same key are serialised inside one gateway (one lock per key: different requests never wait for each other), so two threads that miss the same
 key make one provider call and both get the stored answer; in `record` mode a gateway re-records
 each key once and replays it afterwards. A run therefore sees exactly the answers a later
 replay of it will see, even when the model is not deterministic (spec §3, principle 3). Two

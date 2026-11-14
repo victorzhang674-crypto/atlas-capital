@@ -37,6 +37,15 @@ Owner: "please fully audit this stage". Five defects fixed test-first (A1 replay
 - Verify `uv run pytest tests/unit/llm -q` → **281 passed, 2 deselected**, exit 0 · [audit-verify-pytest-unit-llm.txt](artifacts/audit-verify-pytest-unit-llm.txt)
 - Coverage 100% on every touched module; mutation `cache.py` + `gateway.py` 910 / 967 killed, survivors reviewed · [audit-coverage.txt](artifacts/audit-coverage.txt), [audit-mutation-summary.txt](artifacts/audit-mutation-summary.txt)
 - Audit merge into `main`: fast-forward 2c4bbd7 → **23696eb** (2026-11-14, owner's Terminal panel); trees equal; merged result `uv run pytest -q` → 4362 passed, 71 deselected, exit 0 · `make check` → exit 0 (4359 + 3 passed) · `git branch --merged main` lists the stage branch · raw: [audit-merged-main-check.txt](artifacts/audit-merged-main-check.txt)
+- CI on the audit push 168b858: `main` run 43607690087 success, branch run 43607690088 success
 - Acceptance criteria re-checked: both still hold (`test_the_same_scripted_agent_twice_in_read_write_makes_one_provider_call`, `test_replay_only_with_a_miss_fails_loudly_and_never_calls`)
+
+#### Final audit — 2026-11-14
+Owner: "please have a final audit and explicitly state whether it is completed or not". One more defect fixed test-first (A7: the A1 striped locks made unrelated requests wait for each other; now one lock per key) — [final audit](artifacts/audit-2026-11-14-report.md#final-audit-2026-11-14).
+- `make check` → exit 0 (4361 passed + 3 timing) · [final-audit-make-check.txt](artifacts/final-audit-make-check.txt)
+- `uv run pytest -q` → **4364 passed, 71 deselected**, exit 0 · [final-audit-pytest.txt](artifacts/final-audit-pytest.txt)
+- Verify `uv run pytest tests/unit/llm -q` → **283 passed, 2 deselected**, exit 0 · [final-audit-verify-pytest-unit-llm.txt](artifacts/final-audit-verify-pytest-unit-llm.txt)
+- Acceptance criteria re-checked on the final tree: both hold · [final-audit-acceptance.txt](artifacts/final-audit-acceptance.txt)
+- Verdict: **COMPLETE** — every acceptance criterion and In-scope item verified; no open defect
 
 **Result:** ALL CRITERIA VERIFIED
