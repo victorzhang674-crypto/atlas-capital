@@ -32,5 +32,6 @@ Output of commands run in this stage's chat (Project.md Rule 1). Raw output is u
 - Audit (self-review, recorded in [worklog.md](worklog.md#2026-11-14--audit-self-review-against-the-brief-spec-and-projectmd-no-reviewer-subagent)): A1 fixed test-first (`agent_run_id` collided under seeded ids on a re-run) — `test_agents_audit.py::test_a1_seeded_re_runs_do_not_collide_in_agent_runs`
 - Deviations from the brief: evidence ids for fundamentals use the period end (`fund:AAA:2023-12-31:revenue_ttm`) rather than a quarter label; extra files `prompting.py` and `DataView.fundamentals_detail`; `docs/agents.md`
 - Waivers: none
+- Merge into `main`: fast-forward 8ca85e0 → **60a2eda** (2026-11-14, run in the owner's Terminal panel: the sandbox cannot write the main checkout); trees equal (3de646e). Merged result: `uv run pytest -q` → 4530 passed, 71 deselected, exit 0 · `make check` → exit 0 (ruff clean, 429 files formatted, mypy clean, 4527 passed + 3 timing passed) · `git branch --merged main` lists the stage branch · raw: [merged-main-check.txt](artifacts/merged-main-check.txt), script [merged-main-check.sh](artifacts/merged-main-check.sh). Not pushed (waiting for the owner's go-ahead).
 
 **Result:** ALL CRITERIA VERIFIED
