@@ -36,6 +36,7 @@ Owner: "please fully audit this stage". Five defects fixed test-first (A1 replay
 - `uv run pytest -q` → **4362 passed, 71 deselected**, exit 0 · [audit-pytest.txt](artifacts/audit-pytest.txt)
 - Verify `uv run pytest tests/unit/llm -q` → **281 passed, 2 deselected**, exit 0 · [audit-verify-pytest-unit-llm.txt](artifacts/audit-verify-pytest-unit-llm.txt)
 - Coverage 100% on every touched module; mutation `cache.py` + `gateway.py` 910 / 967 killed, survivors reviewed · [audit-coverage.txt](artifacts/audit-coverage.txt), [audit-mutation-summary.txt](artifacts/audit-mutation-summary.txt)
+- Audit merge into `main`: fast-forward 2c4bbd7 → **23696eb** (2026-11-14, owner's Terminal panel); trees equal; merged result `uv run pytest -q` → 4362 passed, 71 deselected, exit 0 · `make check` → exit 0 (4359 + 3 passed) · `git branch --merged main` lists the stage branch · raw: [audit-merged-main-check.txt](artifacts/audit-merged-main-check.txt)
 - Acceptance criteria re-checked: both still hold (`test_the_same_scripted_agent_twice_in_read_write_makes_one_provider_call`, `test_replay_only_with_a_miss_fails_loudly_and_never_calls`)
 
 **Result:** ALL CRITERIA VERIFIED

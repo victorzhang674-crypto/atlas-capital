@@ -53,6 +53,7 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Fixed: A1 per-key locks + `record` re-records a key once per gateway (spec beats the brief's literal "always call", Rule 3); A2 `max_tokens` in the key (`KEY_VERSION` 2, digests re-pinned); A3 `float(temperature)`; A4 CLI catches `duckdb.Error`; A5 `attempts == 0` iff `cache_hit`. `LLMCache.stats()` aggregates in SQL on DuckDB. Two of my own Stage 25 tests were wrong and were changed with reasons: `test_labels_and_caps_do_not_change_the_key` (the cap) and `test_record_always_calls_and_replaces_the_stored_answer` (record semantics).
 - Mutation `cache.py` + `gateway.py`: 865 / 967 → added A6 tests (hit / miss log lines, CacheMiss message, unique hit `call_id`s) → **910 / 967**; remaining Stage 25 survivors equivalent.
 - Ran: `make check` → exit 0 (4359 + 3 passed); `uv run pytest -q` → 4362 passed, 71 deselected; Verify → 281 passed; concurrency test 30/30 stable; secret scan clean. Docs updated (`docs/llm-cache.md`: key, record mode, replay fidelity).
+- Commit **23696eb** `stage-25: post-DONE audit fixes` (staged diff reviewed: 26 files, stage folder, docs, `src/atlas/llm`, `src/atlas/cli/llm_cmd.py`, tests). Fast-forwarded `main` 2c4bbd7 → 23696eb in the owner's Terminal panel; merged result `uv run pytest -q` 4362 passed, `make check` exit 0 ([audit-merged-main-check.txt](artifacts/audit-merged-main-check.txt)). Records commit and push follow.
 - Report: [audit report](artifacts/audit-2026-11-14-report.md)
 
 ## Code files created or changed
