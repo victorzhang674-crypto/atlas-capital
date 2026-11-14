@@ -919,12 +919,30 @@ class LLMBudgets(_Frozen):
     estimate_chars_per_token: Annotated[float, Field(gt=0)] = 3.0
 
 
+LLMCacheMode = Literal["off", "read_write", "replay_only", "record"]
+
+
+class LLMCacheConfig(_Frozen):
+    """The LLM record/replay cache (Stage 25). `mode`: `off` (no lookup, nothing stored),
+    `read_write` (a hit is replayed, a miss is called and stored), `replay_only` (a miss
+    raises `CacheMiss`; no provider call ever) or `record` (always call, store and replace)."""
+
+    mode: LLMCacheMode = "read_write"
+
+    @field_validator("mode", mode="before")
+    @classmethod
+    def _yaml_off_is_false(cls, value: object) -> object:
+        # YAML 1.1 reads an unquoted `off` as the boolean False.
+        return "off" if value is False else value
+
+
 class LLMConfig(_Frozen):
     """LLM gateway values (Stage 24).
 
     `provider` picks the client: `openai_compatible` posts to `base_url` (DeepSeek by default,
     spec A2) with the models in `tiers`; `anthropic` uses the official SDK with
-    `anthropic_tiers`. `request_timeout_seconds` bounds one HTTP call. `prices` maps a model
+    `anthropic_tiers`. `cache` configures the record/replay cache. `request_timeout_seconds`
+    bounds one HTTP call. `prices` maps a model
     id to its price; every tier model of both providers must have one.
     """
 
@@ -936,6 +954,7 @@ class LLMConfig(_Frozen):
     request_timeout_seconds: Annotated[float, Field(gt=0)] = 120.0
     retry: LLMRetry = Field(default_factory=LLMRetry)
     budgets: LLMBudgets = Field(default_factory=LLMBudgets)
+    cache: LLMCacheConfig = Field(default_factory=LLMCacheConfig)
     prices: _PriceMap = Field(default_factory=_default_prices)
 
     @model_validator(mode="after")

@@ -2,8 +2,9 @@
 
 Every Atlas error subclasses `AtlasError`. The kinds are deliberately siblings, not a deeper
 tree: a handler that tolerates one kind (say bad vendor data) must never swallow another (say
-a look-ahead bug). A kind may have refinements of itself (`BudgetExceeded` and
-`LLMTransientError` are `LLMError`s), so a caller that fails safe on the kind covers them.
+a look-ahead bug). A kind may have refinements of itself (`BudgetExceeded`,
+`CacheMiss` and `LLMTransientError` are `LLMError`s), so a caller that fails safe on the
+kind covers them.
 """
 
 
@@ -47,6 +48,15 @@ class LLMTransientError(LLMError):
     def __init__(self, message: str, *, retry_after: float | None = None) -> None:
         super().__init__(message)
         self.retry_after = retry_after
+
+
+class CacheMiss(LLMError):
+    """A replay-only LLM call found no recorded answer and was refused: replay mode never
+    calls a provider. `key` is the cache key that was looked up (see `atlas.llm.cache`)."""
+
+    def __init__(self, message: str, *, key: str) -> None:
+        super().__init__(message)
+        self.key = key
 
 
 class BacktestError(AtlasError):

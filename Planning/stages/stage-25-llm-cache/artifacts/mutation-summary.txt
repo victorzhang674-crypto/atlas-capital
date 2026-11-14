@@ -1,0 +1,9 @@
+# mutmut 3.8.1 over src/atlas/llm/cache.py, tests tests/unit/llm (scratch copy; PYTHONPATH=<copy>/mutants/src)
+## run 1 (before the audit tests)
+ 211 🫥 0  ⏰ 0  🤔 0  🙁 34  🔇 0  🧙 0
+34.74 mutations/second
+
+## run 2 (after the audit tests)
+ 224 🫥 0  ⏰ 0  🤔 0  🙁 21  🔇 0  🧙 0
+34.92 mutations/second
+

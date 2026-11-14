@@ -15,6 +15,7 @@ parameters, and views are created through the relation API.
 
 import threading
 from collections.abc import Mapping, Sequence
+from datetime import datetime
 from pathlib import Path
 from types import TracebackType
 from typing import Self
@@ -103,6 +104,36 @@ _INSERT_LLM_USAGE = (
     f"VALUES ({', '.join('?' for _ in LLM_USAGE_COLUMNS)})"
 )
 
+LLM_CACHE_TABLE = "llm_cache"
+
+LLM_CACHE_COLUMNS = (
+    "key",
+    "created_at",
+    "provider",
+    "model",
+    "request_json",
+    "response_json",
+    "usage",
+)
+"""Columns of `llm_cache`, in table order (see `Database.put_llm_cache`)."""
+
+_LLM_CACHE_DDL = """
+CREATE TABLE IF NOT EXISTS llm_cache (
+    key           VARCHAR PRIMARY KEY,
+    created_at    TIMESTAMPTZ NOT NULL,
+    provider      VARCHAR NOT NULL,
+    model         VARCHAR NOT NULL,
+    request_json  VARCHAR NOT NULL,
+    response_json VARCHAR NOT NULL,
+    usage         VARCHAR NOT NULL
+)
+"""
+
+_PUT_LLM_CACHE = (
+    "INSERT OR {action} INTO llm_cache "
+    f"({', '.join(LLM_CACHE_COLUMNS)}) VALUES ({', '.join('?' for _ in LLM_CACHE_COLUMNS)})"
+)
+
 _Params = Sequence[object] | Mapping[str, object] | None
 
 _log = get_logger(__name__)
@@ -119,7 +150,8 @@ class Database:
 
     def __init__(self, lake: Lake, *, read_only: bool = False) -> None:
         """Open (creating if needed, unless `read_only`) the lake's database file and create
-        `audit_events` and `llm_usage` if missing. `read_only` needs an existing file."""
+        `audit_events`, `llm_usage` and `llm_cache` if missing. `read_only` needs an existing
+        file."""
         self._lake = lake
         self._path = lake.root / DB_FILENAME
         self._read_only = read_only
@@ -133,6 +165,7 @@ class Database:
             if not read_only:
                 self._con.execute(_AUDIT_DDL)
                 self._con.execute(_LLM_USAGE_DDL)
+                self._con.execute(_LLM_CACHE_DDL)
             self._confine_to_lake()
             self.refresh()
         except BaseException:
@@ -312,6 +345,57 @@ class Database:
                 raise
         return len(values)
 
+    def put_llm_cache(self, rows: Sequence[Mapping[str, object]], *, replace: bool) -> int:
+        """Store rows in `llm_cache` (one per recorded LLM answer) and return how many were
+        written.
+
+        Each row maps exactly `LLM_CACHE_COLUMNS` to values: `key` (the request's SHA-256),
+        `created_at` (tz-aware UTC instant), `provider`, `model`, `request_json`,
+        `response_json` and `usage` (JSON text). A row whose `key` is already stored replaces
+        the old one when `replace`, else is skipped (the first writer wins). The batch is one
+        transaction; a null in a column raises `DataError` and stores nothing. Raises
+        `ValueError` for a row with missing or unknown columns and on a read-only database.
+        """
+        if self._read_only:
+            raise ValueError(f"cannot write the LLM cache of read-only database {self._path}")
+        expected = set(LLM_CACHE_COLUMNS)
+        for row in rows:
+            if set(row) != expected:
+                odd = sorted(expected.symmetric_difference(row))
+                raise ValueError(f"llm_cache row has missing or unknown columns: {odd}")
+        values = [[row[column] for column in LLM_CACHE_COLUMNS] for row in rows]
+        if not values:
+            return 0
+        statement = _PUT_LLM_CACHE.format(action="REPLACE" if replace else "IGNORE")
+        with self._lock:
+            con = self._connection()
+            before = _count(con, LLM_CACHE_TABLE)
+            con.execute("BEGIN TRANSACTION")
+            try:
+                con.executemany(statement, values)
+                con.execute("COMMIT")
+            except duckdb.ConstraintException as exc:
+                con.execute("ROLLBACK")
+                raise DataError(f"llm_cache rejected {len(values)} row(s): {exc}") from exc
+            except BaseException:
+                con.execute("ROLLBACK")
+                raise
+            after = _count(con, LLM_CACHE_TABLE)
+        return len(values) if replace else after - before
+
+    def prune_llm_cache(self, before: datetime) -> int:
+        """Delete the `llm_cache` rows created strictly before the tz-aware instant `before`
+        and return how many were deleted."""
+        if before.tzinfo is None or before.utcoffset() is None:
+            raise ValueError(f"naive datetime {before!r}; pass a timezone-aware datetime")
+        if self._read_only:
+            raise ValueError(f"cannot prune the LLM cache of read-only database {self._path}")
+        with self._lock:
+            con = self._connection()
+            n_before = _count(con, LLM_CACHE_TABLE)
+            con.execute("DELETE FROM llm_cache WHERE created_at < ?", [before])
+            return n_before - _count(con, LLM_CACHE_TABLE)
+
     def close(self) -> None:
         """Close the connection (idempotent) and forget it as the process-wide instance."""
         with self._lock:
@@ -333,6 +417,11 @@ class Database:
         tb: TracebackType | None,
     ) -> None:
         self.close()
+
+
+def _count(con: duckdb.DuckDBPyConnection, table: str) -> int:
+    rows = con.execute(f"SELECT count(*) FROM {table}").fetchall()
+    return int(rows[0][0])
 
 
 _OPEN: dict[Path, Database] = {}

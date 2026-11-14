@@ -130,9 +130,10 @@ class LLMResult(AtlasModel):
 
     `content` is the model's text; `parsed` the validated instance of the requested schema
     (else `None`); `usage` and `cost_usd` (USD) sum every billed provider response of the
-    call (`attempts` of them: 2 after a repair retry); `latency_ms` is wall time of the whole
-    call in milliseconds, waits between retries included; `cache_hit` is set by the
-    record/replay cache (Stage 25) and always `False` here.
+    call (`attempts` of them: 2 after a repair retry, 0 for a cache hit); `latency_ms` is wall
+    time of the whole call in milliseconds, waits between retries included; `cache_hit` is
+    `True` when the record/replay cache (Stage 25) answered: no provider was called, `usage`
+    is empty and `cost_usd` is 0.
     """
 
     content: str
@@ -144,7 +145,7 @@ class LLMResult(AtlasModel):
     cache_hit: bool = False
     tool_calls: tuple[ToolCall, ...] = ()
     finish_reason: str = "stop"
-    attempts: Annotated[int, Field(ge=1)] = 1
+    attempts: Annotated[int, Field(ge=0)] = 1
 
 
 @dataclass(frozen=True)

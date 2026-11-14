@@ -5,3 +5,6 @@ llm:
   # Spend caps.
   budgets:
     daily_usd: 5.0  # live/paper daily LLM budget in USD (spec A8)
+  # Paper trading reads live data: an answer recorded earlier must never stand in for a new call.
+  cache:
+    mode: off  # no lookup, nothing stored

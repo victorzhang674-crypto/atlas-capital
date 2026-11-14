@@ -443,6 +443,9 @@ llm:
     per_run_usd: 25.0  # USD per run_id (one backtest run); provisional, revisit in Stage 56
     per_agent_call_max_tokens: 8000  # output token cap of one call (reasoning tokens included)
     estimate_chars_per_token: 3.0  # prompt characters per token in the pre-call cost estimate (lower = more cautious)
+  # Record/replay cache (Stage 25): identical requests return the stored answer at cost 0.
+  cache:
+    mode: read_write  # off | read_write (hit: replay, miss: call and store) | replay_only (a miss raises CacheMiss) | record (always call and store)
   # USD per 1M tokens, checked 2026-11-09 (api-docs.deepseek.com/quick_start/pricing; Claude: platform.claude.com pricing).
   # input = uncached prompt, cached_input = prompt read from the provider cache, cache_write = prompt written to it
   # (null = charged as input), output = generated tokens incl. reasoning. windows = rates during those UTC hours.

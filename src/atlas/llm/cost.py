@@ -141,6 +141,21 @@ class CostLedger:
         )
         return float(frame["usd"].iloc[0])
 
+    def cache_counts(self) -> tuple[int, int]:
+        """`(hits, paid)`: the calls the record/replay cache answered, and the first provider
+        responses of calls it did not (repair retries are not counted again). Hit rate is
+        `hits / (hits + paid)`."""
+        if self._database is not None:
+            frame = self._database.query(
+                "SELECT coalesce(sum(CASE WHEN cache_hit THEN 1 ELSE 0 END), 0) AS hits, "
+                "coalesce(sum(CASE WHEN NOT cache_hit AND attempt = 1 THEN 1 ELSE 0 END), 0) "
+                "AS paid FROM llm_usage"
+            )
+            return int(frame["hits"].iloc[0]), int(frame["paid"].iloc[0])
+        records = self.records()
+        hits = sum(r.cache_hit for r in records)
+        return hits, sum(not r.cache_hit and r.attempt == 1 for r in records)
+
     def spent_on(self, day: date) -> float:
         """USD spent on the UTC calendar day `day`."""
         if self._database is not None:

@@ -1,0 +1,102 @@
+-        "messages": [m.model_dump(mode="json") for m in request.messages],
++        "messages": [m.model_dump(mode=None) for m in request.messages],
+== atlas.llm.cache.x_key_payload__mutmut_10
+-        "messages": [m.model_dump(mode="json") for m in request.messages],
++        "messages": [m.model_dump(mode="XXjsonXX") for m in request.messages],
+== atlas.llm.cache.x_key_payload__mutmut_11
+-        "messages": [m.model_dump(mode="json") for m in request.messages],
++        "messages": [m.model_dump(mode="JSON") for m in request.messages],
+== atlas.llm.cache.x_key_payload__mutmut_12
+-        "tools": [t.model_dump(mode="json") for t in request.tools],
++        "tools": [t.model_dump(mode=None) for t in request.tools],
+== atlas.llm.cache.x_key_payload__mutmut_27
+-        "tools": [t.model_dump(mode="json") for t in request.tools],
++        "tools": [t.model_dump(mode="XXjsonXX") for t in request.tools],
+== atlas.llm.cache.x_key_payload__mutmut_28
+-        "tools": [t.model_dump(mode="json") for t in request.tools],
++        "tools": [t.model_dump(mode="JSON") for t in request.tools],
+== atlas.llm.cache.x_key_payload__mutmut_29
+-        "prompt_version": request.metadata.get(PROMPT_VERSION_LABEL, ""),
++        "prompt_version": request.metadata.get(PROMPT_VERSION_LABEL, None),
+== atlas.llm.cache.x_key_payload__mutmut_35
+-        "prompt_version": request.metadata.get(PROMPT_VERSION_LABEL, ""),
++        "prompt_version": request.metadata.get(PROMPT_VERSION_LABEL, ),
+== atlas.llm.cache.x_key_payload__mutmut_37
+-        "prompt_version": request.metadata.get(PROMPT_VERSION_LABEL, ""),
++        "prompt_version": request.metadata.get(PROMPT_VERSION_LABEL, "XXXX"),
+== atlas.llm.cache.x_key_payload__mutmut_38
+-    return canonical_json(key_payload(request, provider=provider))
++    return canonical_json(None)
+== atlas.llm.cache.x_request_json__mutmut_1
+-    return canonical_json(key_payload(request, provider=provider))
++    return canonical_json(key_payload(request, provider=None))
+== atlas.llm.cache.x_request_json__mutmut_3
+-    answer = result.model_dump(mode="json", include={"content", "tool_calls", "finish_reason"})
++    answer = result.model_dump(mode=None, include={"content", "tool_calls", "finish_reason"})
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_2
+-    answer = result.model_dump(mode="json", include={"content", "tool_calls", "finish_reason"})
++    answer = result.model_dump(mode="json", include=None)
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_3
+-    answer = result.model_dump(mode="json", include={"content", "tool_calls", "finish_reason"})
++    answer = result.model_dump(include={"content", "tool_calls", "finish_reason"})
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_4
+-    answer = result.model_dump(mode="json", include={"content", "tool_calls", "finish_reason"})
++    answer = result.model_dump(mode="json", )
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_5
+-    answer = result.model_dump(mode="json", include={"content", "tool_calls", "finish_reason"})
++    answer = result.model_dump(mode="XXjsonXX", include={"content", "tool_calls", "finish_reason"})
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_6
+-    answer = result.model_dump(mode="json", include={"content", "tool_calls", "finish_reason"})
++    answer = result.model_dump(mode="JSON", include={"content", "tool_calls", "finish_reason"})
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_7
+-    meter = result.model_dump(mode="json", include={"usage", "cost_usd", "attempts"})
++    meter = result.model_dump(mode=None, include={"usage", "cost_usd", "attempts"})
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_15
+-    meter = result.model_dump(mode="json", include={"usage", "cost_usd", "attempts"})
++    meter = result.model_dump(mode="json", include=None)
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_16
+-    meter = result.model_dump(mode="json", include={"usage", "cost_usd", "attempts"})
++    meter = result.model_dump(include={"usage", "cost_usd", "attempts"})
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_17
+-    meter = result.model_dump(mode="json", include={"usage", "cost_usd", "attempts"})
++    meter = result.model_dump(mode="json", )
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_18
+-    meter = result.model_dump(mode="json", include={"usage", "cost_usd", "attempts"})
++    meter = result.model_dump(mode="XXjsonXX", include={"usage", "cost_usd", "attempts"})
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_19
+-    meter = result.model_dump(mode="json", include={"usage", "cost_usd", "attempts"})
++    meter = result.model_dump(mode="JSON", include={"usage", "cost_usd", "attempts"})
+== atlas.llm.cache.xǁCacheEntryǁcreate__mutmut_20
+-    frame = self._database.query("SELECT * FROM llm_cache WHERE key = ?", [key])
++    frame = self._database.query("select * from llm_cache where key = ?", [key])
+== atlas.llm.cache.xǁLLMCacheǁget__mutmut_9
+-    frame = self._database.query("SELECT * FROM llm_cache WHERE key = ?", [key])
++    frame = self._database.query("SELECT * FROM LLM_CACHE WHERE KEY = ?", [key])
+== atlas.llm.cache.xǁLLMCacheǁget__mutmut_10
+-    frame = self._database.query("SELECT * FROM llm_cache ORDER BY created_at, key")
++    frame = self._database.query("select * from llm_cache order by created_at, key")
+== atlas.llm.cache.xǁLLMCacheǁentries__mutmut_13
+-    frame = self._database.query("SELECT * FROM llm_cache ORDER BY created_at, key")
++    frame = self._database.query("SELECT * FROM LLM_CACHE ORDER BY CREATED_AT, KEY")
+== atlas.llm.cache.xǁLLMCacheǁentries__mutmut_14
+-    return tuple(_entry_from_row(r) for r in frame.to_dict(orient="records"))
++    return tuple(_entry_from_row(r) for r in frame.to_dict(orient="RECORDS"))
+== atlas.llm.cache.xǁLLMCacheǁentries__mutmut_19
+-    if before.tzinfo is None or before.utcoffset() is None:
++    if before.tzinfo is None and before.utcoffset() is None:
+== atlas.llm.cache.xǁLLMCacheǁprune__mutmut_3
+-        created_at=created.to_pydatetime() if hasattr(created, "to_pydatetime") else created,
++        created_at=created.to_pydatetime() if (hasattr(created, "to_pydatetime")) and False else created,
+== atlas.llm.cache.x__entry_from_row__mutmut_21
+-        created_at=created.to_pydatetime() if hasattr(created, "to_pydatetime") else created,
++        created_at=created.to_pydatetime() if (hasattr(created, "to_pydatetime")) or True else created,
+== atlas.llm.cache.x__entry_from_row__mutmut_22
+-        created_at=created.to_pydatetime() if hasattr(created, "to_pydatetime") else created,
++        created_at=created.to_pydatetime() if hasattr(None, "to_pydatetime") else created,
+== atlas.llm.cache.x__entry_from_row__mutmut_23
+-        created_at=created.to_pydatetime() if hasattr(created, "to_pydatetime") else created,
++        created_at=created.to_pydatetime() if hasattr(created, "XXto_pydatetimeXX") else created,
+== atlas.llm.cache.x__entry_from_row__mutmut_27
+-        created_at=created.to_pydatetime() if hasattr(created, "to_pydatetime") else created,
++        created_at=created.to_pydatetime() if hasattr(created, "TO_PYDATETIME") else created,
+== atlas.llm.cache.x__entry_from_row__mutmut_28

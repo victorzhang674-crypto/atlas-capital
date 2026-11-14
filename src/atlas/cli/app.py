@@ -1,6 +1,6 @@
 """The `atlas` command (Typer). Stage 14 adds the `data` group, Stage 17 `research`, Stage 21
-`regime`, the Phase 2 checkpoint `factors` (Stage 16) and `risk-model` (Stage 19); later stages
-add theirs."""
+`regime`, the Phase 2 checkpoint `factors` (Stage 16) and `risk-model` (Stage 19), Stage 25 `llm`;
+later stages add theirs."""
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,6 +10,7 @@ import typer
 
 from atlas.cli.data_cmd import data_app
 from atlas.cli.factors_cmd import factors_app
+from atlas.cli.llm_cmd import llm_app
 from atlas.cli.regime_cmd import regime_app
 from atlas.cli.research_cmd import research_app
 from atlas.cli.risk_model_cmd import risk_model_app
@@ -26,6 +27,7 @@ app.add_typer(research_app, name="research")
 app.add_typer(regime_app, name="regime")
 app.add_typer(factors_app, name="factors")
 app.add_typer(risk_model_app, name="risk-model")
+app.add_typer(llm_app, name="llm")
 
 
 @dataclass(frozen=True)

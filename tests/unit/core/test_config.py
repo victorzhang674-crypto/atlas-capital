@@ -1627,3 +1627,30 @@ def test_deepseek_key_from_env_and_dotenv(tmp_path: Path, monkeypatch: pytest.Mo
     assert _secret(load_config(config_dir=d).secrets.deepseek_api_key) == "from-file"
     monkeypatch.setenv("DEEPSEEK_API_KEY", "from-env")
     assert _secret(load_config(config_dir=d).secrets.deepseek_api_key) == "from-env"
+
+
+def test_llm_cache_mode_defaults_to_read_write_and_is_off_when_paper_trading(
+    repo_root: Path, tmp_path: Path
+) -> None:  # Stage 25
+    d = _repo_config_copy(repo_root, tmp_path)
+    assert load_config("dev", config_dir=d).llm.cache.mode == "read_write"
+    assert load_config("backtest", config_dir=d).llm.cache.mode == "read_write"
+    assert load_config("paper", config_dir=d).llm.cache.mode == "off"
+    assert AtlasConfig().llm.cache.mode == "read_write"
+
+
+def test_llm_cache_mode_is_validated() -> None:
+    for mode in ("off", "read_write", "replay_only", "record"):
+        assert AtlasConfig.model_validate({"llm": {"cache": {"mode": mode}}}).llm.cache.mode == mode
+    with pytest.raises(ValidationError):
+        AtlasConfig.model_validate({"llm": {"cache": {"mode": "replay"}}})
+    with pytest.raises(ValidationError):
+        AtlasConfig.model_validate({"llm": {"cache": {"mode": "off", "typo": 1}}})
+
+
+def test_llm_cache_mode_accepts_an_unquoted_yaml_off(tmp_path: Path) -> None:
+    # YAML 1.1 turns a bare `off` into False; the config must still mean "off".
+    d = write_config(tmp_path, {"fund.yaml": "llm:\n  cache:\n    mode: off\n"})
+    assert load_config("dev", config_dir=d).llm.cache.mode == "off"
+    with pytest.raises(ValidationError):  # `on` (True) is not a mode
+        AtlasConfig.model_validate({"llm": {"cache": {"mode": True}}})

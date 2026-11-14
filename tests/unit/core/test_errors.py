@@ -8,6 +8,7 @@ from atlas.core.errors import (
     AtlasError,
     BacktestError,
     BudgetExceeded,
+    CacheMiss,
     ComplianceError,
     ConfigError,
     DataError,
@@ -65,3 +66,12 @@ def test_llm_refinements_are_llm_errors() -> None:  # Stage 24 D2
     assert not issubclass(LLMTransientError, BudgetExceeded)
     for cls in (BudgetExceeded, LLMTransientError):
         assert cls.__doc__ and cls.__doc__.strip()
+
+
+def test_cache_miss_is_an_llm_error_with_its_key() -> None:  # Stage 25 D3
+    miss = CacheMiss("no recorded answer", key="abc123")
+    assert isinstance(miss, LLMError)  # callers that fail safe on LLMError hold on a replay miss
+    assert miss.key == "abc123"
+    assert str(miss) == "no recorded answer"
+    assert not issubclass(CacheMiss, (BudgetExceeded, LLMTransientError))
+    assert CacheMiss.__doc__ and CacheMiss.__doc__.strip()
