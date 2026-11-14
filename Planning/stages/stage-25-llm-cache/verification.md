@@ -26,5 +26,6 @@ Output of commands run in this stage's chat (Project.md Rule 1). Raw output is u
   - [x] CLI `atlas llm cache stats|export|prune --older-than` — `tests/unit/cli/test_llm_cmd.py` (20 tests)
   - [x] Docs note: replay valid only while prompts and data are unchanged — [docs/llm-cache.md](../../../docs/llm-cache.md) § "Replay is only valid while prompts and data are unchanged"
 - Waivers: none
+- Merge into `main`: fast-forward 2eaf072 → **d1ef62d** (2026-11-14, run in the owner's Terminal panel: the sandbox cannot write the main checkout); trees equal. Merged result: `uv run pytest -q` → 4348 passed, 71 deselected, exit 0 · `make check` → exit 0 (ruff clean, 401 files formatted, mypy clean, 4345 passed + 3 timing passed) · `git branch --merged main` lists the stage branch · raw: [merged-main-check.txt](artifacts/merged-main-check.txt), script [merged-main-check.sh](artifacts/merged-main-check.sh). Not pushed yet (waits for the owner's go-ahead)
 
 **Result:** ALL CRITERIA VERIFIED
