@@ -107,4 +107,4 @@ Findings (report: [artifacts/audit-report.md](artifacts/audit-report.md)): A1 a 
 - [x] Self-review of the stage diff against the brief, spec §3/§10 and Project.md: PIT holes, untested branches, error paths, docs; mutation run on `src/atlas/agents/memory` (mutmut overlay); findings fixed test-first and recorded in `artifacts/audit-report.md`
 
 ### Task 12 — Git (Rule 6A)
-- [ ] Review the staged diff; commit `stage-27: memory system`; fast-forward `main`; merged-`main` `uv run pytest -q` and `make check`; push on the owner's go-ahead; record hashes
+- [x] Review the staged diff; commit `stage-27: memory system`; fast-forward `main`; merged-`main` `uv run pytest -q` and `make check`; push on the owner's go-ahead (pending); record hashes

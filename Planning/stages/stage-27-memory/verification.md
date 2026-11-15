@@ -16,5 +16,6 @@ Every command below was run by the AI in this stage's chat (2026-11-15), after t
   - [x] **Retrieval returns relevant items on a synthetic corpus** — evidence: `test_recall_returns_relevant_items_first` (5 topics on the 11-episode corpus in `memory_world.py`, deterministic `HashEmbedder`, in the Verify run) and the live `test_minilm_recalls_relevant_memories_from_paraphrases` (real model, paraphrased queries: best on-topic 0.47–0.56 vs best off-topic 0.17–0.30)
   - [x] Brief tasks: 1 store CRUD with DuckDB — `test_memory_store.py` (DuckDB and in-memory), `test_storage_memory_tables.py`; 2 embedder interface + fake deterministic embedder — `test_memory_embedder.py`; 3 PIT retrieval tests — above; 4 dedupe + caps — `test_memory_curation.py`
 - Waivers: none
+- Merge into `main`: fast-forward 59b5e0b → **9c01904** (2026-11-15, run in the owner's Terminal panel: the sandbox cannot write the main checkout); trees equal (cc74f86). Merged result: `uv run pytest -q` → 4730 passed, 74 deselected, exit 0 · `make check` → exit 0 (ruff clean, 450 files formatted, mypy clean, 4727 passed + 3 timing passed) · `git branch --merged main` lists the stage branch · raw: [merged-main-check.txt](artifacts/merged-main-check.txt), script [merged-main-check.sh](artifacts/merged-main-check.sh). Not pushed yet (waits for the owner's go-ahead).
 
 **Result:** ALL CRITERIA VERIFIED
