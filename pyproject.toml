@@ -12,6 +12,7 @@ requires-python = ">=3.12,<3.13"
 # reproducible HMM fits; jinja2 from Stage 26 for the versioned agent prompt templates).
 dependencies = [
     "arch>=8.0",
+    "chromadb>=1.5",
     "duckdb>=2.0",
     "exchange-calendars>=4.5",
     "hmmlearn>=0.3",
@@ -136,6 +137,6 @@ strict_equality = true
 [[tool.mypy.overrides]]
 module = [
     "exchange_calendars", "hmmlearn.*", "pyarrow", "pyarrow.*", "statsmodels.*", "threadpoolctl",
-    "yfinance",
+    "yfinance", "onnxruntime",
 ]
 ignore_missing_imports = true

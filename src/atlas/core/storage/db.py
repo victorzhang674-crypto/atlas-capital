@@ -1,8 +1,9 @@
 """DuckDB over the lake: session-only views of the curated tables and read-only queries.
 
 The database file is `<lake root>/atlas.duckdb`. It stores only native tables (the
-append-only `audit_events` mirror, `llm_usage` (one row per billed LLM response), `llm_cache`
-and `agent_runs` (one row per agent run, Stage 26)). Curated
+append-only `audit_events` mirror, `llm_usage` (one row per billed LLM response), `llm_cache`,
+`agent_runs` (one row per agent run, Stage 26) and the agent memory tables `episodes` and
+`lessons` (Stage 27)). Curated
 Parquet tables are exposed as views registered on this connection alone, never stored in the
 file, so moving the lake or opening the file read-only (the dashboard) never meets stale
 paths. The connection runs with `TimeZone = 'UTC'` and can touch no file outside the lake
@@ -201,6 +202,74 @@ _INSERT_AGENT_RUNS = (
     f"VALUES ({', '.join('?' for _ in AGENT_RUNS_COLUMNS)})"
 )
 
+EPISODES_TABLE = "episodes"
+
+EPISODES_COLUMNS = (
+    "id",
+    "agent",
+    "symbol",
+    "created_at",
+    "situation_text",
+    "decision_json",
+    "outcome_json",
+    "settled_at",
+    "run_id",
+)
+"""Columns of `episodes` (agent memory, Stage 27), in table order."""
+
+_EPISODES_DDL = """
+CREATE TABLE IF NOT EXISTS episodes (
+    id             VARCHAR PRIMARY KEY,
+    agent          VARCHAR NOT NULL,
+    symbol         VARCHAR,
+    created_at     TIMESTAMPTZ NOT NULL,
+    situation_text VARCHAR NOT NULL,
+    decision_json  VARCHAR NOT NULL,
+    outcome_json   VARCHAR,
+    settled_at     TIMESTAMPTZ,
+    run_id         VARCHAR
+)
+"""
+
+_INSERT_EPISODES = (
+    f"INSERT INTO episodes ({', '.join(EPISODES_COLUMNS)}) "
+    f"VALUES ({', '.join('?' for _ in EPISODES_COLUMNS)})"
+)
+
+LESSONS_TABLE = "lessons"
+
+LESSONS_COLUMNS = (
+    "id",
+    "agent",
+    "created_at",
+    "text",
+    "tags",
+    "source_episode_ids",
+    "quality_score",
+    "superseded_by",
+    "superseded_at",
+)
+"""Columns of `lessons` (agent memory, Stage 27), in table order."""
+
+_LESSONS_DDL = """
+CREATE TABLE IF NOT EXISTS lessons (
+    id                 VARCHAR PRIMARY KEY,
+    agent              VARCHAR NOT NULL,
+    created_at         TIMESTAMPTZ NOT NULL,
+    text               VARCHAR NOT NULL,
+    tags               VARCHAR NOT NULL,
+    source_episode_ids VARCHAR NOT NULL,
+    quality_score      DOUBLE,
+    superseded_by      VARCHAR,
+    superseded_at      TIMESTAMPTZ
+)
+"""
+
+_INSERT_LESSONS = (
+    f"INSERT INTO lessons ({', '.join(LESSONS_COLUMNS)}) "
+    f"VALUES ({', '.join('?' for _ in LESSONS_COLUMNS)})"
+)
+
 _Params = Sequence[object] | Mapping[str, object] | None
 
 _log = get_logger(__name__)
@@ -217,8 +286,8 @@ class Database:
 
     def __init__(self, lake: Lake, *, read_only: bool = False) -> None:
         """Open (creating if needed, unless `read_only`) the lake's database file and create
-        `audit_events`, `llm_usage`, `llm_cache` and `agent_runs` if missing. `read_only`
-        needs an existing file."""
+        `audit_events`, `llm_usage`, `llm_cache`, `agent_runs`, `episodes` and `lessons` if
+        missing. `read_only` needs an existing file."""
         self._lake = lake
         self._path = lake.root / DB_FILENAME
         self._read_only = read_only
@@ -234,6 +303,8 @@ class Database:
                 self._con.execute(_LLM_USAGE_DDL)
                 self._con.execute(_LLM_CACHE_DDL)
                 self._con.execute(_AGENT_RUNS_DDL)
+                self._con.execute(_EPISODES_DDL)
+                self._con.execute(_LESSONS_DDL)
             self._confine_to_lake()
             self.refresh()
         except BaseException:
@@ -401,6 +472,95 @@ class Database:
         """
         return self._append("agent_runs", AGENT_RUNS_COLUMNS, _INSERT_AGENT_RUNS, rows)
 
+    def insert_episodes(self, rows: Sequence[Mapping[str, object]]) -> int:
+        """Append rows to `episodes` (agent memory, Stage 27) and return how many.
+
+        Each row maps exactly `EPISODES_COLUMNS` to values (see `atlas.agents.memory.store`).
+        The batch is one transaction: a duplicate `id` or a null in a required column raises
+        `DataError` and stores nothing. Raises `ValueError` for a row with missing or unknown
+        columns and on a read-only database.
+        """
+        return self._append("episodes", EPISODES_COLUMNS, _INSERT_EPISODES, rows)
+
+    def settle_episode(self, episode_id: str, outcome_json: str, settled_at: datetime) -> None:
+        """Set the outcome of episode `episode_id`, known from the tz-aware `settled_at`.
+
+        An episode settles once: `DataError` if it is unknown or already settled (the stored
+        outcome is never rewritten). `ValueError` on a read-only database.
+        """
+        self._writable("episodes")
+        with self._lock:
+            con = self._connection()
+            con.execute("BEGIN TRANSACTION")
+            try:
+                found = con.execute(
+                    "SELECT settled_at FROM episodes WHERE id = ?", [episode_id]
+                ).fetchall()
+                if not found:
+                    raise DataError(f"no episode {episode_id!r} to settle")
+                if found[0][0] is not None:
+                    raise DataError(f"episode {episode_id!r} is already settled")
+                con.execute(
+                    "UPDATE episodes SET outcome_json = ?, settled_at = ? WHERE id = ?",
+                    [outcome_json, settled_at, episode_id],
+                )
+                con.execute("COMMIT")
+            except BaseException:
+                con.execute("ROLLBACK")
+                raise
+
+    def insert_lesson(self, row: Mapping[str, object], *, supersedes: str | None = None) -> None:
+        """Insert one `lessons` row (agent memory, Stage 27); if `supersedes` names a stored
+        lesson, mark it superseded by the new one at the new one's `created_at`, in the same
+        transaction.
+
+        The row maps exactly `LESSONS_COLUMNS` to values. `DataError` (and nothing stored) for
+        a duplicate `id`, a null in a required column, or a `supersedes` lesson that is unknown
+        or already superseded. `ValueError` for missing or unknown columns and on a read-only
+        database.
+        """
+        self._writable("lessons")
+        self._check_columns("lessons", LESSONS_COLUMNS, [row])
+        with self._lock:
+            con = self._connection()
+            con.execute("BEGIN TRANSACTION")
+            try:
+                if supersedes is not None:
+                    found = con.execute(
+                        "SELECT superseded_by FROM lessons WHERE id = ?", [supersedes]
+                    ).fetchall()
+                    if not found:
+                        raise DataError(f"no lesson {supersedes!r} to supersede")
+                    if found[0][0] is not None:
+                        raise DataError(f"lesson {supersedes!r} is already superseded")
+                try:
+                    con.execute(_INSERT_LESSONS, [row[column] for column in LESSONS_COLUMNS])
+                except duckdb.ConstraintException as exc:
+                    raise DataError(f"lessons rejected the row for {row['id']}: {exc}") from exc
+                if supersedes is not None:
+                    con.execute(
+                        "UPDATE lessons SET superseded_by = ?, superseded_at = ? WHERE id = ?",
+                        [row["id"], row["created_at"], supersedes],
+                    )
+                con.execute("COMMIT")
+            except BaseException:
+                con.execute("ROLLBACK")
+                raise
+
+    def _writable(self, table: str) -> None:
+        if self._read_only:
+            raise ValueError(f"cannot write to {table} of read-only database {self._path}")
+
+    @staticmethod
+    def _check_columns(
+        table: str, columns: tuple[str, ...], rows: Sequence[Mapping[str, object]]
+    ) -> None:
+        expected = set(columns)
+        for row in rows:
+            if set(row) != expected:
+                odd = sorted(expected.symmetric_difference(row))
+                raise ValueError(f"{table} row has missing or unknown columns: {odd}")
+
     def _append(
         self,
         table: str,
@@ -411,11 +571,7 @@ class Database:
         """Append `rows` (each mapping exactly `columns`) to `table` in one transaction."""
         if self._read_only:
             raise ValueError(f"cannot insert into {table} of read-only database {self._path}")
-        expected = set(columns)
-        for row in rows:
-            if set(row) != expected:
-                odd = sorted(expected.symmetric_difference(row))
-                raise ValueError(f"{table} row has missing or unknown columns: {odd}")
+        self._check_columns(table, columns, rows)
         values = [[row[column] for column in columns] for row in rows]
         if not values:
             return 0

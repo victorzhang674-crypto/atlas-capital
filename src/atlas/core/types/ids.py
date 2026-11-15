@@ -39,6 +39,7 @@ class IdPrefix(StrEnum):
     PREDICTION = "pred"
     LESSON = "les"
     LEDGER = "led"
+    EPISODE = "epi"
 
 
 class IdSource(Protocol):
@@ -153,3 +154,5 @@ LessonId = Annotated[str, Field(pattern=id_pattern(IdPrefix.LESSON))]
 """Id of a `Lesson` (`les_…`)."""
 LedgerId = Annotated[str, Field(pattern=id_pattern(IdPrefix.LEDGER))]
 """Id of a `LedgerEntry` (`led_…`)."""
+EpisodeId = Annotated[str, Field(pattern=id_pattern(IdPrefix.EPISODE))]
+"""Id of an agent memory episode (`epi_…`, Stage 27)."""

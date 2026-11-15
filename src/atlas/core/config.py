@@ -992,6 +992,62 @@ class CostConfig(_Frozen):
     borrow_gc_annual: _NonNeg = 0.003
 
 
+class LessonCurationConfig(_Frozen):
+    """How stored lessons are curated (Stage 27); all of it is point-in-time.
+
+    `dedupe_cosine`: a new lesson whose cosine similarity to a lesson of the same scope (the
+    agent, or `global`) is strictly above this is a near-duplicate: it is stored only if its
+    quality beats the old lesson's effective quality, and then supersedes it.
+    `max_per_agent`: at recall, each scope keeps only this many lessons, the best by
+    effective quality at `as_of`.
+    `half_life_days`: a lesson's effective quality halves every this many days of age (age
+    from its `created_at` to the decision cutoff).
+    `min_quality`: lessons whose effective quality is below this are not recalled.
+    `default_quality`: the quality of a lesson stored without a `quality_score`.
+    """
+
+    dedupe_cosine: Annotated[float, Field(gt=0, le=1)] = 0.92
+    max_per_agent: Annotated[int, Field(ge=1)] = 50
+    half_life_days: Annotated[float, Field(gt=0)] = 180.0
+    min_quality: Annotated[float, Field(ge=0, le=1)] = 0.05
+    default_quality: Annotated[float, Field(ge=0, le=1)] = 0.5
+
+
+class MemoryRenderConfig(_Frozen):
+    """How memories are shown in prompts (Stage 27): `max_chars` cuts each rendered line."""
+
+    max_chars: Annotated[int, Field(ge=40)] = 240
+
+
+class MemoryConfig(_Frozen):
+    """Agent memory: episodes and lessons, recalled by similarity, point-in-time (Stage 27).
+
+    `index_dir`: the ChromaDB index folder, a path inside the lake.
+    `model_dir`: where the local embedding model is downloaded once (`~` is expanded).
+    `embedder`: `minilm` (all-MiniLM-L6-v2 in ONNX, 384-d) or `hash` (deterministic hashed
+    bag of words; tests and offline use).
+    `default_k`: memories recalled when no `k` is given.
+    `min_similarity`: memories whose cosine similarity to the query is below this are not
+    recalled.
+    """
+
+    index_dir: str = "memory/chroma"
+    model_dir: Path = Path("~/.cache/atlas/models")
+    embedder: Literal["minilm", "hash"] = "minilm"
+    default_k: Annotated[int, Field(ge=1)] = 5
+    min_similarity: Annotated[float, Field(ge=-1, lt=1)] = 0.3
+    lessons: LessonCurationConfig = Field(default_factory=LessonCurationConfig)
+    render: MemoryRenderConfig = Field(default_factory=MemoryRenderConfig)
+
+    @field_validator("index_dir")
+    @classmethod
+    def _index_inside_lake(cls, value: str) -> str:
+        path = PurePosixPath(value)
+        if not value or path.is_absolute() or ".." in path.parts:
+            raise ValueError(f"index_dir must be a path inside the lake, got {value!r}")
+        return value
+
+
 class AgentsConfig(_Frozen):
     """The agent framework (Stage 26).
 
@@ -1001,11 +1057,13 @@ class AgentsConfig(_Frozen):
     unknown evidence ids or claims that cite nothing.
     `low_quality_confidence_cap`: the highest `confidence` (in [0, 1]) an output keeps when
     its citations are still invalid after the repairs (it is then marked `low_quality`).
+    `memory`: agent memory (Stage 27).
     """
 
     max_tool_rounds: Annotated[int, Field(ge=1)] = 4
     evidence_repair_retries: Annotated[int, Field(ge=0)] = 1
     low_quality_confidence_cap: Annotated[float, Field(ge=0, le=1)] = 0.3
+    memory: MemoryConfig = Field(default_factory=MemoryConfig)
 
 
 class BacktestConfig(_Frozen):
@@ -1916,7 +1974,9 @@ def _deep_merge(*layers: Mapping[str, Any]) -> dict[str, Any]:
 
 _ENV_PREFIX = "ATLAS__"
 # Top-level keys that YAML, env vars and overrides may set.
-_SECTIONS = frozenset({"fund", "limits", "pods", "data", "quant", "llm", "backtest", "calendar"})
+_SECTIONS = frozenset(
+    {"fund", "limits", "pods", "data", "quant", "llm", "agents", "backtest", "calendar"}
+)
 _RESERVED = {
     "secrets": "'secrets' may only come from environment variables or .env",
     "profile": "'profile' may only come from load_config(profile=...)",

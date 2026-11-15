@@ -78,6 +78,8 @@ def test_static_schema_may_omit_available_at() -> None:
         {"name": "llm_usage"},  # reserved for the native LLM usage table (Stage 24)
         {"name": "llm_cache"},  # reserved for the native LLM cache table (Stage 25)
         {"name": "agent_runs"},  # reserved for the native agent trace table (Stage 26)
+        {"name": "episodes"},  # reserved for the native agent memory tables (Stage 27)
+        {"name": "lessons"},  # reserved for the native agent memory tables (Stage 27)
         {"version": 0},
     ],
 )

@@ -11,6 +11,7 @@ from ulid import ULID
 from atlas.core.clock import SimClock
 from atlas.core.types.base import AtlasModel
 from atlas.core.types.ids import (
+    EpisodeId,
     IdPrefix,
     RandomIds,
     SeededIds,
@@ -52,6 +53,7 @@ def test_id_prefix_values() -> None:
         "PREDICTION": "pred",
         "LESSON": "les",
         "LEDGER": "led",
+        "EPISODE": "epi",  # Stage 27: agent memory episodes
     }
 
 
@@ -131,3 +133,14 @@ def test_new_thread_mints_random_ids() -> None:
         thread.start()
         thread.join()
     assert isinstance(seen[0], RandomIds)
+
+
+class _HasEpisodeId(AtlasModel):
+    id: EpisodeId
+
+
+def test_episode_id_pattern() -> None:  # Stage 27
+    good = new_id(IdPrefix.EPISODE)
+    assert good.startswith("epi_") and _HasEpisodeId(id=good).id == good
+    with pytest.raises(ValidationError):
+        _HasEpisodeId(id=new_id(IdPrefix.LESSON))

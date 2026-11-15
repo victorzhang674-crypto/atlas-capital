@@ -1,0 +1,11 @@
+Name                                   Stmts   Miss  Cover   Missing
+--------------------------------------------------------------------
+src/atlas/agents/memory/__init__.py        6      0   100%
+src/atlas/agents/memory/embedder.py       93      0   100%
+src/atlas/agents/memory/index.py         134      0   100%
+src/atlas/agents/memory/render.py         36      0   100%
+src/atlas/agents/memory/retrieval.py     250      0   100%
+src/atlas/agents/memory/store.py         192      0   100%
+--------------------------------------------------------------------
+TOTAL                                    711      0   100%
+167 passed, 1 deselected in 5.64s

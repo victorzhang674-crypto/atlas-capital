@@ -1,0 +1,13 @@
+2026-11-15 07:30:08.874 Python[59279:159116172] 2026-11-15 07:30:08.874278 [W:onnxruntime:Default, telemetry_1ds.cc:613 operator()] Failed to persist telemetry device ID; using an in-memory identifier
+'a company topped profit forecasts and lifted its outlook' -> [(0.486, 'earnings'), (0.463, 'earnings'), (0.43, 'earnings'), (0.355, 'earnings'), (0.256, 'deal'), (0.256, 'rates'), (0.25, 'rates'), (0.249, 'supply'), (0.179, 'legal'), (0.078, 'supply')]
+  best on-topic 0.486, best off-topic 0.256, floor 0.3
+'the Fed tightened monetary policy again' -> [(0.554, 'rates'), (0.447, 'rates'), (0.301, 'earnings'), (0.242, 'earnings'), (0.214, 'earnings'), (0.192, 'supply'), (0.143, 'earnings'), (0.125, 'legal'), (0.093, 'supply'), (0.057, 'deal')]
+  best on-topic 0.554, best off-topic 0.301, floor 0.3
+'logistics bottlenecks held up deliveries of parts' -> [(0.472, 'supply'), (0.403, 'supply'), (0.171, 'deal'), (0.135, 'earnings'), (0.099, 'earnings'), (0.095, 'rates'), (0.082, 'rates'), (0.079, 'earnings'), (0.057, 'legal'), (0.036, 'earnings')]
+  best on-topic 0.472, best off-topic 0.171, floor 0.3
+'competition authorities sued the firm' -> [(0.557, 'legal'), (0.278, 'deal'), (0.216, 'earnings'), (0.2, 'earnings'), (0.193, 'supply'), (0.179, 'earnings'), (0.174, 'supply'), (0.17, 'earnings'), (0.027, 'rates'), (0.022, 'rates')]
+  best on-topic 0.557, best off-topic 0.278, floor 0.3
+'takeover bid at a premium to the share price' -> [(0.557, 'deal'), (0.267, 'earnings'), (0.267, 'legal'), (0.256, 'earnings'), (0.227, 'earnings'), (0.225, 'earnings'), (0.146, 'rates'), (0.13, 'rates'), (0.107, 'supply'), (0.09, 'supply')]
+  best on-topic 0.557, best off-topic 0.267, floor 0.3
+.
+1 passed in 1.01s

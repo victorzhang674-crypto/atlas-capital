@@ -1,0 +1,110 @@
+store.MemoryStore.all_episodes__mutmut_8 | -    frame = self._database.query("SELECT * FROM episodes ORDER BY created_at, id") => +    frame = self._database.query("SELECT * FROM EPISODES ORDER BY CREATED_AT, ID")
+store.MemoryStore.all_lessons__mutmut_7 | -    frame = self._database.query("SELECT * FROM lessons ORDER BY created_at, id") => +    frame = self._database.query("select * from lessons order by created_at, id")
+store.MemoryStore.all_episodes__mutmut_7 | -    frame = self._database.query("SELECT * FROM episodes ORDER BY created_at, id") => +    frame = self._database.query("select * from episodes order by created_at, id")
+store.x__records__mutmut_8 | -        frame.astype(object).where(frame.notna(), None).to_dict(orient="records") => +        frame.astype(object).where(frame.notna(), None).to_dict(orient="RECORDS")
+render.x_render_memory__mutmut_18 | -        if memory.outcome is not None and memory.settled_at is not None: => +        if memory.outcome is not None or memory.settled_at is not None:
+retrieval.AgentMemory._reindex__mutmut_39 | -        self._index.add(kind, [make(r, v) for r, v in zip(chunk, vectors, strict=True)]) => +        self._index.add(kind, [make(r, v) for r, v in zip(chunk, vectors, )])
+store.MemoryStore.all_lessons__mutmut_8 | -    frame = self._database.query("SELECT * FROM lessons ORDER BY created_at, id") => +    frame = self._database.query("SELECT * FROM LESSONS ORDER BY CREATED_AT, ID")
+retrieval.AgentMemory._reindex__mutmut_36 | -        self._index.add(kind, [make(r, v) for r, v in zip(chunk, vectors, strict=True)]) => +        self._index.add(kind, [make(r, v) for r, v in zip(chunk, vectors, strict=None)])
+retrieval.AgentMemory._reindex__mutmut_40 | -        self._index.add(kind, [make(r, v) for r, v in zip(chunk, vectors, strict=True)]) => +        self._index.add(kind, [make(r, v) for r, v in zip(chunk, vectors, strict=False)])
+embedder.MiniLMEmbedder.embed__mutmut_19 | -    return normalise(np.stack([np.asarray(r, dtype=np.float32) for r in rows]), self.DIM) => +    return normalise(np.stack([np.asarray(r, ) for r in rows]), self.DIM)
+embedder.MiniLMEmbedder.embed__mutmut_17 | -    return normalise(np.stack([np.asarray(r, dtype=np.float32) for r in rows]), self.DIM) => +    return normalise(np.stack([np.asarray(r, dtype=None) for r in rows]), self.DIM)
+store.x_json_object__mutmut_3 | -        raise ValueError(f"expected a JSON object (a mapping), got {type(value).__name__}") => +        raise ValueError(f"expected a JSON object (a mapping), got {type(None).__name__}")
+store.MemoryStore.settle_episode__mutmut_5 | -    _require_aware("settled_at", settled_at) => +    _require_aware("XXsettled_atXX", settled_at)
+store.MemoryStore.settle_episode__mutmut_1 | -    _require_aware("settled_at", settled_at) => +    _require_aware(None, settled_at)
+store.MemoryStore.episodes__mutmut_13 | -        "SELECT * FROM episodes WHERE list_contains($ids, id)", {"ids": wanted} => +        "select * from episodes where list_contains($ids, id)", {"ids": wanted}
+store.MemoryStore.settle_episode__mutmut_6 | -    _require_aware("settled_at", settled_at) => +    _require_aware("SETTLED_AT", settled_at)
+store.MemoryStore.episodes__mutmut_16 | -        "SELECT * FROM episodes WHERE list_contains($ids, id)", {"ids": wanted} => +        "SELECT * FROM episodes WHERE list_contains($ids, id)", {"IDS": wanted}
+store.MemoryStore.episode_ids__mutmut_6 | -    return set(self._database.query("SELECT id FROM episodes")["id"]) => +    return set(self._database.query("select id from episodes")["id"])
+store.MemoryStore.episodes__mutmut_14 | -        "SELECT * FROM episodes WHERE list_contains($ids, id)", {"ids": wanted} => +        "SELECT * FROM EPISODES WHERE LIST_CONTAINS($IDS, ID)", {"ids": wanted}
+store.MemoryStore.episode_ids__mutmut_7 | -    return set(self._database.query("SELECT id FROM episodes")["id"]) => +    return set(self._database.query("SELECT ID FROM EPISODES")["id"])
+store.MemoryStore.lesson__mutmut_9 | -    frame = self._database.query("SELECT * FROM lessons WHERE id = ?", [lesson_id]) => +    frame = self._database.query("select * from lessons where id = ?", [lesson_id])
+store.MemoryStore.add_lesson__mutmut_11 | -                        "supersede only one created before it" => +                        "XXsupersede only one created before itXX"
+store.MemoryStore.lesson__mutmut_10 | -    frame = self._database.query("SELECT * FROM lessons WHERE id = ?", [lesson_id]) => +    frame = self._database.query("SELECT * FROM LESSONS WHERE ID = ?", [lesson_id])
+store.MemoryStore.lessons__mutmut_19 | -        "SELECT * FROM lessons WHERE list_contains($scopes, agent) ORDER BY created_at, id", => +        "select * from lessons where list_contains($scopes, agent) order by created_at, id",
+store.MemoryStore.lesson_ids__mutmut_6 | -    return set(self._database.query("SELECT id FROM lessons")["id"]) => +    return set(self._database.query("select id from lessons")["id"])
+store.MemoryStore.lessons__mutmut_22 | -        {"scopes": wanted}, => +        {"SCOPES": wanted},
+store.MemoryStore.lesson_ids__mutmut_7 | -    return set(self._database.query("SELECT id FROM lessons")["id"]) => +    return set(self._database.query("SELECT ID FROM LESSONS")["id"])
+store.MemoryStore.lessons__mutmut_20 | -        "SELECT * FROM lessons WHERE list_contains($scopes, agent) ORDER BY created_at, id", => +        "SELECT * FROM LESSONS WHERE LIST_CONTAINS($SCOPES, AGENT) ORDER BY CREATED_AT, ID",
+index.VectorInde__init____mutmut_29 | -        self._prefix = f"atlas-{str(ULID()).lower()}" => +        self._prefix = f"atlas-{str(ULID()).upper()}"
+index.VectorInde_open__mutmut_29 | -                f"(dim {meta.get('dim')}), not {self._embedder_name!r} (dim {self._dim}); " => +                f"(dim {meta.get('DIM')}), not {self._embedder_name!r} (dim {self._dim}); "
+index.VectorInde_open__mutmut_7 | -        collection = self._client.get_collection(name, embedding_function=None) => +        collection = self._client.get_collection(name, )
+index.VectorInde_open__mutmut_27 | -                f"(dim {meta.get('dim')}), not {self._embedder_name!r} (dim {self._dim}); " => +                f"(dim {meta.get(None)}), not {self._embedder_name!r} (dim {self._dim}); "
+index.VectorInde_open__mutmut_28 | -                f"(dim {meta.get('dim')}), not {self._embedder_name!r} (dim {self._dim}); " => +                f"(dim {meta.get('XXdimXX')}), not {self._embedder_name!r} (dim {self._dim}); "
+index.VectorInde_open__mutmut_30 | -                "open it with rebuild=True to re-embed every record" => +                "XXopen it with rebuild=True to re-embed every recordXX"
+index.VectorInde_open__mutmut_36 | -        _log.info("memory.index.rebuild", collection=name, embedder=self._embedder_name) => +        _log.info(None, collection=name, embedder=self._embedder_name)
+index.VectorInde_open__mutmut_31 | -                "open it with rebuild=True to re-embed every record" => +                "open it with rebuild=true to re-embed every record"
+index.VectorInde_open__mutmut_38 | -        _log.info("memory.index.rebuild", collection=name, embedder=self._embedder_name) => +        _log.info("memory.index.rebuild", collection=name, embedder=None)
+index.VectorInde_open__mutmut_39 | -        _log.info("memory.index.rebuild", collection=name, embedder=self._embedder_name) => +        _log.info(collection=name, embedder=self._embedder_name)
+index.VectorInde_open__mutmut_37 | -        _log.info("memory.index.rebuild", collection=name, embedder=self._embedder_name) => +        _log.info("memory.index.rebuild", collection=None, embedder=self._embedder_name)
+index.VectorInde_open__mutmut_40 | -        _log.info("memory.index.rebuild", collection=name, embedder=self._embedder_name) => +        _log.info("memory.index.rebuild", embedder=self._embedder_name)
+index.VectorInde_open__mutmut_41 | -        _log.info("memory.index.rebuild", collection=name, embedder=self._embedder_name) => +        _log.info("memory.index.rebuild", collection=name, )
+index.VectorInde_open__mutmut_43 | -        _log.info("memory.index.rebuild", collection=name, embedder=self._embedder_name) => +        _log.info("MEMORY.INDEX.REBUILD", collection=name, embedder=self._embedder_name)
+index.VectorInde_open__mutmut_50 | -        name, metadata=self._metadata(), embedding_function=None => -    ) => +        name, metadata=self._metadata(), )
+index.VectorInde_open__mutmut_42 | -        _log.info("memory.index.rebuild", collection=name, embedder=self._embedder_name) => +        _log.info("XXmemory.index.rebuildXX", collection=name, embedder=self._embedder_name)
+index.VectorInde_vector__mutmut_3 | -    array = np.asarray(vector, dtype=np.float32) => +    array = np.asarray(vector, dtype=None)
+index.VectorIndeadd__mutmut_10 | -        raise ValueError("cannot index a zero vector") => +        raise ValueError("XXcannot index a zero vectorXX")
+index.VectorInde_collection__mutmut_3 | -        raise ValueError("the memory index is closed") => +        raise ValueError("XXthe memory index is closedXX")
+index.VectorInde_vector__mutmut_5 | -    array = np.asarray(vector, dtype=np.float32) => +    array = np.asarray(vector, )
+index.VectorIndequery__mutmut_6 | -        raise ValueError(f"n must be positive, got {n}") => +        raise ValueError(None)
+index.VectorIndeadd__mutmut_23 | -            {"agent": e.agent, "symbol": e.symbol or "", "created_us": micros(e.created_at)} => +            {"agent": e.agent, "symbol": e.symbol or "XXXX", "created_us": micros(e.created_at)}
+index.VectorIndequery__mutmut_40 | -    include = ["distances", "embeddings"] if with_vectors else ["distances"] => +    include = ["distances", "embeddings"] if (with_vectors) or True else ["distances"]
+index.VectorIndequery__mutmut_91 | -            similarity=float(np.clip(1.0 - d, -1.0, 1.0)), => +            similarity=float(np.clip(1.0 - d, None, 1.0)),
+index.VectorIndequery__mutmut_54 | -        n_results=min(n, size),
+index.VectorIndequery__mutmut_92 | -            similarity=float(np.clip(1.0 - d, -1.0, 1.0)), => +            similarity=float(np.clip(1.0 - d, -1.0, None)),
+index.VectorIndequery__mutmut_100 | -            similarity=float(np.clip(1.0 - d, -1.0, 1.0)), => +            similarity=float(np.clip(1.0 - d, -1.0, 2.0)),
+index.VectorIndequery__mutmut_99 | -            similarity=float(np.clip(1.0 - d, -1.0, 1.0)), => +            similarity=float(np.clip(1.0 - d, -2.0, 1.0)),
+index.VectorIndequery__mutmut_115 | -        for i, d, e in zip(found_ids, distances, embeddings, strict=True) => +        for i, d, e in zip(found_ids, distances, embeddings, )
+index.VectorIndequery__mutmut_111 | -        for i, d, e in zip(found_ids, distances, embeddings, strict=True) => +        for i, d, e in zip(found_ids, distances, embeddings, strict=None)
+index.VectorIndequery__mutmut_107 | -            vector=None if e is None else np.asarray(e, dtype=np.float32), => +            vector=None if e is None else np.asarray(e, ),
+index.VectorIndequery__mutmut_105 | -            vector=None if e is None else np.asarray(e, dtype=np.float32), => +            vector=None if e is None else np.asarray(e, dtype=None),
+retrieval.AgentMemory.add_lesson__mutmut_43 | -                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=similarity) => +                _log.info(None, lesson=old.id, similarity=similarity)
+index.VectorIndequery__mutmut_116 | -        for i, d, e in zip(found_ids, distances, embeddings, strict=True) => +        for i, d, e in zip(found_ids, distances, embeddings, strict=False)
+retrieval.AgentMemory.add_lesson__mutmut_45 | -                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=similarity) => +                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=None)
+retrieval.AgentMemory.add_lesson__mutmut_44 | -                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=similarity) => +                _log.info("memory.lesson.duplicate", lesson=None, similarity=similarity)
+retrieval.AgentMemory.add_lesson__mutmut_47 | -                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=similarity) => +                _log.info("memory.lesson.duplicate", similarity=similarity)
+retrieval.AgentMemory.add_lesson__mutmut_48 | -                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=similarity) => +                _log.info("memory.lesson.duplicate", lesson=old.id, )
+retrieval.AgentMemory.add_lesson__mutmut_49 | -                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=similarity) => +                _log.info("XXmemory.lesson.duplicateXX", lesson=old.id, similarity=similarity)
+retrieval.AgentMemory.add_lesson__mutmut_46 | -                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=similarity) => +                _log.info(lesson=old.id, similarity=similarity)
+retrieval.AgentMemory._point__mutmut_2 | -        raise TypeError("pass a trading day (date) or an AsOf, not a datetime") => +        raise TypeError("XXpass a trading day (date) or an AsOf, not a datetimeXX")
+retrieval.AgentMemory._near_duplicate__mutmut_22 | -        n=1, => +        n=2,
+retrieval.AgentMemory._point__mutmut_3 | -        raise TypeError("pass a trading day (date) or an AsOf, not a datetime") => +        raise TypeError("pass a trading day (date) or an asof, not a datetime")
+retrieval.AgentMemory.add_lesson__mutmut_50 | -                _log.info("memory.lesson.duplicate", lesson=old.id, similarity=similarity) => +                _log.info("MEMORY.LESSON.DUPLICATE", lesson=old.id, similarity=similarity)
+retrieval.AgentMemory.recall__mutmut_29 | -            found += self._recall_episodes(agent, vector, point, size, symbol) => +            found = self._recall_episodes(agent, vector, point, size, symbol)
+retrieval.AgentMemory.recall__mutmut_5 | -        raise ValueError("query_text is blank") => +        raise ValueError("XXquery_text is blankXX")
+retrieval.AgentMemory.recall__mutmut_49 | -            found += self._recall_lessons(agent, vector, point, size) => +            found += self._recall_lessons(agent, vector, point, None)
+retrieval.AgentMemory._recall_episodes__mutmut_22 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning(None, kind="episodes", id=hit.id)
+retrieval.AgentMemory._recall_episodes__mutmut_24 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning("memory.index.orphan", kind="episodes", id=None)
+retrieval.AgentMemory._recall_episodes__mutmut_23 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning("memory.index.orphan", kind=None, id=hit.id)
+retrieval.AgentMemory._recall_episodes__mutmut_25 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning(kind="episodes", id=hit.id)
+retrieval.AgentMemory._recall_episodes__mutmut_26 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning("memory.index.orphan", id=hit.id)
+retrieval.AgentMemory._recall_episodes__mutmut_28 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning("XXmemory.index.orphanXX", kind="episodes", id=hit.id)
+retrieval.AgentMemory._recall_episodes__mutmut_27 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning("memory.index.orphan", kind="episodes", )
+retrieval.AgentMemory._recall_episodes__mutmut_29 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning("MEMORY.INDEX.ORPHAN", kind="episodes", id=hit.id)
+retrieval.AgentMemory._recall_episodes__mutmut_30 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning("memory.index.orphan", kind="XXepisodesXX", id=hit.id)
+retrieval.AgentMemory._recall_episodes__mutmut_31 | -            _log.warning("memory.index.orphan", kind="episodes", id=hit.id) => +            _log.warning("memory.index.orphan", kind="EPISODES", id=hit.id)
+retrieval.AgentMemory.visible_lessons__mutmut_6 | -            continue => +            break
+retrieval.AgentMemory.visible_lessons__mutmut_18 | -        if quality >= curation.min_quality: => +        if quality > curation.min_quality:
+retrieval.AgentMemory.visible_lessons__mutmut_29 | -        items.sort(key=lambda x: (-x[1], -x[0].created_at.timestamp(), x[0].id)) => +        items.sort(key=lambda x: (-x[1], +x[0].created_at.timestamp(), x[0].id))
+retrieval.AgentMemory.sync__mutmut_14 | -                _log.warning("memory.index.orphans", kind=kind, count=len(orphans)) => +                _log.warning(None, kind=kind, count=len(orphans))
+retrieval.AgentMemory.sync__mutmut_15 | -                _log.warning("memory.index.orphans", kind=kind, count=len(orphans)) => +                _log.warning("memory.index.orphans", kind=None, count=len(orphans))
+retrieval.AgentMemory.sync__mutmut_16 | -                _log.warning("memory.index.orphans", kind=kind, count=len(orphans)) => +                _log.warning("memory.index.orphans", kind=kind, count=None)
+retrieval.AgentMemory.sync__mutmut_17 | -                _log.warning("memory.index.orphans", kind=kind, count=len(orphans)) => +                _log.warning(kind=kind, count=len(orphans))
+retrieval.AgentMemory.sync__mutmut_18 | -                _log.warning("memory.index.orphans", kind=kind, count=len(orphans)) => +                _log.warning("memory.index.orphans", count=len(orphans))
+retrieval.AgentMemory.sync__mutmut_19 | -                _log.warning("memory.index.orphans", kind=kind, count=len(orphans)) => +                _log.warning("memory.index.orphans", kind=kind, )
+retrieval.AgentMemory.sync__mutmut_21 | -                _log.warning("memory.index.orphans", kind=kind, count=len(orphans)) => +                _log.warning("MEMORY.INDEX.ORPHANS", kind=kind, count=len(orphans))
+retrieval.AgentMemory.sync__mutmut_20 | -                _log.warning("memory.index.orphans", kind=kind, count=len(orphans)) => +                _log.warning("XXmemory.index.orphansXX", kind=kind, count=len(orphans))
+retrieval.AgentMemory.sync__mutmut_35 | -        _log.info("memory.index.sync", added=added) => +        _log.info("memory.index.sync", added=None)
+retrieval.AgentMemory.sync__mutmut_34 | -        _log.info("memory.index.sync", added=added) => +        _log.info(None, added=added)
+retrieval.AgentMemory.sync__mutmut_36 | -        _log.info("memory.index.sync", added=added) => +        _log.info(added=added)
+retrieval.AgentMemory.sync__mutmut_38 | -        _log.info("memory.index.sync", added=added) => +        _log.info("XXmemory.index.syncXX", added=added)
+retrieval.AgentMemory.sync__mutmut_39 | -        _log.info("memory.index.sync", added=added) => +        _log.info("MEMORY.INDEX.SYNC", added=added)
+retrieval.AgentMemory.sync__mutmut_37 | -        _log.info("memory.index.sync", added=added) => +        _log.info("memory.index.sync", )
+embedder.x_normalise__mutmut_3 | -    array = np.asarray(vectors, dtype=np.float32) => +    array = np.asarray(vectors, dtype=None)
+embedder.x_normalise__mutmut_5 | -    array = np.asarray(vectors, dtype=np.float32) => +    array = np.asarray(vectors, )
+embedder.x_normalise__mutmut_23 | -    return np.divide(array, norms, out=np.zeros_like(array), where=norms > 0) => +    return np.divide(array, norms, out=None, where=norms > 0)
+embedder.x_normalise__mutmut_27 | -    return np.divide(array, norms, out=np.zeros_like(array), where=norms > 0) => +    return np.divide(array, norms, where=norms > 0)
+embedder.HashEmbedder._vector__mutmut_3 | -    vector = np.zeros(self._dim, dtype=np.float32) => +    vector = np.zeros(self._dim, dtype=None)
+embedder.HashEmbedder._vector__mutmut_5 | -    vector = np.zeros(self._dim, dtype=np.float32) => +    vector = np.zeros(self._dim, )
+embedder.HashEmbedder.embed__mutmut_3 | -        return np.zeros((0, self._dim), dtype=np.float32) => +        return np.zeros((0, self._dim), dtype=None)
+embedder.HashEmbedder.embed__mutmut_5 | -        return np.zeros((0, self._dim), dtype=np.float32) => +        return np.zeros((0, self._dim), )

@@ -491,6 +491,21 @@ agents:
   max_tool_rounds: 4  # model turns that may ask for tools in one agent run; then a wrap-up turn with no tools
   evidence_repair_retries: 1  # extra turns asking the model to fix unknown evidence ids or uncited claims
   low_quality_confidence_cap: 0.3  # highest confidence (0-1) kept by an output whose citations stay invalid
+  # Agent memory (Stage 27): episodes and lessons recalled by similarity, point-in-time.
+  memory:  # agents.memory (Stage 27)
+    index_dir: memory/chroma  # ChromaDB index folder inside the lake (rebuilt from the DuckDB records if lost)
+    model_dir: ~/.cache/atlas/models  # where the local embedding model is downloaded once
+    embedder: minilm  # minilm (all-MiniLM-L6-v2, ONNX, 384-d) | hash (deterministic hashed words; tests/offline)
+    default_k: 5  # memories recalled when no k is given
+    min_similarity: 0.3  # cosine similarity below which a memory is not recalled (Stage 27 live MiniLM run: off-topic <= 0.30, on-topic >= 0.355)
+    lessons:  # lesson curation: near-duplicates, cap per scope, quality decay
+      dedupe_cosine: 0.92  # cosine above which a new lesson is a near-duplicate of one in the same scope
+      max_per_agent: 50  # lessons kept per scope (agent or global) at recall, best effective quality first
+      half_life_days: 180  # effective quality halves every this many days of age (to the decision cutoff)
+      min_quality: 0.05  # lessons with a lower effective quality are not recalled
+      default_quality: 0.5  # quality of a lesson stored without a quality_score
+    render:  # memory lines in prompts
+      max_chars: 240  # longest rendered memory line in a prompt (longer text is cut)
 
 # Backtest window and simulated costs.
 backtest:

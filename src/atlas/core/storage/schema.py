@@ -46,7 +46,9 @@ AVAILABLE_AT = "available_at"
 YEAR = "year"
 """Virtual partition token: the calendar year of `TableSchema.year_column`."""
 
-RESERVED_TABLES = frozenset({"audit_events", "llm_usage", "llm_cache", "agent_runs"})
+RESERVED_TABLES = frozenset(
+    {"audit_events", "llm_usage", "llm_cache", "agent_runs", "episodes", "lessons"}
+)
 """Names owned by native DuckDB tables, so no lake table may use them."""
 
 _IDENTIFIER_RE = re.compile(IDENTIFIER)

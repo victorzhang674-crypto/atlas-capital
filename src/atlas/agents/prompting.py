@@ -7,8 +7,9 @@ version line too. The version line is removed before Jinja2 sees the source, so 
 blank line. Undefined variables fail (`StrictUndefined`): a prompt is never sent with a
 silently empty field.
 
-Every template sees two globals: `data_block(text, source=...)` (the Stage 24
-prompt-injection wrapper) and `evidence_lines(items)` (`[E:<id>] ...` lines).
+Every template sees three globals: `data_block(text, source=...)` (the Stage 24
+prompt-injection wrapper), `evidence_lines(items)` (`[E:<id>] ...` lines) and
+`memory_block(memories)` (recalled memories, Stage 27; partial `_partials/_memory.j2`).
 """
 
 import hashlib
@@ -23,6 +24,7 @@ import jinja2
 from jinja2 import meta
 
 from atlas.agents.evidence import evidence_lines
+from atlas.agents.memory.render import memory_block
 from atlas.core.errors import ConfigError
 from atlas.llm.hygiene import data_block
 from atlas.llm.schemas import Message
@@ -110,7 +112,9 @@ class PromptRegistry:
             # and digest must describe the text that is sent (audit A2).
             auto_reload=False,
         )
-        self._env.globals.update(data_block=data_block, evidence_lines=evidence_lines)
+        self._env.globals.update(
+            data_block=data_block, evidence_lines=evidence_lines, memory_block=memory_block
+        )
         self._lock = threading.Lock()
         self._loaded: dict[str, PromptTemplate] = {}
 

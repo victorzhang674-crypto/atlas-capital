@@ -73,7 +73,12 @@ def test_a_partial_without_a_version_line_is_refused(tmp_path: Path) -> None:
 
 def test_every_shipped_partial_has_a_version_line() -> None:
     partials = sorted((PROMPTS_DIR / "_partials").glob("*.j2"))
-    assert [p.name for p in partials] == ["_data_block.j2", "_date_rules.j2", "_output_rules.j2"]
+    assert [p.name for p in partials] == [
+        "_data_block.j2",
+        "_date_rules.j2",
+        "_memory.j2",  # Stage 27
+        "_output_rules.j2",
+    ]
     registry = PromptRegistry()
     for path in partials:
         assert registry.version_of(f"_partials/{path.name}") >= 1

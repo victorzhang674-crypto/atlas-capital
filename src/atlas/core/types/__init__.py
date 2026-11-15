@@ -11,6 +11,7 @@ from atlas.core.types.base import (
     UtcDatetime,
 )
 from atlas.core.types.ids import (
+    EpisodeId,
     FillId,
     IdPrefix,
     IdSource,
@@ -99,6 +100,7 @@ __all__ = [
     "DebateTurn",
     "Direction",
     "EntrySide",
+    "EpisodeId",
     "Evidence",
     "Fill",
     "FillId",

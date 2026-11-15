@@ -142,6 +142,8 @@ def test_views_are_not_persisted(lake: Lake, prices_frame: PricesFrame) -> None:
     assert sorted(tables) == [
         ("agent_runs",),  # Stage 26
         ("audit_events",),
+        ("episodes",),  # Stage 27
+        ("lessons",),  # Stage 27
         ("llm_cache",),
         ("llm_usage",),
     ]  # the native tables only
