@@ -1,0 +1,20 @@
+........................................................................ [ 44%]
+........................................................................ [ 88%]
+...................                                                      [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                             Stmts   Miss  Cover   Missing
+------------------------------------------------------------------------------
+src/atlas/agents/__init__.py                         7      0   100%
+src/atlas/agents/base.py                           171      0   100%
+src/atlas/agents/context.py                         27      0   100%
+src/atlas/agents/evidence.py                       123      0   100%
+src/atlas/agents/prompting.py                      112      0   100%
+src/atlas/agents/prompts/__init__.py                 0      0   100%
+src/atlas/agents/prompts/_partials/__init__.py       0      0   100%
+src/atlas/agents/tools.py                          156      0   100%
+src/atlas/agents/trace.py                           80      0   100%
+------------------------------------------------------------------------------
+TOTAL                                              676      0   100%
+163 passed, 2 deselected in 3.99s

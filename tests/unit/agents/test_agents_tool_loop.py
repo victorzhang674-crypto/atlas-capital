@@ -110,6 +110,7 @@ def test_a_bad_call_is_answered_with_an_error_and_the_loop_goes_on(
         None,
         calls(("x", "teleport", {}), ("y", "news", {"symbol": ""})),
         report(),
+        report(),  # the evidence repair (audit A3: an answer citing nothing is uncited)
     )
     out = tool_agent(fake_llm).run(world.ctx(inputs={"symbol": "AAA"}))
     tool_messages = [m for m in fake_llm.calls[1].messages if m.role == "tool"]
@@ -117,7 +118,7 @@ def test_a_bad_call_is_answered_with_an_error_and_the_loop_goes_on(
     assert tool_messages[1].content.startswith("ERROR: invalid arguments for news: symbol")
     assert [r.error is not None for r in out.trace.tool_calls] == [True, True]
     assert [r.evidence_ids for r in out.trace.tool_calls] == [(), ()]
-    assert out.trace.evidence_ids == () and out.trace.status == "ok"
+    assert out.trace.evidence_ids == () and out.trace.status == "low_quality"
 
 
 def test_tool_calls_without_tools_offered_fail(world: World, fake_llm: FakeLLM) -> None:

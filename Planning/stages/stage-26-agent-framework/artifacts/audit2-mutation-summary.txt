@@ -1,0 +1,13 @@
+# Stage 26 post-DONE audit: mutmut 3.8.1 over src/atlas/agents/, tests tests/unit/agents (setup: audit2-mutmut-setup.cfg)
+run 0: baseline failed (docs/ not copied: test_docs_explain_how_to_build_an_agent) -> docs/ added to also_copy
+run 1: 1117 mutants, 925 killed, 184 survived, 8 timeout (load; timeouts are not survivors)
+run 2 (after test_agents_audit_mutation.py, first 16 tests): 1109 mutants, 958 killed, 151 survived
+targeted re-run (4 more tests): _repair_text 6-10, _fundamentals 24, _error 12 killed; _schema_cites 13 survived (equivalent: pydantic nests models under $defs, which the dict walk covers)
+final: 965 / 1109 killed; the 144 remaining survivors were reviewed and are equivalent:
+  log event names and log fields (structlog kwargs), error/repair/describe message wording and casing,
+  tools=None vs () (the gateway sends `tools or None`), JSON/python dump modes before canonical_json,
+  keys of the inputs-digest payload, SQL keyword case, pandas orient case, Jinja2 options set to None
+  (equally falsy), FileSystemLoader encoding spelling and environment argument (unused),
+  `>= cap` vs `> cap` (same value), `symbol` from any row (one symbol per frame), stale filter
+  (stale rows already carry NaN values), market_news limit (one market article in the test world),
+  walk(output, None) (root path is falsy either way), errors(include_input=...) (input not printed)

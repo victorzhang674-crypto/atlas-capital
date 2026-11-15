@@ -106,6 +106,9 @@ class PromptRegistry:
             undefined=jinja2.StrictUndefined,
             autoescape=False,
             keep_trailing_newline=False,
+            # A loaded template never changes under a running process: the recorded version
+            # and digest must describe the text that is sent (audit A2).
+            auto_reload=False,
         )
         self._env.globals.update(data_block=data_block, evidence_lines=evidence_lines)
         self._lock = threading.Lock()

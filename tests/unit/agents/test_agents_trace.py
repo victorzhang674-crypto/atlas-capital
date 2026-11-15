@@ -49,7 +49,7 @@ def test_a_run_writes_one_trace(world: World, fake_llm: FakeLLM) -> None:
     assert trace.finished_at > trace.started_at
     assert (trace.prompt_name, trace.prompt_version) == ("echo_analyst.j2", 1)
     assert len(trace.prompt_digest) == 64 and len(trace.inputs_digest) == 64
-    assert trace.versions == "echo_analyst.j2@v1|fundamentals@v1,news@v1,price_history@v1"
+    assert trace.versions == "echo_analyst.j2@v1|fundamentals@v1,news@v1,price_history@v2"
     assert [c.name for c in trace.tool_calls] == ["news"]
     assert trace.evidence_ids == ("news:alpaca-2", "news:alpaca-1")
     assert trace.cited_ids == ("news:alpaca-2",) and trace.unknown_ids == ()

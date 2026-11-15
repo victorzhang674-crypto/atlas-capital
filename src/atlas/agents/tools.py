@@ -231,9 +231,8 @@ def _day(value: object) -> date:
 
 
 def _instant(value: object) -> datetime:
-    stamp = pd.Timestamp(value)  # type: ignore[arg-type]
-    stamp = stamp.tz_localize("UTC") if stamp.tzinfo is None else stamp.tz_convert("UTC")
-    return stamp.to_pydatetime()
+    """A lake `available_at` (always tz-aware UTC) as an aware `datetime`."""
+    return pd.Timestamp(value).tz_convert("UTC").to_pydatetime()  # type: ignore[arg-type]
 
 
 def _fundamentals(ctx: AgentContext, args: SymbolArgs) -> Sequence[Evidence]:
@@ -257,6 +256,8 @@ def _fundamentals(ctx: AgentContext, args: SymbolArgs) -> Sequence[Evidence]:
 
 
 def _price_history(ctx: AgentContext, args: PriceHistoryArgs) -> Sequence[Evidence]:
+    if args.symbol in ctx.view.blocked:  # `prices` would silently leave it out
+        raise DataError(f"symbol {args.symbol} is blocked by a critical data-quality issue")
     bars = ctx.view.prices([args.symbol], args.lookback)
     if bars.empty:
         return []
@@ -268,8 +269,9 @@ def _price_history(ctx: AgentContext, args: PriceHistoryArgs) -> Sequence[Eviden
         f"{symbol} daily bars {first}..{last} ({n} sessions): last close "
         f"{float(bars['close'].iloc[-1]):.2f} USD; total return {total:+.2%} (adjusted close "
         f"{float(bars['adj_close'].iloc[0]):.2f} -> {float(bars['adj_close'].iloc[-1]):.2f}); "
-        f"high {float(bars['high'].max()):.2f}, low {float(bars['low'].min()):.2f} "
-        "(raw USD prices)"
+        f"adjusted close range {float(bars['adj_close'].min()):.2f} to "
+        f"{float(bars['adj_close'].max()):.2f} (USD; adjusted for splits and dividends, so "
+        "comparable across the window)"
     )
     return [
         Evidence(
@@ -307,6 +309,7 @@ PRICE_HISTORY = Tool(
     description="A summary of one stock's daily prices over the last sessions known today.",
     args=PriceHistoryArgs,
     fn=_price_history,
+    version=2,  # v2 (audit A8, A9): blocked symbols are an error; split-adjusted range
 )
 
 

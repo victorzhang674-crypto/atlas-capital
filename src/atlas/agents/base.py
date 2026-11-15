@@ -9,15 +9,17 @@ a structured output (`output_schema`), an evidence trail and a persisted trace. 
 3. checks the output's citations against the evidence the run showed the model;
 4. persists an `AgentTrace` and, given an `AuditLog`, records an `AGENT_REPORT` event.
 
-Any `AtlasError` (an `LLMError` from the gateway, a `ConfigError` from the prompt, a
-`LookAheadError` from a tool) is recorded as a `failed` trace and re-raised: no output, so no
-new risk (spec §3 principle 6).
+Any exception (an `LLMError` from the gateway, a `ConfigError` from the prompt, a
+`LookAheadError` from a tool, a bug) is recorded as a `failed` trace and re-raised: no output,
+so no new risk (spec §3 principle 6). An agent given an `AuditLog` refuses to start outside a
+run context, before any LLM call.
 """
 
 import hashlib
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any, ClassVar
 
 from pydantic import BaseModel
@@ -38,6 +40,7 @@ from atlas.core.clock import Clock, LiveClock
 from atlas.core.config import AgentsConfig, AtlasConfig
 from atlas.core.errors import AtlasError, ConfigError, LLMError
 from atlas.core.logging import get_logger
+from atlas.core.run_context import current_run_context
 from atlas.core.types.research import Evidence
 from atlas.data.view import guard_evidence
 from atlas.llm.gateway import LLMGateway
@@ -182,6 +185,9 @@ class BaseAgent[OutT: BaseModel]:
 
     def run(self, ctx: AgentContext) -> AgentOutput[OutT]:
         """Run the agent for `ctx` (see the module docstring). Raises what stopped it."""
+        if self._audit is not None and current_run_context() is None:
+            # Fail before spending anything: the AGENT_REPORT event could not be written.
+            raise AtlasError(f"{self.name}: an agent with an AuditLog needs an active run context")
         started = self._clock.now()
         # A record id, not a decision: random even under a seeded id source (a same-seed
         # backtest re-run must not collide with its earlier rows in `agent_runs`).
@@ -191,8 +197,9 @@ class BaseAgent[OutT: BaseModel]:
             state.ledger.add(guard_evidence(list(self.gather(ctx)), ctx.as_of))
             rendered = self._render(ctx, state)
             output, citations = self._converse(ctx, rendered, state)
-        except AtlasError as exc:
-            self._finish(ctx, agent_run_id, started, state, status="failed", error=str(exc))
+        except Exception as exc:  # traced as failed, then re-raised: never swallowed
+            error = str(exc) if isinstance(exc, AtlasError) else f"{type(exc).__name__}: {exc}"
+            self._finish(ctx, agent_run_id, started, state, status="failed", error=error)
             raise
         low_quality = not citations.ok
         status: TraceStatus = "low_quality" if low_quality else "ok"
@@ -313,7 +320,7 @@ class BaseAgent[OutT: BaseModel]:
         self,
         ctx: AgentContext,
         agent_run_id: str,
-        started: Any,
+        started: datetime,
         state: _Run,
         *,
         status: TraceStatus,

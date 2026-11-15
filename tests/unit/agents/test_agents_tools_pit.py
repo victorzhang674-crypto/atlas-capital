@@ -92,8 +92,8 @@ def test_price_history_tool(world: World) -> None:
 def test_blocked_symbol_is_an_error_text_or_no_data(world: World) -> None:
     news = run(world, "clean", "news", {"symbol": "BAD"})
     assert news.error is not None and "BAD" in news.error
-    prices = run(world, "clean", "price_history", {"symbol": "BAD"})
-    assert prices.evidence == () and "(no data)" in prices.text
+    prices = run(world, "clean", "price_history", {"symbol": "BAD"})  # audit A8
+    assert prices.evidence == () and prices.error is not None and "blocked" in prices.error
 
 
 @pytest.mark.parametrize("name", ["news", "fundamentals", "price_history"])
@@ -108,3 +108,8 @@ def test_symbols_are_normalised(world: World) -> None:
         call=lower.call, evidence=lower.evidence, text=lower.text
     )
     assert all(e.id.startswith("fund:AAA:") for e in lower.evidence)
+
+
+def test_price_history_of_an_unknown_symbol_is_no_data(world: World) -> None:
+    out = run(world, "clean", "price_history", {"symbol": "ZZZ"})
+    assert out.error is None and out.evidence == () and "(no data)" in out.text

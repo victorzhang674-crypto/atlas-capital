@@ -79,12 +79,15 @@ tools: `news`, `market_news`, `fundamentals` (`fund:<SYM>:<period end>:<metric>`
    a wrap-up turn without tools follows, and a wrap-up that asks again fails the run.
 3. Citation check: a claim is any nested model with `evidence_ids` and must cite at least one
    id; ids in `evidence_ids`, an `evidence` list or inline `[E:<id>]` tags must be ids the
-   run showed. Problems get `agents.evidence_repair_retries` repair turns; if they remain,
-   the output is marked `low_quality` and its `confidence` is capped at
+   run showed; an output that could cite but cites nothing at all is uncited too. Problems
+   get `agents.evidence_repair_retries` repair turns; if they remain, the output is marked
+   `low_quality` and its top-level `confidence` and `conviction` are capped at
    `agents.low_quality_confidence_cap` (0.3).
 4. Trace: one `agent_runs` row (status `ok`, `low_quality` or `failed`; prompt version and
    digest, inputs digest, tool calls, evidence ids, output, tokens, cost) and, with an
    `AuditLog`, an `AGENT_REPORT` event.
 
-Any `AtlasError` (budget, provider, invalid output, look-ahead) is traced as `failed` and
-re-raised: no output means no new risk (spec §3 principle 6).
+Any exception (budget, provider, invalid output, look-ahead, a bug) is traced as `failed` and
+re-raised: no output means no new risk (spec §3 principle 6). An agent given an `AuditLog`
+refuses to start outside a run context, before any LLM call. Templates are loaded once per
+`PromptRegistry`: editing a file on disk does not change a running process's prompts.

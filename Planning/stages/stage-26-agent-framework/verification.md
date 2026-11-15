@@ -36,3 +36,17 @@ Output of commands run in this stage's chat (Project.md Rule 1). Raw output is u
 - Pushed 2026-11-14 on the owner's go-ahead ("Yes, push"): `main` 8ca85e0..67906e2 and the stage branch. CI (GitHub Actions, `make check` + `make test-integration`) on 67906e2: **`main` run 43670775190 success**, stage-branch run 43670775194 success · raw: [ci-runs-67906e2.json](artifacts/ci-runs-67906e2.json)
 
 **Result:** ALL CRITERIA VERIFIED
+
+## Post-DONE full audit — 2026-11-14
+Owner: "can you help me to fully audit this stage and make sure everything is being fully completed?" Report: [artifacts/audit2-report.md](artifacts/audit2-report.md); log: [worklog.md](worklog.md).
+- Findings fixed test-first: A2 (prompts reload from disk under the old version), A3 (an output citing nothing passed), A4 (`conviction` not capped), A6 (non-Atlas exceptions untraced), A7 (audit without run context spent money first), A8 (blocked symbol shown as "(no data)" by `price_history`), A9 (raw high/low across a split; `price_history` → v2); A5 live run added; 20 tests for mutation-run gaps.
+- Commands run (this chat, final tree):
+  - `make check` → **exit 0**: ruff clean, 431 files formatted, mypy clean (167 files), pytest 4557 passed + 3 timing passed · raw: [audit2-make-check.txt](artifacts/audit2-make-check.txt)
+  - `uv run pytest -q` → **4560 passed, 73 deselected**, exit 0 · raw: [audit2-pytest.txt](artifacts/audit2-pytest.txt)
+  - Verify `uv run pytest tests/unit/agents -q` → **150 passed, 2 deselected** (the live `llm` tests), exit 0 · raw: [audit2-verify-pytest-unit-agents.txt](artifacts/audit2-verify-pytest-unit-agents.txt)
+  - Coverage `src/atlas/agents` → 100% (676 statements) · raw: [audit2-coverage.txt](artifacts/audit2-coverage.txt)
+  - Live `pytest tests/unit/agents/test_agents_live_deepseek.py -m llm -s` → 2 passed (quick and deep: tool calls, only shown ids cited, status ok; 0.0035 USD) · raw: [audit2-live-deepseek.txt](artifacts/audit2-live-deepseek.txt)
+  - Mutation (mutmut 3.8.1, `src/atlas/agents/`) → 925 / 1117 before, **965 / 1109** after; remaining survivors equivalent · raw: [audit2-mutation-summary.txt](artifacts/audit2-mutation-summary.txt)
+  - Secret scan: the key value occurs in no file → no match
+- Acceptance criteria re-checked: all three still hold (same tests as above, plus `test_a3_*` for uncited outputs and the live run for tools on a real model).
+- Waivers: none

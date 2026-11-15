@@ -7,12 +7,15 @@ sees it as one line `[E:<id>] <published UTC> <text>` and cites it by that id.
 The citation check (`check_citations`) walks a structured output: a *claim* is any nested
 model with an `evidence_ids` field and must cite at least one id; *citations* are the ids in
 `evidence_ids` fields, in an `evidence` field holding strings, and every inline `[E:<id>]` tag
-in a string. Cited ids the run never showed the model are *unknown*.
+in a string. Cited ids the run never showed the model are *unknown*. An output whose schema
+can cite (it has a claim or an `evidence` field somewhere) but that cites nothing at all is
+itself an uncited claim (path `<root>`).
 """
 
 import re
 from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
+from functools import cache
 from typing import Any
 
 from pydantic import BaseModel
@@ -65,8 +68,12 @@ CLAIM_FIELD = "evidence_ids"
 LIST_FIELD = "evidence"
 """A field of this name holding strings lists cited evidence ids."""
 
-CONFIDENCE_FIELD = "confidence"
-"""The output field `cap_confidence` caps."""
+CONFIDENCE_FIELDS = ("confidence", "conviction")
+"""The top-level output fields `cap_confidence` caps (an analyst report's `confidence`, a
+thesis's `conviction`)."""
+
+ROOT = "<root>"
+"""The path of the output itself in `CitationReport.uncited_claims`."""
 
 
 class EvidenceLedger:
@@ -132,8 +139,11 @@ class CitationReport:
             lines.append(
                 "Unknown evidence ids (not in the data or tool results): " + ", ".join(self.unknown)
             )
-        if self.uncited_claims:
-            lines.append("Claims that cite no evidence: " + ", ".join(self.uncited_claims))
+        if ROOT in self.uncited_claims:
+            lines.append("The output cites no evidence at all.")
+        claims = [path for path in self.uncited_claims if path != ROOT]
+        if claims:
+            lines.append("Claims that cite no evidence: " + ", ".join(claims))
         return "\n".join(lines) if lines else "ok"
 
 
@@ -143,6 +153,25 @@ def _child(path: str, part: str) -> str:
 
 def _is_strings(value: object) -> bool:
     return isinstance(value, (tuple, list)) and all(isinstance(v, str) for v in value)
+
+
+def _schema_cites(node: object) -> bool:
+    """Whether a JSON Schema (or part of one) has a property named like a citation field."""
+    if isinstance(node, Mapping):
+        props = node.get("properties")
+        if isinstance(props, Mapping) and (CLAIM_FIELD in props or LIST_FIELD in props):
+            return True
+        return any(_schema_cites(value) for value in node.values())
+    if isinstance(node, list):
+        return any(_schema_cites(value) for value in node)
+    return False
+
+
+@cache
+def can_cite(schema: type[BaseModel]) -> bool:
+    """Whether outputs of `schema` can cite evidence (a claim or an `evidence` field anywhere
+    in its JSON Schema)."""
+    return _schema_cites(schema.model_json_schema())
 
 
 def check_citations(output: BaseModel, known: Collection[str]) -> CitationReport:
@@ -155,7 +184,7 @@ def check_citations(output: BaseModel, known: Collection[str]) -> CitationReport
         if isinstance(value, BaseModel):
             fields = type(value).model_fields
             if CLAIM_FIELD in fields and not getattr(value, CLAIM_FIELD):
-                uncited.append(path or "<root>")
+                uncited.append(path or ROOT)
             for name in fields:
                 item = getattr(value, name)
                 if name in (CLAIM_FIELD, LIST_FIELD) and _is_strings(item):
@@ -172,6 +201,8 @@ def check_citations(output: BaseModel, known: Collection[str]) -> CitationReport
                 walk(item, f"{path}[{i}]")
 
     walk(output, "")
+    if not cited and ROOT not in uncited and can_cite(type(output)):
+        uncited.insert(0, ROOT)
     return CitationReport(
         cited=tuple(cited),
         unknown=tuple(i for i in cited if i not in known),
@@ -180,11 +211,14 @@ def check_citations(output: BaseModel, known: Collection[str]) -> CitationReport
 
 
 def cap_confidence[M: BaseModel](output: M, cap: float) -> M:
-    """`output` with its top-level `confidence` lowered to `cap` when it is higher; outputs
-    without a `confidence` field, or already at or below `cap`, are returned unchanged."""
-    if CONFIDENCE_FIELD not in type(output).model_fields:
-        return output
-    value = getattr(output, CONFIDENCE_FIELD)
-    if isinstance(value, (int, float)) and value > cap:
-        return output.model_copy(update={CONFIDENCE_FIELD: cap})
-    return output
+    """`output` with each top-level `CONFIDENCE_FIELDS` value above `cap` lowered to `cap`;
+    outputs with none of them, or with values at or below `cap`, are returned unchanged."""
+    fields = type(output).model_fields
+    update = {
+        name: cap
+        for name in CONFIDENCE_FIELDS
+        if name in fields
+        and isinstance(getattr(output, name), (int, float))
+        and getattr(output, name) > cap
+    }
+    return output.model_copy(update=update) if update else output
