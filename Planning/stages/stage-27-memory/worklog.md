@@ -71,4 +71,8 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Final runs after the audit: `make check` → exit 0 (4727 + 3 timing passed); `uv run pytest -q` → 4730 passed, 74 deselected, exit 0; Verify `uv run pytest tests/unit/agents/memory -q` → 158 passed, 1 deselected; live MiniLM → 1 passed; coverage 100% (711 statements). `verification.md` and PROGRESS.md written; stage set DONE.
 - Staged diff reviewed (48 files: stage code, tests, config, docs, lock, stage records; no `.env`, lake, cache or Chroma files; secret values from the main checkout's `.env` not found in the diff). Commit **9c01904** `stage-27: memory system (episodic + lessons, point-in-time)` (pre-commit hooks passed); `git status` clean.
 - Merge: the owner's Terminal panel ran `artifacts/merged-main-check.sh` from the main checkout: `git merge --ff-only` 59b5e0b → 9c01904 (merge exit 0, trees equal cc74f86); merged `uv run pytest -q` → 4730 passed, exit 0; merged `make check` → exit 0; `git branch --merged main` lists the branch · raw: `artifacts/merged-main-check.txt`.
-- Push: not done; `main` is 1 ahead of `origin/main`. Waits for the owner's go-ahead (the remote may be public).
+- Records commit 38c5903 (`stage-27: merge records`), `main` fast-forwarded to it in the owner's Terminal panel.
+
+## 2026-11-15 — Push and CI
+- Owner: "Yes, push". `git push origin main claude/stage-27-planning-audit-1e46cf` from the sandbox (`allowed_domains: github.com`) → `main` 59b5e0b..38c5903, new branch.
+- CI read from the public API: `main` run 43716562748 success, branch run 43716562759 success (12:58–13:13 UTC) · raw: `artifacts/ci-runs-38c5903.json`. My first polling loop failed to parse the API's JSON (zsh `echo` expanded escapes inside a commit message); curl writing straight to a file worked.
