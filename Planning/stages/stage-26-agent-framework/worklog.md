@@ -83,3 +83,7 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Reviewed `git diff --cached --stat` (60 files: stage folder, `src/atlas/agents`, storage, config, view, tests, docs, `uv.lock`; no `.env`, lake data or caches). Committed **60a2eda** `stage-26: Agent framework, prompts & tool registry` (pre-commit hooks passed); `git status --short` clean.
 - Merged into `main` in the owner's Terminal panel with [merged-main-check.sh](artifacts/merged-main-check.sh): fast-forward 8ca85e0 → 60a2eda, trees equal; merged result `uv run pytest -q` 4530 passed, `make check` exit 0; `git branch --merged main` lists the branch · raw: [merged-main-check.txt](artifacts/merged-main-check.txt).
 - Records commit follows on the branch, then `main` is fast-forwarded to it. Not pushed: waiting for the owner.
+
+## 2026-11-14 — Push and CI
+- Owner: "Yes, push". `git push origin main claude/stage-26-planning-execution-3bbe8a` from the sandbox → `main` 8ca85e0..67906e2, new branch.
+- CI on 67906e2 read from the public API: `main` run 43670775190 success, branch run 43670775194 success · raw: [ci-runs-67906e2.json](artifacts/ci-runs-67906e2.json). This records commit is fast-forwarded into `main` and pushed too.
