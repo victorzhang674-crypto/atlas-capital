@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Stage 26: fast-forward `main` to the stage branch and re-run the checks on the merged
+# Stage 26 (post-DONE audit): fast-forward `main` to the stage branch and re-run the checks on the merged
 # result (Project.md Rule 6A). Run from the main checkout:
 #   zsh <this script> <output file>
 # The sandbox cannot write the main checkout, so this runs in the owner's Terminal panel.

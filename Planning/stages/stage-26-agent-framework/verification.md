@@ -50,3 +50,4 @@ Owner: "can you help me to fully audit this stage and make sure everything is be
   - Secret scan: the key value occurs in no file → no match
 - Acceptance criteria re-checked: all three still hold (same tests as above, plus `test_a3_*` for uncited outputs and the live run for tools on a real model).
 - Waivers: none
+- Merge into `main` (audit): fast-forward 15e65a0 → **bbc4535** in the owner's Terminal panel; trees equal (0e57f87). Merged result: `uv run pytest -q` → 4560 passed, 73 deselected, exit 0 · `make check` → exit 0 (4557 passed + 3 timing passed) · `git branch --merged main` lists the branch · raw: [audit2-merged-main-check.txt](artifacts/audit2-merged-main-check.txt). Pushed with this records commit (Rule 6A.7).
