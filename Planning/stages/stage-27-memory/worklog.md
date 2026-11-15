@@ -2,6 +2,48 @@
 
 Append entries in order. Record failures and dead ends as honestly as successes.
 
+## Code files created or changed by this stage (Rule 2A.3)
+
+35 files (`git diff --name-only 59b5e0b..1a932c0 -- src tests config docs pyproject.toml uv.lock`):
+
+| File | Change |
+|---|---|
+| `pyproject.toml` | + `chromadb>=1.5` runtime dependency; `onnxruntime` in the mypy missing-stubs list |
+| `uv.lock` | lock for chromadb and its dependencies (purely additive) |
+| `config/fund.yaml` | `agents.memory.*` with comments (`min_similarity` 0.3) |
+| `docs/agents.md` | section "Memory"; `AgentContext` row mentions `ctx.recall` |
+| `src/atlas/core/config.py` | `MemoryConfig`, `LessonCurationConfig`, `MemoryRenderConfig`; `AgentsConfig.memory`; `agents` added to the env allow-list `_SECTIONS` |
+| `src/atlas/core/types/ids.py` | `IdPrefix.EPISODE = "epi"`, `EpisodeId` |
+| `src/atlas/core/types/__init__.py` | exports `EpisodeId` |
+| `src/atlas/core/storage/db.py` | native `episodes` / `lessons` tables; `insert_episodes`, `settle_episode`, `insert_lesson(supersedes=)`; shared `_check_columns`, `_writable` |
+| `src/atlas/core/storage/schema.py` | `episodes`, `lessons` added to `RESERVED_TABLES` |
+| `src/atlas/agents/context.py` | `AgentContext.memory: AgentMemory | None`; `AgentContext.recall(...)` bound to `as_of` |
+| `src/atlas/agents/prompting.py` | template global `memory_block`; module docstring |
+| `src/atlas/agents/prompts/_partials/_memory.j2` | the memory partial (`{# version: 1 #}`) |
+| `src/atlas/agents/memory/__init__.py` | public API (`__all__`, 20 names) |
+| `src/atlas/agents/memory/store.py` | `Episode`, `StoredLesson`, `MemoryStore`, row converters, `json_object` |
+| `src/atlas/agents/memory/embedder.py` | `Embedder`, `HashEmbedder`, `MiniLMEmbedder`, `make_embedder`, `normalise` |
+| `src/atlas/agents/memory/index.py` | `VectorIndex` (ChromaDB), `IndexEntry`, `Hit`, `micros` |
+| `src/atlas/agents/memory/retrieval.py` | `AgentMemory`, `Memory`, `LessonWrite`, `effective_quality` |
+| `src/atlas/agents/memory/render.py` | `render_memory`, `memory_block`, `NO_MEMORIES` |
+| `tests/unit/agents/memory/memory_world.py` | synthetic corpus helper (`build_memory`, `HASH_CONFIG`, `as_of`, `at`) |
+| `tests/unit/agents/memory/test_memory_foundations.py` | config, dependency, env overrides |
+| `tests/unit/agents/memory/test_memory_store.py` | store CRUD (DuckDB and in-memory) |
+| `tests/unit/agents/memory/test_memory_embedder.py` | embedders |
+| `tests/unit/agents/memory/test_memory_index.py` | ChromaDB index |
+| `tests/unit/agents/memory/test_memory_pit.py` | point-in-time recall (incl. hypothesis property) |
+| `tests/unit/agents/memory/test_memory_retrieval.py` | relevance, filters, sync, rebuild |
+| `tests/unit/agents/memory/test_memory_curation.py` | dedupe, caps, decay |
+| `tests/unit/agents/memory/test_memory_render.py` | rendering partial |
+| `tests/unit/agents/memory/test_memory_package.py` | public API, docs, `ctx.recall` |
+| `tests/unit/agents/memory/test_memory_live_minilm.py` | live real-model test (marked `live`) |
+| `tests/unit/agents/memory/test_memory_audit.py` | audit A1–A8 tests |
+| `tests/unit/agents/test_agents_prompting.py` | shipped partials list + `_memory.j2` |
+| `tests/unit/core/storage/test_storage_memory_tables.py` | native `episodes` / `lessons` tables |
+| `tests/unit/core/storage/test_storage_db.py` | native table list + `episodes`, `lessons` |
+| `tests/unit/core/storage/test_storage_schema.py` | reserved names + `episodes`, `lessons` |
+| `tests/unit/core/types/test_types_ids.py` | EPISODE prefix, `EpisodeId` |
+
 ## 2026-11-15 — Gate check, environment, probes
 - Did: read Project.md, PROGRESS.md, brief, spec §10/§11/§12, roadmap row 27, Stage 26 plan and handoff. Stage 26 is DONE; its `verification.md` says ALL CRITERIA VERIFIED.
 - Ran: `uv sync --group dev` (fresh `UV_CACHE_DIR`) → ok. Gate `uv run pytest -q` → 4560 passed, 73 deselected, exit 0 (403 s) · raw: `artifacts/gate-pytest.txt`.
@@ -76,3 +118,14 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 ## 2026-11-15 — Push and CI
 - Owner: "Yes, push". `git push origin main claude/stage-27-planning-audit-1e46cf` from the sandbox (`allowed_domains: github.com`) → `main` 59b5e0b..38c5903, new branch.
 - CI read from the public API: `main` run 43716562748 success, branch run 43716562759 success (12:58–13:13 UTC) · raw: `artifacts/ci-runs-38c5903.json`. My first polling loop failed to parse the API's JSON (zsh `echo` expanded escapes inside a commit message); curl writing straight to a file worked.
+- Records commit **1a932c0** (`stage-27: push and CI records`); `main` fast-forwarded to it in the owner's Terminal panel and pushed (`main` 38c5903..1a932c0, branch too).
+
+## 2026-11-15 — Completeness pass (owner: "can you please fill in this gap and make sure everything for this stage is being fully completed?")
+- CI on 1a932c0: `main` run 43718001568 success, branch run 43718001937 success (13:15–13:29 UTC) · raw: `artifacts/ci-runs-1a932c0.json`. My first poll queried a mistyped SHA (built by string splicing) and could never match; stopped and re-polled with `git rev-parse`.
+- Checked the stage against Project.md (Rules 0, 1.5, 2, 2A, 3, 4, 6A and the quick checklist). Gaps found and closed:
+  - G1 (Rule 2A.3): the worklog named only some code files (6 of 35 missing) → full table "Code files created or changed by this stage" at the top of this file, checked against `git diff --name-only 59b5e0b..1a932c0`.
+  - G2 (Rule 6A.3): records commit 1a932c0 and its CI were not recorded → recorded here, in `verification.md` and PROGRESS.md.
+  - G3: PROGRESS.md "Last updated" did not mention the merge, push and CI → added.
+  - G4: `plan.md` listed D10 after D11–D13 → reordered (no content change).
+- Checked and complete: brief in-scope items and Verify; both acceptance criteria evidenced; verification block in `verification.md` (ALL CRITERIA VERIFIED) and PROGRESS.md; Decisions log row; Backlog items; handoff note; `plan.md` DONE with every task ticked; raw outputs under `artifacts/`; `git branch --merged main` lists the branch; working tree clean. The author email inside the CI JSON artifacts is the git commit email already in the history and in earlier stages' CI artifacts.
+- This pass is committed as `stage-27: completeness records`; its own CI result is reported in the chat (a commit cannot record its own CI run).
