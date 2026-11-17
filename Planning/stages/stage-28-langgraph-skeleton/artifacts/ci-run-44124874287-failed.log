@@ -1,0 +1,246 @@
+check	Run make check	﻿2026-11-17T16:21:58.9297040Z ##[group]Run make check
+check	Run make check	2026-11-17T16:21:58.9297346Z ^[[36;1mmake check^[[0m
+check	Run make check	2026-11-17T16:21:58.9349940Z shell: /usr/bin/bash -e {0}
+check	Run make check	2026-11-17T16:21:58.9350211Z env:
+check	Run make check	2026-11-17T16:21:58.9350504Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+check	Run make check	2026-11-17T16:21:58.9350900Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+check	Run make check	2026-11-17T16:21:58.9351214Z ##[endgroup]
+check	Run make check	2026-11-17T16:21:58.9451394Z uv run ruff check .
+check	Run make check	2026-11-17T16:21:59.1212042Z All checks passed!
+check	Run make check	2026-11-17T16:21:59.1242615Z uv run ruff format --check .
+check	Run make check	2026-11-17T16:21:59.2392943Z 474 files already formatted
+check	Run make check	2026-11-17T16:21:59.2432593Z uv run mypy src/atlas
+check	Run make check	2026-11-17T16:22:35.9514658Z Success: no issues found in 179 source files
+check	Run make check	2026-11-17T16:22:36.0236994Z uv run pytest -q -n auto --dist loadfile -m 'not live and not llm and not integration and not timing'
+check	Run make check	2026-11-17T16:23:03.7216639Z bringing up nodes...
+check	Run make check	2026-11-17T16:23:03.7236413Z bringing up nodes...
+check	Run make check	2026-11-17T16:23:03.7266075Z 
+check	Run make check	2026-11-17T16:23:03.7703502Z ........................................................................ [  1%]
+check	Run make check	2026-11-17T16:23:03.9126401Z ........................................................................ [  2%]
+check	Run make check	2026-11-17T16:23:04.0186806Z ........................................................................ [  4%]
+check	Run make check	2026-11-17T16:23:04.1573116Z ........................................................................ [  5%]
+check	Run make check	2026-11-17T16:23:04.2866539Z ........................................................................ [  7%]
+check	Run make check	2026-11-17T16:23:04.4346934Z ........................................................................ [  8%]
+check	Run make check	2026-11-17T16:23:04.5626419Z ........................................................................ [ 10%]
+check	Run make check	2026-11-17T16:23:04.7187832Z ........................................................................ [ 11%]
+check	Run make check	2026-11-17T16:23:04.8756471Z ........................................................................ [ 13%]
+check	Run make check	2026-11-17T16:23:04.9966869Z ........................................................................ [ 14%]
+check	Run make check	2026-11-17T16:23:05.6326880Z ........................................................................ [ 15%]
+check	Run make check	2026-11-17T16:23:05.8981623Z ........................................................................ [ 17%]
+check	Run make check	2026-11-17T16:23:06.2506627Z ........................................................................ [ 18%]
+check	Run make check	2026-11-17T16:23:06.4246578Z ........................................................................ [ 20%]
+check	Run make check	2026-11-17T16:23:06.6597308Z ........................................................................ [ 21%]
+check	Run make check	2026-11-17T16:23:07.4186593Z ........................................................................ [ 23%]
+check	Run make check	2026-11-17T16:23:07.6453591Z ........................................................................ [ 24%]
+check	Run make check	2026-11-17T16:23:08.0431262Z ........................................................................ [ 26%]
+check	Run make check	2026-11-17T16:23:08.6526384Z ........................................................................ [ 27%]
+check	Run make check	2026-11-17T16:23:09.1703523Z ........................................................................ [ 29%]
+check	Run make check	2026-11-17T16:23:09.4383600Z ........................................................................ [ 30%]
+check	Run make check	2026-11-17T16:23:11.3066445Z ........................................................................ [ 31%]
+check	Run make check	2026-11-17T16:23:12.8356419Z ........................................................................ [ 33%]
+check	Run make check	2026-11-17T16:23:13.9006436Z ........................................................................ [ 34%]
+check	Run make check	2026-11-17T16:23:15.9181365Z ........................................................................ [ 36%]
+check	Run make check	2026-11-17T16:23:19.9869556Z ........................................................................ [ 37%]
+check	Run make check	2026-11-17T16:23:20.9886401Z ........................................................................ [ 39%]
+check	Run make check	2026-11-17T16:23:27.9376731Z ........................................................................ [ 40%]
+check	Run make check	2026-11-17T16:23:28.3727779Z ........................................................................ [ 42%]
+check	Run make check	2026-11-17T16:23:29.7376422Z ........................................................................ [ 43%]
+check	Run make check	2026-11-17T16:23:30.7426307Z ........................................................................ [ 44%]
+check	Run make check	2026-11-17T16:23:34.7586314Z ........................................................................ [ 46%]
+check	Run make check	2026-11-17T16:23:35.7906437Z ........................................................................ [ 47%]
+check	Run make check	2026-11-17T16:23:38.0486460Z ........................................................................ [ 49%]
+check	Run make check	2026-11-17T16:23:38.8256451Z ........................................................................ [ 50%]
+check	Run make check	2026-11-17T16:23:40.5780095Z ........................................................................ [ 52%]
+check	Run make check	2026-11-17T16:23:42.4390817Z ........................................................................ [ 53%]
+check	Run make check	2026-11-17T16:23:46.7826278Z ........................................................................ [ 55%]
+check	Run make check	2026-11-17T16:23:51.9086325Z ........................................................................ [ 56%]
+check	Run make check	2026-11-17T16:23:56.6847344Z ........................................................................ [ 58%]
+check	Run make check	2026-11-17T16:23:58.3646523Z ........................................................................ [ 59%]
+check	Run make check	2026-11-17T16:24:02.3318876Z ........................................................................ [ 60%]
+check	Run make check	2026-11-17T16:24:11.7866450Z ........................................................................ [ 62%]
+check	Run make check	2026-11-17T16:24:24.5118000Z ........................................................................ [ 63%]
+check	Run make check	2026-11-17T16:24:28.3893073Z ........................................................................ [ 65%]
+check	Run make check	2026-11-17T16:24:40.0386329Z ........................................................................ [ 66%]
+check	Run make check	2026-11-17T16:24:43.4966249Z ........................................................................ [ 68%]
+check	Run make check	2026-11-17T16:24:44.5169053Z ........................................................................ [ 69%]
+check	Run make check	2026-11-17T16:25:00.1447734Z ........................................................................ [ 71%]
+check	Run make check	2026-11-17T16:26:46.3146312Z ........................................................................ [ 72%]
+check	Run make check	2026-11-17T16:26:49.8866237Z ........................................................................ [ 73%]
+check	Run make check	2026-11-17T16:26:55.8646514Z .......................F................................................ [ 75%]
+check	Run make check	2026-11-17T16:26:59.2886431Z ........................................................................ [ 76%]
+check	Run make check	2026-11-17T16:27:01.6136376Z ........................................................................ [ 78%]
+check	Run make check	2026-11-17T16:27:05.4126479Z ........................................................................ [ 79%]
+check	Run make check	2026-11-17T16:27:06.2639984Z ........................................................................ [ 81%]
+check	Run make check	2026-11-17T16:27:21.3616369Z ........................................................................ [ 82%]
+check	Run make check	2026-11-17T16:27:31.4146332Z ........................................................................ [ 84%]
+check	Run make check	2026-11-17T16:27:33.1286175Z ........................................................................ [ 85%]
+check	Run make check	2026-11-17T16:28:01.9006230Z ........................................................................ [ 87%]
+check	Run make check	2026-11-17T16:28:09.9396437Z ........................................................................ [ 88%]
+check	Run make check	2026-11-17T16:28:16.6444449Z ........................................................................ [ 89%]
+check	Run make check	2026-11-17T16:28:32.2146206Z ........................................................................ [ 91%]
+check	Run make check	2026-11-17T16:29:12.0986375Z ........................................................................ [ 92%]
+check	Run make check	2026-11-17T16:30:01.2586573Z ........................................................................ [ 94%]
+check	Run make check	2026-11-17T16:30:35.4806373Z ........................................................................ [ 95%]
+check	Run make check	2026-11-17T16:31:19.5576405Z ........................................................................ [ 97%]
+check	Run make check	2026-11-17T16:31:40.7356358Z ........................................................................ [ 98%]
+check	Run make check	2026-11-17T16:37:33.5687104Z nanobind: leaked 27 instances!
+check	Run make check	2026-11-17T16:37:33.5696160Z nanobind: leaked 6 types!
+check	Run make check	2026-11-17T16:37:33.5737383Z  - leaked type "_duckdb._sqltypes.DuckDBPyType"
+check	Run make check	2026-11-17T16:37:33.5765954Z  - leaked type "_duckdb.DuckDBPyConnection"
+check	Run make check	2026-11-17T16:37:33.5766575Z  - leaked type "FunctionNullHandling"
+check	Run make check	2026-11-17T16:37:33.5770393Z  - leaked type "PythonUDFType"
+check	Run make check	2026-11-17T16:37:33.5797814Z  - leaked type "ExplainType"
+check	Run make check	2026-11-17T16:37:33.5826202Z  - leaked type "PythonExceptionHandling"
+check	Run make check	2026-11-17T16:37:33.5826931Z nanobind: leaked 84 functions!
+check	Run make check	2026-11-17T16:37:33.5855921Z  - leaked function "row_type"
+check	Run make check	2026-11-17T16:37:33.5885845Z  - leaked function "__new__"
+check	Run make check	2026-11-17T16:37:33.5915922Z  - leaked function "execute"
+check	Run make check	2026-11-17T16:37:33.5916577Z  - leaked function "sqltype"
+check	Run make check	2026-11-17T16:37:33.5945988Z  - leaked function "decimal_type"
+check	Run make check	2026-11-17T16:37:33.5975978Z  - leaked function "enable_profiling"
+check	Run make check	2026-11-17T16:37:33.5985842Z  - leaked function "remove_function"
+check	Run make check	2026-11-17T16:37:33.6005916Z  - leaked function "_catalog_version"
+check	Run make check	2026-11-17T16:37:33.6035935Z  - leaked function "append"
+check	Run make check	2026-11-17T16:37:33.6065858Z  - leaked function "close"
+check	Run make check	2026-11-17T16:37:33.6066464Z  - ... skipped remainder
+check	Run make check	2026-11-17T16:37:33.6096097Z nanobind: this is likely caused by a reference counting issue in the binding code.
+check	Run make check	2026-11-17T16:37:33.7310894Z See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+check	Run make check	2026-11-17T16:37:33.7311979Z nanobind: leaked 6 types!
+check	Run make check	2026-11-17T16:37:33.7312529Z  - leaked type "_duckdb._sqltypes.DuckDBPyType"
+check	Run make check	2026-11-17T16:37:33.7313119Z  - leaked type "_duckdb.DuckDBPyConnection"
+check	Run make check	2026-11-17T16:37:33.7313665Z  - leaked type "FunctionNullHandling"
+check	Run make check	2026-11-17T16:37:33.7314184Z  - leaked type "PythonUDFType"
+check	Run make check	2026-11-17T16:37:33.7314671Z  - leaked type "ExplainType"
+check	Run make check	2026-11-17T16:37:33.7315174Z  - leaked type "PythonExceptionHandling"
+check	Run make check	2026-11-17T16:37:33.7315901Z nanobind: leaked 84 functions!
+check	Run make check	2026-11-17T16:37:33.7316384Z  - leaked function "_register_values"
+check	Run make check	2026-11-17T16:37:33.7316879Z  - leaked function ""
+check	Run make check	2026-11-17T16:37:33.7317324Z  - leaked function "fetchdf"
+check	Run make check	2026-11-17T16:37:33.7317810Z  - leaked function "_result_as_arrow"
+check	Run make check	2026-11-17T16:37:33.7318317Z  - leaked function "fetch_df_chunk"
+check	Run make check	2026-11-17T16:37:33.7318813Z  - leaked function "load_extension"
+check	Run make check	2026-11-17T16:37:33.7319306Z  - leaked function "_statement_count"
+check	Run make check	2026-11-17T16:37:33.7319812Z  - leaked function "enum_type"
+check	Run make check	2026-11-17T16:37:33.7320295Z  - leaked function "map_type"
+check	Run make check	2026-11-17T16:37:33.7320752Z  - leaked function ""
+check	Run make check	2026-11-17T16:37:33.7321177Z  - ... skipped remainder
+check	Run make check	2026-11-17T16:37:33.7321805Z nanobind: this is likely caused by a reference counting issue in the binding code.
+check	Run make check	2026-11-17T16:37:33.8544733Z See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+check	Run make check	2026-11-17T16:37:33.8546058Z nanobind: leaked 6 types!
+check	Run make check	2026-11-17T16:37:33.8546749Z  - leaked type "_duckdb._sqltypes.DuckDBPyType"
+check	Run make check	2026-11-17T16:37:33.8547353Z  - leaked type "_duckdb.DuckDBPyConnection"
+check	Run make check	2026-11-17T16:37:33.8547842Z  - leaked type "FunctionNullHandling"
+check	Run make check	2026-11-17T16:37:33.8548285Z  - leaked type "PythonUDFType"
+check	Run make check	2026-11-17T16:37:33.8548685Z  - leaked type "ExplainType"
+check	Run make check	2026-11-17T16:37:33.8549091Z  - leaked type "PythonExceptionHandling"
+check	Run make check	2026-11-17T16:37:33.8549532Z nanobind: leaked 84 functions!
+check	Run make check	2026-11-17T16:37:33.8549916Z  - leaked function "fetch_df"
+check	Run make check	2026-11-17T16:37:33.8550332Z  - leaked function "unregister_filesystem"
+check	Run make check	2026-11-17T16:37:33.8550783Z  - leaked function "get_table_names"
+check	Run make check	2026-11-17T16:37:33.8551194Z  - leaked function "__exit__"
+check	Run make check	2026-11-17T16:37:33.8551582Z  - leaked function "query_progress"
+check	Run make check	2026-11-17T16:37:33.8551988Z  - leaked function "df"
+check	Run make check	2026-11-17T16:37:33.8552331Z  - leaked function "__new__"
+check	Run make check	2026-11-17T16:37:33.8552705Z  - leaked function "sqltype"
+check	Run make check	2026-11-17T16:37:33.8553563Z  - leaked function "execute"
+check	Run make check	2026-11-17T16:37:33.8553933Z  - leaked function "__eq__"
+check	Run make check	2026-11-17T16:37:33.8554284Z  - ... skipped remainder
+check	Run make check	2026-11-17T16:37:33.8554842Z nanobind: this is likely caused by a reference counting issue in the binding code.
+check	Run make check	2026-11-17T16:37:34.1381234Z See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+check	Run make check	2026-11-17T16:37:34.1382242Z nanobind: leaked 6 types!
+check	Run make check	2026-11-17T16:37:34.1382575Z  - leaked type "_duckdb._sqltypes.DuckDBPyType"
+check	Run make check	2026-11-17T16:37:34.1382970Z  - leaked type "_duckdb.DuckDBPyConnection"
+check	Run make check	2026-11-17T16:37:34.1383715Z  - leaked type "FunctionNullHandling"
+check	Run make check	2026-11-17T16:37:34.1384042Z  - leaked type "PythonUDFType"
+check	Run make check	2026-11-17T16:37:34.1384340Z  - leaked type "ExplainType"
+check	Run make check	2026-11-17T16:37:34.1384643Z  - leaked type "PythonExceptionHandling"
+check	Run make check	2026-11-17T16:37:34.1384965Z nanobind: leaked 84 functions!
+check	Run make check	2026-11-17T16:37:34.1385238Z  - leaked function "_submit"
+check	Run make check	2026-11-17T16:37:34.1385812Z  - leaked function "_register_values"
+check	Run make check	2026-11-17T16:37:34.1386147Z  - leaked function "__exit__"
+check	Run make check	2026-11-17T16:37:34.1386426Z  - leaked function "enum_type"
+check	Run make check	2026-11-17T16:37:34.1386698Z  - leaked function "fetchone"
+check	Run make check	2026-11-17T16:37:34.1386974Z  - leaked function "fetch_df_chunk"
+check	Run make check	2026-11-17T16:37:34.1387304Z  - leaked function "filesystem_is_registered"
+check	Run make check	2026-11-17T16:37:34.1387640Z  - leaked function "__eq__"
+check	Run make check	2026-11-17T16:37:34.1387912Z  - leaked function "fetchall"
+check	Run make check	2026-11-17T16:37:34.1388186Z  - leaked function "fetchdf"
+check	Run make check	2026-11-17T16:37:34.1388463Z  - ... skipped remainder
+check	Run make check	2026-11-17T16:37:34.1388883Z nanobind: this is likely caused by a reference counting issue in the binding code.
+check	Run make check	2026-11-17T16:37:34.5203603Z ....................................................................     [100%]
+check	Run make check	2026-11-17T16:37:34.5204284Z =================================== FAILURES ===================================
+check	Run make check	2026-11-17T16:37:34.5204893Z ____________ test_a_killed_process_resumes_from_its_last_checkpoint ____________
+check	Run make check	2026-11-17T16:37:34.5206068Z [gw0] linux -- Python 3.12.16 /home/runner/work/atlas-capital/atlas-capital/.venv/bin/python
+check	Run make check	2026-11-17T16:37:34.5206570Z 
+check	Run make check	2026-11-17T16:37:34.5206963Z tmp_path = PosixPath('/tmp/pytest-of-runner/pytest-0/popen-gw0/test_a_killed_process_resumes_0')
+check	Run make check	2026-11-17T16:37:34.5207490Z 
+check	Run make check	2026-11-17T16:37:34.5207877Z     def test_a_killed_process_resumes_from_its_last_checkpoint(tmp_path: Path) -> None:
+check	Run make check	2026-11-17T16:37:34.5208449Z         run_id = _run_id()
+check	Run make check	2026-11-17T16:37:34.5208770Z         log = tmp_path / "calls.log"
+check	Run make check	2026-11-17T16:37:34.5209179Z         others = [s for s in SYMBOLS if s != "CCC"]
+check	Run make check	2026-11-17T16:37:34.5209516Z     
+check	Run make check	2026-11-17T16:37:34.5209730Z         def ready(text: str) -> bool:
+check	Run make check	2026-11-17T16:37:34.5210205Z             return "CCC news blocked" in text and all(f"{s} director done" in text for s in others)
+check	Run make check	2026-11-17T16:37:34.5210682Z     
+check	Run make check	2026-11-17T16:37:34.5210918Z         err = (tmp_path / "worker.err").open("wb")
+check	Run make check	2026-11-17T16:37:34.5211261Z         proc = subprocess.Popen(
+check	Run make check	2026-11-17T16:37:34.5211535Z             [
+check	Run make check	2026-11-17T16:37:34.5211753Z                 sys.executable,
+check	Run make check	2026-11-17T16:37:34.5212043Z                 str(HERE / "kill_worker.py"),
+check	Run make check	2026-11-17T16:37:34.5212354Z                 str(tmp_path),
+check	Run make check	2026-11-17T16:37:34.5212613Z                 run_id,
+check	Run make check	2026-11-17T16:37:34.5212844Z                 str(log),
+check	Run make check	2026-11-17T16:37:34.5213082Z                 "CCC",
+check	Run make check	2026-11-17T16:37:34.5213327Z                 ",".join(SYMBOLS),
+check	Run make check	2026-11-17T16:37:34.5213592Z             ],
+check	Run make check	2026-11-17T16:37:34.5213807Z             cwd=tmp_path,
+check	Run make check	2026-11-17T16:37:34.5214074Z             stdout=subprocess.DEVNULL,
+check	Run make check	2026-11-17T16:37:34.5214376Z             stderr=err,
+check	Run make check	2026-11-17T16:37:34.5214604Z         )
+check	Run make check	2026-11-17T16:37:34.5214806Z         try:
+check	Run make check	2026-11-17T16:37:34.5215064Z             text = _wait_for(log, ready, proc, timeout=60)
+check	Run make check	2026-11-17T16:37:34.5215527Z         finally:
+check	Run make check	2026-11-17T16:37:34.5215773Z             proc.send_signal(signal.SIGKILL)
+check	Run make check	2026-11-17T16:37:34.5216098Z             proc.wait(timeout=30)
+check	Run make check	2026-11-17T16:37:34.5216693Z             err.close()
+check	Run make check	2026-11-17T16:37:34.5216984Z         assert proc.returncode == -signal.SIGKILL
+check	Run make check	2026-11-17T16:37:34.5217333Z         assert "finished" not in text
+check	Run make check	2026-11-17T16:37:34.5217610Z     
+check	Run make check	2026-11-17T16:37:34.5217803Z         spy = Spy()
+check	Run make check	2026-11-17T16:37:34.5218031Z         out = resume_graph(
+check	Run make check	2026-11-17T16:37:34.5218490Z             build_research_graph(spy.team(), max_concurrency=2), run_id=run_id, lake_path=tmp_path
+check	Run make check	2026-11-17T16:37:34.5218974Z         )
+check	Run make check	2026-11-17T16:37:34.5219220Z         _assert_same_final_state(out, _clean_final())
+check	Run make check	2026-11-17T16:37:34.5219729Z         resumed = {s for s, _ in spy.calls}
+check	Run make check	2026-11-17T16:37:34.5220162Z >       assert resumed == {"CCC"}  # the four finished symbols are not researched again
+check	Run make check	2026-11-17T16:37:34.5220550Z         ^^^^^^^^^^^^^^^^^^^^^^^^^
+check	Run make check	2026-11-17T16:37:34.5220834Z E       AssertionError: assert {'CCC', 'EEE'} == {'CCC'}
+check	Run make check	2026-11-17T16:37:34.5221128Z E         
+check	Run make check	2026-11-17T16:37:34.5221337Z E         Extra items in the left set:
+check	Run make check	2026-11-17T16:37:34.5221596Z E         'EEE'
+check	Run make check	2026-11-17T16:37:34.5221782Z E         
+check	Run make check	2026-11-17T16:37:34.5221962Z E         Full diff:
+check	Run make check	2026-11-17T16:37:34.5222165Z E           {
+check	Run make check	2026-11-17T16:37:34.5222349Z E               'CCC',
+check	Run make check	2026-11-17T16:37:34.5222551Z E         +     'EEE',
+check	Run make check	2026-11-17T16:37:34.5222746Z E           }
+check	Run make check	2026-11-17T16:37:34.5222859Z 
+check	Run make check	2026-11-17T16:37:34.5223094Z tests/unit/orchestration/test_orchestration_checkpoint.py:252: AssertionError
+check	Run make check	2026-11-17T16:37:34.5223600Z ------------------------------ Captured log call -------------------------------
+check	Run make check	2026-11-17T16:37:34.5225153Z INFO     atlas.orchestration.checkpoint:checkpoint.py:131 {'run_id': '01M7N5A74PGW5J3K34V45ZZHYK', 'checkpoint': '/tmp/pytest-of-runner/pytest-0/popen-gw0/test_a_killed_process_resumes_0/runs/01M7N5A74PGW5J3K34V45ZZHYK/checkpoints.sqlite', 'event': 'orchestration_run_resumed', 'level': 'info', 'logger': 'atlas.orchestration.checkpoint', 'timestamp': '2026-11-17T16:26:53.242703Z'}
+check	Run make check	2026-11-17T16:37:34.5227619Z INFO     atlas.orchestration.research_graph:research_graph.py:240 {'as_of': '2024-03-01', 'queued': 5, 'researched': 5, 'dropped': [], 'event': 'orchestration_research_done', 'level': 'info', 'logger': 'atlas.orchestration.research_graph', 'timestamp': '2026-11-17T16:26:53.302448Z'}
+check	Run make check	2026-11-17T16:37:34.5229362Z INFO     atlas.orchestration.research_graph:research_graph.py:240 {'as_of': '2024-03-01', 'queued': 5, 'researched': 5, 'dropped': [], 'event': 'orchestration_research_done', 'level': 'info', 'logger': 'atlas.orchestration.research_graph', 'timestamp': '2026-11-17T16:26:53.398179Z'}
+check	Run make check	2026-11-17T16:37:34.5230432Z =========================== short test summary info ============================
+check	Run make check	2026-11-17T16:37:34.5231255Z FAILED tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_killed_process_resumes_from_its_last_checkpoint - AssertionError: assert {'CCC', 'EEE'} == {'CCC'}
+check	Run make check	2026-11-17T16:37:34.5231963Z   
+check	Run make check	2026-11-17T16:37:34.5232151Z   Extra items in the left set:
+check	Run make check	2026-11-17T16:37:34.5232395Z   'EEE'
+check	Run make check	2026-11-17T16:37:34.5232571Z   
+check	Run make check	2026-11-17T16:37:34.5232742Z   Full diff:
+check	Run make check	2026-11-17T16:37:34.5232925Z     {
+check	Run make check	2026-11-17T16:37:34.5233106Z         'CCC',
+check	Run make check	2026-11-17T16:37:34.5233292Z   +     'EEE',
+check	Run make check	2026-11-17T16:37:34.5233475Z     }
+check	Run make check	2026-11-17T16:37:34.5233677Z 1 failed, 4963 passed in 893.24s (0:14:53)
+check	Run make check	2026-11-17T16:37:35.1044724Z See https://nanobind.readthedocs.io/en/latest/refleaks.htmlmake: *** [Makefile:12: test] Error 1
+check	Run make check	2026-11-17T16:37:35.1061402Z ##[error]Process completed with exit code 2.

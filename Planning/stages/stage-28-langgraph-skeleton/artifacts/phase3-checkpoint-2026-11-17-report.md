@@ -225,6 +225,11 @@ backtests on one lake (56).
   - After Tier 1: `uv run pytest -q` 4967 passed; `make check` exit 0 (4964 + 3 timing);
     Verify 1084 / 339 / 308 / 158 / 189 passed; integration 48 passed, 15 skipped; coverage
     of every changed module 100% for the new lines.
+- Push (2026-11-17, owner: "Yes, push"): CI on 4679e24 passed on `main` and failed on the
+  branch: Stage 28's kill-resume test killed its worker after a director logged "done" but
+  before LangGraph saved that director's write, so the resumed run researched that symbol
+  again. A race in the test, not the code; the test now waits for the saved writes (red
+  reproduced on purpose, then green; full suite 4967 passed, `make check` exit 0).
 - Tiers 2–4: not started; they wait for the owner's word. Tier 2 items change behaviour or a
   brief, so each needs it. Recommended order: Tier 2 items 5 (tools package) and 1 (memory
   ids) before Stage 29; item 7 (where fixture data comes from) before Stage 29's live run.

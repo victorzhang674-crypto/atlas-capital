@@ -211,13 +211,36 @@ def _wait_for(log: Path, predicate: Any, proc: subprocess.Popen[bytes], timeout:
     raise AssertionError(f"timed out; log:\n{log.read_text() if log.exists() else ''}")
 
 
+def _saved_theses(path: Path) -> int:
+    """How many directors' `thesis` writes the checkpoint file holds (0 while it is missing or
+    being written). A director logs "done" before LangGraph saves its write."""
+    if not path.is_file():
+        return 0
+    try:
+        with sqlite3.connect(f"file:{path}?mode=ro", uri=True, timeout=0.1) as conn:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM writes WHERE channel = 'thesis'"
+                " AND task_path LIKE '%director'"
+            ).fetchone()
+    except sqlite3.OperationalError:  # not created yet, or locked by the writer
+        return 0
+    return int(row[0])
+
+
 def test_a_killed_process_resumes_from_its_last_checkpoint(tmp_path: Path) -> None:
     run_id = _run_id()
     log = tmp_path / "calls.log"
     others = [s for s in SYMBOLS if s != "CCC"]
+    saved = checkpoint_path(tmp_path, run_id)
 
     def ready(text: str) -> bool:
-        return "CCC news blocked" in text and all(f"{s} director done" in text for s in others)
+        # The kill must come after the four finished directors' writes are saved, not just
+        # logged: killed in between, a finished symbol is rightly researched again.
+        return (
+            "CCC news blocked" in text
+            and all(f"{s} director done" in text for s in others)
+            and _saved_theses(saved) >= len(others)
+        )
 
     err = (tmp_path / "worker.err").open("wb")
     proc = subprocess.Popen(

@@ -1,0 +1,71 @@
+## RED: unchanged test (wait on log lines only) vs a worker that saves EEE's director write 3 s after logging it
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_kill_resume_with_a_slow_write ______________________
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8111/test_kill_resume_with_a_slow_w0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x11054b890>
+
+    def test_kill_resume_with_a_slow_write(tmp_path, monkeypatch):
+        monkeypatch.setattr(t, "HERE", Path(__file__).resolve().parent)
+>       t.test_a_killed_process_resumes_from_its_last_checkpoint(tmp_path)
+
+/tmp/claude-501/race/test_race_probe.py:10: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8111/test_kill_resume_with_a_slow_w0')
+
+    def test_a_killed_process_resumes_from_its_last_checkpoint(tmp_path: Path) -> None:
+        run_id = _run_id()
+        log = tmp_path / "calls.log"
+        others = [s for s in SYMBOLS if s != "CCC"]
+    
+        def ready(text: str) -> bool:
+            return "CCC news blocked" in text and all(f"{s} director done" in text for s in others)
+    
+        err = (tmp_path / "worker.err").open("wb")
+        proc = subprocess.Popen(
+            [
+                sys.executable,
+                str(HERE / "kill_worker.py"),
+                str(tmp_path),
+                run_id,
+                str(log),
+                "CCC",
+                ",".join(SYMBOLS),
+            ],
+            cwd=tmp_path,
+            stdout=subprocess.DEVNULL,
+            stderr=err,
+        )
+        try:
+            text = _wait_for(log, ready, proc, timeout=60)
+        finally:
+            proc.send_signal(signal.SIGKILL)
+            proc.wait(timeout=30)
+            err.close()
+        assert proc.returncode == -signal.SIGKILL
+        assert "finished" not in text
+    
+        spy = Spy()
+        out = resume_graph(
+            build_research_graph(spy.team(), max_concurrency=2), run_id=run_id, lake_path=tmp_path
+        )
+        _assert_same_final_state(out, _clean_final())
+        resumed = {s for s, _ in spy.calls}
+>       assert resumed == {"CCC"}  # the four finished symbols are not researched again
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert {'CCC', 'EEE'} == {'CCC'}
+E         
+E         Extra items in the left set:
+E         'EEE'
+E         Use -v to get more diff
+
+tests/unit/orchestration/test_orchestration_checkpoint.py:252: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../../../../../tmp/claude-501/race/test_race_probe.py::test_kill_resume_with_a_slow_write
+1 failed in 6.71s
+
+## GREEN: the test also waits for the four saved director writes
+.                                                                        [100%]
+1 passed in 10.25s
