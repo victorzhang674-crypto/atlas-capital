@@ -264,7 +264,8 @@ def invoke_untraced(
 @dataclass(frozen=True)
 class ResearchGraph:
     """The fund-level research graph: `builder` (uncompiled, so a runner can compile it with
-    its checkpointer) and the `max_concurrency` it was built for."""
+    its checkpointer) and the `max_concurrency` it was built for. The agent-call semaphore
+    belongs to the built graph: runs of one `ResearchGraph` at the same time share its limit."""
 
     builder: StateGraph[FundState]
     max_concurrency: int
@@ -277,7 +278,9 @@ class ResearchGraph:
     def fingerprint(self) -> str:
         """SHA-256 of the graph's structure (its mermaid export: node names and edges, the
         analyst roster included; not the concurrency limit). A checkpointed run records it,
-        and a resume with a graph built differently is refused."""
+        and a resume with a graph built differently is refused. The export's text comes from
+        LangGraph, so a LangGraph upgrade that changes it also refuses older runs (fail safe:
+        finish or abandon runs before upgrading)."""
         return hashlib.sha256(self.mermaid().encode()).hexdigest()
 
     def config(self, **configurable: Any) -> RunnableConfig:

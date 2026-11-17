@@ -282,3 +282,57 @@ def test_a5_invoke_untraced_passes_every_argument_through() -> None:
         out = invoke_untraced(App(), {"a": 1}, {"b": 2}, durability="sync")  # type: ignore[arg-type]
     assert out == {"ok": True}
     assert seen == [({"a": 1}, {"b": 2}, {"durability": "sync"}, False)]
+
+
+# --- R1 (re-audit): checkpoints, logs and agent traces name the same run --------------------
+
+
+def test_r1_agents_run_inside_the_callers_run_context(tmp_path: Path) -> None:
+    # Logs and agent traces take `run_id` from the run context: it must reach every agent
+    # thread and be the id the checkpoints are filed under.
+    from atlas.core.run_context import current_run_context, run_context
+
+    seen: list[str | None] = []
+
+    def record() -> None:
+        ctx = current_run_context()
+        seen.append(None if ctx is None else ctx.run_id)
+
+    spy = Spy(hooks={("*", "director"): record, ("*", "news"): record})
+    with run_context() as ctx:
+        run_graph(
+            build_research_graph(spy.team(), max_concurrency=3),
+            INPUTS,
+            run_id=ctx.run_id,
+            lake_path=tmp_path,
+        )
+    assert seen == [ctx.run_id] * (2 * len(SYMBOLS))
+
+
+def test_r1_run_graph_refuses_another_runs_id(tmp_path: Path) -> None:
+    from atlas.core.run_context import run_context
+
+    other = str(ULID())
+    graph = build_research_graph(stub_team(), max_concurrency=2)
+    with run_context(), pytest.raises(OrchestrationError, match="run context"):
+        run_graph(graph, INPUTS, run_id=other, lake_path=tmp_path)
+    assert not checkpoint_path(tmp_path, other).exists()
+
+
+def test_r1_resume_graph_refuses_another_runs_id(tmp_path: Path) -> None:
+    from atlas.core.run_context import run_context
+
+    run_id = str(ULID())
+    graph = build_research_graph(stub_team(), max_concurrency=2)
+    run_graph(graph, INPUTS, run_id=run_id, lake_path=tmp_path)
+    with run_context(), pytest.raises(OrchestrationError, match="run context"):
+        resume_graph(graph, run_id=run_id, lake_path=tmp_path)
+
+
+def test_r1_a_nested_scope_of_the_same_run_is_fine(tmp_path: Path) -> None:
+    from atlas.core.run_context import run_context
+
+    graph = build_research_graph(stub_team(), max_concurrency=2)
+    with run_context() as ctx, run_context(stage="research", as_of=DAY):
+        out = run_graph(graph, INPUTS, run_id=ctx.run_id, lake_path=tmp_path)
+    assert set(out["theses"]) == set(SYMBOLS)

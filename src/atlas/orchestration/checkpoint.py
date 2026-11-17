@@ -14,8 +14,9 @@ the unfinished ones. Agent failures do not stop a run at all: they are recorded 
 `run_graph` checks the inputs before it writes anything and refuses a `run_id` that already
 has a checkpoint (a new run never appends to an old one); `resume_graph` refuses one without,
 and one started with a graph built differently (the graph fingerprint is stored as checkpoint
-metadata). Resuming a finished run runs nothing and returns its final state. LangSmith tracing
-is off for every run (`invoke_untraced`).
+metadata). Both refuse to run under the run context of another run (logs and agent traces
+take their `run_id` from the context). Resuming a finished run runs nothing and returns its
+final state. LangSmith tracing is off for every run (`invoke_untraced`).
 
 The serializer only rebuilds the types listed by `state_types()` (every model and enum the
 state can hold); LangGraph would hand any other type back as a plain dict.
@@ -32,7 +33,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 from atlas.core.errors import OrchestrationError
 from atlas.core.logging import get_logger
-from atlas.core.run_context import run_dir
+from atlas.core.run_context import current_run_context, run_dir
 from atlas.orchestration.research_graph import (
     GRAPH_METADATA_KEY,
     ResearchGraph,
@@ -71,6 +72,18 @@ def sqlite_checkpointer(path: Path) -> Iterator[SqliteSaver]:
         conn.close()
 
 
+def _check_run_context(run_id: str) -> None:
+    """Raise `OrchestrationError` if a run context is active for another run: logs and agent
+    traces take their `run_id` from the context, the checkpoints from `run_id`, and one run's
+    records must not be split across two ids."""
+    ctx = current_run_context()
+    if ctx is not None and ctx.run_id != run_id:
+        raise OrchestrationError(
+            f"run id {run_id} differs from the active run context's {ctx.run_id}; "
+            "checkpoint a run under its own run id"
+        )
+
+
 def _has_checkpoint(saver: SqliteSaver, run_id: str) -> bool:
     return saver.get_tuple({"configurable": {"thread_id": run_id}}) is not None
 
@@ -79,9 +92,11 @@ def run_graph(
     graph: ResearchGraph, inputs: FundState, *, run_id: str, lake_path: Path
 ) -> FundState:
     """Run `graph` on `inputs` as run `run_id`, checkpointed under `lake_path`; returns the
-    final state. Raises `OrchestrationError` for malformed inputs (before anything is
-    written) or if the run already has a checkpoint."""
+    final state. Call it inside the run's `run_context` (logs and agent traces then carry
+    `run_id`). Raises `OrchestrationError` for malformed inputs (before anything is written),
+    if the run already has a checkpoint, or if a run context of another run is active."""
     path = checkpoint_path(lake_path, run_id)
+    _check_run_context(run_id)
     graph.check_inputs(inputs)
     with sqlite_checkpointer(path) as saver:
         if _has_checkpoint(saver, run_id):
@@ -98,8 +113,10 @@ def resume_graph(graph: ResearchGraph, *, run_id: str, lake_path: Path) -> FundS
     """Continue run `run_id` from its last checkpoint under `lake_path` and return its final
     state (a finished run's final state, without running anything). `graph` must be built
     like the original (same graph fingerprint). Raises `OrchestrationError` if the run has no
-    checkpoint or was started with a graph built differently."""
+    checkpoint, was started with a graph built differently, or if a run context of another
+    run is active."""
     path = checkpoint_path(lake_path, run_id)
+    _check_run_context(run_id)
     if not path.is_file():
         raise OrchestrationError(f"run {run_id} has no checkpoint at {path}")
     with sqlite_checkpointer(path) as saver:

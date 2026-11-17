@@ -90,3 +90,12 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Owner: "Yes, push". `git push origin main claude/stage-28-planning-audit-957ff6` from the sandbox (`allowed_domains: github.com`) → `main` 09f76eb..bfe9850, stage branch new on origin.
 - CI read from the public API (`actions/runs?head_sha=bfe9850…`): `main` run 44002675127 completed success; branch run 44002675035 completed success. Raw: artifacts/ci-runs-bfe9850.json. (My wait loop's exit test used `set --` word splitting, which zsh does not do, so it ran its full 30 polls; the result is unaffected.)
 - This push-and-CI records commit goes to `main` the same way (fast-forward in the owner's Terminal panel, merged-result checks) and is pushed; its own CI is reported in the chat.
+- CI on the push-and-CI records commit 6a2f9b4: `main` run 44007526003 success, branch run 44007526021 success (reported in the chat; recorded here by the re-audit below).
+
+## 2026-11-16 — Re-audit (owner: "please help me to audit again and make sure the completion of this stage")
+- Fresh evidence on 6a2f9b4 before any change: Verify → 185 passed; `uv run pytest -q` → 4917 passed, 74 deselected, exit 0; `make check` → exit 0. Git: `main` = `origin/main` = branch = 6a2f9b4, main checkout clean, CI success on both refs (GitHub API).
+- Re-read the brief, protocol §2–§6 and Project.md; reviewed the code again; checked LangGraph's `SqliteSaver` (cursor under its own lock: thread-safe).
+- R1 (defect): checkpoints are filed under the `run_id` argument, logs and agent traces under the active run context's id, and nothing checked they agree. Red: `test_r1_run_graph_refuses_another_runs_id`, `test_r1_resume_graph_refuses_another_runs_id` failed (2 failed, 2 passed). Fix: `checkpoint._check_run_context` in `run_graph` and `resume_graph` (before anything is written). Green: 189 passed.
+- R2: units in the `stub_analyst` / `stub_director` docstrings (protocol §3). R3: the `IN PROGRESS` step after the gate check was skipped (recorded; Stage 29 should write it). R4: documented that a LangGraph upgrade changes the fingerprint (resume of older runs refused) and that runs of one `ResearchGraph` share its semaphore.
+- Ran: ruff clean, format clean, mypy clean, coverage 100% (390 statements); full results in artifacts/re-audit-report.md and artifacts/reaudit-*.txt.
+- Code changed: `src/atlas/orchestration/checkpoint.py`, `stubs.py` (docstrings), `research_graph.py` (docstrings), `docs/orchestration.md`, `tests/unit/orchestration/test_orchestration_audit.py`.

@@ -44,7 +44,9 @@ def _evidence_id(analyst: str, task: ResearchTask) -> str:
 
 
 def stub_analyst(name: str) -> AnalystFn:
-    """A stub analyst called `name`: one signal citing one stub evidence id."""
+    """A stub analyst called `name`: one signal citing one stub evidence id. Its direction,
+    `strength` and the report's `confidence` (both in [0, 1)) are fixed by a hash of the
+    analyst, the symbol and the day."""
 
     def run(task: ResearchTask) -> AnalystReport:
         u = _unit(name, task.symbol, task.as_of)
@@ -96,7 +98,10 @@ def stub_director(
     reports: Mapping[str, AnalystReport],
     debate: Sequence[DebateTurn],
 ) -> InvestmentThesis:
-    """A thesis on the majority signal direction, citing every report's evidence."""
+    """A thesis on the strength-weighted majority signal direction, citing every report's
+    evidence. `exp_return` quantiles are simple returns over `horizon_days` = 20 trading days
+    (not annualised): a band of half-width 2-10% (hashed) around a centre of half that width
+    in the thesis direction (0 for FLAT); `conviction` is the reports' mean `confidence`."""
     signals = [signal for report in reports.values() for signal in report.signals]
     score = sum(s.direction.sign * s.strength for s in signals)
     direction = Direction.LONG if score > 0 else Direction.SHORT if score < 0 else Direction.FLAT
