@@ -1066,6 +1066,16 @@ class AgentsConfig(_Frozen):
     memory: MemoryConfig = Field(default_factory=MemoryConfig)
 
 
+class OrchestrationConfig(_Frozen):
+    """The fund graph (Stage 28).
+
+    `max_concurrency`: at most this many agent calls (LLM calls from Stage 29) run at once
+    across the whole graph, and at most this many research symbols are in flight.
+    """
+
+    max_concurrency: Annotated[int, Field(ge=1)] = 4
+
+
 class BacktestConfig(_Frozen):
     """Backtest window (spec A7). `end=None` means the latest available session."""
 
@@ -1854,6 +1864,7 @@ class AtlasConfig(BaseSettings):
     quant: QuantConfig = Field(default_factory=QuantConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
+    orchestration: OrchestrationConfig = Field(default_factory=OrchestrationConfig)
     backtest: BacktestConfig = Field(default_factory=BacktestConfig)
     calendar: CalendarConfig = Field(default_factory=CalendarConfig)
     secrets: Secrets = Field(default_factory=Secrets)
@@ -1975,7 +1986,18 @@ def _deep_merge(*layers: Mapping[str, Any]) -> dict[str, Any]:
 _ENV_PREFIX = "ATLAS__"
 # Top-level keys that YAML, env vars and overrides may set.
 _SECTIONS = frozenset(
-    {"fund", "limits", "pods", "data", "quant", "llm", "agents", "backtest", "calendar"}
+    {
+        "fund",
+        "limits",
+        "pods",
+        "data",
+        "quant",
+        "llm",
+        "agents",
+        "orchestration",
+        "backtest",
+        "calendar",
+    }
 )
 _RESERVED = {
     "secrets": "'secrets' may only come from environment variables or .env",

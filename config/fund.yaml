@@ -507,6 +507,10 @@ agents:
     render:  # memory lines in prompts
       max_chars: 240  # longest rendered memory line in a prompt (longer text is cut)
 
+# Fund graph (Stage 28): LangGraph research fan-out, checkpoints in data/runs/<run_id>/.
+orchestration:
+  max_concurrency: 4  # agent calls running at once across the whole graph; also the most research symbols in flight
+
 # Backtest window and simulated costs.
 backtest:
   start: 2018-01-01  # first session (spec A7)

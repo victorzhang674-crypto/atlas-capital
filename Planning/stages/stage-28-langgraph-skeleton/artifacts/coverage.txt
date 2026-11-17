@@ -1,0 +1,18 @@
+........................................................................ [ 38%]
+........................................................................ [ 77%]
+.........................................                                [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                        Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------
+src/atlas/orchestration/__init__.py             6      0   100%
+src/atlas/orchestration/checkpoint.py          51      0   100%
+src/atlas/orchestration/errors.py              42      0   100%
+src/atlas/orchestration/research_graph.py     167      0   100%
+src/atlas/orchestration/state.py               81      0   100%
+src/atlas/orchestration/stubs.py               37      0   100%
+-------------------------------------------------------------------------
+TOTAL                                         384      0   100%
+185 passed in 12.70s
+exit 0

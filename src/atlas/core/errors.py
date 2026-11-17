@@ -59,6 +59,13 @@ class CacheMiss(LLMError):
         self.key = key
 
 
+class OrchestrationError(AtlasError):
+    """The fund graph reached an invalid state: two nodes wrote conflicting values to one
+    key, a run id is malformed, or a run's checkpoint is missing (resume) or already exists
+    (a new run). A failing *agent node* is not this error: the error policy records it in the
+    state's `errors` and drops the symbol (`atlas.orchestration.errors`)."""
+
+
 class BacktestError(AtlasError):
     """A backtest reached a state it cannot continue from (for example the book lost its
     whole NAV in one session)."""

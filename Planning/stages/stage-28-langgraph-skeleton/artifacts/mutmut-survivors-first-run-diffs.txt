@@ -1,0 +1,181 @@
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_13
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info(None, run_id=run_id, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_14
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_started", run_id=None, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_15
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_started", run_id=run_id, checkpoint=None)
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_16
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info(run_id=run_id, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_17
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_started", checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_18
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_started", run_id=run_id, )
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_19
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info("XXorchestration_run_startedXX", run_id=run_id, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_20
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info("ORCHESTRATION_RUN_STARTED", run_id=run_id, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_21
+-        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_started", run_id=run_id, checkpoint=str(None))
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_25
+-            graph.compile(saver), inputs, graph.config(thread_id=run_id), durability="sync"
++            graph.compile(saver), inputs, graph.config(thread_id=run_id), durability=None
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_29
+-            graph.compile(saver), inputs, graph.config(thread_id=run_id), durability="sync"
+-        )
++            graph.compile(saver), inputs, graph.config(thread_id=run_id), )
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_32
+-            graph.compile(saver), inputs, graph.config(thread_id=run_id), durability="sync"
++            graph.compile(saver), inputs, graph.config(thread_id=run_id), durability="XXsyncXX"
+### atlas.orchestration.checkpoint.x_run_graph__mutmut_33
+-            graph.compile(saver), inputs, graph.config(thread_id=run_id), durability="sync"
++            graph.compile(saver), inputs, graph.config(thread_id=run_id), durability="SYNC"
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_20
+-                "roster or graph shape); resume it with the graph it was started with"
++                "XXroster or graph shape); resume it with the graph it was started withXX"
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_21
+-                "roster or graph shape); resume it with the graph it was started with"
++                "ROSTER OR GRAPH SHAPE); RESUME IT WITH THE GRAPH IT WAS STARTED WITH"
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_22
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info(None, run_id=run_id, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_23
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_resumed", run_id=None, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_24
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=None)
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_25
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info(run_id=run_id, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_26
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_resumed", checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_27
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_resumed", run_id=run_id, )
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_28
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info("XXorchestration_run_resumedXX", run_id=run_id, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_29
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info("ORCHESTRATION_RUN_RESUMED", run_id=run_id, checkpoint=str(path))
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_30
+-        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(path))
++        _log.info("orchestration_run_resumed", run_id=run_id, checkpoint=str(None))
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_33
+-            graph.compile(saver), None, graph.config(thread_id=run_id), durability="sync"
++            graph.compile(saver), None, graph.config(thread_id=run_id), durability=None
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_37
+-            graph.compile(saver), None, graph.config(thread_id=run_id), durability="sync"
+-        )
++            graph.compile(saver), None, graph.config(thread_id=run_id), )
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_40
+-            graph.compile(saver), None, graph.config(thread_id=run_id), durability="sync"
++            graph.compile(saver), None, graph.config(thread_id=run_id), durability="XXsyncXX"
+### atlas.orchestration.checkpoint.x_resume_graph__mutmut_41
+-            graph.compile(saver), None, graph.config(thread_id=run_id), durability="sync"
++            graph.compile(saver), None, graph.config(thread_id=run_id), durability="SYNC"
+### atlas.orchestration.research_graph.xǁResearchTeamǁ__post_init____mutmut_3
+-        raise ValueError("a research team needs at least one analyst")
++        raise ValueError("XXa research team needs at least one analystXX")
+### atlas.orchestration.research_graph.x__check__mutmut_3
+-        raise DataError(f"{who} returned {type(out).__name__}, expected {expected.__name__}")
++        raise DataError(f"{who} returned {type(None).__name__}, expected {expected.__name__}")
+### atlas.orchestration.research_graph.x__analyst_work__mutmut_8
+-        _check(task, out, AnalystReport, f"analyst {name!r}")
++        _check(task, out, AnalystReport, None)
+### atlas.orchestration.research_graph.x__debate_work__mutmut_18
+-                    f"debate returned a {type(turn).__name__}, expected DebateTurn items"
++                    f"debate returned a {type(None).__name__}, expected DebateTurn items"
+### atlas.orchestration.research_graph.x__director_work__mutmut_20
+-        out = run(task, reports, tuple(state.get("debate", ())))
++        out = run(task, reports, tuple(state.get("debate", None)))
+### atlas.orchestration.research_graph.x__director_work__mutmut_22
+-        out = run(task, reports, tuple(state.get("debate", ())))
++        out = run(task, reports, tuple(state.get("debate", )))
+### atlas.orchestration.research_graph.x__director_work__mutmut_28
+-        _check(task, out, InvestmentThesis, "director")
++        _check(task, out, InvestmentThesis, None)
+### atlas.orchestration.research_graph.x__director_work__mutmut_33
+-        _check(task, out, InvestmentThesis, "director")
++        _check(task, out, InvestmentThesis, "XXdirectorXX")
+### atlas.orchestration.research_graph.x__director_work__mutmut_34
+-        _check(task, out, InvestmentThesis, "director")
++        _check(task, out, InvestmentThesis, "DIRECTOR")
+### atlas.orchestration.research_graph.x_build_research_subgraph__mutmut_3
+-    graph = StateGraph(ResearchState, input_schema=ResearchInput, output_schema=ResearchOutput)
++    graph = StateGraph(ResearchState, input_schema=None, output_schema=ResearchOutput)
+### atlas.orchestration.research_graph.x_build_research_subgraph__mutmut_6
+-    graph = StateGraph(ResearchState, input_schema=ResearchInput, output_schema=ResearchOutput)
++    graph = StateGraph(ResearchState, output_schema=ResearchOutput)
+### atlas.orchestration.research_graph.x_build_research_subgraph__mutmut_10
+-        graph.add_node(name, guarded(name, _analyst_work(name, run), limiter=limiter))
++        graph.add_node(guarded(name, _analyst_work(name, run), limiter=limiter))
+### atlas.orchestration.research_graph.x_build_research_subgraph__mutmut_43
+-    graph.add_node("debate", guarded("debate", _debate_work(team.debate, roster), limiter=limiter))
++    graph.add_node(guarded("debate", _debate_work(team.debate, roster), limiter=limiter))
+### atlas.orchestration.research_graph.x_build_research_subgraph__mutmut_61
+-        "director", guarded("director", _director_work(team.director, roster), limiter=limiter)
++        guarded("director", _director_work(team.director, roster), limiter=limiter)
+### atlas.orchestration.research_graph.x_build_research_subgraph__mutmut_70
+-        "director", guarded("director", _director_work(team.director, roster), limiter=limiter)
++        "director", guarded("director", _director_work(team.director, roster), )
+### atlas.orchestration.research_graph.x_build_research_subgraph__mutmut_79
+-    graph.add_node("publish", _publisher(roster))
++    graph.add_node(_publisher(roster))
+### atlas.orchestration.research_graph.x__collect__mutmut_2
+-        as_of=str(state["as_of"]),
++        as_of=None,
+### atlas.orchestration.research_graph.x__collect__mutmut_7
+-        as_of=str(state["as_of"]),
+### atlas.orchestration.research_graph.x__collect__mutmut_13
+-        as_of=str(state["as_of"]),
++        as_of=str(None),
+### atlas.orchestration.research_graph.x__collect__mutmut_17
+-        dropped=list(failed_symbols(state.get("errors"))),
++        dropped=list(failed_symbols(None)),
+### atlas.orchestration.research_graph.x__collect__mutmut_18
+-        dropped=list(failed_symbols(state.get("errors"))),
++        dropped=list(failed_symbols(state.get(None))),
+### atlas.orchestration.research_graph.x__collect__mutmut_19
+-        dropped=list(failed_symbols(state.get("errors"))),
++        dropped=list(failed_symbols(state.get("XXerrorsXX"))),
+### atlas.orchestration.research_graph.x__collect__mutmut_20
+-        dropped=list(failed_symbols(state.get("errors"))),
++        dropped=list(failed_symbols(state.get("ERRORS"))),
+### atlas.orchestration.research_graph.x_invoke_untraced__mutmut_3
+-        return cast(FundState, app.invoke(inputs, config, **kwargs))
++        return cast(None, app.invoke(inputs, config, **kwargs))
+### atlas.orchestration.research_graph.x_invoke_untraced__mutmut_11
+-        return cast(FundState, app.invoke(inputs, config, **kwargs))
++        return cast(FundState, app.invoke(inputs, config, ))
+### atlas.orchestration.research_graph.xǁResearchGraphǁinvoke__mutmut_3
+-    return invoke_untraced(self.compile(), inputs, self.config())
++    return invoke_untraced(self.compile(), inputs, None)
+### atlas.orchestration.research_graph.xǁResearchGraphǁmermaid__mutmut_2
+-    return self.compile().get_graph(xray=1).draw_mermaid()
++    return self.compile().get_graph(xray=2).draw_mermaid()
+### atlas.orchestration.errors.x__cut__mutmut_1
+-    if len(text) <= MAX_MESSAGE_CHARS:
++    if len(text) < MAX_MESSAGE_CHARS:
+### atlas.orchestration.errors.x_guarded__mutmut_5
+-            fields = cast(Mapping[str, Any], state)
++            fields = cast(None, state)
+### atlas.orchestration.state.x_state_types__mutmut_21
+-        for hint in get_type_hints(schema, include_extras=True).values():
++        for hint in get_type_hints(schema, include_extras=None).values():
+### atlas.orchestration.state.x_state_types__mutmut_23
+-        for hint in get_type_hints(schema, include_extras=True).values():
++        for hint in get_type_hints(schema, ).values():
+### atlas.orchestration.state.x_state_types__mutmut_24
+-        for hint in get_type_hints(schema, include_extras=True).values():
++        for hint in get_type_hints(schema, include_extras=False).values():

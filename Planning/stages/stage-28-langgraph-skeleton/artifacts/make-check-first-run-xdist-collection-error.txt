@@ -1,0 +1,206 @@
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+468 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 178 source files
+uv run pytest -q -n auto --dist loadfile -m 'not live and not llm and not integration and not timing'
+bringing up nodes...
+bringing up nodes...
+
+
+==================================== ERRORS ====================================
+_____________________________ ERROR collecting gw3 _____________________________
+Different tests were collected between gw0 and gw3. The difference is:
+--- gw0
+
++++ gw3
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbsbwkqqqkf6mwwjk2z6m]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBSBWKQQQKF6MWWJK2Z6N/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+_____________________________ ERROR collecting gw1 _____________________________
+Different tests were collected between gw0 and gw1. The difference is:
+--- gw0
+
++++ gw1
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbse1jxhn8mdbj8xepv7f]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBSE1JXHN8MDBJ8XEPV7G/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+_____________________________ ERROR collecting gw5 _____________________________
+Different tests were collected between gw0 and gw5. The difference is:
+--- gw0
+
++++ gw5
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbspcagnt21bffev493be]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBSPCAGNT21BFFEV493BF/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+_____________________________ ERROR collecting gw6 _____________________________
+Different tests were collected between gw0 and gw6. The difference is:
+--- gw0
+
++++ gw6
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbss8687qhc777148d8at]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBSS8687QHC777148D8AV/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+_____________________________ ERROR collecting gw4 _____________________________
+Different tests were collected between gw0 and gw4. The difference is:
+--- gw0
+
++++ gw4
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbsvmmk4qfxxq5dgk81gy]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBSVMMK4QFXXQ5DGK81GZ/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+_____________________________ ERROR collecting gw2 _____________________________
+Different tests were collected between gw0 and gw2. The difference is:
+--- gw0
+
++++ gw2
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbssgy0qzq4qrdbj1w2mh]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBSSGY0QZQ4QRDBJ1W2MJ/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+_____________________________ ERROR collecting gw7 _____________________________
+Different tests were collected between gw0 and gw7. The difference is:
+--- gw0
+
++++ gw7
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbt008w5fnkk42r7y2btn]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBT017Q4CXNBZAB8RYRZD/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+_____________________________ ERROR collecting gw8 _____________________________
+Different tests were collected between gw0 and gw8. The difference is:
+--- gw0
+
++++ gw8
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbt0t8jmgg5gt692f8wgh]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBT0T8JMGG5GT692F8WGJ/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+_____________________________ ERROR collecting gw9 _____________________________
+Different tests were collected between gw0 and gw9. The difference is:
+--- gw0
+
++++ gw9
+
+@@ -2808,9 +2808,9 @@
+
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[abc]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[../00000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbr4fg20qr153h68w5pg2]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01m7kkbtdgz80grjapjgf0p0hd]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[80000000000000000000000000]
+-tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBR4FG20QR153H68W5PG3/x]
++tests/unit/orchestration/test_orchestration_checkpoint.py::test_a_run_id_must_be_a_ulid[01M7KKBTDGZ80GRJAPJGF0P0HE/x]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_state_types_cover_every_contract_in_the_state
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_fund_state]
+ tests/unit/orchestration/test_orchestration_checkpoint.py::test_every_state_value_round_trips_through_the_serializer[full_research_state]
+To see why this happens see 'Known limitations' in documentation for pytest-xdist
+=========================== short test summary info ============================
+ERROR gw3 - Different tests were collected between gw0 and gw3. The differenc...
+ERROR gw1 - Different tests were collected between gw0 and gw1. The differenc...
+ERROR gw5 - Different tests were collected between gw0 and gw5. The differenc...
+ERROR gw6 - Different tests were collected between gw0 and gw6. The differenc...
+ERROR gw4 - Different tests were collected between gw0 and gw4. The differenc...
+ERROR gw2 - Different tests were collected between gw0 and gw2. The differenc...
+ERROR gw7 - Different tests were collected between gw0 and gw7. The differenc...
+ERROR gw8 - Different tests were collected between gw0 and gw8. The differenc...
+ERROR gw9 - Different tests were collected between gw0 and gw9. The differenc...
+9 errors in 23.08s
+make: *** [test] Error 1
+
+exit 2

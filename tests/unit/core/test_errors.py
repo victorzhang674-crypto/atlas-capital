@@ -15,6 +15,7 @@ from atlas.core.errors import (
     LLMError,
     LLMTransientError,
     LookAheadError,
+    OrchestrationError,
     RiskLimitError,
 )
 
@@ -23,6 +24,7 @@ SUBCLASSES = [
     LookAheadError,
     DataError,
     LLMError,
+    OrchestrationError,
     BacktestError,
     RiskLimitError,
     ComplianceError,

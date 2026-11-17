@@ -1,0 +1,22 @@
+# Stage 28 — LangGraph orchestration skeleton · Verification evidence
+
+Filled in only with output from commands run in this stage's chat (Project.md Rule 1). Raw outputs are under `artifacts/`.
+
+#### Verification evidence — Stage 28 — 2026-11-16
+- Commands run (this chat):
+  - Gate: `uv run pytest -q` → 4730 passed, 74 deselected, exit 0 · raw: [artifacts/gate-pytest.txt](artifacts/gate-pytest.txt)
+  - `uv run pytest tests/unit/orchestration -q` (brief's Verify) → 185 passed, exit 0 · raw: [artifacts/verify-orchestration.txt](artifacts/verify-orchestration.txt)
+  - `uv run pytest -q` → 4917 passed, 74 deselected (live / llm / integration), exit 0 · raw: [artifacts/pytest.txt](artifacts/pytest.txt)
+  - `make check` → exit 0: `uv run ruff check .` → All checks passed! · `uv run ruff format --check .` → 468 files already formatted · `uv run mypy src/atlas` → Success: no issues found in 178 source files · `make test` → 4914 passed (parallel) + 3 passed (timing) · raw: [artifacts/make-check.txt](artifacts/make-check.txt). An earlier `make check` on this chat's code failed in `make test` (xdist "Different tests were collected": random ULIDs in one parametrize), fixed, raw kept: [artifacts/make-check-first-run-xdist-collection-error.txt](artifacts/make-check-first-run-xdist-collection-error.txt)
+  - Coverage `uv run pytest tests/unit/orchestration --cov=src/atlas/orchestration` → 100% (384 statements) · raw: [artifacts/coverage.txt](artifacts/coverage.txt)
+  - Mutation (mutmut 3.8.1 on `src/atlas/orchestration`) → 723 / 801 killed; the 78 survivors are 61 stub constants and 17 equivalent mutants · raw: [artifacts/mutmut-results.txt](artifacts/mutmut-results.txt), review in the [audit report](artifacts/audit-report.md)
+  - No outbound connection in any of these runs (no `smith.langchain` line in the raw outputs; the sandbox logged none)
+- Acceptance criteria (brief):
+  - [x] **Parallel stub graph over N symbols completes** — evidence: `test_five_symbols_fan_out_and_complete` (5 symbols, 5 theses, 5 × 5 reports, each equal to the symbol run alone), `test_the_limit_caps_agent_calls_and_symbols_in_flight[1|2|3]` (6 symbols complete with peak calls and symbols ≤ N), `test_symbols_are_researched_in_parallel` and `test_the_analysts_run_in_parallel` (barriers that only parallel calls pass), `test_a_limit_of_one_runs_one_call_at_a_time`
+  - [x] **Resume works** — evidence: `test_a_killed_process_resumes_from_its_last_checkpoint` (worker process killed with `SIGKILL` mid-run; resumed in another process from `<lake>/runs/<run_id>/checkpoints.sqlite`; final state equals an uninterrupted run; only the unfinished symbol, and none of its finished analysts, re-ran), `test_ctrl_c_mid_run_then_resume_gives_the_same_final_state`, `test_resuming_a_finished_run_reruns_nothing`, `test_errors_survive_a_resume`, audit `test_a2_resume_refuses_a_differently_built_graph`; repeat check: the three resume tests 10 runs in a row → 30 / 30 passed (worklog)
+  - [x] **One failing symbol does not affect the others** — evidence: `test_one_failing_node_drops_only_its_symbol` (each of the 7 agent nodes × RuntimeError / LookAheadError / BudgetExceeded: the symbol has no reports and no thesis, one `NodeError` names it, every other symbol equals a clean run), `test_a_bad_output_drops_only_its_symbol`, `test_failures_in_several_symbols`, `test_every_symbol_failing_still_completes_the_run`, `test_a_failing_symbol_does_not_hold_up_the_others`; deliberate-defect checks (worklog): routers that never drop → 29 / 29 fail, `guarded` catching only `RuntimeError` → 17 / 29 fail
+- Brief tasks: 1 state + reducers → `test_orchestration_state.py` (hypothesis order-independence, parallel graph writers, conflicting writes raise); 2 subgraph with stubs, fan-out across 5 symbols → `test_orchestration_subgraph.py`, `test_orchestration_fanout.py`; 3 checkpoint + resume (kill mid-run, same final state) → `test_orchestration_checkpoint.py`; 4 error isolation → `test_orchestration_isolation.py`. In scope also: mermaid export to docs → `test_the_docs_diagram_is_the_current_export` ([docs/orchestration.md](../../../docs/orchestration.md))
+- Audit: [artifacts/audit-report.md](artifacts/audit-report.md) — verdict COMPLETE; A1 LangSmith tracing forced off, A2 graph fingerprint checked on resume, A3 inputs checked before the first checkpoint (all fixed test-first), A4 fund-level order pinned, A5 mutation gaps closed with tests
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED
