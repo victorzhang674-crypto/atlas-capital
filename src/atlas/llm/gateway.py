@@ -29,6 +29,7 @@ from atlas.llm.budget import BudgetGuard
 from atlas.llm.cache import CacheEntry, CacheMode, LLMCache, StoredResult, cache_key, request_json
 from atlas.llm.cost import CostLedger, UsageRecord, cost_usd
 from atlas.llm.hygiene import with_data_policy
+from atlas.llm.providers.offline import OfflineProvider
 from atlas.llm.schemas import (
     LLMProvider,
     LLMResult,
@@ -523,12 +524,18 @@ class LLMGateway:
 def build_provider(config: AtlasConfig) -> LLMProvider:
     """The provider `config.llm.provider` names, with its key from `config.secrets`.
 
-    Raises `ConfigError` naming the missing environment variable when the key is not set.
+    In cache mode `replay_only` a missing key is not an error: no call can be made, so an
+    `OfflineProvider` with the configured provider's name and endpoint stands in (the cache
+    keys of recordings made with the real provider match). In every other mode a missing key
+    raises `ConfigError` naming the environment variable.
     """
+    replay_only = config.llm.cache.mode == "replay_only"
     if config.llm.provider == "anthropic":
         from atlas.llm.providers.anthropic import AnthropicProvider
 
         if config.secrets.anthropic_api_key is None:
+            if replay_only:
+                return OfflineProvider(AnthropicProvider.name)
             raise ConfigError(
                 "llm.provider is 'anthropic' but ANTHROPIC_API_KEY is not set (env var or .env)"
             )
@@ -536,6 +543,8 @@ def build_provider(config: AtlasConfig) -> LLMProvider:
     from atlas.llm.providers.openai_compat import OpenAICompatibleProvider
 
     if config.secrets.deepseek_api_key is None:
+        if replay_only:
+            return OfflineProvider(OpenAICompatibleProvider.name, config.llm.base_url)
         raise ConfigError(
             "llm.provider is 'openai_compatible' but DEEPSEEK_API_KEY is not set (env var or .env)"
         )

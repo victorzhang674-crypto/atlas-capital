@@ -1,0 +1,18 @@
+$ uv run pytest tests/unit/llm tests/unit/cli/test_llm_cmd.py tests/unit/data/test_view_threads.py tests/unit/data/test_view_pit.py tests/unit/data/test_universe.py --cov=src/atlas/llm --cov=src/atlas/cli --cov=src/atlas/data --cov-report=term-missing -q -p no:cacheprovider  (rows of the changed modules)
+src/atlas/cli/llm_cmd.py                          108      0   100%
+src/atlas/data/universe.py                        230      0   100%
+src/atlas/data/view.py                            445     13    97%   274, 298, 418, 616, 629, 646, 651, 657, 669, 712, 719, 749, 892
+src/atlas/llm/__init__.py                           9      0   100%
+src/atlas/llm/budget.py                            49      0   100%
+src/atlas/llm/cache.py                            229      0   100%
+src/atlas/llm/cost.py                              98      0   100%
+src/atlas/llm/gateway.py                          227      0   100%
+src/atlas/llm/hygiene.py                           19      0   100%
+src/atlas/llm/providers/__init__.py                 0      0   100%
+src/atlas/llm/providers/anthropic.py               81      0   100%
+src/atlas/llm/providers/fake.py                    79      0   100%
+src/atlas/llm/providers/offline.py                 18      0   100%
+src/atlas/llm/providers/openai_compat.py          109      0   100%
+src/atlas/llm/schemas.py                          101      0   100%
+598 passed, 3 deselected in 210.23s (0:03:30)
+exit 0

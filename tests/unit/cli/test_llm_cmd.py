@@ -11,8 +11,9 @@ from typer.testing import CliRunner
 from atlas.cli.app import app
 from atlas.cli.llm_cmd import parse_older_than
 from atlas.core.clock import LiveClock
+from atlas.core.config import AtlasConfig
 from atlas.core.storage import Database, Lake
-from atlas.llm import CostLedger, Usage
+from atlas.llm import CostLedger, FakeLLM, LLMGateway, Message, OfflineProvider, Usage
 from atlas.llm.cache import CacheEntry, LLMCache, StoredResult
 from atlas.llm.cost import UsageRecord
 
@@ -83,7 +84,7 @@ def test_help_lists_the_three_commands() -> None:
     result = CliRunner().invoke(app, ["llm", "cache", "--help"], env=BASE_ENV)
     text = _plain(result.output)
     assert result.exit_code == 0
-    for command in ("stats", "export", "prune"):
+    for command in ("stats", "export", "import", "prune"):
         assert command in text
     assert "llm" in _plain(CliRunner().invoke(app, ["--help"], env=BASE_ENV).output)
 
@@ -205,3 +206,66 @@ def test_an_unreadable_database_exits_1_without_a_traceback(tmp_path: Path) -> N
     assert result.exit_code == 1
     assert "Cannot open the cache" in _plain(result.output)
     assert result.exception is None or isinstance(result.exception, SystemExit)
+
+
+# -- phase 3 checkpoint: `atlas llm cache import` ---------------------------------------------
+
+
+@pytest.fixture
+def recording(tmp_path: Path) -> Path:
+    """An export file with two real recordings (keys that are the hash of their request)."""
+    lake = Lake(tmp_path / "recorded")
+    with Database(lake) as database:
+        fake = FakeLLM({"analyst": ["buy", "sell"]})
+        gateway = LLMGateway(fake, AtlasConfig(), cache=LLMCache(database), cache_mode="read_write")
+        for symbol in ("AAA", "BBB"):
+            gateway.complete([Message.user(f"Rate {symbol}.")], metadata={"agent": "analyst"})
+    out = tmp_path / "recording.jsonl"
+    assert invoke("export", str(out), "--store", str(lake.root)).exit_code == 0
+    return out
+
+
+def test_import_loads_an_export_and_skips_what_is_stored(recording: Path, store: Path) -> None:
+    result = invoke("import", str(recording), "--store", str(store))
+    assert result.exit_code == 0, _plain(result.output)
+    assert "Imported 2 of 2 entries" in _plain(result.output)
+    assert len(keys(store)) == 5
+    again = invoke("import", str(recording), "--store", str(store))
+    assert again.exit_code == 0 and "Imported 0 of 2 entries" in _plain(again.output)
+    assert "2 already stored" in _plain(again.output)
+    replaced = invoke("import", str(recording), "--store", str(store), "--replace")
+    assert replaced.exit_code == 0 and "Imported 2 of 2 entries" in _plain(replaced.output)
+    assert len(keys(store)) == 5
+
+
+def test_an_imported_recording_replays_without_a_provider(recording: Path, tmp_path: Path) -> None:
+    target = tmp_path / "ci-lake"
+    result = invoke("import", str(recording), "--store", str(target))  # a store that is new
+    assert result.exit_code == 0, _plain(result.output)
+    with Database(Lake(target)) as database:
+        gateway = LLMGateway(
+            OfflineProvider("fake"),
+            AtlasConfig(),
+            cache=LLMCache(database),
+            cache_mode="replay_only",
+        )
+        answer = gateway.complete([Message.user("Rate BBB.")], metadata={"agent": "analyst"})
+    assert answer.content == "sell" and answer.cache_hit
+
+
+def test_import_of_a_damaged_file_exits_1_and_stores_nothing(recording: Path, store: Path) -> None:
+    lines = recording.read_text(encoding="utf-8").splitlines()
+    damaged = json.loads(lines[1])
+    damaged["response"]["content"] = "hold"  # an edited answer keeps its key: still loadable
+    damaged["request"]["model"] = "another-model"  # an edited request does not
+    recording.write_text(lines[0] + "\n" + json.dumps(damaged) + "\n", encoding="utf-8")
+    result = invoke("import", str(recording), "--store", str(store))
+    assert result.exit_code == 1
+    text = _plain(result.output)
+    assert "Cannot import" in text and "line 2" in text and "Traceback" not in text
+    assert keys(store) == ["c", "b", "a"]  # the good first line was not stored either
+
+
+def test_import_needs_an_existing_file(store: Path, tmp_path: Path) -> None:
+    result = invoke("import", str(tmp_path / "missing.jsonl"), "--store", str(store))
+    assert result.exit_code == 2

@@ -2,8 +2,10 @@
 
 import json
 import math
-from collections.abc import Mapping, Sequence
+import threading
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
+from typing import cast
 
 from pydantic import BaseModel
 
@@ -25,15 +27,28 @@ class FakeReply:
     finish_reason: str | None = None
 
 
-Scripted = str | BaseModel | Mapping[str, object] | Exception | FakeReply
-"""One scripted reply: text, a model or mapping (sent as JSON), an exception to raise, or a
+Reply = str | BaseModel | Mapping[str, object] | Exception | FakeReply
+"""One reply: text, a model or mapping (sent as JSON), an exception to raise, or a
 `FakeReply`."""
+
+Answer = Callable[[ProviderRequest], Reply]
+"""A reply computed from the request: called with it, returns the `Reply` to give. For agents
+asked about several symbols at once (the research graph's fan-out), where a script by agent
+and step alone cannot tell the requests apart."""
+
+Scripted = Reply | Answer
+"""One scripted reply: a `Reply`, or an `Answer` function that makes one from the request."""
 
 _Key = tuple[str | None, str | None]
 
 
 def _tokens(chars: int) -> int:
     return math.ceil(chars / CHARS_PER_TOKEN)
+
+
+def _is_one(value: object) -> bool:
+    """Whether `value` is one scripted reply (not a sequence of them)."""
+    return isinstance(value, (str, BaseModel, Mapping, Exception, FakeReply)) or callable(value)
 
 
 class FakeLLM:
@@ -44,6 +59,11 @@ class FakeLLM:
     of them it raises `LLMError`. A script holding one reply repeats it for ever; a script
     holding a list is consumed in order and raises `LLMError` when exhausted, so a test that
     makes more calls than it scripted fails loudly. Every request is kept in `calls`.
+
+    A reply may be a function of the request (`Answer`): it is called with the request and
+    returns the reply to give, so one script can answer each symbol of a parallel fan-out
+    from its own prompt. What the function raises propagates. Safe to call from several
+    threads (an `Answer` function runs outside the lock and must be thread-safe itself).
 
     Reported usage is deterministic: one token per 4 characters (rounded up) of the message
     contents and of the reply, unless a `FakeReply` gives its own.
@@ -59,20 +79,22 @@ class FakeLLM:
     ) -> None:
         self._scripts: dict[_Key, Scripted | list[Scripted]] = {}
         self._default = default
+        self._lock = threading.Lock()
         self.calls: list[ProviderRequest] = []
         for key, value in (script or {}).items():
             agent, step = (key, None) if isinstance(key, str) else key
-            if isinstance(value, (str, BaseModel, Mapping, Exception, FakeReply)):
-                self._scripts[(agent, step)] = value
+            if _is_one(value):
+                self._scripts[(agent, step)] = cast(Scripted, value)
             else:
-                self._scripts[(agent, step)] = list(value)
+                self._scripts[(agent, step)] = list(cast(Sequence[Scripted], value))
 
     def add(self, agent: str | None, step: str | None, *replies: Scripted) -> None:
         """Script `replies` for `(agent, step)` (`step=None`: any step). One reply repeats
         for ever; several are consumed in order. Replaces an earlier script for the key."""
         if not replies:
             raise ValueError("add() needs at least one reply")
-        self._scripts[(agent, step)] = replies[0] if len(replies) == 1 else list(replies)
+        with self._lock:
+            self._scripts[(agent, step)] = replies[0] if len(replies) == 1 else list(replies)
 
     def _next(self, request: ProviderRequest) -> Scripted:
         agent, step = request.metadata.get("agent"), request.metadata.get("step")
@@ -91,8 +113,16 @@ class FakeLLM:
 
     def complete(self, request: ProviderRequest) -> ProviderResponse:
         """Answer `request` from the script (see the class docstring)."""
-        self.calls.append(request)
-        scripted = self._next(request)
+        with self._lock:
+            self.calls.append(request)
+            scripted = self._next(request)
+        if callable(scripted):
+            scripted = scripted(request)
+            if callable(scripted):
+                raise TypeError(
+                    "a FakeLLM answer function must return a reply (text, model, mapping, "
+                    "exception or FakeReply), not another function"
+                )
         if isinstance(scripted, Exception):
             raise scripted
         if isinstance(scripted, BaseModel):

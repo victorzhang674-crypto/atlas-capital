@@ -15,6 +15,7 @@ keeps the members that pass the liquidity filters (`cfg.data.tradable`) on raw d
 known strictly before the decision cutoff. Residual biases: `docs/data-limitations.md`.
 """
 
+import threading
 from collections.abc import Collection
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
@@ -382,6 +383,7 @@ class Universe:
         )
         self._intervals: dict[str, pd.DataFrame] = {}
         self._files_state: tuple[tuple[str, int, int, int], ...] | None = None
+        self._intervals_lock = threading.Lock()  # a view's readers serve several threads
 
     def _as_of(self, as_of: date | AsOf) -> AsOf:
         if isinstance(as_of, AsOf):
@@ -406,6 +408,10 @@ class Universe:
         return tuple(state)
 
     def _index_intervals(self, index_id: str) -> pd.DataFrame:
+        with self._intervals_lock:
+            return self._index_intervals_locked(index_id)
+
+    def _index_intervals_locked(self, index_id: str) -> pd.DataFrame:
         state = self._membership_files_state()
         if state != self._files_state:
             self._intervals.clear()

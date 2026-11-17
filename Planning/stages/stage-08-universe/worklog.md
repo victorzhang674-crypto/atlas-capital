@@ -127,3 +127,9 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Backlog (index changes since the last sync): `atlas data sync --datasets universe` run on the scratch copy after the purge: OKTA added 2026-10-30, KVUE's membership ended 2026-10-30, IR/XEC's 2020 change one day later, trade dates refreshed (AVB filled; the purged symbols cleared) · [artifacts/phase2-checkpoint-tier4-universe-sync-trial.txt](artifacts/phase2-checkpoint-tier4-universe-sync-trial.txt). OKTA has no bars or facts in the lake yet (it joined on the lake's last day): the next regular data sync brings them.
 - KVUE (a former member from 2026-10-30) gets a reviewed sector in `config/former_sectors.yaml` (Consumer Staples; 181 entries); its industry and exchange, which only the constituents page gives, are now empty.
 - AVB: explained, not a defect: Yahoo dropped it after its 2026-08 delisting (`config/yahoo_no_data.yaml`), its bars (Alpaca, 2020-07-27 .. 2026-08-14) fall inside its membership (to 2026-08-18); the 2015-2020 bars are the known gap of a delisted member.
+
+## 2026-11-17 — Phase 3 checkpoint follow-up (Tier 1 item 1): membership cache under a lock
+- Why: a `DataView`'s `Universe` reader is shared by the research graph's threads (Stage 28); `_index_intervals` cleared and refilled its cache in several unlocked steps. See the Stage 13 worklog entry of the same day and the [Phase 3 checkpoint report](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-report.md).
+- Did: `Universe._index_intervals` runs under a lock (`_index_intervals_locked` holds the old body). No behaviour change for one thread.
+- Tests: covered by `tests/unit/data/test_view_threads.py::test_every_view_method_gives_the_same_answer_on_four_threads` (`universe`, `members_on`, `tradable`) and the existing `tests/unit/data/test_universe.py`; `src/atlas/data/universe.py` coverage 100%.
+- Code file changed: `src/atlas/data/universe.py`.

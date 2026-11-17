@@ -23,6 +23,7 @@ returns; ADV in USD and in split-adjusted shares; `prices` / `returns` / `adv` l
 sessions, `news` / `social` lookbacks calendar days, `macro` a `timedelta` or calendar days.
 """
 
+import threading
 from collections import OrderedDict
 from collections.abc import Callable, Hashable, Sequence
 from dataclasses import dataclass
@@ -109,29 +110,60 @@ class CacheInfo:
 
 
 class _LRU:
-    """A least-recently-used cache of at most `size` results."""
+    """A least-recently-used cache of at most `size` results, safe to share between threads
+    (the Stage 28 research graph runs agents on worker threads that read one view).
+
+    A key is computed once: callers that ask for a key while another thread computes it wait
+    for that result instead of computing it again (the first `blocked` of a day is one
+    quality report, not one per thread). Different keys never wait for each other, and
+    `compute` runs outside the cache's lock, so it may ask the cache for other keys. A
+    computation that raises caches nothing: its error goes to its own caller and a waiting
+    caller computes the key itself.
+    """
 
     def __init__(self, size: int) -> None:
         self._data: OrderedDict[Hashable, Any] = OrderedDict()
         self._size = size
+        self._lock = threading.Lock()
+        self._computing: dict[Hashable, tuple[threading.Event, int]] = {}
         self.hits = 0
         self.misses = 0
 
     def info(self) -> CacheInfo:
         """The current counters."""
-        return CacheInfo(self.hits, self.misses, len(self._data), self._size)
+        with self._lock:
+            return CacheInfo(self.hits, self.misses, len(self._data), self._size)
 
     def get(self, key: Hashable, compute: Callable[[], Any]) -> Any:
-        """The cached value of `key`, computing and storing it on a miss."""
-        if key in self._data:
-            self._data.move_to_end(key)
-            self.hits += 1
-            return self._data[key]
-        self.misses += 1
-        value = compute()
-        self._data[key] = value
-        if len(self._data) > self._size:
-            self._data.popitem(last=False)
+        """The cached value of `key`, computing and storing it on a miss (a caller that
+        waited for another thread's computation counts as a hit)."""
+        me = threading.get_ident()
+        while True:
+            with self._lock:
+                if key in self._data:
+                    self._data.move_to_end(key)
+                    self.hits += 1
+                    return self._data[key]
+                running = self._computing.get(key)
+                if running is None:
+                    self.misses += 1
+                    done = threading.Event()
+                    self._computing[key] = (done, me)
+                    break
+            finished, owner = running
+            if owner == me:
+                raise RuntimeError(f"the cached value {key!r} needs itself to be computed")
+            finished.wait()
+        try:
+            value = compute()
+            with self._lock:
+                self._data[key] = value
+                if len(self._data) > self._size:
+                    self._data.popitem(last=False)
+        finally:
+            with self._lock:
+                del self._computing[key]
+            done.set()
         return value
 
 
@@ -186,6 +218,9 @@ class _Shared:
         self.cache = _LRU(config.data.view.cache_size)
         self.fundamentals_cache = _LRU(config.data.view.fundamentals_cache_size)
         self.readers: dict[str, Any] = {}
+        # Re-entrant: building one reader may need another (a view is shared by the research
+        # graph's threads, Stage 28; each reader is built once).
+        self.readers_lock = threading.RLock()
 
 
 class DataView:
@@ -195,6 +230,9 @@ class DataView:
     `config` defaults to `AtlasConfig()`; `calendar` to `TradingCalendar(config=config.calendar)`;
     `concept_map`, `catalog` and `lexicon` default to the files named in `config` (loaded on
     first use, relative to the working directory).
+
+    A view may be shared between threads (the research graph's agents read the day's view
+    from worker threads): its cache computes each result once and its readers are built once.
     """
 
     __slots__ = ("_as_of", "_shared")
@@ -488,10 +526,11 @@ class DataView:
     # --- readers --------------------------------------------------------------------------------
 
     def _reader(self, name: str, build: Callable[[], Any]) -> Any:
-        readers = self._shared.readers
-        if name not in readers:
-            readers[name] = build()
-        return readers[name]
+        shared = self._shared
+        with shared.readers_lock:
+            if name not in shared.readers:
+                shared.readers[name] = build()
+            return shared.readers[name]
 
     @property
     def _universe(self) -> Universe:

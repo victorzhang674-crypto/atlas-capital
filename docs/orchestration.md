@@ -20,6 +20,8 @@ Agents plug in through a `ResearchTeam`: `analysts` (name → `AnalystFn`), `deb
 - **The day** (`build_research_graph(team, max_concurrency=...)`): `prepare` checks `as_of` (a `date`) and the symbols and de-duplicates the queue; one LangGraph `Send` per symbol starts a research subgraph, all in one step; `collect` joins them and logs `orchestration_research_done` (queued, researched, dropped). An empty queue goes straight to `collect`.
 - **Concurrency** (`orchestration.max_concurrency` in `config/fund.yaml`, default 4): at most that many agent calls run at once in the whole graph (a semaphore held only around each call) and at most that many symbols are in flight (LangGraph's own `max_concurrency`, which it applies per graph loop and passes down to subgraphs, so on its own it would allow N symbols × N analysts).
 
+Agents in the analyst slots run on worker threads and may share the day's `DataView`: a view's cache and readers are thread-safe (each result computed once). `tests/integration/test_phase3_run.py` runs real `BaseAgent`s in the graph with the LLM cache, memory, traces and audit log, interrupts and resumes the run, and replays it with no provider.
+
 ## Error policy (`errors.py`)
 
 Every agent node runs through `guarded(node, work, limiter=...)`:

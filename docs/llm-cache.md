@@ -57,5 +57,34 @@ zlib-compressed (`zlib:` + base64); every reader unpacks them, and `stats` repor
 ```bash
 atlas llm cache stats                      # entries, size, per model, hit rate
 atlas llm cache export cache.jsonl         # one JSON line per entry
+atlas llm cache import cache.jsonl         # store an export (checked line by line); --replace
 atlas llm cache prune --older-than 30d     # or 12h, or 2026-11-01; add --dry-run to count
 ```
+
+## Recordings as files: fixtures and replays without a key
+
+A recording can leave the lake it was made in. `atlas llm cache export FILE` writes one JSON
+line per entry and `atlas llm cache import FILE [--store LAKE] [--replace]` stores such a file
+in a lake's cache (creating the cache if the lake has none). In code: `write_export(entries,
+path)`, `read_export(path)` and `LLMCache.load(entries, replace=False)`. Reading checks every
+line: its key must be the SHA-256 of its request, the answer must be readable, a key may
+appear once. A file with one bad line is refused as a whole (`LLMError` naming the line), so
+an edited request can never stand in for a recording. An export of the same entries is the
+same bytes (sorted keys), so a re-recorded fixture shows a clean diff.
+
+A replay needs no API key. With `llm.cache.mode: replay_only` and no key in the environment,
+`build_gateway` puts an `OfflineProvider` behind the gateway: it carries the configured
+provider's name and endpoint (so the keys of earlier recordings match) and raises `LLMError`
+if it is ever asked to call a model. Every other mode still needs the key.
+
+A test that replays a recorded live run:
+
+```python
+cache = LLMCache()
+cache.load(read_export(FIXTURES / "fundamental_aapl_2024-05-01.jsonl"))
+provider = OfflineProvider("openai_compatible", "https://api.deepseek.com")
+gateway = LLMGateway(provider, config, cache=cache, cache_mode="replay_only")
+```
+
+The key covers the whole conversation, tool results included: the replay must give the agent
+the same data the recording run read, or it is a `CacheMiss`.

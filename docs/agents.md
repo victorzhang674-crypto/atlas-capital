@@ -45,6 +45,13 @@ In tests use `LLMGateway(FakeLLM(...), AtlasConfig())`: FakeLLM scripts are keye
 agent `name` and the step (`round-1`, `round-2`, ..., `wrap_up`, `evidence_repair`). The toy
 `EchoAnalyst` in `tests/unit/agents/agent_helpers.py` is a complete example.
 
+A FakeLLM reply may also be a function of the request (`lambda request: ...`, returning any
+reply kind). Use it when the same agent is asked about several symbols at once, as in the
+research graph's fan-out: the function reads the ticker and the evidence ids from the prompt
+and answers that request, whatever order the threads arrive in.
+`tests/integration/test_phase3_run.py` runs two agents this way inside the graph, with the
+cache, the memory, traces and the audit log.
+
 ## Prompt templates
 
 A template is one `.j2` file in `src/atlas/agents/prompts/` whose **first line is

@@ -1,0 +1,5 @@
+two identically built memories give the same prompt text: False
+  run 1: [les_01M7MQAVJ9TEQC9B7EFZ04VV43] lesson 2024-02-20 · news · qual
+  run 2: [les_01M7MQAVK0WFMJY5NZ9F2AHY6H] lesson 2024-02-20 · news · qual
+same text under one id seed (ids are not taken from the id source): False
+exit 0

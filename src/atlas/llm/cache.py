@@ -8,6 +8,9 @@ Replay is only valid while prompts and data are unchanged: the key covers the ex
 (so changed data changes the key) and the `prompt_version` label a prompt template sets (so a
 template change that the messages cannot show is a version bump); nothing else voids a
 recording. See `docs/llm-cache.md`.
+
+Recordings also travel as files (`write_export` / `read_export` / `LLMCache.load`): a recorded
+live run kept as a test fixture replays with no provider and no key.
 """
 
 import base64
@@ -16,9 +19,10 @@ import hashlib
 import json
 import threading
 import zlib
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Annotated, Any
 
 from pydantic import BaseModel, Field, ValidationError
@@ -260,6 +264,23 @@ class LLMCache:
             matches=lambda row: same(None if row is None else _entry_from_row(row)),
         )
 
+    def load(self, entries: Iterable[CacheEntry], *, replace: bool = False) -> int:
+        """Store `entries` (for example `read_export(path)`): an entry whose key is stored is
+        kept unless `replace`. One transaction with a database. Returns how many were stored."""
+        found = list(entries)
+        if self._database is None:
+            with self._lock:
+                stored = 0
+                for entry in found:
+                    if entry.key in self._entries and not replace:
+                        continue
+                    self._entries[entry.key] = entry
+                    stored += 1
+                return stored
+        if not found:
+            return 0
+        return self._database.put_llm_cache([self._row(e) for e in found], replace=replace)
+
     def delete(self, key: str) -> bool:
         """Delete the entry of `key`; return whether there was one."""
         if self._database is not None:
@@ -333,6 +354,106 @@ class LLMCache:
         return len(stale)
 
 
+# --- export files: recordings as JSON lines (fixtures, moving a cache between lakes) ---------
+
+EXPORT_FIELDS = ("key", "created_at", "provider", "model", "request", "response", "usage")
+"""The fields of one line of an export file (`atlas llm cache export`)."""
+
+
+def export_record(entry: CacheEntry) -> dict[str, Any]:
+    """`entry` as one line of an export file: its key, when it was recorded (UTC ISO-8601),
+    provider, model, and the request, response and usage as JSON objects."""
+    return {
+        "key": entry.key,
+        "created_at": entry.created_at.astimezone(UTC).isoformat(),
+        "provider": entry.provider,
+        "model": entry.model,
+        "request": json.loads(entry.request_json),
+        "response": json.loads(entry.response_json),
+        "usage": json.loads(entry.usage_json),
+    }
+
+
+def entry_from_record(record: Mapping[str, Any]) -> CacheEntry:
+    """The entry of one export line. Raises `LLMError` unless the line has exactly
+    `EXPORT_FIELDS`, a tz-aware `created_at`, a readable answer, and a `key` that is the
+    SHA-256 of its request (an edited or truncated line never becomes a recording)."""
+    if not isinstance(record, Mapping) or set(record) != set(EXPORT_FIELDS):
+        found = sorted(record) if isinstance(record, Mapping) else type(record).__name__
+        raise LLMError(f"an export line needs exactly the fields {list(EXPORT_FIELDS)}: {found}")
+    key = record["key"]
+    try:
+        created = datetime.fromisoformat(record["created_at"])
+    except (TypeError, ValueError) as exc:
+        raise LLMError(f"entry {key}: created_at {record['created_at']!r} is not a time") from exc
+    if created.tzinfo is None or created.utcoffset() is None:
+        raise LLMError(f"entry {key}: created_at {record['created_at']!r} has no timezone")
+    for name in ("provider", "model"):
+        if not isinstance(record[name], str) or not record[name]:
+            raise LLMError(f"entry {key}: {name} must be a non-empty string")
+    try:
+        request = canonical_json(record["request"])
+        response = canonical_json(record["response"])
+        usage = canonical_json(record["usage"])
+    except (TypeError, ValueError) as exc:
+        raise LLMError(f"entry {key}: not canonical JSON ({exc})") from exc
+    digest = hashlib.sha256(request.encode()).hexdigest()
+    if key != digest:
+        raise LLMError(
+            f"entry {key}: the key is not the SHA-256 of the request ({digest}); "
+            "the line was edited or damaged"
+        )
+    entry = CacheEntry(
+        key=key,
+        created_at=created.astimezone(UTC),
+        provider=record["provider"],
+        model=record["model"],
+        request_json=request,
+        response_json=response,
+        usage_json=usage,
+    )
+    entry.result()  # LLMError when the answer or its usage cannot be read
+    return entry
+
+
+def write_export(entries: Iterable[CacheEntry], path: Path) -> int:
+    """Write `entries` to `path` as JSON lines (one `export_record` per line, keys sorted),
+    in the order given; parent folders are created. Returns the number of lines."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    count = 0
+    with path.open("w", encoding="utf-8") as handle:
+        for entry in entries:
+            record = export_record(entry)
+            handle.write(json.dumps(record, sort_keys=True, ensure_ascii=False) + "\n")
+            count += 1
+    return count
+
+
+def read_export(path: Path) -> tuple[CacheEntry, ...]:
+    """The entries of the export file `path`, in file order (blank lines are skipped).
+    Raises `LLMError` naming the line for one that is not JSON, fails `entry_from_record`
+    or repeats an earlier key: nothing of a damaged file is used."""
+    entries: list[CacheEntry] = []
+    seen: dict[str, int] = {}
+    with path.open(encoding="utf-8") as handle:
+        for number, line in enumerate(handle, start=1):
+            if not line.strip():
+                continue
+            try:
+                entry = entry_from_record(json.loads(line))
+            except ValueError as exc:
+                raise LLMError(f"{path}, line {number}: not JSON ({exc})") from exc
+            except LLMError as exc:
+                raise LLMError(f"{path}, line {number}: {exc}") from exc
+            if entry.key in seen:
+                raise LLMError(
+                    f"{path}, line {number}: key {entry.key} repeats line {seen[entry.key]}"
+                )
+            seen[entry.key] = number
+            entries.append(entry)
+    return tuple(entries)
+
+
 def _entry_from_row(row: Mapping[Any, Any]) -> CacheEntry:
     created, key = row["created_at"], str(row["key"])
     return CacheEntry(
@@ -348,6 +469,7 @@ def _entry_from_row(row: Mapping[Any, Any]) -> CacheEntry:
 
 __all__ = [
     "COMPRESSED_PREFIX",
+    "EXPORT_FIELDS",
     "KEY_VERSION",
     "PROMPT_VERSION_LABEL",
     "CacheEntry",
@@ -356,7 +478,11 @@ __all__ = [
     "LLMCache",
     "StoredResult",
     "cache_key",
+    "entry_from_record",
+    "export_record",
     "key_payload",
+    "read_export",
     "request_json",
     "schema_fingerprint",
+    "write_export",
 ]

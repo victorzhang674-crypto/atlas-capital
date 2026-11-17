@@ -26,3 +26,16 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - After the fix: `uv run pytest tests/unit/orchestration -q` → 189 passed, exit 0 · `uv run pytest -q` → 4921 passed, 74 deselected, exit 0 · `make check` → exit 0 (4918 + 3 timing passed) · raw: [reaudit-pytest.txt](artifacts/reaudit-pytest.txt), [reaudit-make-check.txt](artifacts/reaudit-make-check.txt), [reaudit-verify-orchestration.txt](artifacts/reaudit-verify-orchestration.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 3 checkpoint (Stages 24–28): audit and Tier 1 — 2026-11-17
+- Commands run (this chat), after Tier 1 (script [artifacts/phase3-checkpoint-2026-11-17-tier1-checks.sh](artifacts/phase3-checkpoint-2026-11-17-tier1-checks.sh)):
+  - `uv run pytest -q` → 4967 passed, 81 deselected, exit 0 · raw: [artifacts/phase3-checkpoint-2026-11-17-tier1-pytest.txt](artifacts/phase3-checkpoint-2026-11-17-tier1-pytest.txt)
+  - `make check` → exit 0: All checks passed! · 474 files already formatted · mypy: no issues in 179 source files · 4964 passed in parallel + 3 timing passed · raw: [artifacts/phase3-checkpoint-2026-11-17-tier1-make-check.txt](artifacts/phase3-checkpoint-2026-11-17-tier1-make-check.txt)
+  - Verify commands: `tests/unit/data` → 1084 passed · `tests/unit/llm` → 339 passed · `tests/unit/agents` → 308 passed · `tests/unit/agents/memory` → 158 passed · `tests/unit/orchestration` → 189 passed · raw: `artifacts/phase3-checkpoint-2026-11-17-tier1-verify-*.txt`
+  - `uv run pytest -m integration -q -rs` → 48 passed, 15 skipped (real-lake tests; no lake in this worktree), exit 0 (incl. the new `tests/integration/test_phase3_run.py`, 7 passed) · raw: [artifacts/phase3-checkpoint-2026-11-17-tier1-integration.txt](artifacts/phase3-checkpoint-2026-11-17-tier1-integration.txt)
+  - Red first, on the unchanged code: [artifacts/phase3-checkpoint-2026-11-17-tier1-red.txt](artifacts/phase3-checkpoint-2026-11-17-tier1-red.txt); coverage of the changed modules: [artifacts/phase3-checkpoint-2026-11-17-tier1-coverage.txt](artifacts/phase3-checkpoint-2026-11-17-tier1-coverage.txt)
+- Audit on the unchanged tree (3900868): `uv run pytest -q` 4921 passed; `make check` exit 0; Verify 305 / 308 / 158 / 189 passed; integration 41 passed, 15 skipped; live DeepSeek 4 passed · raw: `artifacts/phase3-checkpoint-2026-11-17-{gate-pytest,make-check,verify-*,integration,live-deepseek}.txt`; report: [artifacts/phase3-checkpoint-2026-11-17-report.md](artifacts/phase3-checkpoint-2026-11-17-report.md). No stage reopens.
+- New: `tests/integration/test_phase3_run.py` 7 passed (3 of 3 runs green before the full run).
+- Acceptance criteria of Stage 28 unchanged and still evidenced: `test_five_symbols_fan_out_and_complete`, `test_a_killed_process_resumes_from_its_last_checkpoint`, `test_one_failing_node_drops_only_its_symbol` (Verify 189 passed); now also with real agents in the graph (the end-to-end test).
+
+**Result:** ALL CRITERIA VERIFIED

@@ -65,3 +65,15 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Acceptance criteria unchanged and still evidenced.
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 3 checkpoint follow-up (Tier 1 item 1: one DataView on several threads) — 2026-11-17
+- Commands run (this chat), after Tier 1 (script [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-checks.sh](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-checks.sh)):
+  - `uv run pytest -q` → 4967 passed, 81 deselected, exit 0 · raw: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-pytest.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-pytest.txt)
+  - `make check` → exit 0: All checks passed! · 474 files already formatted · mypy: no issues in 179 source files · 4964 passed in parallel + 3 timing passed · raw: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-make-check.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-make-check.txt)
+  - Verify commands: `tests/unit/data` → 1084 passed · `tests/unit/llm` → 339 passed · `tests/unit/agents` → 308 passed · `tests/unit/agents/memory` → 158 passed · `tests/unit/orchestration` → 189 passed · raw: `../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-verify-*.txt`
+  - `uv run pytest -m integration -q -rs` → 48 passed, 15 skipped (real-lake tests; no lake in this worktree), exit 0 (incl. the new `tests/integration/test_phase3_run.py`, 7 passed) · raw: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-integration.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-integration.txt)
+  - Red first, on the unchanged code: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-red.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-red.txt); coverage of the changed modules: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-coverage.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-coverage.txt)
+- New tests: `tests/unit/data/test_view_threads.py` 8 passed (3 failed before the fix).
+- Acceptance criteria unchanged and still evidenced: the leak suite (`test_future_rows_never_leak[*]`, `test_methods_cover_the_public_api`) and `test_blocked_symbol_absent[*]` / `test_blocked_symbol_raises[*]` passed in the Verify run above.
+
+**Result:** ALL CRITERIA VERIFIED

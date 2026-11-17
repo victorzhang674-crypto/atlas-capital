@@ -5,15 +5,18 @@
 - `atlas llm cache export OUT.jsonl` writes every entry as one JSON line (oldest first): `key`,
   `created_at`, `provider`, `model`, `request`, `response` and `usage` (tokens and `cost_usd`
   of the recorded call). An existing file is only replaced with `--force`.
+- `atlas llm cache import FILE.jsonl` stores the entries of an export file (a recorded live
+  run kept as a fixture, or a cache moved from another lake); every line is checked (its key
+  must be the SHA-256 of its request) and a file with a bad line stores nothing. Entries
+  already stored are kept unless `--replace`. The store is created when it has no cache.
 - `atlas llm cache prune --older-than 30d` deletes the entries recorded more than 30 days (or
   `12h` hours) ago, or before a `YYYY-MM-DD` date (UTC); `--dry-run` only counts them.
 
-All three read the lake given by `--store` (default: the data lake, `data.lake_path`) and never
-create one. Exit codes: 0 ok, 1 no cache in the store / configuration error / file exists,
-2 bad arguments.
+All four use the lake given by `--store` (default: the data lake, `data.lake_path`); only
+`import` creates one. Exit codes: 0 ok, 1 no cache in the store / configuration error / file
+exists / a damaged import file, 2 bad arguments.
 """
 
-import json
 import re
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -26,10 +29,10 @@ from rich.table import Table
 
 from atlas.core.clock import LiveClock
 from atlas.core.config import load_config
-from atlas.core.errors import AtlasError, ConfigError
+from atlas.core.errors import AtlasError, ConfigError, LLMError
 from atlas.core.storage import Database, Lake
 from atlas.core.storage.db import DB_FILENAME
-from atlas.llm.cache import LLMCache
+from atlas.llm.cache import LLMCache, read_export, write_export
 from atlas.llm.cost import CostLedger
 
 llm_app = typer.Typer(
@@ -39,7 +42,7 @@ llm_app = typer.Typer(
     pretty_exceptions_enable=False,
 )
 cache_app = typer.Typer(
-    help="The LLM record/replay cache: stats, export, prune.",
+    help="The LLM record/replay cache: stats, export, import, prune.",
     no_args_is_help=True,
     add_completion=False,
     pretty_exceptions_enable=False,
@@ -73,8 +76,16 @@ def parse_older_than(text: str, now: datetime) -> datetime:
         ) from None
 
 
-def _open(ctx: typer.Context, store: Path | None, console: Console, *, read_only: bool) -> Database:
-    """The database of `store` (or of the configured data lake); exit 1 when it has none."""
+def _open(
+    ctx: typer.Context,
+    store: Path | None,
+    console: Console,
+    *,
+    read_only: bool,
+    create: bool = False,
+) -> Database:
+    """The database of `store` (or of the configured data lake); exit 1 when it has none,
+    unless `create` (then a missing lake and database are created)."""
     root = store
     if root is None:
         obj = ctx.find_root().obj
@@ -85,7 +96,7 @@ def _open(ctx: typer.Context, store: Path | None, console: Console, *, read_only
         except ConfigError as exc:
             console.print(f"[red]Configuration error:[/red] {exc}")
             raise typer.Exit(1) from None
-    if not (Path(root) / DB_FILENAME).is_file():
+    if not create and not (Path(root) / DB_FILENAME).is_file():
         console.print(f"[red]No LLM cache:[/red] {Path(root) / DB_FILENAME} does not exist.")
         raise typer.Exit(1)
     try:
@@ -131,20 +142,40 @@ def export_cmd(
         raise typer.Exit(1)
     with _open(ctx, store, console, read_only=True) as database:
         entries = LLMCache(database).entries()
-    out.parent.mkdir(parents=True, exist_ok=True)
-    with out.open("w", encoding="utf-8") as handle:
-        for entry in entries:
-            line = {
-                "key": entry.key,
-                "created_at": entry.created_at.astimezone(UTC).isoformat(),
-                "provider": entry.provider,
-                "model": entry.model,
-                "request": json.loads(entry.request_json),
-                "response": json.loads(entry.response_json),
-                "usage": json.loads(entry.usage_json),
-            }
-            handle.write(json.dumps(line, sort_keys=True, ensure_ascii=False) + "\n")
+    write_export(entries, out)
     console.print(f"Exported {len(entries)} entries to {out}.")
+
+
+@cache_app.command("import")
+def import_cmd(
+    ctx: typer.Context,
+    source: Annotated[
+        Path,
+        typer.Argument(
+            metavar="FILE",
+            exists=True,
+            dir_okay=False,
+            readable=True,
+            help="An export file: one JSON object per line.",
+        ),
+    ],
+    store: StoreOption = None,
+    replace: Annotated[
+        bool, typer.Option("--replace", help="Replace entries that are already stored.")
+    ] = False,
+) -> None:
+    """Store the entries of an export FILE in the cache (creating the cache if needed)."""
+    console = Console(soft_wrap=False, highlight=False)
+    try:
+        entries = read_export(source)
+    except LLMError as exc:
+        console.print(f"[red]Cannot import:[/red] {exc}")
+        raise typer.Exit(1) from None
+    with _open(ctx, store, console, read_only=False, create=True) as database:
+        stored = LLMCache(database).load(entries, replace=replace)
+    skipped = len(entries) - stored
+    note = f" ({skipped} already stored; pass --replace to overwrite)" if skipped else ""
+    console.print(f"Imported {stored} of {len(entries)} entries from {source}{note}.")
 
 
 @cache_app.command("prune")

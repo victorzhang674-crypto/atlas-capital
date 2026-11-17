@@ -6,6 +6,7 @@ from atlas.llm.cost import CostLedger, Rates, UsageRecord, cost_usd, rates_at
 from atlas.llm.gateway import LLMGateway, build_gateway, build_provider
 from atlas.llm.hygiene import DATA_POLICY, data_block, with_data_policy
 from atlas.llm.providers.fake import FakeLLM, FakeReply
+from atlas.llm.providers.offline import OfflineProvider
 from atlas.llm.schemas import (
     LLMProvider,
     LLMResult,
@@ -32,6 +33,7 @@ __all__ = [
     "LLMProvider",
     "LLMResult",
     "Message",
+    "OfflineProvider",
     "ProviderRequest",
     "ProviderResponse",
     "Rates",

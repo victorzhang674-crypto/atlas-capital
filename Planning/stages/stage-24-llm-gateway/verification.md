@@ -34,3 +34,16 @@ Output of commands run in this stage's chat (Project.md Rule 1). Raw output is u
 - CI (GitHub Actions, `make check` + `make test-integration`): on 13f8a02 the stage-branch run 42778103529 passed and the `main` run 42778103411 was cancelled by the workflow's 20-minute job limit (not a test failure); after raising the limit to 40 minutes, on a6a249c both runs passed: 42781081786 (stage branch) and **42781082033 (`main`)** · raw: [ci-runs.txt](artifacts/ci-runs.txt), [ci-main-run.txt](artifacts/ci-main-run.txt), [ci-runs-a6a249c.txt](artifacts/ci-runs-a6a249c.txt)
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 3 checkpoint follow-ups (Tier 1 items 2–3: FakeLLM functions, keyless replay) — 2026-11-17
+- Commands run (this chat), after Tier 1 (script [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-checks.sh](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-checks.sh)):
+  - `uv run pytest -q` → 4967 passed, 81 deselected, exit 0 · raw: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-pytest.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-pytest.txt)
+  - `make check` → exit 0: All checks passed! · 474 files already formatted · mypy: no issues in 179 source files · 4964 passed in parallel + 3 timing passed · raw: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-make-check.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-make-check.txt)
+  - Verify commands: `tests/unit/data` → 1084 passed · `tests/unit/llm` → 339 passed · `tests/unit/agents` → 308 passed · `tests/unit/agents/memory` → 158 passed · `tests/unit/orchestration` → 189 passed · raw: `../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-verify-*.txt`
+  - `uv run pytest -m integration -q -rs` → 48 passed, 15 skipped (real-lake tests; no lake in this worktree), exit 0 (incl. the new `tests/integration/test_phase3_run.py`, 7 passed) · raw: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-integration.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-integration.txt)
+  - Red first, on the unchanged code: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-red.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-red.txt); coverage of the changed modules: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-coverage.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-tier1-coverage.txt)
+- New tests: `test_llm_fake_answerers.py` 6 passed (6 failed before), `test_llm_offline.py` 9 passed (did not collect before); coverage of `src/atlas/llm` 100%.
+- Live (this chat, before the change, both tiers): 4 passed · raw: [../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-live-deepseek.txt](../stage-28-langgraph-skeleton/artifacts/phase3-checkpoint-2026-11-17-live-deepseek.txt). The change does not touch the real providers.
+- Acceptance criteria unchanged and still evidenced: every call costed and logged, budgets enforced, agents testable with FakeLLM only (`tests/unit/llm` 339 passed).
+
+**Result:** ALL CRITERIA VERIFIED

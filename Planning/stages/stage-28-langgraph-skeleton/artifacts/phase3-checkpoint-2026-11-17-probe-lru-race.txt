@@ -1,0 +1,3 @@
+reader threads that died: 3 of 4; errors: ['KeyError(0)', 'KeyError(0)', 'KeyError(2)']
+cache counters: CacheInfo(hits=654, misses=218532, size=2, maxsize=2)
+exit 0

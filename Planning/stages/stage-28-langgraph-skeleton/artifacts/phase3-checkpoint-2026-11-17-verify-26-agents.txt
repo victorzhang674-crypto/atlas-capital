@@ -1,0 +1,31 @@
+$ uv run pytest tests/unit/agents -q
+started 2026-11-17T05:57:55Z
+........................................................................ [ 23%]
+........................................................................ [ 46%]
+........................................................................ [ 70%]
+........................................................................ [ 93%]
+....................                                                     [100%]
+308 passed, 3 deselected in 15.43s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "disable_profiling"
+ - leaked function "begin"
+ - leaked function "remove_function"
+ - leaked function "_prepare_script"
+ - leaked function "type"
+ - leaked function "fetchnumpy"
+ - leaked function "query_progress"
+ - leaked function "_name_scope"
+ - leaked function "df"
+ - leaked function "_register_collection"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlfinished 2026-11-17T05:58:15Z
+exit 0
