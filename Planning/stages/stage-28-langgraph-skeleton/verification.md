@@ -39,3 +39,4 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Acceptance criteria of Stage 28 unchanged and still evidenced: `test_five_symbols_fan_out_and_complete`, `test_a_killed_process_resumes_from_its_last_checkpoint`, `test_one_failing_node_drops_only_its_symbol` (Verify 189 passed); now also with real agents in the graph (the end-to-end test).
 
 **Result:** ALL CRITERIA VERIFIED
+- Merge into `main` (2026-11-17): fast-forward 3900868 → **d21d70c** (owner's Terminal panel), trees equal; merged result `uv run pytest -q` 4967 passed, `make check` exit 0, Phase 3 end-to-end 7 passed · raw: [artifacts/phase3-checkpoint-2026-11-17-merged-main-check.txt](artifacts/phase3-checkpoint-2026-11-17-merged-main-check.txt)
