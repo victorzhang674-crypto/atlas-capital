@@ -229,7 +229,8 @@ backtests on one lake (56).
   branch: Stage 28's kill-resume test killed its worker after a director logged "done" but
   before LangGraph saved that director's write, so the resumed run researched that symbol
   again. A race in the test, not the code; the test now waits for the saved writes (red
-  reproduced on purpose, then green; full suite 4967 passed, `make check` exit 0).
+  reproduced on purpose, then green; full suite 4967 passed, `make check` exit 0). Fix
+  538702a merged into `main` and pushed: CI success on `main` and the branch.
 - Tiers 2–4: not started; they wait for the owner's word. Tier 2 items change behaviour or a
   brief, so each needs it. Recommended order: Tier 2 items 5 (tools package) and 1 (memory
   ids) before Stage 29; item 7 (where fixture data comes from) before Stage 29's live run.
