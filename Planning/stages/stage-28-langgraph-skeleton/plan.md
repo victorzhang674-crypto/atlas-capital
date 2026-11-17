@@ -93,4 +93,4 @@ Brief task mapping: brief 1 (state + reducers) → Task 2; brief 2 (subgraph wit
 - [x] `uv run pytest tests/unit/orchestration -q` (brief Verify), `uv run pytest -q`, `make check` → green; raw output in `artifacts/`
 - [x] Coverage of `src/atlas/orchestration` (target 100%); mutation run (mutmut) on `src/atlas/orchestration`; survivors reviewed
 - [x] Audit against brief, spec and Project.md (findings A1… fixed test-first) → `artifacts/audit-report.md`
-- [ ] `verification.md`, PROGRESS.md (status, handoff, Decisions log), commit `stage-28: LangGraph orchestration skeleton`, merge into `main`, merged-result checks, push
+- [x] `verification.md`, PROGRESS.md (status, handoff, Decisions log), commit `stage-28: LangGraph orchestration skeleton`, merge into `main`, merged-result checks, push

@@ -79,3 +79,8 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 ## 2026-11-16 — Code files created or changed by this stage
 - Created: `src/atlas/orchestration/{state,errors,research_graph,checkpoint,stubs}.py`, `docs/orchestration.md`, `tests/unit/orchestration/{graph_world,kill_worker}.py`, `tests/unit/orchestration/test_orchestration_{foundations,state,errors,stubs,subgraph,fanout,checkpoint,isolation,package,audit}.py`
 - Changed: `src/atlas/orchestration/__init__.py`, `src/atlas/core/config.py` (`OrchestrationConfig`, env section), `src/atlas/core/errors.py` (`OrchestrationError`), `config/fund.yaml`, `pyproject.toml`, `uv.lock`, `tests/unit/core/test_errors.py`
+
+## 2026-11-16 — Commit and merge into `main` (Rule 6A)
+- Reviewed the staged diff (44 files, only the stage's code, tests, docs, config, lock and records; no `data/`, `.env`, caches, sqlite files); pre-commit hooks passed. Commit **e1a2d20** `stage-28: LangGraph orchestration skeleton`; `git status --short` clean.
+- Merge: the main checkout is not writable from the sandbox, so `artifacts/merged-main-check.sh` ran in the owner's Terminal panel (nothing else was running there): fast-forward 09f76eb → e1a2d20, trees equal (e752c0d), `uv sync --group dev` (adds langgraph to main's venv), `uv run pytest -q` → 4917 passed, 74 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch. Raw: artifacts/merged-main-check.txt.
+- This records commit follows; `main` is fast-forwarded to it too. Push waits for the owner's go-ahead (the remote may be public).
