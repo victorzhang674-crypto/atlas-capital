@@ -84,3 +84,9 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Reviewed the staged diff (44 files, only the stage's code, tests, docs, config, lock and records; no `data/`, `.env`, caches, sqlite files); pre-commit hooks passed. Commit **e1a2d20** `stage-28: LangGraph orchestration skeleton`; `git status --short` clean.
 - Merge: the main checkout is not writable from the sandbox, so `artifacts/merged-main-check.sh` ran in the owner's Terminal panel (nothing else was running there): fast-forward 09f76eb → e1a2d20, trees equal (e752c0d), `uv sync --group dev` (adds langgraph to main's venv), `uv run pytest -q` → 4917 passed, 74 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch. Raw: artifacts/merged-main-check.txt.
 - This records commit follows; `main` is fast-forwarded to it too. Push waits for the owner's go-ahead (the remote may be public).
+- Records commit bfe9850 fast-forwarded `main` e1a2d20 → bfe9850 in the owner's Terminal panel with the full merged-result checks again: trees equal (e94870b), `uv run pytest -q` → 4917 passed, 74 deselected, exit 0; `make check` → exit 0; branch listed as merged.
+
+## 2026-11-16 — Push and CI
+- Owner: "Yes, push". `git push origin main claude/stage-28-planning-audit-957ff6` from the sandbox (`allowed_domains: github.com`) → `main` 09f76eb..bfe9850, stage branch new on origin.
+- CI read from the public API (`actions/runs?head_sha=bfe9850…`): `main` run 44002675127 completed success; branch run 44002675035 completed success. Raw: artifacts/ci-runs-bfe9850.json. (My wait loop's exit test used `set --` word splitting, which zsh does not do, so it ran its full 30 polls; the result is unaffected.)
+- This push-and-CI records commit goes to `main` the same way (fast-forward in the owner's Terminal panel, merged-result checks) and is pushed; its own CI is reported in the chat.
