@@ -54,3 +54,4 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Acceptance criteria of Stage 28 unchanged and still evidenced (Verify 200 passed; the end-to-end test 7 passed).
 
 **Result:** ALL CRITERIA VERIFIED
+- Merge, push and CI (Tier 2): Merged into `main` by fast-forward 5dc3961 → 798a99e (commit `phase-3 checkpoint: Tier 2 (items 1-6, item 7 drafted)`, 42 files, staged diff reviewed, secrets scan 0 hits of 4) in the owner's Terminal panel; trees equal (8e1f7c7); merged result `uv run pytest -q` 5008 passed, `make check` exit 0, Phase 3 end-to-end 7 passed ([merged-main check](artifacts/phase3-checkpoint-2026-11-17-tier2-merged-main-check.txt)). Pushed; CI on 798a99e: **`main` run 44211040861 success**, branch run 44211040869 success ([ci-runs-798a99e.json](artifacts/ci-runs-798a99e.json)). The records commit that follows is pushed the same way; a commit cannot record its own CI run.

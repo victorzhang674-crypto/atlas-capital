@@ -244,4 +244,5 @@ backtests on one lake (56).
   - Item 6: `llm.retry.outage_failures` (8) / `outage_cooldown_seconds` (300).
   - After Tier 2: `uv run pytest -q` 5008 passed; `make check` exit 0; Verify 350 / 327 /
     162 / 200 passed; integration 48 passed, 15 skipped; changed modules 100% covered.
+  - Merged into `main` (798a99e) and pushed: CI success on `main` and the branch.
 - Item 7's notes wait for the owner. Tiers 3–4: not started; they wait for the owner's word.
