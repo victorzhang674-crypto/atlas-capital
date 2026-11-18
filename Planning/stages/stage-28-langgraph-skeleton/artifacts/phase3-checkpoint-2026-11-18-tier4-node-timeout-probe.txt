@@ -1,0 +1,33 @@
+# Phase 3 checkpoint Tier 4 item 2, 2026-11-18: LangGraph 1.2.22 node-timeout probe
+# script:
+    """Probe: does LangGraph 1.2's add_node(timeout=...) bound a synchronous node under invoke()?"""
+    import time
+    from typing import TypedDict
+    from langgraph.graph import StateGraph, START, END
+    
+    class S(TypedDict):
+        x: int
+    
+    def slow(state: S) -> S:
+        time.sleep(2.0)
+        return {"x": 1}
+    
+    g = StateGraph(S)
+    try:
+        g.add_node("slow", slow, timeout=0.5)
+    except Exception as exc:
+        print("add_node refused:", type(exc).__name__, exc)
+        raise SystemExit
+    g.add_edge(START, "slow"); g.add_edge("slow", END)
+    graph = g.compile()
+    t = time.perf_counter()
+    try:
+        print("result:", graph.invoke({"x": 0}))
+    except Exception as exc:
+        print("raised:", type(exc).__name__, str(exc)[:200])
+    print(f"elapsed {time.perf_counter() - t:.2f} s")
+# output (last lines):
+  File "/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-3-checkpoint-stages-24-28-e324d2/.venv/lib/python3.12/site-packages/langgraph/pregel/_utils.py", line 135, in validate_timeout_supported
+    raise sync_timeout_unsupported(name)
+ValueError: Node timeouts are only supported for async nodes because sync Python execution cannot be safely cancelled in-process. Node 'slow' is sync.
+exit 0

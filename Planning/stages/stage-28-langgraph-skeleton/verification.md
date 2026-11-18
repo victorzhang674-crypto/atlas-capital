@@ -69,3 +69,16 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 
 **Result:** ALL CRITERIA VERIFIED
 - Merge, push and CI (Tier 3): Merged into `main` by fast-forward d5b2b69 → dd6eafe (commit `phase-3 checkpoint: Tier 3 (atlas llm usage; read-only llm commands on old lakes)`, 24 files, staged diff reviewed, secrets scan 0 hits of 5) in the owner's Terminal panel; trees equal (1e44600); merged result `uv run pytest -q` 5033 passed, `make check` exit 0, Phase 3 end-to-end 7 passed ([merged-main check](artifacts/phase3-checkpoint-2026-11-18-tier3-merged-main-check.txt)). Pushed; CI on dd6eafe: **`main` run 44245712126 success**, branch run 44245711934 success ([ci-runs-dd6eafe.json](artifacts/ci-runs-dd6eafe.json)). The records commit that follows is pushed the same way.
+
+#### Phase 3 checkpoint Tier 4 — 2026-11-18
+- Owner's words: "Start Tier 4". Done: item 1 (`docs/llm.md`, Stage 24). Not built, each with its reason: item 2 (per-node timeout) — LangGraph 1.2.22 refuses `add_node(timeout=…)` on a synchronous node and every research node is synchronous ([probe](artifacts/phase3-checkpoint-2026-11-18-tier4-node-timeout-probe.txt)); a Stage 55 design choice, Backlog corrected; item 3 (budgets with real prompts) needs Stage 29's prompts and Stage 56's backtest (Rule 4).
+- Commands run (this chat; script [artifacts/phase3-checkpoint-2026-11-18-tier4-checks.sh](artifacts/phase3-checkpoint-2026-11-18-tier4-checks.sh)):
+  - `uv run pytest -q` → 5034 passed, 81 deselected, exit 0 · raw: [artifacts/phase3-checkpoint-2026-11-18-tier4-pytest.txt](artifacts/phase3-checkpoint-2026-11-18-tier4-pytest.txt)
+  - `make check`, first run → exit 2: `ruff format --check` wanted the `FakeLLM` example in `docs/llm.md` reformatted (ruff formats Python blocks in Markdown) · raw: [artifacts/phase3-checkpoint-2026-11-18-tier4-make-check-first-fmt-fail.txt](artifacts/phase3-checkpoint-2026-11-18-tier4-make-check-first-fmt-fail.txt). Fixed with `uv run ruff format docs/llm.md`.
+  - `make check`, after the fix → exit 0: All checks passed! · 485 files already formatted · mypy: no issues in 181 source files · 5031 passed in parallel + 3 timing passed · raw: [artifacts/phase3-checkpoint-2026-11-18-tier4-make-check.txt](artifacts/phase3-checkpoint-2026-11-18-tier4-make-check.txt)
+  - Verify: `tests/unit/test_repo_docs.py` → 4 passed (after the fix) · raw: [artifacts/phase3-checkpoint-2026-11-18-tier4-verify-docs.txt](artifacts/phase3-checkpoint-2026-11-18-tier4-verify-docs.txt)
+  - `uv run pytest -m integration -q -rs` → 48 passed, 15 skipped (real-lake tests; no lake in this worktree), exit 0 · raw: [artifacts/phase3-checkpoint-2026-11-18-tier4-integration.txt](artifacts/phase3-checkpoint-2026-11-18-tier4-integration.txt)
+  - Red first, before the page existed: `test_llm_doc_covers_the_gateway` failed with `FileNotFoundError` ([red](artifacts/phase3-checkpoint-2026-11-18-tier4-red.txt)).
+- Acceptance criteria of Stages 24 and 28 unchanged and still evidenced (full suite green; the end-to-end test in the integration run).
+
+**Result:** ALL CRITERIA VERIFIED

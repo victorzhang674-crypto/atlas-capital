@@ -60,3 +60,9 @@ Output of commands run in this stage's chat (Project.md Rule 1). Raw output is u
 - Acceptance criteria unchanged and still evidenced: every call costed and logged, budgets enforced, agents testable with FakeLLM only (`tests/unit/llm` 363 passed).
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 3 checkpoint Tier 4 — 2026-11-18
+- Item 1 (`docs/llm.md`): `tests/unit/test_repo_docs.py` 4 passed (red first: `FileNotFoundError`). Full block and raw output: [../stage-28-langgraph-skeleton/verification.md](../stage-28-langgraph-skeleton/verification.md) (Tier 4) — `uv run pytest -q` 5034 passed; `make check` exit 0 (after a `ruff format` of the page's example, recorded there).
+- Acceptance criteria unchanged and still evidenced (full suite green).
+
+**Result:** ALL CRITERIA VERIFIED

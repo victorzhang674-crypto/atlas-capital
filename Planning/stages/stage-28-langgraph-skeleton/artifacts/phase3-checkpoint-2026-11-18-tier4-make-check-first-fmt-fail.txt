@@ -1,0 +1,21 @@
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+unformatted: File would be reformatted
+   --> docs/llm.md:184:10
+    |
+183 | fake = FakeLLM({("news_analyst", "extract"): Facts(...), "risk_officer": "ok"}, default="{}")
+    - fake.add("pm", None, FakeReply(tool_calls=(ToolCall(id="1", name="news", arguments={}),)),
+    -          '{"weights": {}}')  # consumed in order; more calls than scripted raise LLMError
+184 + fake.add(
+185 +     "pm",
+186 +     None,
+187 +     FakeReply(tool_calls=(ToolCall(id="1", name="news", arguments={}),)),
+188 +     '{"weights": {}}',
+189 + )  # consumed in order; more calls than scripted raise LLMError
+190 | fake.add("analyst", None, lambda request: answer_for(request))  # a reply from the request
+    |
+
+1 file would be reformatted, 484 files already formatted
+make: *** [fmt-check] Error 1
+exit 2

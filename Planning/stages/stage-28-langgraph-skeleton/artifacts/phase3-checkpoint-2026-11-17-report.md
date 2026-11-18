@@ -258,4 +258,15 @@ backtests on one lake (56).
     `ANTHROPIC_API_KEY` in `.env` (absent).
   - After Tier 3: `uv run pytest -q` 5033 passed; `make check` exit 0; `tests/unit/llm` 363
     passed; integration 48 passed, 15 skipped; `cost.py` and `llm_cmd.py` 100% covered.
-  - Tier 4: not started; it waits for the owner's word.
+- Tier 4 (2026-11-18, owner: "Start Tier 4"):
+  - Item 1 done test-first: `docs/llm.md` (tiers and providers, one call step by step,
+    budgets, prices and the ledger, retries and outages, untrusted text, testing without a
+    vendor, configuration). `test_llm_doc_covers_the_gateway` names every `llm` config key
+    and priced model, so the page cannot fall behind the config silently.
+  - Item 2 investigated, not built: LangGraph 1.2.22 refuses `add_node(timeout=…)` on a
+    synchronous node ([probe](phase3-checkpoint-2026-11-18-tier4-node-timeout-probe.txt)),
+    and every research node is synchronous. A node timeout needs async nodes or a limit
+    inside the agent: a Stage 55 design choice (Backlog corrected). Item 3 waits for real
+    prompts (Stage 29) and the first LLM backtest (Stage 56).
+  - After Tier 4: `uv run pytest -q` 5034 passed; `make check` exit 0 (after formatting the
+    page's example); docs test 4 passed; integration 48 passed, 15 skipped.
