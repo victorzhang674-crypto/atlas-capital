@@ -1,0 +1,12 @@
+factor_exposures: before 1212389 rows / 142 dates / c1af13b53c182d58; after 1212389 / 142 / c1af13b53c182d58: EQUAL
+factor_returns: before 49420 rows / 2471 dates / b1b64609b1d9f4ae; after 49420 / 2471 / b1b64609b1d9f4ae: EQUAL
+risk_model_snapshots: before 1236160 rows / 115 dates / 4e51ddf8929b5b49; after 1236160 / 115 / 4e51ddf8929b5b49: EQUAL
+STORES EQUAL
+{"day": "2026-10-30", "event": "factors.stored", "level": "info", "logger": "atlas.quant.factors.store", "mode": "dev", "rows": 8551, "run_id": "01M7Q9566KQ1ADWNMDYCJKM7HG", "stage": "factors.build", "timestamp": "2026-11-18T12:35:02.064158Z"}
+{"date": "2026-10-30", "done": 142, "event": "factors.cache_written", "level": "info", "logger": "atlas.quant.factors.store", "mode": "dev", "names": 503, "rows": 8551, "run_id": "01M7Q9566KQ1ADWNMDYCJKM7HG", "stage": "factors.build", "timestamp": "2026-11-18T12:35:02.064287Z", "todo": 142}
+
+{"date": "2026-10-30", "event": "risk_model.snapshot_stored", "level": "info", "logger": "atlas.quant.risk_model.loader", "mode": "dev", "names": 514, "run_id": "01M7QAFSZ01AQXMQAXEJ7Y9FDT", "stage": "risk_model.build", "timestamp": "2026-11-18T13:03:00.342355Z"}
+{"event": "risk_model.built_and_stored", "level": "info", "logger": "atlas.quant.risk_model.loader", "mode": "dev", "run_id": "01M7QAFSZ01AQXMQAXEJ7Y9FDT", "sessions": 2471, "snapshots": 115, "stage": "risk_model.build", "timestamp": "2026-11-18T13:03:00.342386Z"}
+
+main lake: stored dates 142, fresh 142
+scratch copy: stored dates 142, fresh 142

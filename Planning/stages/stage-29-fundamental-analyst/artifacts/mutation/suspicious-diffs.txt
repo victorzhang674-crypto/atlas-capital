@@ -1,0 +1,877 @@
+# atlas.agents.research.fundamental.x_missing_sections__mutmut_5
+-    for label, pattern in zip(SECTIONS, _SECTION_RES, strict=True):
++    for label, pattern in zip(SECTIONS, _SECTION_RES, strict=None):
+# atlas.agents.research.fundamental.x_missing_sections__mutmut_8
+-    for label, pattern in zip(SECTIONS, _SECTION_RES, strict=True):
++    for label, pattern in zip(SECTIONS, _SECTION_RES, ):
+# atlas.agents.research.fundamental.x_missing_sections__mutmut_9
+-    for label, pattern in zip(SECTIONS, _SECTION_RES, strict=True):
++    for label, pattern in zip(SECTIONS, _SECTION_RES, strict=False):
+# atlas.agents.research.fundamental.x_sentences__mutmut_14
+-        if out and not TAG_RE.sub("", piece).strip(" .;,"):
++        if out and not TAG_RE.sub("", piece).strip("XX .;,XX"):
+# atlas.agents.research.fundamental.x_sentences__mutmut_5
+-            continue
++            break
+# atlas.agents.research.fundamental.x_sentences__mutmut_8
+-        if out and not TAG_RE.sub("", piece).strip(" .;,"):
++        if out and not TAG_RE.sub("", piece).strip(None):
+# atlas.agents.research.fundamental.x_uncited_numbers__mutmut_13
+-        if _DIGIT.search(_ISO_DATE.sub("", TAG_RE.sub("", s))) and not TAG_RE.search(s)
++        if _DIGIT.search(_ISO_DATE.sub("", TAG_RE.sub("XXXX", s))) and not TAG_RE.search(s)
+# atlas.agents.research.fundamental.x_uncited_numbers__mutmut_8
+-        if _DIGIT.search(_ISO_DATE.sub("", TAG_RE.sub("", s))) and not TAG_RE.search(s)
++        if _DIGIT.search(_ISO_DATE.sub("XXXX", TAG_RE.sub("", s))) and not TAG_RE.search(s)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁ__init____mutmut_1
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get(None) is None:
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁ__init____mutmut_2
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get("XXtool_registryXX") is None:
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁ__init____mutmut_3
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get("TOOL_REGISTRY") is None:
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_18
+-            "signals must be exactly "
++            "XXsignals must be exactly XX"
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_21
+-            + ", ".join(SIGNALS)
++            + "XX, XX".join(SIGNALS)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_22
+-            + " (each once); got "
++            + "XX (each once); got XX"
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_23
+-            + " (each once); got "
++            + " (EACH ONCE); GOT "
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_24
+-            + (", ".join(names) or "none")
++            + (", ".join(names) and "none")
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_26
+-            + (", ".join(names) or "none")
++            + ("XX, XX".join(names) or "none")
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_27
+-            + (", ".join(names) or "none")
++            + (", ".join(names) or "XXnoneXX")
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_28
+-            + (", ".join(names) or "none")
++            + (", ".join(names) or "NONE")
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_33
+-            "the summary needs these sections, in order, each starting a line with its "
++            "XXthe summary needs these sections, in order, each starting a line with its XX"
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_34
+-            "the summary needs these sections, in order, each starting a line with its "
++            "THE SUMMARY NEEDS THESE SECTIONS, IN ORDER, EACH STARTING A LINE WITH ITS "
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_35
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "XXlabel and a colon: XX" + ", ".join(f'"{m}:"' for m in missing)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_36
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "LABEL AND A COLON: " + ", ".join(f'"{m}:"' for m in missing)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_38
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "label and a colon: " + "XX, XX".join(f'"{m}:"' for m in missing)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_42
+-        uncited += [f"risks[{i}]: {s}" for s in uncited_numbers(risk)]
++        uncited = [f"risks[{i}]: {s}" for s in uncited_numbers(risk)]
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_46
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "XXevery sentence that states a number needs an [E:<id>] tag of its evidence; XX"
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_47
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "every sentence that states a number needs an [e:<id>] tag of its evidence; "
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁcheck_output__mutmut_48
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "EVERY SENTENCE THAT STATES A NUMBER NEEDS AN [E:<ID>] TAG OF ITS EVIDENCE; "
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁprompt_inputs__mutmut_10
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=None), symbol=symbol)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁprompt_inputs__mutmut_4
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(None, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁprompt_inputs__mutmut_5
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, None, symbol=symbol)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁprompt_inputs__mutmut_6
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=None)
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁprompt_inputs__mutmut_9
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), )
+# atlas.agents.research.fundamental.xǁFundamentalAnalystǁsymbol__mutmut_9
+-        raise ConfigError("fundamental_analyst needs inputs['symbol'] (a ticker)")
++        raise ConfigError("XXfundamental_analyst needs inputs['symbol'] (a ticker)XX")
+# atlas.agents.tools.fundamental_tools.x__current_multiples__mutmut_61
+-    return pd.DataFrame.from_dict(rows, orient="index", columns=[k for k, _, _ in MULTIPLES])
++    return pd.DataFrame.from_dict(rows, orient="index", columns=None)
+# atlas.agents.tools.fundamental_tools.x__current_multiples__mutmut_64
+-    return pd.DataFrame.from_dict(rows, orient="index", columns=[k for k, _, _ in MULTIPLES])
++    return pd.DataFrame.from_dict(rows, orient="index", )
+# atlas.agents.tools.fundamental_tools.x__current_multiples__mutmut_66
+-    return pd.DataFrame.from_dict(rows, orient="index", columns=[k for k, _, _ in MULTIPLES])
++    return pd.DataFrame.from_dict(rows, orient="INDEX", columns=[k for k, _, _ in MULTIPLES])
+# atlas.agents.tools.fundamental_tools.x__debt_growth__mutmut_10
+-        return math.inf if now > 0 else 0.0
++        return math.inf if now > 1 else 0.0
+# atlas.agents.tools.fundamental_tools.x__debt_growth__mutmut_2
+-    if not (_finite(now) and _finite(before)):
++    if not (_finite(now) or _finite(before)):
+# atlas.agents.tools.fundamental_tools.x__debt_growth__mutmut_6
+-    if before <= 0:
++    if before <= 1:
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_100
+-        else "; a year earlier: not available"
++        else "XX; a year earlier: not availableXX"
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_101
+-        else "; a year earlier: not available"
++        else "; A YEAR EARLIER: NOT AVAILABLE"
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_128
+-        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=True)
++        + fmt_pct(None, signed=True)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_129
+-        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=True)
++        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=None)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_131
+-        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=True)
++        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), )
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_132
+-        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=True)
++        + fmt_pct(_growth(None, _fcf(history, year_ago)), signed=True)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_133
+-        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=True)
++        + fmt_pct(_growth(_fcf(history, end), None), signed=True)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_137
+-        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=True)
++        + fmt_pct(_growth(_fcf(history, None), _fcf(history, year_ago)), signed=True)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_141
+-        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=True)
++        + fmt_pct(_growth(_fcf(history, end), _fcf(history, None)), signed=True)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_144
+-        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=True)
++        + fmt_pct(_growth(_fcf(history, end), _fcf(history, year_ago)), signed=False)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_147
+-        if year_ago is not None
++        if (year_ago is not None) or True
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_181
+-        cagr = ratio ** (1 / 3) - 1 if _finite(ratio) and ratio > 0 else math.nan
++        cagr = ratio ** (1 / 3) - 1 if (_finite(ratio) and ratio > 0) or True else math.nan
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_188
+-        cagr = ratio ** (1 / 3) - 1 if _finite(ratio) and ratio > 0 else math.nan
++        cagr = ratio ** (1 / 3) - 1 if _finite(ratio) or ratio > 0 else math.nan
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_190
+-        cagr = ratio ** (1 / 3) - 1 if _finite(ratio) and ratio > 0 else math.nan
++        cagr = ratio ** (1 / 3) - 1 if _finite(ratio) and ratio >= 0 else math.nan
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_191
+-        cagr = ratio ** (1 / 3) - 1 if _finite(ratio) and ratio > 0 else math.nan
++        cagr = ratio ** (1 / 3) - 1 if _finite(ratio) and ratio > 1 else math.nan
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_201
+-    as_of = _latest_stamp(stamps, fallback)
++    as_of = _latest_stamp(stamps, None)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_212
+-            source="sec_edgar",
++            source="XXsec_edgarXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_213
+-            source="sec_edgar",
++            source="SEC_EDGAR",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_225
+-            source="sec_edgar",
++            source="XXsec_edgarXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_226
+-            source="sec_edgar",
++            source="SEC_EDGAR",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_41
+-    stale = (view.day - end).days > view.config.data.fundamentals.max_staleness_days
++    stale = (view.day - end).days >= view.config.data.fundamentals.max_staleness_days
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_48
+-        "revenue",
++        "XXrevenueXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_49
+-        "revenue",
++        "REVENUE",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_5
+-    revenue = history.of("revenue", "ttm")
++    revenue = history.of("revenue", )
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_50
+-        "gross_profit",
++        "XXgross_profitXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_51
+-        "gross_profit",
++        "GROSS_PROFIT",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_52
+-        "operating_income",
++        "XXoperating_incomeXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_53
+-        "operating_income",
++        "OPERATING_INCOME",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_54
+-        "net_income",
++        "XXnet_incomeXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_55
+-        "net_income",
++        "NET_INCOME",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_56
+-        "eps_diluted",
++        "XXeps_dilutedXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_57
+-        "eps_diluted",
++        "EPS_DILUTED",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_58
+-        "operating_cash_flow",
++        "XXoperating_cash_flowXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_59
+-        "operating_cash_flow",
++        "OPERATING_CASH_FLOW",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_60
+-        "capex",
++        "XXcapexXX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_61
+-        "capex",
++        "CAPEX",
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_69
+-    fallback = _instant(revenue["available_at"].iloc[-1])
++    fallback = None
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_70
+-    fallback = _instant(revenue["available_at"].iloc[-1])
++    fallback = _instant(None)
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_73
+-    fallback = _instant(revenue["available_at"].iloc[-1])
++    fallback = _instant(revenue["available_at"].iloc[+1])
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_74
+-    fallback = _instant(revenue["available_at"].iloc[-1])
++    fallback = _instant(revenue["available_at"].iloc[-2])
+# atlas.agents.tools.fundamental_tools.x__derived_items__mutmut_91
+-        if year_ago is not None
++        if (year_ago is not None) or True
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_16
+-    if (view.day - latest).days > staleness:
++    if (view.day - latest).days >= staleness:
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_17
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            None, "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_18
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            "dilution", None, f"the latest share count is dated {latest}: stale"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_19
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            "dilution", "NOT EVALUATED", None
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_20
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_21
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            "dilution", f"the latest share count is dated {latest}: stale"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_22
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
+-        ), ""
++            "dilution", "NOT EVALUATED", ), ""
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_23
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            "XXdilutionXX", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_24
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            "DILUTION", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_25
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            "dilution", "XXNOT EVALUATEDXX", f"the latest share count is dated {latest}: stale"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_26
+-            "dilution", "NOT EVALUATED", f"the latest share count is dated {latest}: stale"
++            "dilution", "not evaluated", f"the latest share count is dated {latest}: stale"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_27
+-        ), ""
++        ), "XXXX"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_33
+-    n = _window_sessions(view, latest - timedelta(days=_YEAR + tol))
++    n = _window_sessions(view, latest + timedelta(days=_YEAR + tol))
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_35
+-    n = _window_sessions(view, latest - timedelta(days=_YEAR + tol))
++    n = _window_sessions(view, latest - timedelta(days=_YEAR - tol))
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_5
+-        return dilution_rule(math.nan, settings), ""
++        return dilution_rule(None, settings), ""
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_59
+-        return dilution_rule(math.nan, settings), f"count dated {latest}"
++        return dilution_rule(None, settings), f"count dated {latest}"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_6
+-        return dilution_rule(math.nan, settings), ""
++        return dilution_rule(math.nan, None), ""
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_60
+-        return dilution_rule(math.nan, settings), f"count dated {latest}"
++        return dilution_rule(math.nan, None), f"count dated {latest}"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_61
+-        return dilution_rule(math.nan, settings), f"count dated {latest}"
++        return dilution_rule(settings), f"count dated {latest}"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_62
+-        return dilution_rule(math.nan, settings), f"count dated {latest}"
++        return dilution_rule(math.nan, ), f"count dated {latest}"
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_7
+-        return dilution_rule(math.nan, settings), ""
++        return dilution_rule(settings), ""
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_8
+-        return dilution_rule(math.nan, settings), ""
++        return dilution_rule(math.nan, ), ""
+# atlas.agents.tools.fundamental_tools.x__dilution__mutmut_9
+-        return dilution_rule(math.nan, settings), ""
++        return dilution_rule(math.nan, settings), "XXXX"
+# atlas.agents.tools.fundamental_tools.x__factor_at__mutmut_1
+-    if symbol not in splits.columns or splits.empty:
++    if symbol not in splits.columns and splits.empty:
+# atlas.agents.tools.fundamental_tools.x__factor_at__mutmut_11
+-    pos = int(column.index.searchsorted(pd.Timestamp(day), side="right")) - 1
++    pos = int(column.index.searchsorted(pd.Timestamp(day), )) - 1
+# atlas.agents.tools.fundamental_tools.x__factor_at__mutmut_15
+-    pos = int(column.index.searchsorted(pd.Timestamp(day), side="right")) - 1
++    pos = int(column.index.searchsorted(pd.Timestamp(day), side="right")) - 2
+# atlas.agents.tools.fundamental_tools.x__factor_at__mutmut_21
+-    return float(column.iloc[max(pos, 0)])
++    return float(column.iloc[max(pos, 1)])
+# atlas.agents.tools.fundamental_tools.x__factor_at__mutmut_3
+-        return 1.0
++        return 2.0
+# atlas.agents.tools.fundamental_tools.x__factor_at__mutmut_6
+-    pos = int(column.index.searchsorted(pd.Timestamp(day), side="right")) - 1
++    pos = int(column.index.searchsorted(pd.Timestamp(day), side="right")) + 1
+# atlas.agents.tools.fundamental_tools.x__factor_value__mutmut_9
+-        return f"{fmt_pct(x)} a year" if _finite(x) else NM
++        return f"{fmt_pct(x)} a year" if (_finite(x)) or True else NM
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_11
+-    if quarters.empty and ttm.empty:
++    if quarters.empty or ttm.empty:
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_20
+-        for e, v in zip(quarters["period_end"], quarters["value"], strict=True)
++        for e, v in zip(quarters["period_end"], quarters["value"], strict=None)
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_23
+-        for e, v in zip(quarters["period_end"], quarters["value"], strict=True)
++        for e, v in zip(quarters["period_end"], quarters["value"], )
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_28
+-        for e, v in zip(quarters["period_end"], quarters["value"], strict=True)
++        for e, v in zip(quarters["period_end"], quarters["value"], strict=False)
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_32
+-        "; ".join(parts) if parts else "none"
++        "; ".join(parts) if (parts) or True else "none"
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_35
+-        "; ".join(parts) if parts else "none"
++        "; ".join(parts) if parts else "XXnoneXX"
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_36
+-        "; ".join(parts) if parts else "none"
++        "; ".join(parts) if parts else "NONE"
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_56
+-        stamps.append(last["available_at"])
++        stamps.append(None)
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_64
+-    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-1]] if not ttm.empty else [])
++    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-1]] if (not ttm.empty) and False else [])
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_65
+-    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-1]] if not ttm.empty else [])
++    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-1]] if (not ttm.empty) or True else [])
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_68
+-    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-1]] if not ttm.empty else [])
++    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[+1]] if not ttm.empty else [])
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_69
+-    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-1]] if not ttm.empty else [])
++    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-2]] if not ttm.empty else [])
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_70
+-    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-1]] if not ttm.empty else [])
++    ends = list(quarters["period_end"]) + ([ttm["period_end"].iloc[-1]] if ttm.empty else [])
+# atlas.agents.tools.fundamental_tools.x__flow_item__mutmut_8
+-    ttm = history.of(concept, "ttm")
++    ttm = history.of(concept, )
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_113
+-        ev = cap + debt - cash if _finite(debt) and _finite(cash) else math.nan
++        ev = cap + debt - cash if (_finite(debt) and _finite(cash)) or True else math.nan
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_116
+-        ev = cap + debt - cash if _finite(debt) and _finite(cash) else math.nan
++        ev = cap + debt - cash if _finite(debt) or _finite(cash) else math.nan
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_13
+-    ends = [e for e in history.of("revenue", "ttm")["period_end"] if e >= start]
++    ends = [e for e in history.of("revenue", )["period_end"] if e >= start]
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_20
+-    ends = [e for e in history.of("revenue", "ttm")["period_end"] if e >= start]
++    ends = [e for e in history.of("revenue", "ttm")["period_end"] if e > start]
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_27
+-    n = _window_sessions(view, start - timedelta(days=settings.price_tolerance_days))
++    n = _window_sessions(view, start + timedelta(days=settings.price_tolerance_days))
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_54
+-        if before.empty or (end - before["date"].iloc[-1]).days > settings.price_tolerance_days:
++        if before.empty or (end - before["date"].iloc[-2]).days > settings.price_tolerance_days:
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_55
+-        if before.empty or (end - before["date"].iloc[-1]).days > settings.price_tolerance_days:
++        if before.empty or (end - before["date"].iloc[-1]).days >= settings.price_tolerance_days:
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_60
+-        bar_day = before["date"].iloc[-1]
++        bar_day = before["date"].iloc[+1]
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_61
+-        bar_day = before["date"].iloc[-1]
++        bar_day = before["date"].iloc[-2]
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_8
+-    start = view.day - timedelta(days=round(365.25 * settings.valuation_years))
++    start = view.day - timedelta(days=round(366.25 * settings.valuation_years))
+# atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_86
+-            continue
++            break
+# atlas.agents.tools.fundamental_tools.x__instant__mutmut_4
+-    return pd.Timestamp(value).tz_convert("UTC").to_pydatetime()  # type: ignore[arg-type]
++    return pd.Timestamp(value).tz_convert("utc").to_pydatetime()  # type: ignore[arg-type]
+# atlas.agents.tools.fundamental_tools.x__latest_stamp__mutmut_1
+-    known = [s for s in stamps if s is not None]
++    known = None
+# atlas.agents.tools.fundamental_tools.x__latest_stamp__mutmut_2
+-    known = [s for s in stamps if s is not None]
++    known = [s for s in stamps if s is None]
+# atlas.agents.tools.fundamental_tools.x__latest_stamp__mutmut_3
+-    return max(known) if known else fallback
++    return max(known) if (known) and False else fallback
+# atlas.agents.tools.fundamental_tools.x__latest_stamp__mutmut_4
+-    return max(known) if known else fallback
++    return max(known) if (known) or True else fallback
+# atlas.agents.tools.fundamental_tools.x__metric__mutmut_1
+-    if name not in frame.columns or symbol not in frame.index:
++    if name not in frame.columns and symbol not in frame.index:
+# atlas.agents.tools.fundamental_tools.x__metric__mutmut_5
+-    return float(cast(float, frame.at[symbol, name]))
++    return float(cast(None, frame.at[symbol, name]))
+# atlas.agents.tools.fundamental_tools.x__nearest_end__mutmut_5
+-        if gap <= tolerance and (best is None or gap < abs((best - target).days)):
++        if gap <= tolerance or (best is None or gap < abs((best - target).days)):
+# atlas.agents.tools.fundamental_tools.x__nearest_end__mutmut_6
+-        if gap <= tolerance and (best is None or gap < abs((best - target).days)):
++        if gap < tolerance and (best is None or gap < abs((best - target).days)):
+# atlas.agents.tools.fundamental_tools.x__nearest_end__mutmut_9
+-        if gap <= tolerance and (best is None or gap < abs((best - target).days)):
++        if gap <= tolerance and (best is None or gap <= abs((best - target).days)):
+# atlas.agents.tools.fundamental_tools.x__ratio__mutmut_3
+-    if not (_finite(num) and _finite(den)) or den <= 0:
++    if not (_finite(num) or _finite(den)) or den <= 0:
+# atlas.agents.tools.fundamental_tools.x__ratio__mutmut_7
+-    if not (_finite(num) and _finite(den)) or den <= 0:
++    if not (_finite(num) and _finite(den)) or den <= 1:
+# atlas.agents.tools.fundamental_tools.x__stamps_at__mutmut_1
+-    return [history.stamp(c, e, "ttm") for c in concepts for e in ends if e is not None]
++    return [history.stamp(None, e, "ttm") for c in concepts for e in ends if e is not None]
+# atlas.agents.tools.fundamental_tools.x__stamps_at__mutmut_2
+-    return [history.stamp(c, e, "ttm") for c in concepts for e in ends if e is not None]
++    return [history.stamp(c, None, "ttm") for c in concepts for e in ends if e is not None]
+# atlas.agents.tools.fundamental_tools.x__stamps_at__mutmut_4
+-    return [history.stamp(c, e, "ttm") for c in concepts for e in ends if e is not None]
++    return [history.stamp(e, "ttm") for c in concepts for e in ends if e is not None]
+# atlas.agents.tools.fundamental_tools.x__stamps_at__mutmut_5
+-    return [history.stamp(c, e, "ttm") for c in concepts for e in ends if e is not None]
++    return [history.stamp(c, "ttm") for c in concepts for e in ends if e is not None]
+# atlas.agents.tools.fundamental_tools.x__stamps_at__mutmut_6
+-    return [history.stamp(c, e, "ttm") for c in concepts for e in ends if e is not None]
++    return [history.stamp(c, e, ) for c in concepts for e in ends if e is not None]
+# atlas.agents.tools.fundamental_tools.x__stamps_at__mutmut_9
+-    return [history.stamp(c, e, "ttm") for c in concepts for e in ends if e is not None]
++    return [history.stamp(c, e, "ttm") for c in concepts for e in ends if e is None]
+# atlas.agents.tools.fundamental_tools.x__stock_item__mutmut_12
+-        f"{e} {fmt_usd(float(v))}" for e, v in zip(rows["period_end"], rows["value"], strict=True)
++        f"{e} {fmt_usd(float(v))}" for e, v in zip(rows["period_end"], rows["value"], )
+# atlas.agents.tools.fundamental_tools.x__stock_item__mutmut_17
+-        f"{e} {fmt_usd(float(v))}" for e, v in zip(rows["period_end"], rows["value"], strict=True)
++        f"{e} {fmt_usd(float(v))}" for e, v in zip(rows["period_end"], rows["value"], strict=False)
+# atlas.agents.tools.fundamental_tools.x__stock_item__mutmut_30
+-        source="sec_edgar",
++        source="XXsec_edgarXX",
+# atlas.agents.tools.fundamental_tools.x__stock_item__mutmut_31
+-        source="sec_edgar",
++        source="SEC_EDGAR",
+# atlas.agents.tools.fundamental_tools.x__stock_item__mutmut_9
+-        f"{e} {fmt_usd(float(v))}" for e, v in zip(rows["period_end"], rows["value"], strict=True)
++        f"{e} {fmt_usd(float(v))}" for e, v in zip(rows["period_end"], rows["value"], strict=None)
+# atlas.agents.tools.fundamental_tools.x__ttm__mutmut_2
+-    return history.at(concept, end, "ttm") if end is not None else math.nan
++    return history.at(concept, end, "ttm") if (end is not None) or True else math.nan
+# atlas.agents.tools.fundamental_tools.x__window_sessions__mutmut_2
+-    cal = TradingCalendar(config=view.config.calendar)
++    cal = TradingCalendar(config=None)
+# atlas.agents.tools.fundamental_tools.x__window_sessions__mutmut_21
+-    return max(len(cal.sessions(first, last)), 1)
++    return max(len(cal.sessions(first, last)), 2)
+# atlas.agents.tools.fundamental_tools.x__window_sessions__mutmut_5
+-    last = view.sessions(1)[-1]
++    last = view.sessions(2)[-1]
+# atlas.agents.tools.fundamental_tools.x_accruals_rule__mutmut_14
+-        return RedFlag(check, "NOT EVALUATED", "net income, operating cash flow or assets missing")
++        return RedFlag(check, "NOT EVALUATED", "XXnet income, operating cash flow or assets missingXX")
+# atlas.agents.tools.fundamental_tools.x_accruals_rule__mutmut_15
+-        return RedFlag(check, "NOT EVALUATED", "net income, operating cash flow or assets missing")
++        return RedFlag(check, "NOT EVALUATED", "NET INCOME, OPERATING CASH FLOW OR ASSETS MISSING")
+# atlas.agents.tools.fundamental_tools.x_accruals_rule__mutmut_18
+-    before = f"; a year earlier {fmt_pct(ratio_year_ago)}" if _finite(ratio_year_ago) else ""
++    before = f"; a year earlier {fmt_pct(ratio_year_ago)}" if (_finite(ratio_year_ago)) or True else ""
+# atlas.agents.tools.fundamental_tools.x_accruals_rule__mutmut_21
+-    before = f"; a year earlier {fmt_pct(ratio_year_ago)}" if _finite(ratio_year_ago) else ""
++    before = f"; a year earlier {fmt_pct(ratio_year_ago)}" if _finite(ratio_year_ago) else "XXXX"
+# atlas.agents.tools.fundamental_tools.x_accruals_rule__mutmut_31
+-    jumped = _finite(ratio_year_ago) and ratio > 0 and ratio - ratio_year_ago > config.accruals_jump
++    jumped = _finite(ratio_year_ago) and ratio >= 0 and ratio - ratio_year_ago > config.accruals_jump
+# atlas.agents.tools.fundamental_tools.x_accruals_rule__mutmut_34
+-    jumped = _finite(ratio_year_ago) and ratio > 0 and ratio - ratio_year_ago > config.accruals_jump
++    jumped = _finite(ratio_year_ago) and ratio > 0 and ratio - ratio_year_ago >= config.accruals_jump
+# atlas.agents.tools.fundamental_tools.x_accruals_rule__mutmut_8
+-        return RedFlag(check, "NOT EVALUATED", "net income, operating cash flow or assets missing")
++        return RedFlag(check, "NOT EVALUATED", None)
+# atlas.agents.tools.fundamental_tools.x_dilution_rule__mutmut_14
+-        return RedFlag(check, "NOT EVALUATED", "share count a year earlier missing")
++        return RedFlag(check, "NOT EVALUATED", "XXshare count a year earlier missingXX")
+# atlas.agents.tools.fundamental_tools.x_dilution_rule__mutmut_15
+-        return RedFlag(check, "NOT EVALUATED", "share count a year earlier missing")
++        return RedFlag(check, "NOT EVALUATED", "SHARE COUNT A YEAR EARLIER MISSING")
+# atlas.agents.tools.fundamental_tools.x_dilution_rule__mutmut_8
+-        return RedFlag(check, "NOT EVALUATED", "share count a year earlier missing")
++        return RedFlag(check, "NOT EVALUATED", None)
+# atlas.agents.tools.fundamental_tools.x_factor_ranks_from__mutmut_28
+-            value = float(raw[symbol]) if symbol in raw.index else math.nan
++            value = float(raw[symbol]) if (symbol in raw.index) or True else math.nan
+# atlas.agents.tools.fundamental_tools.x_factor_ranks_from__mutmut_64
+-                source="factors",
++                source="XXfactorsXX",
+# atlas.agents.tools.fundamental_tools.x_factor_ranks_from__mutmut_65
+-                source="factors",
++                source="FACTORS",
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_14
+-        return RedFlag(check, "NOT EVALUATED", "TTM free cash flow missing")
++        return RedFlag(check, "NOT EVALUATED", "XXTTM free cash flow missingXX")
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_15
+-        return RedFlag(check, "NOT EVALUATED", "TTM free cash flow missing")
++        return RedFlag(check, "NOT EVALUATED", "ttm free cash flow missing")
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_16
+-        return RedFlag(check, "NOT EVALUATED", "TTM free cash flow missing")
++        return RedFlag(check, "NOT EVALUATED", "TTM FREE CASH FLOW MISSING")
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_21
+-        return RedFlag(check, "CLEAR", f"TTM free cash flow {fmt_usd(fcf_ttm)} is not negative")
++        return RedFlag(check, "CLEAR", None)
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_27
+-        return RedFlag(check, "CLEAR", f"TTM free cash flow {fmt_usd(fcf_ttm)} is not negative")
++        return RedFlag(check, "CLEAR", f"TTM free cash flow {fmt_usd(None)} is not negative")
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_31
+-            f"TTM free cash flow {fmt_usd(fcf_ttm)} is negative; total debt a year earlier missing",
++            None,
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_37
+-            f"TTM free cash flow {fmt_usd(fcf_ttm)} is negative; total debt a year earlier missing",
++            f"TTM free cash flow {fmt_usd(None)} is negative; total debt a year earlier missing",
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_41
+-        "new debt (none a year earlier)"
++        "XXnew debt (none a year earlier)XX"
+# atlas.agents.tools.fundamental_tools.x_fcf_debt_rule__mutmut_8
+-        return RedFlag(check, "NOT EVALUATED", "TTM free cash flow missing")
++        return RedFlag(check, "NOT EVALUATED", None)
+# atlas.agents.tools.fundamental_tools.x_fmt_points__mutmut_2
+-    return f"{x * 100:+.1f} points" if _finite(x) else NM
++    return f"{x * 100:+.1f} points" if (_finite(x)) or True else NM
+# atlas.agents.tools.fundamental_tools.x_fmt_shares__mutmut_15
+-    return fmt_usd(x).replace("USD ", "") + " shares" if _finite(x) else "n/a"
++    return fmt_usd(x).replace("USD ", "") + " shares" if _finite(x) else "XXn/aXX"
+# atlas.agents.tools.fundamental_tools.x_fmt_shares__mutmut_16
+-    return fmt_usd(x).replace("USD ", "") + " shares" if _finite(x) else "n/a"
++    return fmt_usd(x).replace("USD ", "") + " shares" if _finite(x) else "N/A"
+# atlas.agents.tools.fundamental_tools.x_fmt_shares__mutmut_2
+-    return fmt_usd(x).replace("USD ", "") + " shares" if _finite(x) else "n/a"
++    return fmt_usd(x).replace("USD ", "") + " shares" if (_finite(x)) or True else "n/a"
+# atlas.agents.tools.fundamental_tools.x_fmt_usd__mutmut_10
+-    sign, a = ("-" if x < 0 else ""), abs(x)
++    sign, a = ("-" if x < 1 else ""), abs(x)
+# atlas.agents.tools.fundamental_tools.x_fmt_usd__mutmut_13
+-    for scale, suffix in ((1e12, "T"), (1e9, "B"), (1e6, "M"), (1e3, "K")):
++    for scale, suffix in ((1000000000001.0, "T"), (1e9, "B"), (1e6, "M"), (1e3, "K")):
+# atlas.agents.tools.fundamental_tools.x_fmt_usd__mutmut_16
+-    for scale, suffix in ((1e12, "T"), (1e9, "B"), (1e6, "M"), (1e3, "K")):
++    for scale, suffix in ((1e12, "T"), (1000000001.0, "B"), (1e6, "M"), (1e3, "K")):
+# atlas.agents.tools.fundamental_tools.x_fmt_usd__mutmut_19
+-    for scale, suffix in ((1e12, "T"), (1e9, "B"), (1e6, "M"), (1e3, "K")):
++    for scale, suffix in ((1e12, "T"), (1e9, "B"), (1000001.0, "M"), (1e3, "K")):
+# atlas.agents.tools.fundamental_tools.x_fmt_usd__mutmut_25
+-        if a >= scale:
++        if a > scale:
+# atlas.agents.tools.fundamental_tools.x_fmt_usd__mutmut_9
+-    sign, a = ("-" if x < 0 else ""), abs(x)
++    sign, a = ("-" if x <= 0 else ""), abs(x)
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_30
+-        return RedFlag(check, "FLAG", "MD&A mentions " + ", ".join(f'"{h}"' for h in hits))
++        return RedFlag(check, "FLAG", "XXMD&A mentions XX" + ", ".join(f'"{h}"' for h in hits))
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_31
+-        return RedFlag(check, "FLAG", "MD&A mentions " + ", ".join(f'"{h}"' for h in hits))
++        return RedFlag(check, "FLAG", "md&a mentions " + ", ".join(f'"{h}"' for h in hits))
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_32
+-        return RedFlag(check, "FLAG", "MD&A mentions " + ", ".join(f'"{h}"' for h in hits))
++        return RedFlag(check, "FLAG", "MD&A MENTIONS " + ", ".join(f'"{h}"' for h in hits))
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_34
+-        return RedFlag(check, "FLAG", "MD&A mentions " + ", ".join(f'"{h}"' for h in hits))
++        return RedFlag(check, "FLAG", "MD&A mentions " + "XX, XX".join(f'"{h}"' for h in hits))
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_35
+-        check,
++        None,
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_37
+-        "MD&A mentions none of " + ", ".join(f'"{t}"' for t in config.going_concern_terms),
++        None,
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_44
+-        "MD&A mentions none of " + ", ".join(f'"{t}"' for t in config.going_concern_terms),
++        "XXMD&A mentions none of XX" + ", ".join(f'"{t}"' for t in config.going_concern_terms),
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_45
+-        "MD&A mentions none of " + ", ".join(f'"{t}"' for t in config.going_concern_terms),
++        "md&a mentions none of " + ", ".join(f'"{t}"' for t in config.going_concern_terms),
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_46
+-        "MD&A mentions none of " + ", ".join(f'"{t}"' for t in config.going_concern_terms),
++        "MD&A MENTIONS NONE OF " + ", ".join(f'"{t}"' for t in config.going_concern_terms),
+# atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_48
+-        "MD&A mentions none of " + ", ".join(f'"{t}"' for t in config.going_concern_terms),
++        "MD&A mentions none of " + "XX, XX".join(f'"{t}"' for t in config.going_concern_terms),
+# atlas.agents.tools.fundamental_tools.x_multiples__mutmut_22
+-        "ev_ebitda": _ratio(ev, ebitda) if _finite(ev) else math.nan,
++        "ev_ebitda": _ratio(ev, ebitda) if (_finite(ev)) or True else math.nan,
+# atlas.agents.tools.fundamental_tools.x_percentile__mutmut_13
+-    if symbol not in valid.index or n < min_names:
++    if symbol not in valid.index or n <= min_names:
+# atlas.agents.tools.fundamental_tools.x_percentile__mutmut_2
+-    valid = values[values.notna() & values.map(lambda v: math.isfinite(float(v)))].astype("float64")
++    valid = values[values.notna() & values.map(lambda v: math.isfinite(float(v)))].astype(None)
+# atlas.agents.tools.fundamental_tools.x_percentile__mutmut_3
+-    valid = values[values.notna() & values.map(lambda v: math.isfinite(float(v)))].astype("float64")
++    valid = values[values.notna() | values.map(lambda v: math.isfinite(float(v)))].astype("float64")
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_11
+-        items += [
++        items = [
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_26
+-            gap_item(view, symbol, "get_valuation", exc),
++            gap_item(view, symbol, "get_valuation", None),
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_33
+-            ("get_factor_ranks", factor_ranks_from),
++            ("XXget_factor_ranksXX", factor_ranks_from),
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_34
+-            ("get_factor_ranks", factor_ranks_from),
++            ("GET_FACTOR_RANKS", factor_ranks_from),
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_35
+-            ("get_valuation", valuation_from),
++            ("XXget_valuationXX", valuation_from),
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_36
+-            ("get_valuation", valuation_from),
++            ("GET_VALUATION", valuation_from),
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_43
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(None)
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_44
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(gap_item(None, symbol, tool, exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_45
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(gap_item(view, None, tool, exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_46
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(gap_item(view, symbol, None, exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_47
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(gap_item(view, symbol, tool, None))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_48
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(gap_item(symbol, tool, exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_49
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(gap_item(view, tool, exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_50
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(gap_item(view, symbol, exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_51
+-                items.append(gap_item(view, symbol, tool, exc))
++                items.append(gap_item(view, symbol, tool, ))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_58
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(None)
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_59
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(None, symbol, "get_red_flags", exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_60
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(view, None, "get_red_flags", exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_61
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(view, symbol, None, exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_62
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(view, symbol, "get_red_flags", None))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_63
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(symbol, "get_red_flags", exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_64
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(view, "get_red_flags", exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_65
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(view, symbol, exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_66
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(view, symbol, "get_red_flags", ))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_67
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(view, symbol, "XXget_red_flagsXX", exc))
+# atlas.agents.tools.fundamental_tools.x_prefetch__mutmut_68
+-        items.append(gap_item(view, symbol, "get_red_flags", exc))
++        items.append(gap_item(view, symbol, "GET_RED_FLAGS", exc))
+# atlas.agents.tools.fundamental_tools.x_receivables_rule__mutmut_10
+-        return RedFlag(check, "NOT EVALUATED", "receivables or revenue a year earlier missing")
++        return RedFlag(check, "NOT EVALUATED", None)
+# atlas.agents.tools.fundamental_tools.x_receivables_rule__mutmut_16
+-        return RedFlag(check, "NOT EVALUATED", "receivables or revenue a year earlier missing")
++        return RedFlag(check, "NOT EVALUATED", "XXreceivables or revenue a year earlier missingXX")
+# atlas.agents.tools.fundamental_tools.x_receivables_rule__mutmut_17
+-        return RedFlag(check, "NOT EVALUATED", "receivables or revenue a year earlier missing")
++        return RedFlag(check, "NOT EVALUATED", "RECEIVABLES OR REVENUE A YEAR EARLIER MISSING")
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_10
+-    revenue = history.of("revenue", "ttm")
++    revenue = history.of("revenue", )
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_106
+-            if year_ago
++            if (year_ago) or True
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_125
+-            if year_ago
++            if (year_ago) or True
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_155
+-            if year_ago
++            if (year_ago) or True
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_17
+-    end = revenue["period_end"].iloc[-1] if not revenue.empty else None
++    end = revenue["period_end"].iloc[-1] if (not revenue.empty) or True else None
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_197
+-    out.append((going_concern_rule(None, settings), ""))
++    out.append((going_concern_rule(None, None), ""))
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_27
+-    stale = end is None or (view.day - end).days > staleness
++    stale = end is None or (view.day - end).days >= staleness
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_34
+-    year_ago = _nearest_end(ends, end - timedelta(days=_YEAR), tol) if end is not None else None
++    year_ago = _nearest_end(ends, end - timedelta(days=_YEAR), tol) if (end is not None) or True else None
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_46
+-    periods = f"TTM / balances at {end} vs {year_ago}" if year_ago is not None else f"at {end}"
++    periods = f"TTM / balances at {end} vs {year_ago}" if (year_ago is not None) or True else f"at {end}"
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_50
+-            if end is None
++            if (end is None) and False
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_52
+-            "no TTM revenue"
++            "XXno TTM revenueXX"
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_53
+-            "no TTM revenue"
++            "no ttm revenue"
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_54
+-            "no TTM revenue"
++            "NO TTM REVENUE"
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_56
+-        for check in RED_FLAG_CHECKS[:4]:
++        for check in RED_FLAG_CHECKS[:5]:
+# atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_66
+-            out.append((RedFlag(check, "NOT EVALUATED", f"stale or missing filings ({why})"), ""))
++            out.append((RedFlag(check, "NOT EVALUATED", f"stale or missing filings ({why})"), "XXXX"))
+# atlas.agents.tools.fundamental_tools.x_red_flags__mutmut_28
+-                source="red_flags",
++                source="XXred_flagsXX",
+# atlas.agents.tools.fundamental_tools.x_red_flags__mutmut_29
+-                source="red_flags",
++                source="RED_FLAGS",
+# atlas.agents.tools.fundamental_tools.x_sector_panel__mutmut_2
+-    _require(view, symbol)
++    _require(view, None)
+# atlas.agents.tools.fundamental_tools.x_sector_panel__mutmut_24
+-            continue
++            break
+# atlas.agents.tools.fundamental_tools.x_sector_panel__mutmut_34
+-        raise DataError(f"no factor values for {symbol} on {view.day.isoformat()}")
++        raise DataError(None)
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_104
+-        if len(own) >= settings.min_valuation_quarters:
++        if len(own) > settings.min_valuation_quarters:
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_108
+-            series = pd.concat([own, pd.Series([now], index=["now"])]) if _finite(now) else own
++            series = pd.concat([own, pd.Series([now], index=["now"])]) if (_finite(now)) or True else own
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_119
+-            pct, _ = percentile(series, "now", 1) if _finite(now) else (None, 0)
++            pct, _ = percentile(series, "now", 1) if (_finite(now)) or True else (None, 0)
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_128
+-            pct, _ = percentile(series, "now", 1) if _finite(now) else (None, 0)
++            pct, _ = percentile(series, "now", 2) if _finite(now) else (None, 0)
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_130
+-            pct, _ = percentile(series, "now", 1) if _finite(now) else (None, 0)
++            pct, _ = percentile(series, "now", 1) if _finite(now) else (None, 1)
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_152
+-                + (f", now at percentile {pct:.0f} of that history" if pct is not None else "")
++                + (f", now at percentile {pct:.0f} of that history" if (pct is not None) or True else "")
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_154
+-                + (f", now at percentile {pct:.0f} of that history" if pct is not None else "")
++                + (f", now at percentile {pct:.0f} of that history" if pct is not None else "XXXX")
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_155
+-            text += f"; own history: {len(own)} quarter(s) with a value, too few to compare"
++            text = f"; own history: {len(own)} quarter(s) with a value, too few to compare"
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_162
+-        if len(peers) >= settings.min_sector_names:
++        if len(peers) > settings.min_sector_names:
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_182
+-            Evidence(id=f"val:{symbol}:{day}:{key}", source="valuation", as_of=at, text=text + ".")
++            Evidence(id=f"val:{symbol}:{day}:{key}", source="XXvaluationXX", as_of=at, text=text + ".")
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_183
+-            Evidence(id=f"val:{symbol}:{day}:{key}", source="valuation", as_of=at, text=text + ".")
++            Evidence(id=f"val:{symbol}:{day}:{key}", source="VALUATION", as_of=at, text=text + ".")
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_56
+-            source="valuation",
++            source="XXvaluationXX",
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_57
+-            source="valuation",
++            source="VALUATION",
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_89
+-        own = pd.Series([q.values[key] for q in past], dtype="float64")
++        own = pd.Series([q.values[key] for q in past], dtype=None)
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_91
+-        own = pd.Series([q.values[key] for q in past], dtype="float64")
++        own = pd.Series([q.values[key] for q in past], )
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_95
+-        own = own[own.map(math.isfinite)] if not own.empty else own
++        own = own[own.map(math.isfinite)] if (not own.empty) and False else own
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_96
+-        own = own[own.map(math.isfinite)] if not own.empty else own
++        own = own[own.map(math.isfinite)] if (not own.empty) or True else own
+# atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_98
+-        own = own[own.map(math.isfinite)] if not own.empty else own
++        own = own[own.map(math.isfinite)] if own.empty else own
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁat__mutmut_14
+-    return float(hit[column].iloc[-1]) if not hit.empty else math.nan
++    return float(hit[column].iloc[-1]) if (not hit.empty) or True else math.nan
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁat__mutmut_8
+-    own = self.of(concept, column)
++    own = self.of(concept, )
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁof__mutmut_11
+-    own = own[own[column].notna() & (own["period_end"] <= self.day)]
++    own = own[own[column].notna() & (own["period_end"] < self.day)]
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁof__mutmut_13
+-    return own.sort_values("period_end", kind="stable")
++    return own.sort_values("period_end", kind=None)
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁof__mutmut_15
+-    return own.sort_values("period_end", kind="stable")
++    return own.sort_values("period_end", )
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁof__mutmut_19
+-    return own.sort_values("period_end", kind="stable")
++    return own.sort_values("period_end", kind="STABLE")
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁof__mutmut_8
+-    own = own[own[column].notna() & (own["period_end"] <= self.day)]
++    own = own[own[column].notna() | (own["period_end"] <= self.day)]
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_1
+-def stamp(self, concept: str, end: date, column: str = "value") -> datetime | None:
++def stamp(self, concept: str, end: date, column: str = "XXvalueXX") -> datetime | None:
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_11
+-    hit = own[own["period_end"] == end]
++    hit = own[own["period_end"] != end]
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_12
+-    return _instant(hit["available_at"].iloc[-1]) if not hit.empty else None
++    return _instant(hit["available_at"].iloc[-1]) if (not hit.empty) and False else None
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_13
+-    return _instant(hit["available_at"].iloc[-1]) if not hit.empty else None
++    return _instant(hit["available_at"].iloc[-1]) if (not hit.empty) or True else None
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_19
+-    return _instant(hit["available_at"].iloc[-1]) if not hit.empty else None
++    return _instant(hit["available_at"].iloc[-1]) if hit.empty else None
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_2
+-def stamp(self, concept: str, end: date, column: str = "value") -> datetime | None:
++def stamp(self, concept: str, end: date, column: str = "VALUE") -> datetime | None:
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_4
+-    own = self.of(concept, column)
++    own = self.of(None, column)
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_6
+-    own = self.of(concept, column)
++    own = self.of(column)
+# atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_7
+-    own = self.of(concept, column)
++    own = self.of(concept, )

@@ -1,0 +1,34 @@
+--- atlas factors build --from 2015 --to 2026, start 12:12:25Z
+│ 2016 │         12 │        500 │             0.275 │
+│ 2017 │         12 │        502 │             0.264 │
+│ 2018 │         12 │        503 │             0.254 │
+│ 2019 │         12 │        503 │             0.227 │
+│ 2020 │         12 │        504 │             0.199 │
+│ 2021 │         12 │        504 │             0.179 │
+│ 2022 │         12 │        502 │             0.182 │
+│ 2023 │         12 │        502 │             0.180 │
+│ 2024 │         12 │        502 │             0.178 │
+│ 2025 │         12 │        503 │             0.177 │
+│ 2026 │         10 │        503 │             0.176 │
+└──────┴────────────┴────────────┴───────────────────┘
+Factor cache: 142 month-ends from 2015-01-30 to 2026-10-30; 142 written, 0 
+already stored; table factor_exposures in /tmp/claude-501/s29/main-copy 
+(settings 675de8385d00). Run 01M7Q9566KQ1ADWNMDYCJKM7HG.
+factors exit 0, end 12:35:41Z
+--- atlas risk-model build --from 2017 --to 2026 --cached-factors, start 12:35:41Z
+2026-11-18T12:56:47.826974Z [warning  ] factors.share_count_replaced   [atlas.quant.factors.fundamental] day=2024-04-01 mode=dev run_id=01M7QAFSZ01AQXMQAXEJ7Y9FDT stage=risk_model.build symbols=['NTAP']
+2026-11-18T12:56:59.215423Z [warning  ] factors.share_count_replaced   [atlas.quant.factors.fundamental] day=2024-05-01 mode=dev run_id=01M7QAFSZ01AQXMQAXEJ7Y9FDT stage=risk_model.build symbols=['NTAP']
+2026-11-18T12:57:10.915501Z [warning  ] factors.share_count_replaced   [atlas.quant.factors.fundamental] day=2024-06-03 mode=dev run_id=01M7QAFSZ01AQXMQAXEJ7Y9FDT stage=risk_model.build symbols=['NTAP', 'PKG']
+2026-11-18T12:57:24.729014Z [warning  ] factors.share_count_replaced   [atlas.quant.factors.fundamental] day=2024-07-01 mode=dev run_id=01M7QAFSZ01AQXMQAXEJ7Y9FDT stage=risk_model.build symbols=['PKG']
+2026-11-18T12:57:37.381682Z [warning  ] factors.share_count_replaced   [atlas.quant.factors.fundamental] day=2024-08-01 mode=dev run_id=01M7QAFSZ01AQXMQAXEJ7Y9FDT stage=risk_model.build symbols=['PKG']
+2026-11-18T13:01:27.538107Z [warning  ] factors.share_count_replaced   [atlas.quant.factors.fundamental] day=2026-03-02 mode=dev run_id=01M7QAFSZ01AQXMQAXEJ7Y9FDT stage=risk_model.build symbols=['PKG']
+2026-11-18T13:01:38.879841Z [warning  ] factors.share_count_replaced   [atlas.quant.factors.fundamental] day=2026-04-01 mode=dev run_id=01M7QAFSZ01AQXMQAXEJ7Y9FDT stage=risk_model.build symbols=['PKG']
+2026-11-18T13:01:50.463075Z [warning  ] factors.share_count_replaced   [atlas.quant.factors.fundamental] day=2026-05-01 mode=dev run_id=01M7QAFSZ01AQXMQAXEJ7Y9FDT stage=risk_model.build symbols=['PKG']
+Risk model: 2471 sessions fitted from 2017-01-03 to 2026-10-30, 0 skipped (too 
+few names), mean R2 0.306, mean names 464; 115 snapshots from 2017-04-28 to 
+2026-10-30 with 30 ETFs; tables factor_returns and risk_model_snapshots in 
+/tmp/claude-501/s29/main-copy (settings 62592c37a19c). Run 
+01M7QAFSZ01AQXMQAXEJ7Y9FDT.
+Monthly anchors read from the factor cache where it has them (the build log's 
+risk_model.anchor_loaded lines say which); the cache must match the lake's data.
+risk exit 0, end 13:03:00Z

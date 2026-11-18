@@ -1,0 +1,74 @@
+# mutant (atlas. prefix dropped)	class	reason
+agents.research.fundamental.x_missing_sections__mutmut_5	equivalent	zip strict= on SECTIONS and _SECTION_RES, built from one tuple (equal lengths)
+agents.research.fundamental.x_missing_sections__mutmut_8	equivalent	same
+agents.research.fundamental.x_missing_sections__mutmut_9	equivalent	same
+agents.tools.fundamental_tools.x__flow_item__mutmut_20	equivalent	zip strict= on two columns of one frame
+agents.tools.fundamental_tools.x__flow_item__mutmut_23	equivalent	same
+agents.tools.fundamental_tools.x__flow_item__mutmut_28	equivalent	same
+agents.tools.fundamental_tools.x__stock_item__mutmut_9	equivalent	zip strict= on two columns of one frame
+agents.tools.fundamental_tools.x__stock_item__mutmut_12	equivalent	same
+agents.tools.fundamental_tools.x__stock_item__mutmut_17	equivalent	same
+data.slice.x_slice_lake__mutmut_74	equivalent	manifest encoding: json.dumps writes ASCII only, identical in any ASCII-compatible encoding
+data.slice.x_slice_lake__mutmut_76	equivalent	same
+data.slice.x_slice_lake__mutmut_89	equivalent	"UTF-8" and "utf-8" name one codec
+data.slice.x_slice_lake__mutmut_45	equivalent	write mode: a slice always goes into a new empty folder (DataError otherwise), so append = overwrite
+agents.tools.fundamental_tools.x__instant__mutmut_4	equivalent	tz_convert("utc") = tz_convert("UTC")
+agents.tools.fundamental_tools.x__current_multiples__mutmut_66	equivalent	DataFrame.from_dict lower-cases orient
+agents.tools.fundamental_tools.x__current_multiples__mutmut_61	equivalent	columns=None: the row dicts are built in MULTIPLES order and the panel always has the symbol's row
+agents.tools.fundamental_tools.x__current_multiples__mutmut_64	equivalent	same
+agents.tools.fundamental_tools.x_valuation_from__mutmut_89	equivalent	dtype: a list of floats infers float64; an empty series is only counted (too few)
+agents.tools.fundamental_tools.x_valuation_from__mutmut_91	equivalent	same
+agents.tools.fundamental_tools.x_percentile__mutmut_2	equivalent	astype(None) is float64
+agents.tools.fundamental_tools.xǁ_Historyǁof__mutmut_13	equivalent	sort kind: one history row per concept and period end, so the order is unique
+agents.tools.fundamental_tools.xǁ_Historyǁof__mutmut_15	equivalent	same
+agents.tools.fundamental_tools.xǁ_Historyǁof__mutmut_19	equivalent	same
+agents.tools.fundamental_tools.x__metric__mutmut_5	equivalent	typing.cast does nothing at run time
+agents.research.fundamental.x_uncited_numbers__mutmut_8	equivalent	replacement "XXXX" holds no digit, so the digit search is unchanged
+agents.research.fundamental.x_uncited_numbers__mutmut_13	equivalent	same
+agents.tools.fundamental_tools.x__ratio__mutmut_3	equivalent	NaN propagates: num/den with one NaN is NaN either way
+agents.tools.fundamental_tools.x__debt_growth__mutmut_2	equivalent	NaN propagates through the growth formula
+agents.tools.fundamental_tools.x__ttm__mutmut_2	equivalent	history.at(concept, None) is NaN, the else value
+agents.tools.fundamental_tools.x_red_flag_results__mutmut_106	equivalent	without a year-ago end, history.at(..., None) is NaN, the else value
+agents.tools.fundamental_tools.x_red_flag_results__mutmut_125	equivalent	same
+agents.tools.fundamental_tools.x_red_flag_results__mutmut_155	equivalent	same
+agents.tools.fundamental_tools.x_multiples__mutmut_22	equivalent	_ratio(NaN, x) is NaN, the else value
+agents.tools.fundamental_tools.x__history_multiples__mutmut_113	equivalent	cap + NaN - cash is NaN, the else value
+agents.tools.fundamental_tools.x__history_multiples__mutmut_116	equivalent	same
+agents.tools.fundamental_tools.x_valuation_from__mutmut_108	equivalent	a NaN "now" added to the series is dropped by percentile, which then returns None
+agents.tools.fundamental_tools.x_valuation_from__mutmut_119	equivalent	same (the count it returns is discarded)
+agents.tools.fundamental_tools.x_valuation_from__mutmut_130	equivalent	the count is discarded
+agents.tools.fundamental_tools.x_valuation_from__mutmut_128	equivalent	min_names 2: the series holds at least min_valuation_quarters + 1 values in that branch
+agents.tools.fundamental_tools.x_valuation_from__mutmut_96	equivalent	filtering an empty series leaves it empty
+agents.tools.fundamental_tools.xǁ_Historyǁat__mutmut_8	equivalent	a row with a value but no TTM gives NaN from hit[column] either way
+agents.tools.fundamental_tools.x__dilution__mutmut_5	equivalent	dilution_rule's NOT EVALUATED branch reads neither its value nor its config
+agents.tools.fundamental_tools.x__dilution__mutmut_6	equivalent	same
+agents.tools.fundamental_tools.x__dilution__mutmut_59	equivalent	same
+agents.tools.fundamental_tools.x__dilution__mutmut_60	equivalent	same
+agents.tools.fundamental_tools.x_red_flag_results__mutmut_197	equivalent	going_concern_rule(None, ...) never reads its config
+agents.tools.fundamental_tools.x__window_sessions__mutmut_5	equivalent	sessions(2)[-1] and sessions(1)[-1] are both the view's day
+agents.tools.fundamental_tools.x__window_sessions__mutmut_21	equivalent	the floor of 1 vs 2 only matters for a window inside one session; callers ask for years
+agents.tools.fundamental_tools.x__derived_items__mutmut_69	unreachable	fallback stamp: revenue's own TTM row at `end` always has a stamp, so the fallback is never used
+agents.tools.fundamental_tools.x__derived_items__mutmut_70	unreachable	same
+agents.tools.fundamental_tools.x__derived_items__mutmut_73	unreachable	same
+agents.tools.fundamental_tools.x__derived_items__mutmut_74	unreachable	same
+agents.tools.fundamental_tools.x__derived_items__mutmut_201	unreachable	same
+agents.tools.fundamental_tools.x__latest_stamp__mutmut_4	unreachable	same (only caller)
+agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_1	unreachable	default column: every caller passes the column
+agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_2	unreachable	same
+agents.tools.fundamental_tools.x_factor_ranks_from__mutmut_28	unreachable	sector_panel raises before a symbol without factor values reaches it
+agents.tools.fundamental_tools.x__history_multiples__mutmut_8	untested edge	5-year window start (365.25 vs 366.25 days): needs a quarter end inside the 5-day difference
+agents.tools.fundamental_tools.x__history_multiples__mutmut_20	untested edge	a quarter ending exactly on the window start
+agents.tools.fundamental_tools.x__history_multiples__mutmut_27	untested edge	price window start +/- tolerance: needs the first quarter's bar in that band
+agents.tools.fundamental_tools.x__history_multiples__mutmut_54	untested edge	a bar gap before a quarter end (tolerance read off the second-last bar)
+agents.tools.fundamental_tools.x__history_multiples__mutmut_55	untested edge	a bar exactly price_tolerance_days before a quarter end
+agents.tools.fundamental_tools.x__history_multiples__mutmut_61	untested edge	the bar day only feeds the split factor; differs only with a split on the last bar day
+agents.tools.fundamental_tools.x__history_multiples__mutmut_86	untested edge	a quarter without a bar followed by quarters with bars (break vs continue)
+agents.tools.fundamental_tools.x__dilution__mutmut_33	untested edge	share-count window start: needs a count dated in the tolerance band
+agents.tools.fundamental_tools.x__dilution__mutmut_35	untested edge	same
+agents.tools.fundamental_tools.x__window_sessions__mutmut_2	untested edge	the calendar config is passed through; the tests use the default calendar
+agents.tools.fundamental_tools.x_red_flag_results__mutmut_46	untested edge	the periods text when filings are fresh but no year-ago period exists (under a year of history)
+agents.tools.fundamental_tools.x_sector_panel__mutmut_24	untested edge	a universe member without an instrument row before other peers (the A2 test has it last)
+agents.tools.fundamental_tools.x_sector_panel__mutmut_34	untested edge	exact text when the symbol gets no factor values
+agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_7	untested edge	a flow with a value but no TTM at an end where revenue has one (stamp column)
+agents.tools.fundamental_tools.x__stamps_at__mutmut_6	untested edge	same
+agents.research.fundamental.x_sentences__mutmut_14	untested edge	strip set gains "X": differs only for a tag-only piece ending in a literal X

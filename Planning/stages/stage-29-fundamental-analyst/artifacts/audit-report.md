@@ -45,25 +45,25 @@ offline replay of a real recorded run. Three defects or gaps were found and fixe
   on DuckDB's file lock (the recording process held the run lake open). The export is a separate
   step (`record_fixture.py export`). Not a product defect: one writer process per lake is the
   documented rule (Stage 06).
-- **A5 — limit (Backlog).** The main lake has no receivables rows: only mapped tags are stored
-  and it was ingested before the concept existed. On the main lake the receivables check reads
-  NOT EVALUATED (`fixture-compare.txt`). A re-ingest from the archive is offline and fast, but
-  writing the main lake needs the owner's terminal, and the new rows change the factor and risk
-  stores' input fingerprints (rebuild about an hour). The fixture's own facts were re-parsed with
-  the new concept map, so the recorded run has receivables.
+- **A5 — limit, closed in the follow-up.** The main lake had no receivables rows: only mapped
+  tags are stored, and it was ingested before the concept existed. On the main lake the
+  receivables check read NOT EVALUATED (`fixture-compare.txt`). Follow-up: the main lake's facts
+  were re-parsed offline, the factor and risk stores rebuilt (values equal) and the result swapped
+  in with a backup. AAPL's tools now give 29 of 29 items equal on the main lake and the fixture
+  (see *Follow-up* below).
 - **A6 — limit (documented).** No MD&A text is ingested: the going-concern check is always NOT
   EVALUATED; the rule is a pure text scan ready for a text source (`going_concern_hits`).
-- **A7 — note (Backlog).** The fixture lake is 5.96 MB. About two thirds are peers' bars before
-  2022 that no tool reads (peers need ~1.5 years for splits and the latest close; only AAPL needs
-  five years). A slice with per-symbol windows would roughly halve it.
+- **A7 — note, closed without change.** The fixture lake is 5.96 MB. About two thirds are peers'
+  bars before 2022 that no tool reads. The blobs are already in the pushed history, so a smaller
+  re-recording would not shrink the repository. Later fixtures can use per-symbol windows.
 - **A8 — budget measured on a real prompt** (Stage 24 backlog item). One AAPL run: 6,433 input +
   1,730 output tokens, USD 0.0020, one call. `per_agent_call_max_tokens` (8,000, reasoning
   included) leaves 4.6x headroom over the output; a repair turn would roughly double input. Keep
   both budgets; revisit at the first LLM backtest (Stage 56), as the item already says.
-- **A9 — mutation testing not run.** The tool tests build two synthetic lakes per module; with
-  ~1,500 likely mutants a mutmut run is estimated at about two hours. Instead: line coverage of
-  the new modules (95–99%), hand-computed expected values in the tests, and the main-lake vs slice
-  comparison. Recorded here rather than claimed.
+- **A9 — mutation testing, done in the follow-up.** At first not run (estimated two hours);
+  coverage of 95–99% was used instead. Follow-up: mutmut over the three modules, 2,396 mutants.
+  Kill rate 85.7% before, **97.0% after** 80 new tests; the 73 survivors are all classified
+  ([mutation/mutation-summary.md](mutation/mutation-summary.md)). No production defect was found.
 - **A10 — out of scope, noted.** Wiring the analyst into the research graph (a `ResearchTeam`
   analyst callable building `AgentContext(DataView(lake, task.as_of), inputs={"symbol": ...})`)
   is not in this brief; the handoff note says how.
@@ -83,3 +83,52 @@ offline replay of a real recorded run. Three defects or gaps were found and fixe
 - Thresholds and windows in `config/fund.yaml` (`agents.fundamental`), read through `AtlasConfig`.
 - No secrets: no `.env` value occurs in the fixture or the artifacts (scan in the work log); the
   slice manifest records no source path; the local user name was redacted from one artifact.
+
+## Follow-up (2026-11-18)
+
+Owner: "please help me to fix the problems and complete what you have not done. after the fix,
+please have a final audit and report your progress."
+
+### Done
+
+- **A5, main-lake receivables** ([worklog](../worklog.md), follow-up entries):
+  - Re-parse on a scratch copy, offline: 742 symbols, 0 failed; 68,846 receivables rows added;
+    all 2,574,827 old rows unchanged ([main-lake-reparse.txt](main-lake-reparse.txt)).
+  - `atlas factors build` and `atlas risk-model build --cached-factors` rebuilt. The stored
+    exposures, factor returns and risk-model snapshots are equal to their digests from before
+    the rebuild ([main-lake-rebuild.txt](main-lake-rebuild.txt),
+    [main-lake-stores-compare.txt](main-lake-stores-compare.txt)).
+  - Swapped into the main lake from the owner's Terminal panel, with a checked backup
+    ([main-lake-swap.txt](main-lake-swap.txt)). The first attempt failed safely, on a wrong temp
+    path, before any table was replaced.
+  - Read-back: factor cache 142 of 142 dates fresh; AAPL's prefetch has 29 of 29 items equal to
+    the fixture's ([main-lake-readback.txt](main-lake-readback.txt)).
+- **A9, mutation testing:** see above and [mutation/mutation-summary.md](mutation/mutation-summary.md).
+  New and changed tests:
+  - `tests/unit/agents/research/test_fundamental_contracts.py` (new, 75 tests);
+  - `test_fundamental.py` (the five-sentence repair quote);
+  - `test_fundamental_tools.py` (gap source);
+  - `tests/unit/data/test_data_slice.py` (3 tests: custom registry, `symbols` list, manifest
+    text and log, exact errors).
+- **A7:** closed without change (above).
+
+### Not done, with reasons
+
+- MD&A text (A6): no filing-text source is ingested. This is a data-pipeline addition, not in
+  this brief's scope.
+- Graph wiring (A10): Stage 35 / 36 / 55 (Rule 2.4 and Rule 4).
+- The 16 untested-edge mutants: recorded in the Backlog.
+
+### Final audit
+
+The brief's items and the acceptance criterion are unchanged, and still evidenced as in the
+table above. The follow-up changed tests, stage records and the main lake's data. It changed no
+code under `src/`, so the recorded fixture, the prompt and the replay are unchanged. Hard rules
+were re-checked for the new files:
+- the new tests use FakeLLM and synthetic lakes only (no network);
+- no `datetime.now()`;
+- no secrets: the scan is in the worklog;
+- the local user name was redacted from `classify.sh` and `main-lake-swap.txt`.
+
+Final verification (full suite, `make check`, integration): see [../verification.md](../verification.md),
+section *Follow-up*.

@@ -170,6 +170,29 @@ def test_a_report_problem_gets_a_repair_turn(
     assert problem in repair
 
 
+def _uncited_line(fworld: FundamentalWorld, risks: tuple[str, ...]) -> str:
+    fake = FakeLLM({STEP: report(risks=risks), ("fundamental_analyst", "output_repair"): report()})
+    analyst(fake).run(ctx(fworld))
+    lines = fake.calls[1].messages[-1].content.splitlines()
+    (line,) = [x for x in lines if "these have none: " in x]
+    return line.split("these have none: ", 1)[1]
+
+
+def test_the_repair_quotes_at_most_five_uncited_sentences_cut_at_120_characters(
+    fworld: FundamentalWorld,
+) -> None:
+    long = "Debt rose 9% while " + "the cash pile shrank " * 6 + "fast."
+    risks = (long, *(f"Debt rose {i}%." for i in range(1, 7)))  # seven uncited sentences
+    first = f"risks[0]: {long}"
+    assert len(first) > 120
+    shown = [first[:120], *(f"risks[{i}]: Debt rose {i}%." for i in range(1, 5))]
+    assert _uncited_line(fworld, risks) == "; ".join(f'"{s}"' for s in shown) + " and 2 more"
+    five = tuple(f"Debt rose {i}%." for i in range(5))
+    assert _uncited_line(fworld, five) == "; ".join(
+        f'"risks[{i}]: Debt rose {i}%."' for i in range(5)
+    )
+
+
 def test_problems_left_after_the_repair_make_the_report_low_quality(
     fworld: FundamentalWorld,
 ) -> None:

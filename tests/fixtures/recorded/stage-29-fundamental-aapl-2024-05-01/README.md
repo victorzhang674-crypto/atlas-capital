@@ -22,9 +22,10 @@ folder's `fixture-compare.txt` and `live-run.txt`): DeepSeek `deepseek-flash` (q
 main lake was ingested before Stage 29 added the `accounts_receivable` concept, and only mapped
 tags are stored, so the slice's `fundamentals_facts` were re-parsed offline (archive only, no
 download) from the main lake's raw SEC companyfacts with the current `config/xbrl_map.yaml`
-before the final slice. On every other item AAPL's tools give the same evidence on the main lake
-and on this slice (27 of 28 items equal; the receivables line and check are the difference:
-`fixture-compare.txt`).
+before the final slice. On every other item AAPL's tools gave the same evidence on the main lake
+and on this slice (27 of 28 items equal; the receivables line and check were the difference:
+`fixture-compare.txt`). After the main lake's own re-ingest the same day, all 29 items are equal
+(`main-lake-readback.txt`).
 
 **Re-recording** gives another answer (the model is not deterministic) and needs a new
 `expected_report.json`; any change to the prompt template, a tool (its `version`), the evidence

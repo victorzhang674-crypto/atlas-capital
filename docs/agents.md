@@ -202,8 +202,9 @@ risk, red flags, what would change my mind), the four signals and "every number 
 sentence that states a number carries an `[E:<id>]` tag; problems get one repair turn.
 
 Receivables need the concept `accounts_receivable` (Stage 29). A lake ingested before it has
-no receivables rows until the fundamentals are re-ingested, so the receivables check reads NOT
-EVALUATED there; the lake holds no MD&A text, so the going-concern check always does.
+no receivables rows until the fundamentals are re-ingested (the main lake was, 2026-11-18), so
+the receivables check reads NOT EVALUATED there; the lake holds no MD&A text, so the
+going-concern check always does.
 
 **Recorded run.** `tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/` holds a live
 run on AAPL for 2024-05-01: the exported LLM cache, the lake slice it read (`atlas data slice`)

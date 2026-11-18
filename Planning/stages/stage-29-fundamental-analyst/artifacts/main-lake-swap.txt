@@ -1,0 +1,9 @@
+=== swap into ~/Projects/atlas-capital/data from /tmp/claude-501/s29/main-copy, 2026-11-18T13:05:14Z
+backed up fundamentals_facts:  28M digest ef16d8b8f2fc8af6
+backed up factor_exposures:  16M digest 02ac6f830f290f15
+replaced fundamentals_facts: digest now 85185c0050b95ba6 (scratch 85185c0050b95ba6)
+replaced factor_exposures: digest now bedc44ad6115e556 (scratch bedc44ad6115e556)
+_meta.json: identical to the scratch copy's
+build log kept: runs/factors/build-stage29-receivables-2026-11-18.log
+build log kept: runs/risk_model/build-stage29-receivables-2026-11-18.log
+swap exit 0

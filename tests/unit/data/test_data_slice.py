@@ -3,10 +3,13 @@ symbols, and a `DataView` on the slice gives the same tool evidence as on the fu
 
 import json
 import sys
-from datetime import date
+import time as time_module
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
+import pandas as pd
 import pytest
+from structlog.testing import capture_logs
 
 _RESEARCH = Path(__file__).resolve().parents[1] / "agents" / "research"
 if str(_RESEARCH) not in sys.path:
@@ -17,7 +20,14 @@ from fundamental_world import AS_OF, CONFIG, FundamentalWorld, build_fundamental
 from atlas.agents.tools import fundamental_tools as ft  # noqa: E402
 from atlas.core.errors import DataError  # noqa: E402
 from atlas.core.pit import AsOf  # noqa: E402
-from atlas.core.storage import DEFAULT_REGISTRY, Lake  # noqa: E402
+from atlas.core.storage import (  # noqa: E402
+    DEFAULT_REGISTRY,
+    Column,
+    ColumnType,
+    Lake,
+    SchemaRegistry,
+    TableSchema,
+)
 from atlas.data.slice import DERIVED_TABLES, MANIFEST, date_column, slice_lake, slice_tables  # noqa: E402
 from atlas.data.view import DataView  # noqa: E402
 
@@ -139,8 +149,6 @@ def test_the_tools_read_the_same_on_a_slice_of_the_sector(
 
 def test_a_symbols_list_table_keeps_the_articles_of_the_symbols(tmp_path: Path) -> None:
     """`news` has a `symbols` list, no `symbol` column; `since` trims its timestamp key."""
-    from datetime import datetime
-
     from view_helpers import build_world
 
     lake = Lake(tmp_path / "world", registry=DEFAULT_REGISTRY.copy())
@@ -153,3 +161,175 @@ def test_a_symbols_list_table_keeps_the_articles_of_the_symbols(tmp_path: Path) 
     assert all("AAA" in symbols for symbols in news["symbols"])
     assert (news["published_at"] >= datetime(2024, 2, 28, tzinfo=news["published_at"].dt.tz)).all()
     assert report.rows == {"news": 1}
+
+
+# Mutation-testing follow-up (audit A9): contracts the tests above left unpinned.
+
+_UTC_MIDNIGHT = datetime(2024, 2, 28, tzinfo=UTC)
+
+
+def _custom_lake(root: Path) -> Lake:
+    """A lake on its own registry (none of these tables is in `DEFAULT_REGISTRY`): `ticks`
+    (a `symbol` column), `articles` (a `symbols` list, timestamp key), `rates` (neither) and
+    `mentions` (both: the `symbol` column decides)."""
+    ts, day = ColumnType.TIMESTAMP, ColumnType.DATE
+    known = Column(name="available_at", dtype=ts)
+    schemas = [
+        TableSchema(
+            name="ticks",
+            columns=(
+                Column(name="symbol", dtype=ColumnType.STRING),
+                Column(name="date", dtype=day),
+                Column(name="value", dtype=ColumnType.FLOAT64),
+                known,
+            ),
+            primary_key=("symbol", "date"),
+        ),
+        TableSchema(
+            name="articles",
+            columns=(
+                Column(name="article_id", dtype=ColumnType.STRING),
+                Column(name="published_at", dtype=ts),
+                Column(name="symbols", dtype=ColumnType.STRING_LIST),
+                known,
+            ),
+            primary_key=("published_at", "article_id"),
+            year_column="published_at",  # what `since` trims on, as in `news`
+        ),
+        TableSchema(
+            name="rates",
+            columns=(
+                Column(name="date", dtype=day),
+                Column(name="value", dtype=ColumnType.FLOAT64),
+                known,
+            ),
+            primary_key=("date",),
+        ),
+        TableSchema(
+            name="mentions",
+            columns=(
+                Column(name="symbol", dtype=ColumnType.STRING),
+                Column(name="date", dtype=day),
+                Column(name="symbols", dtype=ColumnType.STRING_LIST),
+                known,
+            ),
+            primary_key=("symbol", "date"),
+        ),
+    ]
+    lake = Lake(root, registry=SchemaRegistry(schemas))
+    seen = datetime(2024, 2, 29, 12, tzinfo=UTC)
+    lake.write_table(
+        "ticks",
+        pd.DataFrame(
+            {
+                "symbol": ["AAA", "BBB"],
+                "date": [date(2024, 2, 28)] * 2,
+                "value": [1.0, 2.0],
+                "available_at": [seen] * 2,
+            }
+        ),
+    )
+    lake.write_table(
+        "articles",
+        pd.DataFrame(
+            {
+                "article_id": ["midnight", "before", "other"],
+                "published_at": [
+                    _UTC_MIDNIGHT,
+                    _UTC_MIDNIGHT - timedelta(microseconds=1),
+                    _UTC_MIDNIGHT,
+                ],
+                "symbols": [["AAA", "ZZZ"], ["AAA"], ["BBB"]],
+                "available_at": [seen] * 3,
+            }
+        ),
+    )
+    lake.write_table(
+        "rates",
+        pd.DataFrame(
+            {
+                "date": [date(2024, 2, 27), date(2024, 2, 28)],
+                "value": [5.0, 5.25],
+                "available_at": [seen] * 2,
+            }
+        ),
+    )
+    lake.write_table(
+        "mentions",
+        pd.DataFrame(
+            {
+                "symbol": ["AAA"],
+                "date": [date(2024, 2, 28)],
+                "symbols": [["BBB"]],
+                "available_at": [seen],
+            }
+        ),
+    )
+    return lake
+
+
+def test_default_tables_take_a_symbols_list_and_skip_tables_without_symbols(
+    tmp_path: Path,
+) -> None:
+    assert slice_tables(_custom_lake(tmp_path / "src")) == ("articles", "mentions", "ticks")
+
+
+def test_a_slice_keeps_the_source_registry_and_copies_a_named_table_whole(
+    tmp_path: Path,
+) -> None:
+    source = _custom_lake(tmp_path / "src")
+    out = tmp_path / "s"
+    report = slice_lake(
+        source,
+        out,
+        ["AAA"],
+        POINT,
+        since=date(2024, 2, 28),
+        tables=["ticks", "articles", "rates", "mentions"],
+    )
+    sliced = Lake(out, registry=source.registry)
+    assert list(sliced.read_table("ticks")["symbol"]) == ["AAA"]
+    # `since` keeps an article stamped exactly at 00:00 UTC of that day, not one a µs earlier.
+    assert list(sliced.read_table("articles")["article_id"]) == ["midnight"]
+    assert list(sliced.read_table("rates")["date"]) == [date(2024, 2, 28)]  # no symbol: whole
+    assert len(sliced.read_table("mentions")) == 1  # its `symbol` decides, not `symbols`
+    assert report.rows == {"ticks": 1, "articles": 1, "rates": 1, "mentions": 1}
+    assert report.out == out and report.as_of == POINT
+
+
+def test_the_manifest_text_and_the_log(
+    sworld: FundamentalWorld, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("TZ", "America/New_York")  # the cutoff is written in UTC regardless
+    time_module.tzset()
+    try:
+        with capture_logs() as logs:
+            report = slice_lake(
+                sworld.clean, tmp_path / "s", ["AAA"], POINT, tables=["instruments", "prices_daily"]
+            )
+    finally:
+        monkeypatch.undo()
+        time_module.tzset()
+    expected = {
+        "as_of": "2024-03-01",
+        "cutoff": POINT.cutoff.astimezone(UTC).isoformat(),
+        "since": None,
+        "symbols": ["AAA"],
+        "tables": report.rows,
+    }
+    assert expected["cutoff"].endswith("+00:00")
+    text = (tmp_path / "s" / MANIFEST).read_bytes().decode("utf-8")
+    assert text == json.dumps(expected, indent=2, sort_keys=True) + "\n"
+    events = [e for e in logs if e["event"] == "data.slice.table"]
+    assert [(e["table"], e["rows"]) for e in events] == list(report.rows.items())
+
+
+def test_the_error_messages_are_exact(sworld: FundamentalWorld, tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match=r"^no tables given$"):
+        slice_tables(sworld.clean, [" "])
+    with pytest.raises(ValueError, match=r"^no symbols given$"):
+        slice_lake(sworld.clean, tmp_path / "a", [], POINT)
+    with pytest.raises(
+        ValueError, match=r"^symbols must be a sequence of tickers, not one string$"
+    ):
+        slice_lake(sworld.clean, tmp_path / "b", "AAA", POINT)  # type: ignore[arg-type]

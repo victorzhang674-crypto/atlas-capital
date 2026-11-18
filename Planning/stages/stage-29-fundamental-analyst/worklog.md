@@ -66,3 +66,33 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Committed `eb17ddf` `stage-29: Fundamental analyst agent` after reviewing the staged list (127 files: code, tests, config, docs, the fixture, stage records; no `.env`, lake or DuckDB file; no `.env` value in any staged file). Pre-commit hooks passed; `git status` clean.
 - Fast-forwarded `main` 65de3a5 → eb17ddf in the owner's Terminal panel (`artifacts/merged-main-check.sh`; the sandbox cannot write the main checkout). Merged result ([merged-main-check.txt](artifacts/merged-main-check.txt)): trees equal; `uv run pytest -q` → 5180 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch; main checkout clean, ahead of `origin/main` by 1.
 - Not pushed: the fixture adds about 116,000 vendor price rows (and SEC facts) to a public repository; asked the owner first. This records commit goes onto the branch and `main` the same way.
+
+## 2026-11-18 08:05 — Push and CI
+- Owner: "Yes, push". `git push origin main claude/stage-29-planning-audit-3185f8` from the sandbox: `main` 65de3a5..0b1c74f, the stage branch new on origin.
+- CI on 0b1c74f (public API, [ci-runs-0b1c74f.json](artifacts/ci-runs-0b1c74f.json)): `main` run 44297802312 **success**, branch run 44297801313 **success**.
+
+## 2026-11-18 08:15 — Follow-up (owner: "please help me to fix the problems and complete what you have not done. after the fix, please have a final audit and report your progress")
+- Open items from the audit: A5 (main lake without receivables rows), A9 (no mutation testing), A7 (fixture size), plus graph wiring and MD&A text (later stages: not done here, Rule 2.4).
+- A7 closed without change: the fixture's 6 MB of blobs are in the pushed history, so a smaller re-recording would not make the repository smaller; it would only add churn.
+- A5: [main_lake_receivables.py](artifacts/main_lake_receivables.py) `copy`, `before`, `reparse`, `check` on a scratch copy of the main lake ([main-lake-reparse.txt](artifacts/main-lake-reparse.txt)): 742 symbols re-parsed offline in 28 s, 0 failed; 2,574,827 rows before, all unchanged; 68,846 rows added, all `AccountsReceivableNetCurrent` / `ReceivablesNetCurrent` (609 of 742 symbols). CHECK OK. The stored factor exposures (142 dates), factor returns and risk-model snapshots (115 dates) were digested (values only) before the rebuild, which the new fact counts make necessary (`input_fingerprint` counts fact rows).
+- A5 rebuild on the scratch copy ([main-lake-rebuild.txt](artifacts/main-lake-rebuild.txt)): `atlas factors build --from 2015 --to 2026` → 142 month-ends written, exit 0 (23 min); `atlas risk-model build --from 2017 --to 2026 --cached-factors` → 2,471 sessions, 115 snapshots, exit 0 (27 min). `after` ([main-lake-stores-compare.txt](artifacts/main-lake-stores-compare.txt)): factor exposures (1,212,389 rows), factor returns (49,420) and risk-model snapshots (1,236,160) **equal** to their pre-rebuild digests, so the receivables rows changed no stored value. File digests vs the main lake: only `fundamentals_facts` and `factor_exposures` (new input fingerprints) differ; the risk tables are byte-identical. Both caches fresh (142 of 142 dates).
+- A5 swap into the main lake from the owner's Terminal panel ([main_lake_swap.sh](artifacts/main_lake_swap.sh), adapted from the Phase 2 one-pass swap). First attempt **failed safely**: I passed `$TMPDIR/s29/main-copy`, which the owner's shell resolves to its own temp folder (`cp: ... No such file or directory`, swap exit 1) after the backup copy and before any table was replaced; checked: both tables equal to their backup digests, no `.new` / `.old` folders. Second attempt with the absolute path (`/tmp/claude-501/s29/main-copy`; the first backup renamed to `cache/backup-stage29-receivables-2026-11-18-attempt1`, identical copies) → swap exit 0 ([main-lake-swap.txt](artifacts/main-lake-swap.txt)): backup `cache/backup-stage29-receivables-2026-11-18` checked, `fundamentals_facts` and `factor_exposures` replaced and equal to the scratch copy's digests, `_meta.json` identical, build logs kept as `runs/{factors,risk_model}/build-stage29-receivables-2026-11-18.log`.
+- A5 read-back ([main-lake-readback.txt](artifacts/main-lake-readback.txt)): main lake factor cache 142 of 142 dates fresh; AAPL's prefetch on the main lake vs the fixture: 29 of 29 items equal (before: 27 of 28). The receivables check now evaluates on the main lake.
+- A9 mutation testing ([mutation/mutation-summary.md](artifacts/mutation/mutation-summary.md)):
+  - Setup: mutmut 3.8.1 as a throwaway tool on a scratch copy (config [mutmut-setup.cfg](artifacts/mutmut-setup.cfg)), over `fundamental_tools.py`, `research/fundamental.py` and `data/slice.py`.
+  - First run: 2,396 mutants, 2,038 killed, 66 survived, 292 "suspicious". Suspicious is exit -5, a SIGTRAP when mutmut's forked workers end after passing tests on this Mac. A plain-process re-run ([classify.sh](artifacts/mutation/classify.sh)) gave 15 killed and 277 passing. So 2,053 killed (85.7%) and 343 survivors.
+  - Read every survivor's diff. Wrote tests for the real gaps (sources, stamps, boundaries, per-tool gaps, exact texts, memory query, registry, slice manifest / registry / list columns), in five passes.
+  - The new tests and their passes are in the summary's table. Two of my test drafts were wrong and were corrected before they were used:
+    - a slice test table lacked `year_column`, so `since` correctly left it untrimmed;
+    - a restatement helper filtered on TTM, which `total_assets` lacks.
+  - Result: **2,323 of 2,396 killed (97.0%)**. The 73 survivors are all classified in [final-survivors-classified.tsv](artifacts/mutation/final-survivors-classified.tsv): 48 equivalent, 9 unreachable, 16 untested edges (Backlog).
+  - No production defect was found; no code under `src/` changed.
+  - The pass results are in [after-reruns.txt](artifacts/mutation/after-reruns.txt). The username was removed from `classify.sh` and `main-lake-swap.txt`.
+- Test files created or changed in the follow-up:
+  - `tests/unit/agents/research/test_fundamental_contracts.py` (new, 75 tests);
+  - `tests/unit/agents/research/test_fundamental.py` (five-sentence repair quote);
+  - `tests/unit/agents/research/test_fundamental_tools.py` (gap source);
+  - `tests/unit/data/test_data_slice.py` (3 tests).
+
+  Docs: `docs/agents.md` and `docs/data-limitations.md` (receivables now in the main lake), and the fixture `README.md`.
+- Audit report: A5, A7 and A9 updated, plus a *Follow-up* section ([audit-report.md](artifacts/audit-report.md)).

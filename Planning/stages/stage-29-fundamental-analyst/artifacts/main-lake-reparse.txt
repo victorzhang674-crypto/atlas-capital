@@ -1,0 +1,46 @@
+copied 16 entries, 110.9 MB
+{
+  "factor_exposures": {
+    "rows": 1212389,
+    "columns": [
+      "date",
+      "symbol",
+      "factor",
+      "value",
+      "raw",
+      "filled"
+    ],
+    "dates": 142,
+    "digest": "c1af13b53c182d58"
+  },
+  "factor_returns": {
+    "rows": 49420,
+    "columns": [
+      "date",
+      "factor",
+      "value",
+      "r2",
+      "n_names"
+    ],
+    "dates": 2471,
+    "digest": "b1b64609b1d9f4ae"
+  },
+  "risk_model_snapshots": {
+    "rows": 1236160,
+    "columns": [
+      "date",
+      "component",
+      "row",
+      "column",
+      "value"
+    ],
+    "dates": 115,
+    "digest": "4e51ddf8929b5b49"
+  }
+}
+re-parsed 742 symbols in 28 s: rows=2643673 ok=742 failed=0 {}
+rows before 2574827, after 2643673, unchanged 2574827
+rows gone or changed: 0
+rows added: 68846; their tags: ['AccountsReceivableNetCurrent', 'ReceivablesNetCurrent']
+symbols with receivables rows: 609 of 742
+CHECK OK

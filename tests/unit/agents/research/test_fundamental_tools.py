@@ -326,6 +326,7 @@ def test_prefetch_turns_a_secondary_failure_into_a_gap(fworld: FundamentalWorld)
         "gap:LLL:2024-03-01:get_valuation",
     ]
     assert "no GICS sector" in gaps[0].text
+    assert {g.source for g in gaps} == {"atlas"}
     assert any(e.id.startswith("rflag:LLL") for e in items)
 
 

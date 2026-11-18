@@ -1,0 +1,265 @@
+# atlas.agents.tools.fundamental_tools.x_gap_item__mutmut_9: survived
+@@ -5,7 +5,7 @@
+-        source="atlas",
++        source="XXatlasXX",
+# atlas.agents.tools.fundamental_tools.x_gap_item__mutmut_10: survived
+@@ -5,7 +5,7 @@
+-        source="atlas",
++        source="ATLAS",
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_1: survived
+@@ -1,5 +1,5 @@
+-        return body(ctx.view, args.symbol)
++        return body(None, args.symbol)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_2: survived
+@@ -1,5 +1,5 @@
+-        return body(ctx.view, args.symbol)
++        return body(ctx.view, None)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_3: survived
+@@ -1,5 +1,5 @@
+-        return body(ctx.view, args.symbol)
++        return body(args.symbol)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_4: survived
+@@ -1,5 +1,5 @@
+-        return body(ctx.view, args.symbol)
++        return body(ctx.view, )
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_5: survived
+@@ -2,4 +2,4 @@
+-    return Tool(name=name, description=description, args=FundamentalArgs, fn=fn)
++    return Tool(name=None, description=description, args=FundamentalArgs, fn=fn)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_6: survived
+@@ -2,4 +2,4 @@
+-    return Tool(name=name, description=description, args=FundamentalArgs, fn=fn)
++    return Tool(name=name, description=None, args=FundamentalArgs, fn=fn)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_7: survived
+@@ -2,4 +2,4 @@
+-    return Tool(name=name, description=description, args=FundamentalArgs, fn=fn)
++    return Tool(name=name, description=description, args=None, fn=fn)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_8: survived
+@@ -2,4 +2,4 @@
+-    return Tool(name=name, description=description, args=FundamentalArgs, fn=fn)
++    return Tool(name=name, description=description, args=FundamentalArgs, fn=None)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_9: survived
+@@ -2,4 +2,4 @@
+-    return Tool(name=name, description=description, args=FundamentalArgs, fn=fn)
++    return Tool(description=description, args=FundamentalArgs, fn=fn)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_10: survived
+@@ -2,4 +2,4 @@
+-    return Tool(name=name, description=description, args=FundamentalArgs, fn=fn)
++    return Tool(name=name, args=FundamentalArgs, fn=fn)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_11: survived
+@@ -2,4 +2,4 @@
+-    return Tool(name=name, description=description, args=FundamentalArgs, fn=fn)
++    return Tool(name=name, description=description, fn=fn)
+# atlas.agents.tools.fundamental_tools.x__tool__mutmut_12: survived
+@@ -2,4 +2,4 @@
+-    return Tool(name=name, description=description, args=FundamentalArgs, fn=fn)
++    return Tool(name=name, description=description, args=FundamentalArgs, )
+# atlas.agents.research.fundamental.x__section_re__mutmut_1: survived
+@@ -1,2 +1,2 @@
+-    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(label)}[ \t*_]*:", re.IGNORECASE)
++    return re.compile(None, re.IGNORECASE)
+# atlas.agents.research.fundamental.x__section_re__mutmut_2: survived
+@@ -1,2 +1,2 @@
+-    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(label)}[ \t*_]*:", re.IGNORECASE)
++    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(label)}[ \t*_]*:", None)
+# atlas.agents.research.fundamental.x__section_re__mutmut_3: survived
+@@ -1,2 +1,2 @@
+-    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(label)}[ \t*_]*:", re.IGNORECASE)
++    return re.compile(re.IGNORECASE)
+# atlas.agents.research.fundamental.x__section_re__mutmut_4: survived
+@@ -1,2 +1,2 @@
+-    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(label)}[ \t*_]*:", re.IGNORECASE)
++    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(label)}[ \t*_]*:", )
+# atlas.agents.research.fundamental.x__section_re__mutmut_5: survived
+@@ -1,2 +1,2 @@
+-    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(label)}[ \t*_]*:", re.IGNORECASE)
++    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(None)}[ \t*_]*:", re.IGNORECASE)
+# atlas.agents.research.fundamental.x__quote__mutmut_3: survived
+@@ -1,4 +1,4 @@
+-    shown = "; ".join(f'"{s[:120]}"' for s in sentences_[:MAX_LISTED])
++    shown = "XX; XX".join(f'"{s[:120]}"' for s in sentences_[:MAX_LISTED])
+# atlas.agents.research.fundamental.x__quote__mutmut_4: survived
+@@ -1,4 +1,4 @@
+-    shown = "; ".join(f'"{s[:120]}"' for s in sentences_[:MAX_LISTED])
++    shown = "; ".join(f'"{s[:121]}"' for s in sentences_[:MAX_LISTED])
+# atlas.agents.research.fundamental.x__quote__mutmut_6: survived
+@@ -1,4 +1,4 @@
+-    more = f" and {len(sentences_) - MAX_LISTED} more" if len(sentences_) > MAX_LISTED else ""
++    more = f" and {len(sentences_) - MAX_LISTED} more" if (len(sentences_) > MAX_LISTED) and False else ""
+# atlas.agents.research.fundamental.x__quote__mutmut_7: survived
+@@ -1,4 +1,4 @@
+-    more = f" and {len(sentences_) - MAX_LISTED} more" if len(sentences_) > MAX_LISTED else ""
++    more = f" and {len(sentences_) - MAX_LISTED} more" if (len(sentences_) > MAX_LISTED) or True else ""
+# atlas.agents.research.fundamental.x__quote__mutmut_8: survived
+@@ -1,4 +1,4 @@
+-    more = f" and {len(sentences_) - MAX_LISTED} more" if len(sentences_) > MAX_LISTED else ""
++    more = f" and {len(sentences_) + MAX_LISTED} more" if len(sentences_) > MAX_LISTED else ""
+# atlas.agents.research.fundamental.x__quote__mutmut_9: survived
+@@ -1,4 +1,4 @@
+-    more = f" and {len(sentences_) - MAX_LISTED} more" if len(sentences_) > MAX_LISTED else ""
++    more = f" and {len(sentences_) - MAX_LISTED} more" if len(sentences_) >= MAX_LISTED else ""
+# atlas.agents.research.fundamental.x__quote__mutmut_10: survived
+@@ -1,4 +1,4 @@
+-    more = f" and {len(sentences_) - MAX_LISTED} more" if len(sentences_) > MAX_LISTED else ""
++    more = f" and {len(sentences_) - MAX_LISTED} more" if len(sentences_) > MAX_LISTED else "XXXX"
+# atlas.data.slice.x__has_symbols__mutmut_6: survived
+@@ -1,5 +1,5 @@
+-        "symbols" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
++        "symbols" in names or schema.column("symbols").dtype is ColumnType.STRING_LIST
+# atlas.data.slice.x__has_symbols__mutmut_7: survived
+@@ -1,5 +1,5 @@
+-        "symbols" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
++        "XXsymbolsXX" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
+# atlas.data.slice.x__has_symbols__mutmut_8: survived
+@@ -1,5 +1,5 @@
+-        "symbols" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
++        "SYMBOLS" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
+# atlas.data.slice.x__has_symbols__mutmut_9: survived
+@@ -1,5 +1,5 @@
+-        "symbols" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
++        "symbols" not in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
+# atlas.data.slice.x__has_symbols__mutmut_10: survived
+@@ -1,5 +1,5 @@
+-        "symbols" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
++        "symbols" in names and schema.column(None).dtype is ColumnType.STRING_LIST
+# atlas.data.slice.x__has_symbols__mutmut_11: survived
+@@ -1,5 +1,5 @@
+-        "symbols" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
++        "symbols" in names and schema.column("XXsymbolsXX").dtype is ColumnType.STRING_LIST
+# atlas.data.slice.x__has_symbols__mutmut_12: survived
+@@ -1,5 +1,5 @@
+-        "symbols" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
++        "symbols" in names and schema.column("SYMBOLS").dtype is ColumnType.STRING_LIST
+# atlas.data.slice.x__has_symbols__mutmut_13: survived
+@@ -1,5 +1,5 @@
+-        "symbols" in names and schema.column("symbols").dtype is ColumnType.STRING_LIST
++        "symbols" in names and schema.column("symbols").dtype is not ColumnType.STRING_LIST
+# atlas.data.slice.x_slice_tables__mutmut_8: survived
+@@ -6,7 +6,7 @@
+-            raise ValueError("no tables given")
++            raise ValueError("XXno tables givenXX")
+# atlas.data.slice.x__since_value__mutmut_10: survived
+@@ -1,4 +1,4 @@
+-    return datetime.combine(since, time(0), tzinfo=UTC)
++    return datetime.combine(since, time(1), tzinfo=UTC)
+# atlas.data.slice.x__rows__mutmut_31: survived
+@@ -9,7 +9,7 @@
+-    if "symbol" not in schema.column_names and "symbols" in schema.column_names:
++    if "symbol" not in schema.column_names or "symbols" in schema.column_names:
+# atlas.data.slice.x__rows__mutmut_32: survived
+@@ -9,7 +9,7 @@
+-    if "symbol" not in schema.column_names and "symbols" in schema.column_names:
++    if "XXsymbolXX" not in schema.column_names and "symbols" in schema.column_names:
+# atlas.data.slice.x__rows__mutmut_33: survived
+@@ -9,7 +9,7 @@
+-    if "symbol" not in schema.column_names and "symbols" in schema.column_names:
++    if "SYMBOL" not in schema.column_names and "symbols" in schema.column_names:
+# atlas.data.slice.x_slice_lake__mutmut_2: survived
+@@ -11,7 +11,7 @@
+-        raise ValueError("symbols must be a sequence of tickers, not one string")
++        raise ValueError("XXsymbols must be a sequence of tickers, not one stringXX")
+# atlas.data.slice.x_slice_lake__mutmut_10: survived
+@@ -14,7 +14,7 @@
+-        raise ValueError("no symbols given")
++        raise ValueError("XXno symbols givenXX")
+# atlas.data.slice.x_slice_lake__mutmut_24: survived
+@@ -19,7 +19,7 @@
+-    target = Lake(out, registry=source.registry)
++    target = Lake(out, registry=None)
+# atlas.data.slice.x_slice_lake__mutmut_26: survived
+@@ -19,7 +19,7 @@
+-    target = Lake(out, registry=source.registry)
++    target = Lake(out, )
+# atlas.data.slice.x_slice_lake__mutmut_45: survived
+@@ -24,7 +24,7 @@
+-            target.write_table(name, frame, mode="overwrite")
++            target.write_table(name, frame, )
+# atlas.data.slice.x_slice_lake__mutmut_49: survived
+@@ -26,7 +26,7 @@
+-        _log.info("data.slice.table", table=name, rows=len(frame))
++        _log.info(None, table=name, rows=len(frame))
+# atlas.data.slice.x_slice_lake__mutmut_50: survived
+@@ -26,7 +26,7 @@
+-        _log.info("data.slice.table", table=name, rows=len(frame))
++        _log.info("data.slice.table", table=None, rows=len(frame))
+# atlas.data.slice.x_slice_lake__mutmut_51: survived
+@@ -26,7 +26,7 @@
+-        _log.info("data.slice.table", table=name, rows=len(frame))
++        _log.info("data.slice.table", table=name, rows=None)
+# atlas.data.slice.x_slice_lake__mutmut_52: survived
+@@ -26,7 +26,7 @@
+-        _log.info("data.slice.table", table=name, rows=len(frame))
++        _log.info(table=name, rows=len(frame))
+# atlas.data.slice.x_slice_lake__mutmut_53: survived
+@@ -26,7 +26,7 @@
+-        _log.info("data.slice.table", table=name, rows=len(frame))
++        _log.info("data.slice.table", rows=len(frame))
+# atlas.data.slice.x_slice_lake__mutmut_54: survived
+@@ -26,7 +26,7 @@
+-        _log.info("data.slice.table", table=name, rows=len(frame))
++        _log.info("data.slice.table", table=name, )
+# atlas.data.slice.x_slice_lake__mutmut_55: survived
+@@ -26,7 +26,7 @@
+-        _log.info("data.slice.table", table=name, rows=len(frame))
++        _log.info("XXdata.slice.tableXX", table=name, rows=len(frame))
+# atlas.data.slice.x_slice_lake__mutmut_56: survived
+@@ -26,7 +26,7 @@
+-        _log.info("data.slice.table", table=name, rows=len(frame))
++        _log.info("DATA.SLICE.TABLE", table=name, rows=len(frame))
+# atlas.data.slice.x_slice_lake__mutmut_60: survived
+@@ -29,7 +29,7 @@
+-        "cutoff": as_of.cutoff.astimezone(UTC).isoformat(),
++        "XXcutoffXX": as_of.cutoff.astimezone(UTC).isoformat(),
+# atlas.data.slice.x_slice_lake__mutmut_61: survived
+@@ -29,7 +29,7 @@
+-        "cutoff": as_of.cutoff.astimezone(UTC).isoformat(),
++        "CUTOFF": as_of.cutoff.astimezone(UTC).isoformat(),
+# atlas.data.slice.x_slice_lake__mutmut_62: survived
+@@ -29,7 +29,7 @@
+-        "cutoff": as_of.cutoff.astimezone(UTC).isoformat(),
++        "cutoff": as_of.cutoff.astimezone(None).isoformat(),
+# atlas.data.slice.x_slice_lake__mutmut_74: survived
+@@ -35,6 +35,6 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
++        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding=None
+# atlas.data.slice.x_slice_lake__mutmut_76: survived
+@@ -35,6 +35,5 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+-    )
++        json.dumps(manifest, indent=2, sort_keys=True) + "\n", )
+# atlas.data.slice.x_slice_lake__mutmut_80: survived
+@@ -35,6 +35,6 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
++        json.dumps(manifest, indent=None, sort_keys=True) + "\n", encoding="utf-8"
+# atlas.data.slice.x_slice_lake__mutmut_81: survived
+@@ -35,6 +35,6 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
++        json.dumps(manifest, indent=2, sort_keys=None) + "\n", encoding="utf-8"
+# atlas.data.slice.x_slice_lake__mutmut_83: survived
+@@ -35,6 +35,6 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
++        json.dumps(manifest, sort_keys=True) + "\n", encoding="utf-8"
+# atlas.data.slice.x_slice_lake__mutmut_84: survived
+@@ -35,6 +35,6 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
++        json.dumps(manifest, indent=2, ) + "\n", encoding="utf-8"
+# atlas.data.slice.x_slice_lake__mutmut_85: survived
+@@ -35,6 +35,6 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
++        json.dumps(manifest, indent=3, sort_keys=True) + "\n", encoding="utf-8"
+# atlas.data.slice.x_slice_lake__mutmut_86: survived
+@@ -35,6 +35,6 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
++        json.dumps(manifest, indent=2, sort_keys=False) + "\n", encoding="utf-8"
+# atlas.data.slice.x_slice_lake__mutmut_89: survived
+@@ -35,6 +35,6 @@
+-        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
++        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="UTF-8"
+# atlas.data.slice.x_slice_lake__mutmut_90: survived
+@@ -37,4 +37,4 @@
+-    return SliceReport(out=out, as_of=as_of, symbols=wanted, since=since, rows=rows)
++    return SliceReport(out=None, as_of=as_of, symbols=wanted, since=since, rows=rows)
+# atlas.data.slice.x_slice_lake__mutmut_91: survived
+@@ -37,4 +37,4 @@
+-    return SliceReport(out=out, as_of=as_of, symbols=wanted, since=since, rows=rows)
++    return SliceReport(out=out, as_of=None, symbols=wanted, since=since, rows=rows)

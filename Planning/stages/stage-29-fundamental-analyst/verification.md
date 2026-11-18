@@ -23,3 +23,22 @@ Output of commands run in this stage's chat (Project.md Rule 1); raw files in [a
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Follow-up — Stage 29 — 2026-11-18
+Owner: "please help me to fix the problems and complete what you have not done. after the fix, please have a final audit and report your progress." No code under `src/` changed; tests, records and the main lake's data did ([audit-report.md › Follow-up](artifacts/audit-report.md)).
+
+- Commands run (this chat, one after another, nothing else running):
+  - `uv run pytest tests/unit/agents/research/test_fundamental.py -q` (brief's Verify) → 29 passed, exit 0 · raw: [artifacts/followup-verify-brief.txt](artifacts/followup-verify-brief.txt)
+  - `uv run pytest -q` → 5260 passed, 82 deselected, exit 0 · raw: [artifacts/followup-pytest-full.txt](artifacts/followup-pytest-full.txt). After the summary, DuckDB's nanobind bindings print a leak notice at interpreter exit; it is informational and does not change the exit code.
+  - `make check` → exit 0 · raw: [artifacts/followup-make-check.txt](artifacts/followup-make-check.txt)
+    - `ruff check .` → All checks passed!
+    - `ruff format --check .` → 503 files already formatted
+    - `mypy src/atlas` → Success: no issues found in 185 source files
+    - pytest: 5257 passed + 3 timing passed
+  - `make test-integration` → 48 passed, 15 skipped, exit 0 · raw: [artifacts/followup-test-integration.txt](artifacts/followup-test-integration.txt)
+  - Mutation testing (mutmut 3.8.1 plus plain-process re-runs) → 2,323 of 2,396 killed (97.0%; 85.7% before). The 73 survivors are classified: 48 equivalent, 9 unreachable, 16 untested edges · [artifacts/mutation/mutation-summary.md](artifacts/mutation/mutation-summary.md)
+  - Main-lake receivables: offline re-parse → 68,846 rows added, every old row unchanged. Stores rebuilt with equal values, swapped in with a backup. Read-back: AAPL 29 of 29 items equal to the fixture · raw: [main-lake-*.txt](artifacts/)
+- Acceptance criteria: unchanged and still met. The replay test and the FakeLLM tests pass in the runs above (`test_the_recorded_aapl_run_replays_offline` is in the brief's Verify, 29 passed).
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED (re-run after the follow-up)

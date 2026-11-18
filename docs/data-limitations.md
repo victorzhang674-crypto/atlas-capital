@@ -156,10 +156,11 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
 8. **Receivables need a re-ingest; MD&A text is not stored.** Stage 29 added the concept
    `accounts_receivable` (`AccountsReceivableNetCurrent`, else `ReceivablesNetCurrent`) for the
    fundamental analyst's receivables red flag. Only mapped tags are stored, so a lake ingested
-   before it (the main lake, as of 2026-11-18) has no receivables rows until its fundamentals
-   are re-ingested from the archived companyfacts (offline, `refresh=False`), and the check
-   reads NOT EVALUATED there. No filing text (MD&A) is ingested, so the going-concern check is
-   always NOT EVALUATED.
+   before it has no receivables rows until its fundamentals are re-ingested from the archived
+   companyfacts (offline, `refresh=False`), and the check reads NOT EVALUATED there. The main
+   lake was re-ingested on 2026-11-18 (68,846 rows, 609 of 742 symbols; banks and insurers tag
+   none, so their check stays NOT EVALUATED). No filing text (MD&A) is ingested, so the
+   going-concern check is always NOT EVALUATED.
 
 ## Macro (Stage 10)
 

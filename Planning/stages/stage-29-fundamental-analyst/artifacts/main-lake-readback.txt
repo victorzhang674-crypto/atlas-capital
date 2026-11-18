@@ -1,0 +1,5 @@
+main lake: stored dates 142, fresh 142
+scratch copy: stored dates 142, fresh 142
+main: 29 items in 2.5 s
+fixture: 29 items in 0.9 s
+equal items: 29
