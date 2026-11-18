@@ -13,7 +13,7 @@ An analyst that interprets precomputed technical features (it never computes the
 `src/atlas/agents/research/technical.py`, prompt, tests
 
 ## Acceptance criteria
-- Schema-valid output with evidence; FakeLLM tests; a recorded live fixture.
+- Schema-valid output with evidence; FakeLLM tests; a recorded live fixture. Recorded as Stage 29's fixtures are (exported cache + lake slice under `tests/fixtures/recorded/`). (Phase 3 checkpoint, Tier 2 item 7; owner approved 2026-11-17)
 
 ## Verify
 `uv run pytest tests/unit/agents/research/test_technical.py -q`

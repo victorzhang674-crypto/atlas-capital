@@ -14,7 +14,7 @@ A fund-level daily (or weekly) `MacroOutlook`: regime interpretation, the rates,
 `src/atlas/agents/research/macro.py`, `src/atlas/agents/tools/macro_tools.py`, prompt, tests
 
 ## Acceptance criteria
-- Valid outlook offline; the validator works; the 2020-03-16 recorded fixture shows low risk appetite.
+- Valid outlook offline; the validator works; the 2020-03-16 recorded fixture shows low risk appetite. Recorded as Stage 29's fixtures are (exported cache + lake slice under `tests/fixtures/recorded/`). (Phase 3 checkpoint, Tier 2 item 7; owner approved 2026-11-17)
 
 ## Verify
 `uv run pytest tests/unit/agents/research/test_macro.py -q`

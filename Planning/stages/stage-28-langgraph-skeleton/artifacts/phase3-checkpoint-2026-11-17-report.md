@@ -245,4 +245,6 @@ backtests on one lake (56).
   - After Tier 2: `uv run pytest -q` 5008 passed; `make check` exit 0; Verify 350 / 327 /
     162 / 200 passed; integration 48 passed, 15 skipped; changed modules 100% covered.
   - Merged into `main` (798a99e) and pushed: CI success on `main` and the branch.
-- Item 7's notes wait for the owner. Tiers 3–4: not started; they wait for the owner's word.
+- Item 7 (2026-11-17, owner: "Approve all notes"): the notes are applied to briefs 29, 30,
+  31, 33, 35, 36, 53, 54 and 56. Tier 2 is complete. Tiers 3–4: not started; they wait for
+  the owner's word.

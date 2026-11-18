@@ -14,7 +14,7 @@ An analyst that turns the last 14–30 days of company news and upcoming events 
 `src/atlas/agents/research/news.py`, `src/atlas/agents/tools/news_tools.py`, prompt, tests
 
 ## Acceptance criteria
-- Every catalyst has an evidence ID; the empty-news path is tested; offline replay works.
+- Every catalyst has an evidence ID; the empty-news path is tested; offline replay works. Recorded as Stage 29's fixtures are (exported cache + lake slice under `tests/fixtures/recorded/`). (Phase 3 checkpoint, Tier 2 item 7; owner approved 2026-11-17)
 
 ## Verify
 `uv run pytest tests/unit/agents/research/test_news.py -q`

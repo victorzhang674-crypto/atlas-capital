@@ -9,6 +9,7 @@ Run the whole fund over years, day by day, point-in-time, with costs, at control
 - **Budget mode:** LLM pods research at a lower cadence (e.g. bi-weekly), with a capped queue size and the quick tier everywhere; **quant_only:** LLM pods disabled (ablation baseline and fast iteration)
 - LLM spend projection before start (estimate from cache hit rate and queue sizes) with a confirm prompt when over budget
 - Resume from the last completed day; deterministic seeds; replay-only rerun produces bit-identical outputs (test)
+- Each backtest run uses its own agent memory (episodes and lessons scoped to its `run_id`); a backtest never recalls another run's lessons, and paper / live runs never see a backtest's (Phase 3 checkpoint, Tier 2 item 7; owner approved 2026-11-17)
 - Warm-up period handling (risk model and regime need history: start trading after the warm-up)
 - Parallelism: optional multiprocessing across non-overlapping walk-forward windows (Stage 58)
 - CLI: `atlas backtest run --from 2018-01-01 --to 2024-12-31 --mode budget`

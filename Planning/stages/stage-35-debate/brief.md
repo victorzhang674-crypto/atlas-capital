@@ -22,7 +22,7 @@ An adversarial, evidence-bound debate that stress-tests the analysts' combined p
 4. Integrate into the research subgraph from Stage 28 (replace the stubs).
 
 ## Acceptance criteria
-- The full debate runs offline from fixtures; transcript and balance are produced; uncited claims are measurably discounted.
+- The full debate runs offline from fixtures (the Stage 29–34 recorded fixtures (Phase 3 checkpoint, Tier 2 item 7; owner approved 2026-11-17)); transcript and balance are produced; uncited claims are measurably discounted.
 
 ## Verify
 `uv run pytest tests/unit/agents/debate -q`

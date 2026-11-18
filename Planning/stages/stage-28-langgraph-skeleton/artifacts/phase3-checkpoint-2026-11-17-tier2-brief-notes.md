@@ -1,5 +1,9 @@
 # Phase 3 checkpoint, Tier 2 item 7: proposed brief notes (draft for the owner's approval)
 
+**Status (2026-11-17): approved by the owner ("Approve all notes") and applied as written to
+briefs 29, 30, 31, 33, 35, 36, 53, 54 and 56; each added sentence is tagged "Phase 3
+checkpoint, Tier 2 item 7; owner approved 2026-11-17".**
+
 Briefs are edited only with the owner's approval (Project.md Rule 2A.1). Nothing below is in
 a brief yet. Each note says which brief it would go into and the exact text to add. Approve
 them all, approve some, or change the wording.

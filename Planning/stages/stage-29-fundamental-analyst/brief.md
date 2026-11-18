@@ -8,7 +8,7 @@ An analyst that reads PIT fundamentals, factor ranks and trends, and writes a ci
 - Tools: `get_fundamentals_summary` (last 8 quarters of key lines, TTM, margins, growth), `get_factor_ranks` (value/quality/growth percentiles vs sector), `get_valuation` (multiples vs own 5y history and sector median), `get_red_flags` (deterministic checks: accruals spike, receivables growth >> revenue, negative FCF with rising debt, dilution, going-concern keywords if MD&A is available)
 - Prompt `fundamental_analyst.j2` (v1): structure = business quality, growth trajectory, valuation, balance-sheet risk, red flags, what would change my mind; every number cited
 - Output `AnalystReport` with signals (quality, valuation, growth, balance_sheet) and confidence
-- Golden tests with FakeLLM; one recorded live run on AAPL 2024-05-01 stored as a fixture for later stages
+- Golden tests with FakeLLM; one recorded live run on AAPL 2024-05-01 stored as a fixture for later stages. The fixture is a folder under `tests/fixtures/recorded/`: the exported cache (`atlas llm cache export`) and the lake slice the run read, built by a new `atlas data slice --symbols … --as-of … --out DIR`. Its replay test needs no lake and no key (Phase 3 checkpoint, Tier 2 item 7; owner approved 2026-11-17)
 
 ## Out of scope
 Earnings call transcripts (backlog).
@@ -20,7 +20,7 @@ Earnings call transcripts (backlog).
 1. Tools (deterministic, testable) with evidence IDs.
 2. Red-flag rules with synthetic cases.
 3. Agent + prompt; FakeLLM test validates the schema and evidence references.
-4. Live run fixture (`-m llm`) recorded into the replay cache.
+4. Live run fixture (`-m llm`) recorded into the replay cache, and the lake slice (`atlas data slice`).
 
 ## Acceptance criteria
 - The report validates, cites evidence for every quantitative claim, and runs offline from the cache.

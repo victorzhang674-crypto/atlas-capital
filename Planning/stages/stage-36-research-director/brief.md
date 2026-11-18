@@ -9,6 +9,7 @@ Synthesise reports and the debate into a falsifiable `InvestmentThesis`, store i
 - Kill criteria DSL (small, deterministic): `price_below(x)`, `drawdown_from_entry(pct)`, `metric_below(name, x)`, `date_passed(d)`, `event_occurred(type)`, evaluated daily by code
 - Thesis registry (DuckDB `theses`): versions, status transitions (ACTIVE → INVALIDATED/CLOSED/EXPIRED), `review_due` date, triggers: kill criterion hit, earnings passed, price move > 2σ, thesis age > horizon
 - `Prediction` records emitted for each thesis (for Stage 53 scoring)
+- After publishing a thesis the Director records one memory episode (`AgentMemory.record_episode`, agent `research_director`, situation = the debate summary, decision = direction / conviction / horizon / thesis id, `created_at` = the decision moment) (Phase 3 checkpoint, Tier 2 item 7; owner approved 2026-11-17)
 - CLI: `atlas research AAPL --date 2024-05-01 [--replay]` → Rich-rendered thesis + HTML report in `data/runs/…`
 - Comparison note (optional): the AI itself runs the same ticker/date in the reference TradingAgents (Project.md Rule 6) and records the differences in the handoff note
 
@@ -20,7 +21,7 @@ Synthesise reports and the debate into a falsifiable `InvestmentThesis`, store i
 2. Registry lifecycle + triggers.
 3. Director agent (FakeLLM) + validator (p10 ≤ p50 ≤ p90; conviction consistent with debate balance unless justified).
 4. Wire the research subgraph end to end; CLI.
-5. Live recorded run for 3 tickers (fixtures).
+5. Live recorded run for 3 tickers (fixtures). Recorded as Stage 29's fixtures are (exported cache + lake slice under `tests/fixtures/recorded/`).
 
 ## Acceptance criteria
 - `atlas research AAPL --date 2024-05-01 --replay` works offline and outputs a complete thesis; kill criteria are evaluated by code.
