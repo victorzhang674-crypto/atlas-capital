@@ -68,3 +68,4 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Acceptance criteria of Stages 24, 25 and 28 unchanged and still evidenced (`tests/unit/llm` 363 passed; the end-to-end test in the integration run).
 
 **Result:** ALL CRITERIA VERIFIED
+- Merge, push and CI (Tier 3): Merged into `main` by fast-forward d5b2b69 → dd6eafe (commit `phase-3 checkpoint: Tier 3 (atlas llm usage; read-only llm commands on old lakes)`, 24 files, staged diff reviewed, secrets scan 0 hits of 5) in the owner's Terminal panel; trees equal (1e44600); merged result `uv run pytest -q` 5033 passed, `make check` exit 0, Phase 3 end-to-end 7 passed ([merged-main check](artifacts/phase3-checkpoint-2026-11-18-tier3-merged-main-check.txt)). Pushed; CI on dd6eafe: **`main` run 44245712126 success**, branch run 44245711934 success ([ci-runs-dd6eafe.json](artifacts/ci-runs-dd6eafe.json)). The records commit that follows is pushed the same way.

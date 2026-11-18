@@ -137,3 +137,4 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 ## 2026-11-18 — Phase 3 checkpoint Tier 3 (owner: "Start Tier 3")
 - Sorted the five items first: item 2 done (Stage 24 / 25 records); item 1 belongs to Stage 29 (task 4 of the approved brief), item 3 to Stage 29 on, item 4 is "no action", item 5 needs an Anthropic key that `.env` does not have.
 - Checks: [artifacts/phase3-checkpoint-2026-11-18-tier3-checks.sh](artifacts/phase3-checkpoint-2026-11-18-tier3-checks.sh) → `uv run pytest -q` 5033 passed; `make check` exit 0; integration 48 passed, 15 skipped. Report §4 and §5 updated; PROGRESS Decisions log and Backlog.
+- Commit dd6eafe; fast-forwarded `main` d5b2b69 → dd6eafe in the owner's Terminal panel (trees equal); merged result: `uv run pytest -q` 5033 passed, `make check` exit 0, end-to-end 7 passed. Pushed; CI success on `main` (44245712126) and the branch (44245711934).
