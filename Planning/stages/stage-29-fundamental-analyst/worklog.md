@@ -96,3 +96,9 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 
   Docs: `docs/agents.md` and `docs/data-limitations.md` (receivables now in the main lake), and the fixture `README.md`.
 - Audit report: A5, A7 and A9 updated, plus a *Follow-up* section ([audit-report.md](artifacts/audit-report.md)).
+- Commit and merge:
+  - Committed `e574988` `stage-29: follow-up (main-lake receivables, mutation testing, final audit)`. Before that I reviewed the staged list: 33 files, all records and tests, nothing under `src/`. Scans found no `.env` value, no lake or DuckDB file and no user name.
+  - The first commit attempt failed in the pre-commit hooks: uv could not open its default cache from the sandbox. The hooks passed with `UV_CACHE_DIR` set.
+  - Fast-forwarded `main` 0b1c74f → e574988 in the owner's Terminal panel ([followup-merged-main-check.txt](artifacts/followup-merged-main-check.txt)). Trees equal.
+  - Merged result: `uv run pytest -q` → 5260 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch.
+  - This records commit goes onto `main` the same way; it changes only `worklog.md` and `PROGRESS.md`.
