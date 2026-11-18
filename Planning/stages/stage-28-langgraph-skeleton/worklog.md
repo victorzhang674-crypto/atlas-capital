@@ -133,3 +133,7 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - Checked first against the roadmap (Rule 3: it outranks the briefs) and the design spec: no collision; the spec's layout already has `tests/fixtures/`.
 - Applied word for word as drafted, each sentence tagged "(Phase 3 checkpoint, Tier 2 item 7; owner approved 2026-11-17)": brief 29 (fixture = exported cache + lake slice under `tests/fixtures/recorded/`, new `atlas data slice`; task 4), 30, 31, 33 (recorded the same way), 35 (offline from the Stage 29–34 fixtures), 36 (the Director records one memory episode per thesis; task 5), 53 (settles the episode), 54 (lessons go to the settling run's memory), 56 (each backtest run has its own memory).
 - Records: Decisions log row, two Backlog items marked settled, the notes file's status line, report §5. No code changed.
+
+## 2026-11-18 — Phase 3 checkpoint Tier 3 (owner: "Start Tier 3")
+- Sorted the five items first: item 2 done (Stage 24 / 25 records); item 1 belongs to Stage 29 (task 4 of the approved brief), item 3 to Stage 29 on, item 4 is "no action", item 5 needs an Anthropic key that `.env` does not have.
+- Checks: [artifacts/phase3-checkpoint-2026-11-18-tier3-checks.sh](artifacts/phase3-checkpoint-2026-11-18-tier3-checks.sh) → `uv run pytest -q` 5033 passed; `make check` exit 0; integration 48 passed, 15 skipped. Report §4 and §5 updated; PROGRESS Decisions log and Backlog.

@@ -1,0 +1,94 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+____________ test_usage_on_a_lake_without_the_ledger_table_exits_1 _____________
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8155/test_usage_on_a_lake_without_t0')
+
+    def test_usage_on_a_lake_without_the_ledger_table_exits_1(tmp_path: Path) -> None:
+        result = invoke("--store", str(_old_lake(tmp_path)))
+        assert result.exit_code == 1
+>       assert result.exception is None or isinstance(result.exception, SystemExit)
+E       assert (CatalogException('Catalog Error: Table with name llm_usage does not exist!\nDid you mean "macro_series"?') is None or False)
+E        +  where CatalogException('Catalog Error: Table with name llm_usage does not exist!\nDid you mean "macro_series"?') = <Result CatalogException('Catalog Error: Table with name llm_usage does not exist!\nDid you mean "macro_series"?')>.exception
+E        +  and   False = isinstance(CatalogException('Catalog Error: Table with name llm_usage does not exist!\nDid you mean "macro_series"?'), SystemExit)
+E        +    where CatalogException('Catalog Error: Table with name llm_usage does not exist!\nDid you mean "macro_series"?') = <Result CatalogException('Catalog Error: Table with name llm_usage does not exist!\nDid you mean "macro_series"?')>.exception
+
+tests/unit/cli/test_llm_usage_cmd.py:124: AssertionError
+_______ test_cache_reads_on_a_lake_without_the_cache_table_exit_1[args0] _______
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8155/test_cache_reads_on_a_lake_wit0')
+args = ('stats',)
+
+    @pytest.mark.parametrize(
+        "args", [("stats",), ("export", "out.jsonl"), ("prune", "--older-than", "30d", "--dry-run")]
+    )
+    def test_cache_reads_on_a_lake_without_the_cache_table_exit_1(
+        tmp_path: Path, args: tuple[str, ...]
+    ) -> None:
+        """Found with `atlas llm usage` on the main lake: the read-only cache commands raised
+        DuckDB's CatalogException there (Stage 25)."""
+        old = _old_lake(tmp_path)
+        argv = [a if a != "out.jsonl" else str(tmp_path / a) for a in args]
+        result = CliRunner().invoke(app, ["llm", "cache", *argv, "--store", str(old)], env=BASE_ENV)
+        assert result.exit_code == 1
+>       assert result.exception is None or isinstance(result.exception, SystemExit)
+E       assert (CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') is None or False)
+E        +  where CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') = <Result CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?')>.exception
+E        +  and   False = isinstance(CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?'), SystemExit)
+E        +    where CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') = <Result CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?')>.exception
+
+tests/unit/cli/test_llm_usage_cmd.py:141: AssertionError
+_______ test_cache_reads_on_a_lake_without_the_cache_table_exit_1[args1] _______
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8155/test_cache_reads_on_a_lake_wit1')
+args = ('export', 'out.jsonl')
+
+    @pytest.mark.parametrize(
+        "args", [("stats",), ("export", "out.jsonl"), ("prune", "--older-than", "30d", "--dry-run")]
+    )
+    def test_cache_reads_on_a_lake_without_the_cache_table_exit_1(
+        tmp_path: Path, args: tuple[str, ...]
+    ) -> None:
+        """Found with `atlas llm usage` on the main lake: the read-only cache commands raised
+        DuckDB's CatalogException there (Stage 25)."""
+        old = _old_lake(tmp_path)
+        argv = [a if a != "out.jsonl" else str(tmp_path / a) for a in args]
+        result = CliRunner().invoke(app, ["llm", "cache", *argv, "--store", str(old)], env=BASE_ENV)
+        assert result.exit_code == 1
+>       assert result.exception is None or isinstance(result.exception, SystemExit)
+E       assert (CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') is None or False)
+E        +  where CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') = <Result CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?')>.exception
+E        +  and   False = isinstance(CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?'), SystemExit)
+E        +    where CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') = <Result CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?')>.exception
+
+tests/unit/cli/test_llm_usage_cmd.py:141: AssertionError
+_______ test_cache_reads_on_a_lake_without_the_cache_table_exit_1[args2] _______
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8155/test_cache_reads_on_a_lake_wit2')
+args = ('prune', '--older-than', '30d', '--dry-run')
+
+    @pytest.mark.parametrize(
+        "args", [("stats",), ("export", "out.jsonl"), ("prune", "--older-than", "30d", "--dry-run")]
+    )
+    def test_cache_reads_on_a_lake_without_the_cache_table_exit_1(
+        tmp_path: Path, args: tuple[str, ...]
+    ) -> None:
+        """Found with `atlas llm usage` on the main lake: the read-only cache commands raised
+        DuckDB's CatalogException there (Stage 25)."""
+        old = _old_lake(tmp_path)
+        argv = [a if a != "out.jsonl" else str(tmp_path / a) for a in args]
+        result = CliRunner().invoke(app, ["llm", "cache", *argv, "--store", str(old)], env=BASE_ENV)
+        assert result.exit_code == 1
+>       assert result.exception is None or isinstance(result.exception, SystemExit)
+E       assert (CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') is None or False)
+E        +  where CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') = <Result CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?')>.exception
+E        +  and   False = isinstance(CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?'), SystemExit)
+E        +    where CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?') = <Result CatalogException('Catalog Error: Table with name llm_cache does not exist!\nDid you mean "macro_events or macro_series"?')>.exception
+
+tests/unit/cli/test_llm_usage_cmd.py:141: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_usage_on_a_lake_without_the_ledger_table_exits_1
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_cache_reads_on_a_lake_without_the_cache_table_exit_1[args0]
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_cache_reads_on_a_lake_without_the_cache_table_exit_1[args1]
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_cache_reads_on_a_lake_without_the_cache_table_exit_1[args2]
+4 failed, 8 deselected in 0.82s

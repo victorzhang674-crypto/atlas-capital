@@ -246,5 +246,16 @@ backtests on one lake (56).
     162 / 200 passed; integration 48 passed, 15 skipped; changed modules 100% covered.
   - Merged into `main` (798a99e) and pushed: CI success on `main` and the branch.
 - Item 7 (2026-11-17, owner: "Approve all notes"): the notes are applied to briefs 29, 30,
-  31, 33, 35, 36, 53, 54 and 56. Tier 2 is complete. Tiers 3–4: not started; they wait for
-  the owner's word.
+  31, 33, 35, 36, 53, 54 and 56. Tier 2 is complete.
+- Tier 3 (2026-11-18, owner: "Start Tier 3"):
+  - Item 2 done test-first: `atlas llm usage [--run] [--day] [--by day|run|agent|model]` over
+    `CostLedger.usage_summary` (Stage 24). Running it read-only on the main lake found a
+    Stage 25 defect: a database made before Stages 24 and 25 has no `llm_usage` / `llm_cache`
+    table, and the read-only `atlas llm` commands raised a traceback; they now exit 1 naming
+    the missing table.
+  - Item 1 is Stage 29 task 4 since the approved notes (Rule 4: not built early). Item 3 waits
+    for real agent situations (Stage 29 on). Item 4: no action. Item 5 needs
+    `ANTHROPIC_API_KEY` in `.env` (absent).
+  - After Tier 3: `uv run pytest -q` 5033 passed; `make check` exit 0; `tests/unit/llm` 363
+    passed; integration 48 passed, 15 skipped; `cost.py` and `llm_cmd.py` 100% covered.
+  - Tier 4: not started; it waits for the owner's word.

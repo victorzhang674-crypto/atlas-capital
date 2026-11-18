@@ -76,3 +76,9 @@ Owner: "can you complete what is left in the backlog?" The three Stage 25 backlo
 - Acceptance criteria unchanged and still evidenced: `test_the_same_scripted_agent_twice_in_read_write_makes_one_provider_call`, `test_replay_only_with_a_miss_fails_loudly_and_never_calls`; the end-to-end replay in `tests/integration/test_phase3_run.py` (zero provider calls, identical results).
 
 **Result:** ALL CRITERIA VERIFIED
+
+#### Phase 3 checkpoint Tier 3 — 2026-11-18
+- Read-only commands on a lake without `llm_cache` exit 1 without a traceback: `test_cache_reads_on_a_lake_without_the_cache_table_exit_1[*]` 3 passed (failed before); `tests/unit/cli/test_llm_cmd.py` unchanged and passing; `llm_cmd.py` 100% covered. Full block: [../stage-28-langgraph-skeleton/verification.md](../stage-28-langgraph-skeleton/verification.md) (Tier 3) — `uv run pytest -q` 5033 passed; `make check` exit 0.
+- Acceptance criteria unchanged and still evidenced (`tests/unit/llm` 363 passed).
+
+**Result:** ALL CRITERIA VERIFIED

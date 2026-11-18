@@ -59,7 +59,18 @@ atlas llm cache stats                      # entries, size, per model, hit rate
 atlas llm cache export cache.jsonl         # one JSON line per entry
 atlas llm cache import cache.jsonl         # store an export (checked line by line); --replace
 atlas llm cache prune --older-than 30d     # or 12h, or 2026-11-01; add --dry-run to count
+atlas llm usage                            # spend per day, run, agent and model
+atlas llm usage --run 01J… --by agent      # one run; --day 2026-11-17 for one UTC day
 ```
+
+`atlas llm usage` reads the usage ledger (`llm_usage`, Stage 24): one total, then a table per
+UTC billing day (in date order) and per run, agent and `provider/model` (largest spend first).
+`calls` counts every ledger row, cache hits and repair retries included; `hits` are the free
+cache answers; `paid` the first provider responses of the other calls; `tokens in` adds fresh,
+cache-read and cache-write prompt tokens. `--by` (repeatable) picks the tables. A lake whose
+database was made before Stages 24 and 25 has no `llm_usage` / `llm_cache` table: the
+read-only commands (`usage`, `cache stats`, `cache export`, `cache prune --dry-run`) then
+exit 1 with that message.
 
 ## Recordings as files: fixtures and replays without a key
 

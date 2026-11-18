@@ -1,0 +1,7 @@
+$ atlas llm usage --store <main lake>
+No LLM usage ledger: ~/Projects/atlas-capital/data/atlas.duckdb has no llm_usage table.
+rc=1
+$ atlas llm cache stats --store <main lake>
+No LLM cache: ~/Projects/atlas-capital/data/atlas.duckdb has no llm_cache, llm_usage 
+table.
+rc=1

@@ -1,0 +1,130 @@
+FFFFFFF                                                                  [100%]
+==================================== ERRORS ====================================
+__________ ERROR collecting tests/unit/llm/test_llm_usage_summary.py ___________
+ImportError while importing test module '/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-3-checkpoint-stages-24-28-e324d2/tests/unit/llm/test_llm_usage_summary.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/llm/test_llm_usage_summary.py:12: in <module>
+    from atlas.llm.cost import USAGE_DIMENSIONS, CostLedger, UsageGroup, UsageRecord
+E   ImportError: cannot import name 'USAGE_DIMENSIONS' from 'atlas.llm.cost' (/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/phase-3-checkpoint-stages-24-28-e324d2/src/atlas/llm/cost.py)
+=================================== FAILURES ===================================
+__________________________ test_llm_help_lists_usage ___________________________
+
+    def test_llm_help_lists_usage() -> None:
+        result = CliRunner().invoke(app, ["llm", "--help"], env=BASE_ENV)
+        assert result.exit_code == 0
+>       assert "usage" in _plain(result.output)
+E       AssertionError: assert 'usage' in '                                                                                                                     ...                                                                                                                 ╯\n\n'
+E        +  where '                                                                                                                     ...                                                                                                                 ╯\n\n' = _plain('                                                                                                                     ...─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯\n\n')
+E        +    where '                                                                                                                     ...─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯\n\n' = <Result okay>.output
+
+tests/unit/cli/test_llm_usage_cmd.py:68: AssertionError
+_______ test_usage_shows_the_total_and_spend_per_day_run_agent_and_model _______
+
+store = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8150/test_usage_shows_the_total_and0/lake')
+
+    def test_usage_shows_the_total_and_spend_per_day_run_agent_and_model(store: Path) -> None:
+        result = invoke("--store", str(store))
+>       assert result.exit_code == 0, result.output
+E       AssertionError: Usage: atlas llm [OPTIONS] COMMAND [ARGS]...
+E         Try 'atlas llm --help' for help.
+E         ╭─ Error ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+E         │ No such command 'usage'.                                                                                                                                                                             │
+E         ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests/unit/cli/test_llm_usage_cmd.py:73: AssertionError
+______________________ test_usage_filters_by_run_and_day _______________________
+
+store = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8150/test_usage_filters_by_run_and_0/lake')
+
+    def test_usage_filters_by_run_and_day(store: Path) -> None:
+        result = invoke("--store", str(store), "--run", "01RUNA", "--by", "agent")
+>       assert result.exit_code == 0, result.output
+E       AssertionError: Usage: atlas llm [OPTIONS] COMMAND [ARGS]...
+E         Try 'atlas llm --help' for help.
+E         ╭─ Error ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+E         │ No such command 'usage'.                                                                                                                                                                             │
+E         ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests/unit/cli/test_llm_usage_cmd.py:86: AssertionError
+___________________ test_usage_with_nothing_recorded_says_so ___________________
+
+store = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8150/test_usage_with_nothing_record0/lake')
+
+    def test_usage_with_nothing_recorded_says_so(store: Path) -> None:
+        result = invoke("--store", str(store), "--run", "01NOSUCH")
+>       assert result.exit_code == 0, result.output
+E       AssertionError: Usage: atlas llm [OPTIONS] COMMAND [ARGS]...
+E         Try 'atlas llm --help' for help.
+E         ╭─ Error ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+E         │ No such command 'usage'.                                                                                                                                                                             │
+E         ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+E         
+E       assert 2 == 0
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests/unit/cli/test_llm_usage_cmd.py:99: AssertionError
+____________________ test_usage_without_a_database_exits_1 _____________________
+
+tmp_path = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8150/test_usage_without_a_database_0')
+
+    def test_usage_without_a_database_exits_1(tmp_path: Path) -> None:
+        result = invoke("--store", str(tmp_path / "empty"))
+>       assert result.exit_code == 1
+E       assert 2 == 1
+E        +  where 2 = <Result SystemExit(2)>.exit_code
+
+tests/unit/cli/test_llm_usage_cmd.py:106: AssertionError
+_________________ test_usage_bad_arguments_exit_2[args0---day] _________________
+
+store = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8150/test_usage_bad_arguments_exit_0/lake')
+args = ('--day', '17/11/2026'), hint = '--day'
+
+    @pytest.mark.parametrize(
+        ("args", "hint"), [(("--day", "17/11/2026"), "--day"), (("--by", "sector"), "--by")]
+    )
+    def test_usage_bad_arguments_exit_2(store: Path, args: tuple[str, ...], hint: str) -> None:
+        result = invoke("--store", str(store), *args)
+        assert result.exit_code == 2
+>       assert hint in _plain(result.output)
+E       assert '--day' in "Usage: atlas llm [OPTIONS] COMMAND [ARGS]...\nTry 'atlas llm --help' for help.\n╭  Error                             ...                                                                                                                   ╯\n"
+E        +  where "Usage: atlas llm [OPTIONS] COMMAND [ARGS]...\nTry 'atlas llm --help' for help.\n╭  Error                             ...                                                                                                                   ╯\n" = _plain("Usage: atlas llm [OPTIONS] COMMAND [ARGS]...\nTry 'atlas llm --help' for help.\n╭─ Error ────────────────────────────...───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯\n")
+E        +    where "Usage: atlas llm [OPTIONS] COMMAND [ARGS]...\nTry 'atlas llm --help' for help.\n╭─ Error ────────────────────────────...───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯\n" = <Result SystemExit(2)>.output
+
+tests/unit/cli/test_llm_usage_cmd.py:116: AssertionError
+_________________ test_usage_bad_arguments_exit_2[args1---by] __________________
+
+store = PosixPath('/private/tmp/claude-501/pytest-of-zzjsmacbookair/pytest-8150/test_usage_bad_arguments_exit_1/lake')
+args = ('--by', 'sector'), hint = '--by'
+
+    @pytest.mark.parametrize(
+        ("args", "hint"), [(("--day", "17/11/2026"), "--day"), (("--by", "sector"), "--by")]
+    )
+    def test_usage_bad_arguments_exit_2(store: Path, args: tuple[str, ...], hint: str) -> None:
+        result = invoke("--store", str(store), *args)
+        assert result.exit_code == 2
+>       assert hint in _plain(result.output)
+E       assert '--by' in "Usage: atlas llm [OPTIONS] COMMAND [ARGS]...\nTry 'atlas llm --help' for help.\n╭  Error                             ...                                                                                                                   ╯\n"
+E        +  where "Usage: atlas llm [OPTIONS] COMMAND [ARGS]...\nTry 'atlas llm --help' for help.\n╭  Error                             ...                                                                                                                   ╯\n" = _plain("Usage: atlas llm [OPTIONS] COMMAND [ARGS]...\nTry 'atlas llm --help' for help.\n╭─ Error ────────────────────────────...───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯\n")
+E        +    where "Usage: atlas llm [OPTIONS] COMMAND [ARGS]...\nTry 'atlas llm --help' for help.\n╭─ Error ────────────────────────────...───────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯\n" = <Result SystemExit(2)>.output
+
+tests/unit/cli/test_llm_usage_cmd.py:116: AssertionError
+=========================== short test summary info ============================
+ERROR tests/unit/llm/test_llm_usage_summary.py
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_llm_help_lists_usage - Asse...
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_usage_shows_the_total_and_spend_per_day_run_agent_and_model
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_usage_filters_by_run_and_day
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_usage_with_nothing_recorded_says_so
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_usage_without_a_database_exits_1
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_usage_bad_arguments_exit_2[args0---day]
+FAILED tests/unit/cli/test_llm_usage_cmd.py::test_usage_bad_arguments_exit_2[args1---by]
+7 failed, 1 error in 2.15s
