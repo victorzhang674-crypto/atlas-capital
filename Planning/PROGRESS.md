@@ -1408,4 +1408,4 @@ Full block and raw output: [verification.md](stages/stage-29-fundamental-analyst
   - [x] Cites evidence for every quantitative claim — evidence: the replay test asserts `citations.ok`, cited ⊆ shown, and no sentence with a number lacks an `[E:<id>]` tag in the summary or any risk; `test_uncited_numbers`
   - [x] Runs offline from the cache — evidence: the replay test with no keys, `OfflineProvider`, `replay_only`, `llm_calls == cache_hits == 1`, cost 0, on the fixture's lake slice (no main lake)
 - Waivers: none
-- Merge into `main`: pending (see worklog)
+- Merge into `main`: fast-forward 65de3a5 → **eb17ddf** (2026-11-18, run in the owner's Terminal panel: the sandbox cannot write the main checkout); trees equal. Merged result: `uv run pytest -q` → 5180 passed, 82 deselected, exit 0 · `make check` → exit 0 (ruff clean, 502 files formatted, mypy clean, 5177 passed + 3 timing passed) · `git branch --merged main` lists the stage branch · raw: [merged-main-check.txt](stages/stage-29-fundamental-analyst/artifacts/merged-main-check.txt). Not pushed yet: waiting for the owner's go-ahead (the fixture puts vendor price rows in the public repository).

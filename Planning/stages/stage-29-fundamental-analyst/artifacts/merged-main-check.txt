@@ -1,0 +1,426 @@
+=== before: main 65de3a5
+=== git merge --ff-only claude/stage-29-planning-audit-3185f8
+Updating 65de3a5..eb17ddf
+Fast-forward
+ Planning/PROGRESS.md                               |   45 +-
+ .../artifacts/.gitkeep                             |    0
+ .../artifacts/audit-report.md                      |   85 ++
+ .../artifacts/coverage-first.txt                   |   11 +
+ .../artifacts/coverage.txt                         |   11 +
+ .../artifacts/fixture-compare.txt                  |   12 +
+ .../artifacts/gate-pytest.txt                      |   95 ++
+ .../artifacts/live-run.txt                         |  110 ++
+ .../artifacts/live-test.txt                        |    5 +
+ .../artifacts/make-check.txt                       |  257 +++++
+ .../artifacts/merged-main-check.sh                 |   31 +
+ .../artifacts/pytest-full.txt                      |   97 ++
+ .../artifacts/record_fixture.py                    |  210 ++++
+ .../artifacts/test-integration.txt                 |   23 +
+ .../artifacts/verify-brief.txt                     |    3 +
+ .../stages/stage-29-fundamental-analyst/plan.md    |   67 ++
+ .../stage-29-fundamental-analyst/verification.md   |   25 +
+ .../stages/stage-29-fundamental-analyst/worklog.md |   63 ++
+ config/fund.yaml                                   |   15 +
+ config/xbrl_map.yaml                               |    4 +
+ docs/agents.md                                     |   37 +
+ docs/data-limitations.md                           |    7 +
+ src/atlas/agents/prompts/fundamental_analyst.j2    |   17 +
+ src/atlas/agents/research/__init__.py              |    6 +
+ src/atlas/agents/research/fundamental.py           |  189 ++++
+ src/atlas/agents/tools/fundamental_tools.py        | 1056 ++++++++++++++++++++
+ src/atlas/cli/data_cmd.py                          |   72 +-
+ src/atlas/core/config.py                           |   46 +
+ src/atlas/data/slice.py                            |  181 ++++
+ .../stage-29-fundamental-aapl-2024-05-01/README.md |   33 +
+ .../expected_report.json                           |   61 ++
+ .../lake/curated/_meta.json                        |   34 +
+ .../lake/curated/corporate_actions/data.parquet    |  Bin 0 -> 15369 bytes
+ .../fundamentals_facts/symbol=AAPL/data.parquet    |  Bin 0 -> 20905 bytes
+ .../fundamentals_facts/symbol=ACN/data.parquet     |  Bin 0 -> 18954 bytes
+ .../fundamentals_facts/symbol=ADBE/data.parquet    |  Bin 0 -> 19554 bytes
+ .../fundamentals_facts/symbol=ADI/data.parquet     |  Bin 0 -> 19949 bytes
+ .../fundamentals_facts/symbol=ADSK/data.parquet    |  Bin 0 -> 20454 bytes
+ .../fundamentals_facts/symbol=AKAM/data.parquet    |  Bin 0 -> 19790 bytes
+ .../fundamentals_facts/symbol=AMAT/data.parquet    |  Bin 0 -> 19977 bytes
+ .../fundamentals_facts/symbol=AMD/data.parquet     |  Bin 0 -> 19794 bytes
+ .../fundamentals_facts/symbol=ANET/data.parquet    |  Bin 0 -> 21028 bytes
+ .../fundamentals_facts/symbol=ANSS/data.parquet    |  Bin 0 -> 18694 bytes
+ .../fundamentals_facts/symbol=APH/data.parquet     |  Bin 0 -> 20443 bytes
+ .../fundamentals_facts/symbol=AVGO/data.parquet    |  Bin 0 -> 19975 bytes
+ .../fundamentals_facts/symbol=CDNS/data.parquet    |  Bin 0 -> 16858 bytes
+ .../fundamentals_facts/symbol=CDW/data.parquet     |  Bin 0 -> 19644 bytes
+ .../fundamentals_facts/symbol=CRM/data.parquet     |  Bin 0 -> 21089 bytes
+ .../fundamentals_facts/symbol=CSCO/data.parquet    |  Bin 0 -> 20908 bytes
+ .../fundamentals_facts/symbol=CTSH/data.parquet    |  Bin 0 -> 18090 bytes
+ .../fundamentals_facts/symbol=ENPH/data.parquet    |  Bin 0 -> 19905 bytes
+ .../fundamentals_facts/symbol=EPAM/data.parquet    |  Bin 0 -> 19375 bytes
+ .../fundamentals_facts/symbol=FFIV/data.parquet    |  Bin 0 -> 18644 bytes
+ .../fundamentals_facts/symbol=FICO/data.parquet    |  Bin 0 -> 21605 bytes
+ .../fundamentals_facts/symbol=FSLR/data.parquet    |  Bin 0 -> 18396 bytes
+ .../fundamentals_facts/symbol=FTNT/data.parquet    |  Bin 0 -> 19264 bytes
+ .../fundamentals_facts/symbol=GEN/data.parquet     |  Bin 0 -> 18120 bytes
+ .../fundamentals_facts/symbol=GLW/data.parquet     |  Bin 0 -> 18548 bytes
+ .../fundamentals_facts/symbol=HPE/data.parquet     |  Bin 0 -> 19957 bytes
+ .../fundamentals_facts/symbol=HPQ/data.parquet     |  Bin 0 -> 18638 bytes
+ .../fundamentals_facts/symbol=IBM/data.parquet     |  Bin 0 -> 20289 bytes
+ .../fundamentals_facts/symbol=INTC/data.parquet    |  Bin 0 -> 18951 bytes
+ .../fundamentals_facts/symbol=INTU/data.parquet    |  Bin 0 -> 18875 bytes
+ .../fundamentals_facts/symbol=IT/data.parquet      |  Bin 0 -> 17746 bytes
+ .../fundamentals_facts/symbol=JBL/data.parquet     |  Bin 0 -> 19818 bytes
+ .../fundamentals_facts/symbol=JNPR/data.parquet    |  Bin 0 -> 20280 bytes
+ .../fundamentals_facts/symbol=KEYS/data.parquet    |  Bin 0 -> 18302 bytes
+ .../fundamentals_facts/symbol=KLAC/data.parquet    |  Bin 0 -> 21452 bytes
+ .../fundamentals_facts/symbol=LRCX/data.parquet    |  Bin 0 -> 19364 bytes
+ .../fundamentals_facts/symbol=MCHP/data.parquet    |  Bin 0 -> 21707 bytes
+ .../fundamentals_facts/symbol=MPWR/data.parquet    |  Bin 0 -> 18679 bytes
+ .../fundamentals_facts/symbol=MSFT/data.parquet    |  Bin 0 -> 21005 bytes
+ .../fundamentals_facts/symbol=MSI/data.parquet     |  Bin 0 -> 20189 bytes
+ .../fundamentals_facts/symbol=MU/data.parquet      |  Bin 0 -> 21189 bytes
+ .../fundamentals_facts/symbol=NOW/data.parquet     |  Bin 0 -> 18997 bytes
+ .../fundamentals_facts/symbol=NTAP/data.parquet    |  Bin 0 -> 19525 bytes
+ .../fundamentals_facts/symbol=NVDA/data.parquet    |  Bin 0 -> 19720 bytes
+ .../fundamentals_facts/symbol=NXPI/data.parquet    |  Bin 0 -> 16175 bytes
+ .../fundamentals_facts/symbol=ON/data.parquet      |  Bin 0 -> 23001 bytes
+ .../fundamentals_facts/symbol=ORCL/data.parquet    |  Bin 0 -> 17454 bytes
+ .../fundamentals_facts/symbol=PANW/data.parquet    |  Bin 0 -> 19607 bytes
+ .../fundamentals_facts/symbol=PTC/data.parquet     |  Bin 0 -> 18450 bytes
+ .../fundamentals_facts/symbol=QCOM/data.parquet    |  Bin 0 -> 19508 bytes
+ .../fundamentals_facts/symbol=QRVO/data.parquet    |  Bin 0 -> 20389 bytes
+ .../fundamentals_facts/symbol=ROP/data.parquet     |  Bin 0 -> 21459 bytes
+ .../fundamentals_facts/symbol=SMCI/data.parquet    |  Bin 0 -> 19271 bytes
+ .../fundamentals_facts/symbol=SNPS/data.parquet    |  Bin 0 -> 19985 bytes
+ .../fundamentals_facts/symbol=STX/data.parquet     |  Bin 0 -> 18202 bytes
+ .../fundamentals_facts/symbol=SWKS/data.parquet    |  Bin 0 -> 20699 bytes
+ .../fundamentals_facts/symbol=TDY/data.parquet     |  Bin 0 -> 19222 bytes
+ .../fundamentals_facts/symbol=TEL/data.parquet     |  Bin 0 -> 20030 bytes
+ .../fundamentals_facts/symbol=TER/data.parquet     |  Bin 0 -> 21099 bytes
+ .../fundamentals_facts/symbol=TRMB/data.parquet    |  Bin 0 -> 21155 bytes
+ .../fundamentals_facts/symbol=TXN/data.parquet     |  Bin 0 -> 20160 bytes
+ .../fundamentals_facts/symbol=TYL/data.parquet     |  Bin 0 -> 19300 bytes
+ .../fundamentals_facts/symbol=VRSN/data.parquet    |  Bin 0 -> 16981 bytes
+ .../fundamentals_facts/symbol=WDC/data.parquet     |  Bin 0 -> 20912 bytes
+ .../fundamentals_facts/symbol=ZBRA/data.parquet    |  Bin 0 -> 19923 bytes
+ .../lake/curated/index_membership/data.parquet     |  Bin 0 -> 2024 bytes
+ .../lake/curated/instruments/data.parquet          |  Bin 0 -> 4899 bytes
+ .../curated/prices_daily/year=2017/data.parquet    |  Bin 0 -> 579933 bytes
+ .../curated/prices_daily/year=2018/data.parquet    |  Bin 0 -> 608121 bytes
+ .../curated/prices_daily/year=2019/data.parquet    |  Bin 0 -> 616419 bytes
+ .../curated/prices_daily/year=2020/data.parquet    |  Bin 0 -> 645287 bytes
+ .../curated/prices_daily/year=2021/data.parquet    |  Bin 0 -> 663684 bytes
+ .../curated/prices_daily/year=2022/data.parquet    |  Bin 0 -> 656771 bytes
+ .../curated/prices_daily/year=2023/data.parquet    |  Bin 0 -> 655614 bytes
+ .../curated/prices_daily/year=2024/data.parquet    |  Bin 0 -> 232627 bytes
+ .../lake/slice.json                                |   79 ++
+ .../llm_cache.jsonl                                |    1 +
+ .../stage-29-fundamental-aapl-2024-05-01/run.json  |   43 +
+ tests/unit/agents/research/conftest.py             |   13 +
+ tests/unit/agents/research/fundamental_world.py    |  180 ++++
+ .../research/golden/fundamental_analyst_prompt.txt |   54 +
+ tests/unit/agents/research/recorded.py             |   45 +
+ tests/unit/agents/research/test_fundamental.py     |  326 ++++++
+ .../unit/agents/research/test_fundamental_audit.py |   85 ++
+ .../agents/research/test_fundamental_config.py     |   99 ++
+ .../unit/agents/research/test_fundamental_live.py  |   57 ++
+ .../agents/research/test_fundamental_red_flags.py  |  147 +++
+ .../unit/agents/research/test_fundamental_tools.py |  340 +++++++
+ .../agents/research/test_fundamental_tools_pit.py  |   35 +
+ tests/unit/cli/test_cli_data_slice.py              |  108 ++
+ .../data/fundamentals/test_fundamentals_guards.py  |    2 +-
+ .../data/fundamentals/test_fundamentals_parser.py  |    5 +-
+ .../data/fundamentals/test_fundamentals_pit.py     |    4 +-
+ tests/unit/data/test_data_slice.py                 |  155 +++
+ 127 files changed, 4671 insertions(+), 15 deletions(-)
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/.gitkeep
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/audit-report.md
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/coverage-first.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/coverage.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/fixture-compare.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/gate-pytest.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/live-run.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/live-test.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/merged-main-check.sh
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/pytest-full.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/record_fixture.py
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/test-integration.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/artifacts/verify-brief.txt
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/plan.md
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/verification.md
+ create mode 100644 Planning/stages/stage-29-fundamental-analyst/worklog.md
+ create mode 100644 src/atlas/agents/prompts/fundamental_analyst.j2
+ create mode 100644 src/atlas/agents/research/__init__.py
+ create mode 100644 src/atlas/agents/research/fundamental.py
+ create mode 100644 src/atlas/agents/tools/fundamental_tools.py
+ create mode 100644 src/atlas/data/slice.py
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/README.md
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/expected_report.json
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/_meta.json
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/corporate_actions/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=AAPL/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ACN/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ADBE/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ADI/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ADSK/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=AKAM/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=AMAT/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=AMD/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ANET/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ANSS/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=APH/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=AVGO/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=CDNS/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=CDW/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=CRM/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=CSCO/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=CTSH/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ENPH/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=EPAM/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=FFIV/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=FICO/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=FSLR/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=FTNT/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=GEN/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=GLW/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=HPE/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=HPQ/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=IBM/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=INTC/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=INTU/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=IT/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=JBL/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=JNPR/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=KEYS/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=KLAC/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=LRCX/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=MCHP/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=MPWR/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=MSFT/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=MSI/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=MU/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=NOW/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=NTAP/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=NVDA/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=NXPI/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ON/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ORCL/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=PANW/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=PTC/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=QCOM/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=QRVO/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ROP/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=SMCI/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=SNPS/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=STX/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=SWKS/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=TDY/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=TEL/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=TER/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=TRMB/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=TXN/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=TYL/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=VRSN/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=WDC/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/fundamentals_facts/symbol=ZBRA/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/index_membership/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/instruments/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/prices_daily/year=2017/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/prices_daily/year=2018/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/prices_daily/year=2019/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/prices_daily/year=2020/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/prices_daily/year=2021/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/prices_daily/year=2022/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/prices_daily/year=2023/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/curated/prices_daily/year=2024/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/lake/slice.json
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/llm_cache.jsonl
+ create mode 100644 tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/run.json
+ create mode 100644 tests/unit/agents/research/conftest.py
+ create mode 100644 tests/unit/agents/research/fundamental_world.py
+ create mode 100644 tests/unit/agents/research/golden/fundamental_analyst_prompt.txt
+ create mode 100644 tests/unit/agents/research/recorded.py
+ create mode 100644 tests/unit/agents/research/test_fundamental.py
+ create mode 100644 tests/unit/agents/research/test_fundamental_audit.py
+ create mode 100644 tests/unit/agents/research/test_fundamental_config.py
+ create mode 100644 tests/unit/agents/research/test_fundamental_live.py
+ create mode 100644 tests/unit/agents/research/test_fundamental_red_flags.py
+ create mode 100644 tests/unit/agents/research/test_fundamental_tools.py
+ create mode 100644 tests/unit/agents/research/test_fundamental_tools_pit.py
+ create mode 100644 tests/unit/cli/test_cli_data_slice.py
+ create mode 100644 tests/unit/data/test_data_slice.py
+merge exit 0
+eb17ddf stage-29: Fundamental analyst agent
+65de3a5 phase-3 checkpoint: Tier 4 merge, push and CI records
+6c8526b phase-3 checkpoint: Tier 4 (docs/llm.md; per-node timeout investigated)
+tree main: a94c64e1ba9fdbb7e01d546e0906010a133fab90  tree branch: a94c64e1ba9fdbb7e01d546e0906010a133fab90
+=== uv run pytest -q
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+...............................................
+compute_features: 41 features x 500 symbols x 2000 sessions in 3.07 s (limit 20 s)
+......................... [ 72%]
+........................................................................ [ 73%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+........................................................................ [ 77%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+....................................................................     [100%]
+5180 passed, 82 deselected in 308.75s (0:05:08)
+
+pytest exit 0
+=== make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+502 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 185 source files
+uv run pytest -q -n auto --dist loadfile -m 'not live and not llm and not integration and not timing'
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  8%]
+........................................................................ [  9%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 72%]
+........................................................................ [ 73%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+........................................................................ [ 77%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+5177 passed in 151.34s (0:02:31)
+uv run pytest -q -m timing
+.
+compute_features: 41 features x 500 symbols x 2000 sessions in 2.75 s (limit 20 s)
+..                                                                      [100%]
+3 passed, 5259 deselected in 11.66s
+
+make check exit 0
+=== git branch --merged main
++ claude/stage-29-planning-audit-3185f8
+=== after
+## main...origin/main [ahead 1]
