@@ -71,6 +71,7 @@ def test_load_concept_map_repo_file(repo_root: Path) -> None:
         "sbc",
         "depreciation_amortization",
         "shares_weighted_average",
+        "accounts_receivable",  # Stage 29 (the fundamental analyst's receivables red flag)
     ]
     revenue = cmap["revenue"]
     assert (revenue.kind, revenue.unit) == ("flow", "USD")
@@ -90,7 +91,9 @@ def test_load_concept_map_repo_file(repo_root: Path) -> None:
         ("dei", "EntityCommonStockSharesOutstanding"),
     )
     assert cmap["eps_diluted"].unit == "USD/shares"
-    assert len(cmap.tags()) == 44  # 37 + five D&A tags + two weighted-average share tags
+    assert (
+        len(cmap.tags()) == 46
+    )  # 37 + five D&A + two weighted-average share + two receivables tags
 
 
 @pytest.mark.parametrize(

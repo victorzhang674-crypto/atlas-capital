@@ -58,3 +58,7 @@ concepts:
   # with no fresh shares_outstanding (quant.factors.share_count_fallback); several share classes
   # are added together and Berkshire's is in class-A equivalents.
   shares_weighted_average: {kind: average, unit: shares, tags: [WeightedAverageNumberOfSharesOutstandingBasic, WeightedAverageNumberOfDilutedSharesOutstanding]}
+  # Accounts receivable, current, net of allowances, USD (Stage 29: the fundamental analyst's
+  # receivables red flag). Trade receivables first; a filer that tags only its total current
+  # receivables gets that. The main lake stores these tags only after a fundamentals re-ingest.
+  accounts_receivable: {kind: stock, unit: USD, tags: [AccountsReceivableNetCurrent, ReceivablesNetCurrent]}

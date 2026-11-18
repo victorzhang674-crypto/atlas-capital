@@ -153,6 +153,13 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    `known_facts` drops it rather than guess the intended date, and the quality report lists it
    (`fundamentals_period_after_filing`, a warning). On 2026-11-02 the lake held 75 such facts
    in 35 symbols (added in the Phase 1 checkpoint).
+8. **Receivables need a re-ingest; MD&A text is not stored.** Stage 29 added the concept
+   `accounts_receivable` (`AccountsReceivableNetCurrent`, else `ReceivablesNetCurrent`) for the
+   fundamental analyst's receivables red flag. Only mapped tags are stored, so a lake ingested
+   before it (the main lake, as of 2026-11-18) has no receivables rows until its fundamentals
+   are re-ingested from the archived companyfacts (offline, `refresh=False`), and the check
+   reads NOT EVALUATED there. No filing text (MD&A) is ingested, so the going-concern check is
+   always NOT EVALUATED.
 
 ## Macro (Stage 10)
 

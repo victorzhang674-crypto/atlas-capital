@@ -144,7 +144,9 @@ def test_acceptance_fundamentals_pit_aapl_fy2023() -> None:
         "debt_to_equity": (105_103 + 5_985) / 62_146,
         "fcf_ttm": (110_543 - 10_959) * M,
     }
-    assert s.to_dict() == pytest.approx(expected, rel=1e-12)
+    # The fixture is trimmed to the tags the map named before Stage 29: no receivables tag.
+    assert math.isnan(s["accounts_receivable"])
+    assert s.drop("accounts_receivable").to_dict() == pytest.approx(expected, rel=1e-12)
 
 
 def test_acceptance_detail_cites_the_10k() -> None:

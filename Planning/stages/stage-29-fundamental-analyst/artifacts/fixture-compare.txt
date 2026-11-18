@@ -1,0 +1,12 @@
+{'day': '2024-05-01', 'symbols': ['NTAP'], 'event': 'factors.share_count_replaced', 'level': 'warning', 'logger': 'atlas.quant.factors.fundamental', 'timestamp': '2026-11-18T10:46:17.820029Z'}
+{'day': '2024-05-01', 'symbols': ['NTAP'], 'event': 'factors.share_count_replaced', 'level': 'warning', 'logger': 'atlas.quant.factors.fundamental', 'timestamp': '2026-11-18T10:46:18.947558Z'}
+main: 28 items in 2.4 s
+fixture: 29 items in 1.1 s
+equal items: 27
+--- fsum:AAPL:2023-12-30:accounts_receivable
+  main:    (absent)
+  fixture: AAPL accounts receivable at period end (USD; date, balance): 2022-03-26 USD 20.82B; 2022-06-25 USD 21.8B; 2022-09-24 USD 28.18B; 2022-12-31 USD 23.75B; 2023-04-01 USD 17.94B; 2023-07-01 USD 19.55B; 2023-09-30 USD 29.51B; 2023-12-30 USD 23.19B.
+--- rflag:AAPL:2024-05-01:receivables
+  main:    AAPL red-flag check receivables (receivables growing much faster than revenue): NOT EVALUATED. receivables or revenue a year earlier missing (TTM / balances at 2023-12-30 vs 2022-12-31).
+  fixture: AAPL red-flag check receivables (receivables growing much faster than revenue): CLEAR. receivables -2.3% vs TTM revenue -0.5% year on year: excess -1.9 points (flag above 15.0 points) (TTM / balances at 2023-12-30 vs 2022-12-31).
+exit 0

@@ -171,3 +171,40 @@ hash embedder needs a lower floor) are dropped.
 **The index** can always be rebuilt from the records: opening `AgentMemory` adds missing
 records (`sync`); switching embedder needs `rebuild=True` (re-embeds everything). Writing
 lessons is Stage 54's job and scoring Stage 53's; this stage provides the store and recall.
+
+## The fundamental analyst
+
+Stage 29, `atlas.agents.research.FundamentalAnalyst` (quick tier, `AnalystReport`). It reads
+point-in-time filings, factor ranks against its sector, valuation and red flags, and writes
+a cited report.
+
+```python
+analyst = FundamentalAnalyst(build_gateway(cfg, lake=lake), config=cfg)
+out = analyst.run(AgentContext(DataView(lake, day, cfg), inputs={"symbol": "AAPL"}))
+out.output  # AnalystReport: signals quality, valuation, growth, balance_sheet; confidence
+```
+
+**Tools** (`agents/tools/fundamental_tools.py`; settings `agents.fundamental`). Each returns
+one evidence item per group of numbers, so every number has an id next to it:
+
+| Tool | Evidence ids | What it shows |
+|---|---|---|
+| `get_fundamentals_summary` | `fsum:<SYM>:<period end>:<line>` | Last `summary_quarters` (8) quarters of revenue, profits, EPS, cash flow, capex with the TTM; balance-sheet lines; TTM margins and growth (and the 3-year revenue CAGR) |
+| `get_factor_ranks` | `frank:<SYM>:<day>:<group>` | Value, quality, growth and leverage: style-composite and per-factor percentiles among the index members of the same GICS sector (Stage 16 factor panel) |
+| `get_valuation` | `val:<SYM>:<day>:<multiple>` | Market cap and EV; P/E, P/S, P/B, EV/EBITDA, FCF yield now, against their own history at the fiscal quarter ends of `valuation_years` (5) and the sector median |
+| `get_red_flags` | `rflag:<SYM>:<day>:<check>` | Accruals spike, receivables growing faster than revenue, negative FCF with rising debt, dilution, going concern: FLAG, CLEAR or NOT EVALUATED with the numbers (thresholds `agents.fundamental.red_flags`) |
+
+The run prefetches all four for the symbol (one LLM round normally) and still offers them for
+a peer. A tool that fails for the symbol other than the summary leaves a `gap:` item instead;
+a blocked symbol, or one without fundamentals, fails the run. `check_output` holds the report
+to the six summary sections (business quality, growth trajectory, valuation, balance-sheet
+risk, red flags, what would change my mind), the four signals and "every number cited": a
+sentence that states a number carries an `[E:<id>]` tag; problems get one repair turn.
+
+Receivables need the concept `accounts_receivable` (Stage 29). A lake ingested before it has
+no receivables rows until the fundamentals are re-ingested, so the receivables check reads NOT
+EVALUATED there; the lake holds no MD&A text, so the going-concern check always does.
+
+**Recorded run.** `tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/` holds a live
+run on AAPL for 2024-05-01: the exported LLM cache, the lake slice it read (`atlas data slice`)
+and the report. Its test replays it with no lake, no key and no provider call.

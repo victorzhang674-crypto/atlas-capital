@@ -1,12 +1,13 @@
 """`atlas data …`: backfill, update and inspect the data lake (Stage 14).
 
 `sync` backfills (resumable), `update` fetches what is new since the last sync, `status`
-summarises the lake and `quality` runs the Stage 13 quality report. `sync`, `update` and
-`quality --persist` open a run: a JSON log at `<lake>/runs/<run_id>/<command>.log` and the
-run's audit log (`RUN_STARTED`, one `DATA_SYNC` per step, `RUN_FINISHED`), verified and copied
-into the lake's DuckDB `audit_events` when the run ends. `status` and
-`quality` without `--persist` only read. Exit codes: 0 ok, 1 a step or the command failed,
-2 bad arguments.
+summarises the lake, `quality` runs the Stage 13 quality report and `slice` copies a few
+symbols' rows known at an as-of into a new small lake (Stage 29: recorded-run fixtures).
+`sync`, `update` and `quality --persist` open a run: a JSON log at
+`<lake>/runs/<run_id>/<command>.log` and the run's audit log (`RUN_STARTED`, one `DATA_SYNC`
+per step, `RUN_FINISHED`), verified and copied into the lake's DuckDB `audit_events` when the
+run ends. `status`, `quality` without `--persist` and `slice` only read the lake. Exit codes:
+0 ok, 1 a step or the command failed, 2 bad arguments.
 """
 
 import threading
@@ -36,10 +37,12 @@ from atlas.core.clock import Clock, LiveClock, get_clock, use_clock
 from atlas.core.config import AtlasConfig, load_config
 from atlas.core.errors import AtlasError, ConfigError, DataError
 from atlas.core.logging import configure_logging, get_logger, reset_logging
+from atlas.core.pit import AsOf
 from atlas.core.run_context import run_context, run_dir
 from atlas.core.storage import Lake, get_database
 from atlas.data.providers.base import check_request
 from atlas.data.quality import blocked_symbols, quality_report
+from atlas.data.slice import slice_lake
 from atlas.data.sync import (
     LakeStatus,
     StepReport,
@@ -481,3 +484,60 @@ def _print_quality(console: Console, day: date, issues: pd.DataFrame, limit: int
 
 
 __all__ = ["RichProgress", "build_sources", "data_app", "make_clock"]
+
+
+@data_app.command("slice")
+def slice_cmd(
+    ctx: typer.Context,
+    symbols: Annotated[
+        str, typer.Option("--symbols", help="Comma-separated tickers whose rows are copied.")
+    ],
+    as_of: Annotated[
+        datetime,
+        typer.Option(
+            "--as-of", formats=_DATE, help="Trading day: only rows known at its decision time."
+        ),
+    ],
+    out: Annotated[Path, typer.Option("--out", help="New folder for the slice (must be empty).")],
+    since: Annotated[
+        datetime | None,
+        typer.Option(
+            "--since", formats=_DATE, help="Drop rows dated before this day (dated tables)."
+        ),
+    ] = None,
+    tables: Annotated[
+        str | None,
+        typer.Option(
+            "--tables",
+            help="Comma-separated tables (default: every table with a symbol column, except "
+            "the derived stores).",
+        ),
+    ] = None,
+) -> None:
+    """Copy the rows of a few symbols known at an as-of into a new small lake (a recorded
+    run's fixture, Stage 29). Reads the lake only."""
+    console = _console()
+    config = _config(ctx, console)
+    wanted = _symbols(symbols)
+    assert wanted is not None  # the option is required
+    point = AsOf.for_session(as_of.date(), config=config.calendar)
+    try:
+        report = slice_lake(
+            Lake(config.data.lake_path),
+            out,
+            wanted,
+            point,
+            since=since.date() if since is not None else None,
+            tables=tables.split(",") if tables is not None else None,
+        )
+    except (DataError, ValueError) as exc:
+        console.print(f"[red]Slice failed:[/red] {exc}")
+        raise typer.Exit(1) from None
+    console.print(f"Slice of {len(report.symbols)} symbol(s) at {point.day}")
+    listing = Table()
+    listing.add_column("table")
+    listing.add_column("rows", justify="right")
+    for name, rows in report.rows.items():
+        listing.add_row(name, str(rows))
+    console.print(listing)
+    console.print(f"{report.total} row(s) written to {report.out}")

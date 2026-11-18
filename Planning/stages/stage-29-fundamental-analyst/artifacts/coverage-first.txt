@@ -1,0 +1,11 @@
+src/atlas/agents/research/__init__.py               2      0   100%
+src/atlas/agents/research/fundamental.py           97      1    99%   68
+src/atlas/agents/tools/fundamental_tools.py       483     26    95%   297, 366, 393, 442, 561-562, 566, 693, 722, 748, 764, 830, 836, 864, 866, 883-889, 894, 935, 938, 946, 1009-1010, 1013-1014
+src/atlas/data/fundamentals/__init__.py             6      0   100%
+src/atlas/data/fundamentals/edgar_client.py       174    118    32%   57, 68-89, 94-100, 104-107, 111, 135-140, 149-158, 177-194, 200-201, 204, 212, 218, 226, 234, 243-245, 260-282, 287-289, 292-309, 312-318, 322-328, 335-342, 351-353
+src/atlas/data/fundamentals/ingest.py              55     34    38%   68-124
+src/atlas/data/fundamentals/mapping.py            212     23    89%   65, 68, 71, 87, 104, 110, 140, 145, 149, 164, 168-175, 178, 180, 218, 378, 395-398
+src/atlas/data/fundamentals/parser.py             121     93    23%   86-91, 95-114, 139-169, 173-181, 190-206, 227-250
+src/atlas/data/fundamentals/pit.py                296     36    88%   96, 146, 175-187, 192-194, 216-217, 238, 287-292, 328, 345, 351, 357, 575, 615-616, 669-670, 698-702, 709-711, 718-719, 726-731
+src/atlas/data/slice.py                            94      5    95%   110, 116, 131-133
+137 passed, 1 deselected in 24.23s

@@ -153,7 +153,7 @@ def test_quarterly_values_of_a_stock_is_empty() -> None:
 
 def test_concept_map_is_a_read_only_mapping() -> None:
     cmap = repo_concept_map()
-    assert len(cmap) == 17
+    assert len(cmap) == 18  # Stage 29 added accounts_receivable
     assert list(cmap) == list(cmap.names)
 
 

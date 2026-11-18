@@ -1054,6 +1054,50 @@ class MemoryConfig(_Frozen):
         return value
 
 
+class RedFlagsConfig(_Frozen):
+    """Thresholds of the fundamental analyst's red-flag checks (Stage 29); all fractions.
+
+    `accruals_max`: (TTM net income - TTM operating cash flow) / total assets above this is
+    flagged. `accruals_jump`: so is a rise of more than this from a year earlier to a
+    positive level. `receivables_excess_growth`: receivables growth minus TTM revenue growth
+    (year on year) above this is flagged. `debt_growth_min`: negative TTM free cash flow with
+    total debt up more than this year on year is flagged. `dilution_max`: a split-adjusted
+    share count up more than this year on year is flagged. `going_concern_terms`: phrases
+    that flag an MD&A text (case-insensitive, whole words).
+    """
+
+    accruals_max: Annotated[float, Field(gt=0, le=1)] = 0.10
+    accruals_jump: Annotated[float, Field(gt=0, le=1)] = 0.05
+    receivables_excess_growth: Annotated[float, Field(gt=0)] = 0.15
+    debt_growth_min: Annotated[float, Field(ge=0)] = 0.10
+    dilution_max: Annotated[float, Field(gt=0)] = 0.05
+    going_concern_terms: Annotated[
+        tuple[Annotated[str, Field(min_length=1, pattern=r"\S")], ...], Field(min_length=1)
+    ] = ("going concern", "substantial doubt")
+
+
+class FundamentalAnalystConfig(_Frozen):
+    """The fundamental analyst's tools (Stage 29).
+
+    `summary_quarters`: fiscal quarters (and balances) per line in the fundamentals summary.
+    `valuation_years`: years of fiscal quarter ends in a multiple's own history.
+    `min_valuation_quarters`: fewest quarters with a value for an own-history comparison.
+    `min_sector_names`: fewest sector peers with a value for a percentile or a median.
+    `price_tolerance_days`: a quarter end's price is the close of the last session at most
+    this many calendar days before it. `share_count_tolerance_days`: its share count is the
+    cover-page count dated nearest to it within this many days.
+    `red_flags`: thresholds of the red-flag checks.
+    """
+
+    summary_quarters: Annotated[int, Field(ge=1, le=40)] = 8
+    valuation_years: Annotated[int, Field(ge=1, le=20)] = 5
+    min_valuation_quarters: Annotated[int, Field(ge=1)] = 4
+    min_sector_names: Annotated[int, Field(ge=1)] = 5
+    price_tolerance_days: Annotated[int, Field(ge=0)] = 10
+    share_count_tolerance_days: Annotated[int, Field(ge=0)] = 100
+    red_flags: RedFlagsConfig = Field(default_factory=RedFlagsConfig)
+
+
 class AgentsConfig(_Frozen):
     """The agent framework (Stage 26).
 
@@ -1064,12 +1108,14 @@ class AgentsConfig(_Frozen):
     `low_quality_confidence_cap`: the highest `confidence` (in [0, 1]) an output keeps when
     its citations are still invalid after the repairs (it is then marked `low_quality`).
     `memory`: agent memory (Stage 27).
+    `fundamental`: the fundamental analyst's tools (Stage 29).
     """
 
     max_tool_rounds: Annotated[int, Field(ge=1)] = 4
     evidence_repair_retries: Annotated[int, Field(ge=0)] = 1
     low_quality_confidence_cap: Annotated[float, Field(ge=0, le=1)] = 0.3
     memory: MemoryConfig = Field(default_factory=MemoryConfig)
+    fundamental: FundamentalAnalystConfig = Field(default_factory=FundamentalAnalystConfig)
 
 
 class OrchestrationConfig(_Frozen):

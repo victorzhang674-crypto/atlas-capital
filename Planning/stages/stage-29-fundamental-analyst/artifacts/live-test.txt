@@ -1,0 +1,5 @@
+
+LIVE fundamental: status=ok llm_calls=1 tools=[] cited=21 problems=[] tokens=161+1632 cost_usd=0.001022
+.
+1 passed in 14.64s
+exit 0

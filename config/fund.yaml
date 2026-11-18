@@ -508,6 +508,21 @@ agents:
       default_quality: 0.5  # quality of a lesson stored without a quality_score
     render:  # memory lines in prompts
       max_chars: 240  # longest rendered memory line in a prompt (longer text is cut)
+  # Fundamental analyst tools (Stage 29, atlas.agents.tools.fundamental_tools).
+  fundamental:
+    summary_quarters: 8  # fiscal quarters (and balances) per statement line in get_fundamentals_summary
+    valuation_years: 5  # years of fiscal quarter ends in a multiple's own history (get_valuation)
+    min_valuation_quarters: 4  # fewest quarters with a value for an own-history comparison
+    min_sector_names: 5  # fewest sector peers with a value for a percentile or a sector median
+    price_tolerance_days: 10  # a quarter end's price: the last close at most this many calendar days before it
+    share_count_tolerance_days: 100  # a quarter end's share count: the cover-page count dated nearest to it within this many days
+    red_flags:  # get_red_flags thresholds (fractions, year on year)
+      accruals_max: 0.10  # (TTM net income - TTM operating cash flow) / total assets above this is flagged
+      accruals_jump: 0.05  # ... and so is a rise of more than this from a year earlier to a positive level
+      receivables_excess_growth: 0.15  # receivables growth minus TTM revenue growth above this is flagged
+      debt_growth_min: 0.10  # negative TTM free cash flow with total debt up more than this is flagged
+      dilution_max: 0.05  # split-adjusted share count up more than this is flagged
+      going_concern_terms: ["going concern", "substantial doubt"]  # phrases that flag an MD&A text (no MD&A text is stored yet)
 
 # Fund graph (Stage 28): LangGraph research fan-out, checkpoints in data/runs/<run_id>/.
 orchestration:
