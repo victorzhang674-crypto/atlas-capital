@@ -10,6 +10,11 @@ What is *not* turned into a record:
   run stops and can be resumed from its last checkpoint (`atlas.orchestration.checkpoint`);
 - LangGraph's control-flow exceptions (`GraphBubbleUp`: interrupts, parent commands);
 - a conflicting write to the state, which the reducers raise as `OrchestrationError` (a bug).
+
+A `LookAheadError` or a `CacheMiss` (`INTEGRITY_ERRORS`) is recorded the same way, with
+`integrity=True`: the run's results can no longer be trusted as a faithful replay or a
+point-in-time run. The graph still only drops the symbol; a caller that must not go on with
+fewer names (`atlas research --replay`, a backtest day) checks `integrity_errors(errors)`.
 """
 
 import threading
@@ -20,6 +25,7 @@ from typing import Annotated, Any, Protocol, cast
 from langgraph.errors import GraphBubbleUp
 from pydantic import Field, StringConstraints
 
+from atlas.core.errors import CacheMiss, LookAheadError
 from atlas.core.logging import get_logger
 from atlas.core.types import AtlasModel, Symbol
 
@@ -30,17 +36,23 @@ MAX_MESSAGE_CHARS = 500
 
 _Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
+INTEGRITY_ERRORS: tuple[type[Exception], ...] = (LookAheadError, CacheMiss)
+"""Exceptions that mean the run itself is invalid, not just one symbol's work: data from
+after the cutoff, or a replay that no longer matches its recordings."""
+
 
 class NodeError(AtlasModel):
     """One failed node: which `node`, on which `symbol` (`None` for a fund-level node), on
     decision day `as_of`; `kind` is the exception's class name and `message` its text (cut at
-    `MAX_MESSAGE_CHARS`)."""
+    `MAX_MESSAGE_CHARS`); `integrity` is true for an `INTEGRITY_ERRORS` exception (default
+    false, so records written before the field existed still load)."""
 
     node: _Text
     symbol: Symbol | None
     as_of: date
     kind: _Text
     message: Annotated[str, Field(max_length=MAX_MESSAGE_CHARS)]
+    integrity: bool = False
 
 
 class NodeFn[S](Protocol):
@@ -86,6 +98,7 @@ def guarded[S](
                 node=node,
                 symbol=symbol,
                 kind=type(exc).__name__,
+                integrity=isinstance(exc, INTEGRITY_ERRORS),
                 exc_info=True,
             )
             error = NodeError(
@@ -94,6 +107,7 @@ def guarded[S](
                 as_of=fields["as_of"],
                 kind=type(exc).__name__,
                 message=_cut(str(exc)),
+                integrity=isinstance(exc, INTEGRITY_ERRORS),
             )
             return {"errors": [error]}
 
@@ -105,3 +119,10 @@ def failed_symbols(errors: Iterable[NodeError] | None) -> tuple[str, ...]:
     """The symbols with at least one error, sorted, each once (fund-level errors have no
     symbol and are left out)."""
     return tuple(sorted({e.symbol for e in errors or () if e.symbol is not None}))
+
+
+def integrity_errors(errors: Iterable[NodeError] | None) -> tuple[NodeError, ...]:
+    """The errors marked `integrity` (a `LookAheadError` or a `CacheMiss`), in order. A replay
+    or a backtest day fails when this is not empty; `failed_symbols` lists every dropped
+    symbol whatever the cause."""
+    return tuple(e for e in errors or () if e.integrity)

@@ -1,0 +1,53 @@
+## RED: the Tier 2 tests against the code before Tier 2 (src of 5dc3961, via PYTHONPATH)
+atlas from /tmp/claude-501/tier2-red/src/atlas/__init__.py
+    from atlas.orchestration import NodeError, integrity_errors
+E   ImportError: cannot import name 'integrity_errors' from 'atlas.orchestration' (/tmp/claude-501/tier2-red/src/atlas/orchestration/__init__.py)
+___________________ test_a_failed_check_gets_one_repair_turn ___________________
+    def test_a_failed_check_gets_one_repair_turn(world: World, fake_llm: FakeLLM) -> None:
+                    # this is the current error
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for LLMRetry
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for LLMRetry
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for LLMRetry
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for LLMRetry
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for LLMRetry
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for LLMRetry
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for LLMRetry
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E       pydantic_core._pydantic_core.ValidationError: 2 validation errors for LLMRetry
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+E           For further information visit https://errors.pydantic.dev/2.14/v/extra_forbidden
+ERROR tests/unit/agents/test_agents_tools_package.py
+ERROR tests/unit/orchestration/test_orchestration_integrity.py
+FAILED tests/unit/agents/memory/test_memory_seeded_ids.py::test_the_same_seed_gives_the_same_ids_and_the_same_prompt_text
+FAILED tests/unit/agents/test_agents_no_evidence.py::test_an_answer_with_no_evidence_shown_is_not_sent_for_repair
+FAILED tests/unit/agents/test_agents_no_evidence.py::test_a_tool_round_that_found_nothing_is_not_repaired_either
+FAILED tests/unit/agents/test_agents_check_output.py::test_a_failed_check_gets_one_repair_turn
+FAILED tests/unit/agents/test_agents_check_output.py::test_a_check_still_failing_is_low_quality
+FAILED tests/unit/agents/test_agents_check_output.py::test_citation_and_check_problems_share_one_turn
+FAILED tests/unit/agents/test_agents_check_output.py::test_no_repair_when_retries_are_zero
+FAILED tests/unit/agents/test_agents_check_output.py::test_by_default_there_is_no_check
+FAILED tests/unit/agents/test_agents_check_output.py::test_a_check_that_raises_fails_the_run
+FAILED tests/unit/agents/test_agents_check_output.py::test_the_citation_repair_text_is_unchanged_without_check_problems
+FAILED tests/unit/llm/test_llm_outage.py::test_defaults - AttributeError: 'LL...
+FAILED tests/unit/llm/test_llm_outage.py::test_consecutive_failures_open_the_cool_down
+FAILED tests/unit/llm/test_llm_outage.py::test_the_breaker_stops_a_call_mid_retries
+FAILED tests/unit/llm/test_llm_outage.py::test_after_the_cool_down_the_next_call_tries_again
+FAILED tests/unit/llm/test_llm_outage.py::test_a_failure_after_the_cool_down_reopens_it_at_once
+FAILED tests/unit/llm/test_llm_outage.py::test_an_answer_resets_the_count - p...
+FAILED tests/unit/llm/test_llm_outage.py::test_rate_limits_with_retry_after_are_not_an_outage
+FAILED tests/unit/llm/test_llm_outage.py::test_zero_turns_the_breaker_off - p...
+FAILED tests/unit/llm/test_llm_outage.py::test_cache_hits_are_served_while_down
+19 failed, 6 passed, 2 errors in 1.73s

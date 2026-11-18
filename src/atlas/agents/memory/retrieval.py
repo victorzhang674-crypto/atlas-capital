@@ -16,6 +16,8 @@ Lesson curation (all point-in-time; nothing is rewritten in the past):
   near-duplicates once.
 
 Times are the caller's (the simulated decision time in a backtest), never the wall clock.
+Episode and lesson ids come from the current id source (`new_id`), so a run under
+`use_ids(SeededIds(...))` mints the same ids, and the same prompt text, every time.
 """
 
 import threading
@@ -24,7 +26,6 @@ from datetime import date, datetime, timedelta
 from typing import Any, Literal, Self
 
 from pydantic import Field, model_validator
-from ulid import ULID
 
 from atlas.agents.memory.embedder import Embedder
 from atlas.agents.memory.index import KINDS, Hit, IndexEntry, Kind, VectorIndex
@@ -35,7 +36,7 @@ from atlas.core.logging import get_logger
 from atlas.core.pit import AsOf
 from atlas.core.storage import Database
 from atlas.core.types.base import AtlasModel, FrozenMap, UtcDatetime
-from atlas.core.types.ids import IdPrefix
+from atlas.core.types.ids import IdPrefix, new_id
 
 MemoryKind = Literal["episode", "lesson"]
 MEMORY_KINDS: tuple[MemoryKind, ...] = ("episode", "lesson")
@@ -176,7 +177,7 @@ class AgentMemory:
         """Remember that `agent` faced `situation_text` and decided `decision` (a JSON
         object) at `created_at` (aware; the decision moment); return the stored episode."""
         episode = Episode(
-            id=f"{IdPrefix.EPISODE}_{ULID()}",
+            id=new_id(IdPrefix.EPISODE),
             agent=agent,
             symbol=symbol,
             created_at=created_at,
@@ -216,7 +217,7 @@ class AgentMemory:
         are, at or before it (`LookAheadError`): a lesson cannot draw on a later outcome.
         """
         lesson = StoredLesson(
-            id=f"{IdPrefix.LESSON}_{ULID()}",
+            id=new_id(IdPrefix.LESSON),
             agent=agent,
             created_at=created_at,
             text=text,

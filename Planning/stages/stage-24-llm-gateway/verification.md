@@ -47,3 +47,10 @@ Output of commands run in this stage's chat (Project.md Rule 1). Raw output is u
 - Acceptance criteria unchanged and still evidenced: every call costed and logged, budgets enforced, agents testable with FakeLLM only (`tests/unit/llm` 339 passed).
 
 **Result:** ALL CRITERIA VERIFIED
+
+
+#### Phase 3 checkpoint Tier 2 — 2026-11-17
+- Item 6 (outage cool-down): `tests/unit/llm/test_llm_outage.py` 11 passed; `tests/unit/llm` 350 passed. Full block and raw output: [../stage-28-langgraph-skeleton/verification.md](../stage-28-langgraph-skeleton/verification.md) (Tier 2) — `uv run pytest -q` 5008 passed; `make check` exit 0.
+- Acceptance criteria unchanged and still evidenced: every call costed and logged, budgets enforced, agents testable with FakeLLM only (`tests/unit/llm` 350 passed).
+
+**Result:** ALL CRITERIA VERIFIED

@@ -52,3 +52,10 @@ Owner: "can you help me to fully audit this stage and make sure everything is be
 - Waivers: none
 - Merge into `main` (audit): fast-forward 15e65a0 → **bbc4535** in the owner's Terminal panel; trees equal (0e57f87). Merged result: `uv run pytest -q` → 4560 passed, 73 deselected, exit 0 · `make check` → exit 0 (4557 passed + 3 timing passed) · `git branch --merged main` lists the branch · raw: [audit2-merged-main-check.txt](artifacts/audit2-merged-main-check.txt). Pushed with this records commit (Rule 6A.7).
 - CI (GitHub Actions, `make check` + `make test-integration`) on the audit push 550419c: **`main` run 43678336877 success**, stage-branch run 43678336636 success · raw: [ci-runs-550419c.json](artifacts/ci-runs-550419c.json)
+
+
+#### Phase 3 checkpoint Tier 2 — 2026-11-17
+- Items 3, 4, 5 (no-evidence repair skipped, `check_output`, tools package): `test_agents_no_evidence.py` 3, `test_agents_check_output.py` 7, `test_agents_tools_package.py` 5 passed; `tests/unit/agents` 327 passed. Full block and raw output: [../stage-28-langgraph-skeleton/verification.md](../stage-28-langgraph-skeleton/verification.md) (Tier 2) — `uv run pytest -q` 5008 passed; `make check` exit 0.
+- Acceptance criteria unchanged and still evidenced (`tests/unit/agents` 327 passed; the citation repair text is byte-identical without check problems, `test_the_citation_repair_text_is_unchanged_without_check_problems`).
+
+**Result:** ALL CRITERIA VERIFIED

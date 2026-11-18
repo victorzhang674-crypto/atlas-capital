@@ -86,6 +86,58 @@ def _repair_messages(
     return (Message.assistant(response.content), ask)
 
 
+class _OutageGuard:
+    """Counts transient failures in a row across a gateway's calls and marks the vendor down
+    for a cool-down once there are `failures` of them (`llm.retry.outage_*`). Thread-safe."""
+
+    def __init__(self, failures: int, cooldown: float, monotonic: Callable[[], float]) -> None:
+        self._failures = failures
+        self._cooldown = cooldown
+        self._monotonic = monotonic
+        self._lock = threading.Lock()
+        self._streak = 0
+        self._down_until: float | None = None
+
+    def check(self, provider: str, model: str) -> None:
+        """Raise `LLMError` while the vendor is marked down."""
+        with self._lock:
+            if self._down_until is None:
+                return
+            left = self._down_until - self._monotonic()
+            if left <= 0:  # cool-down over: let this call try (the streak stays, so one
+                self._down_until = None  # more failure marks the vendor down again)
+                return
+            streak = self._streak
+        raise LLMError(
+            f"{provider} is marked down after {streak} transient failures in a row; calls to "
+            f"{model} fail at once for {left:.0f} s more (llm.retry.outage_cooldown_seconds)"
+        )
+
+    def answered(self) -> None:
+        """The vendor answered: the streak is over."""
+        with self._lock:
+            self._streak = 0
+            self._down_until = None
+
+    def failed(self, exc: LLMTransientError, provider: str) -> bool:
+        """Count `exc` (unless it is a rate limit with a `Retry-After`); return whether the
+        vendor is now marked down."""
+        if self._failures == 0:
+            return False
+        with self._lock:
+            if exc.retry_after is None:
+                self._streak += 1
+                if self._streak >= self._failures and self._down_until is None:
+                    self._down_until = self._monotonic() + self._cooldown
+                    _log.error(
+                        "llm.vendor_down",
+                        provider=provider,
+                        failures=self._streak,
+                        cooldown_seconds=self._cooldown,
+                    )
+            return self._down_until is not None
+
+
 class LLMGateway:
     """Provider-agnostic access to tiered models.
 
@@ -99,9 +151,13 @@ class LLMGateway:
     A hit costs nothing: no budget is checked, no provider is called, the result has
     `cache_hit = True` and the ledger gets a `cache_hit` row with cost 0.
 
+    While the vendor is marked down (`llm.retry.outage_failures` transient failures in a
+    row) every call that needs the provider fails at once with `LLMError` for
+    `llm.retry.outage_cooldown_seconds`; cache hits are still served.
+
     `clock` is the wall clock used for billing time (default `LiveClock()`; prices and the
-    daily budget follow real UTC time, not simulated time), `sleep` waits between retries
-    and `timer` measures latency in seconds.
+    daily budget follow real UTC time, not simulated time), `sleep` waits between retries,
+    `timer` measures latency in seconds and `monotonic` times the outage cool-down.
     """
 
     def __init__(
@@ -115,6 +171,7 @@ class LLMGateway:
         timer: Callable[[], float] = time.perf_counter,
         cache: LLMCache | None = None,
         cache_mode: CacheMode | None = None,
+        monotonic: Callable[[], float] = time.monotonic,
     ) -> None:
         mode: CacheMode = cache_mode or (config.llm.cache.mode if cache is not None else "off")
         if mode != "off" and cache is None:
@@ -131,6 +188,8 @@ class LLMGateway:
         self._clock: Clock = clock or LiveClock()
         self._sleep = sleep
         self._timer = timer
+        retry = config.llm.retry
+        self._outage = _OutageGuard(retry.outage_failures, retry.outage_cooldown_seconds, monotonic)
 
     @property
     def provider(self) -> LLMProvider:
@@ -494,14 +553,19 @@ class LLMGateway:
 
         Waits `backoff_seconds * 2**(n-1)` seconds (at most `max_backoff_seconds`, at least
         the server's `retry_after`) before retry `n`. After `max_retries` retries the last
-        failure is raised as a plain `LLMError`; other errors are never retried.
+        failure is raised as a plain `LLMError`; other errors are never retried. While the
+        vendor is marked down (`_OutageGuard`) it raises `LLMError` at once, also mid-retries.
         """
         retry = self._llm.retry
         tries = retry.max_retries + 1
+        name = self._provider.name
         for attempt in range(1, tries + 1):
+            self._outage.check(name, request.model)
             try:
-                return self._provider.complete(request)
+                response = self._provider.complete(request)
             except LLMTransientError as exc:
+                if self._outage.failed(exc, name):
+                    self._outage.check(name, request.model)  # raises: no wait, no retry
                 if attempt == tries:
                     raise LLMError(
                         f"{self._provider.name} call to {request.model} failed after {tries} "
@@ -518,6 +582,9 @@ class LLMGateway:
                     error=str(exc),
                 )
                 self._sleep(wait)
+            else:
+                self._outage.answered()
+                return response
         raise AssertionError("unreachable: the loop returns or raises")  # pragma: no cover
 
 

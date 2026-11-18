@@ -8,7 +8,14 @@ from atlas.orchestration.checkpoint import (
     serializer,
     sqlite_checkpointer,
 )
-from atlas.orchestration.errors import MAX_MESSAGE_CHARS, NodeError, failed_symbols, guarded
+from atlas.orchestration.errors import (
+    INTEGRITY_ERRORS,
+    MAX_MESSAGE_CHARS,
+    NodeError,
+    failed_symbols,
+    guarded,
+    integrity_errors,
+)
 from atlas.orchestration.research_graph import (
     GRAPH_METADATA_KEY,
     RESERVED_NODES,
@@ -38,6 +45,7 @@ __all__ = [
     "ANALYSTS",
     "CHECKPOINT_FILE",
     "GRAPH_METADATA_KEY",
+    "INTEGRITY_ERRORS",
     "MAX_MESSAGE_CHARS",
     "RESERVED_NODES",
     "AnalystFn",
@@ -57,6 +65,7 @@ __all__ = [
     "checkpoint_path",
     "failed_symbols",
     "guarded",
+    "integrity_errors",
     "invoke_untraced",
     "merge_keyed",
     "merge_reports",

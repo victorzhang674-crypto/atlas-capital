@@ -9,7 +9,8 @@ versioned prompt, point-in-time tools, a structured output, an evidence trail an
 |---|---|---|
 | `AgentContext` | `agents/context.py` | The run's inputs: a `DataView` (the only door to data), its `as_of`, the `run_id`, an optional `AgentMemory` (Stage 27, read with `ctx.recall`) and extra `inputs` |
 | `PromptRegistry` | `agents/prompting.py` | Loads Jinja2 templates, checks their version line, renders the `system` and `user` blocks |
-| `ToolRegistry`, `Tool` | `agents/tools.py` | Tools that wrap `DataView` methods and return `Evidence` |
+| `ToolRegistry`, `Tool` | `agents/tools/registry.py` | Tools that wrap `DataView` methods and return `Evidence` |
+| `default_tools()` | `agents/tools/dataview_tools.py` | The built-in tools: `news`, `market_news`, `fundamentals`, `price_history`. An analyst's own tools go in `agents/tools/<name>_tools.py`, import only `registry`, and are joined to these in one `ToolRegistry([*default_tools().tools, *mine])` |
 | `check_citations` | `agents/evidence.py` | Checks that an output cites only evidence the run showed the model |
 | `TraceStore` | `agents/trace.py` | Persists one `AgentTrace` per run in the `agent_runs` table (or in memory) |
 | `BaseAgent[OutT]` | `agents/base.py` | Ties it all together: `run(ctx) -> AgentOutput[OutT]` |
@@ -86,10 +87,16 @@ tools: `news`, `market_news`, `fundamentals` (`fund:<SYM>:<period end>:<metric>`
    a wrap-up turn without tools follows, and a wrap-up that asks again fails the run.
 3. Citation check: a claim is any nested model with `evidence_ids` and must cite at least one
    id; ids in `evidence_ids`, an `evidence` list or inline `[E:<id>]` tags must be ids the
-   run showed; an output that could cite but cites nothing at all is uncited too. Problems
-   get `agents.evidence_repair_retries` repair turns; if they remain, the output is marked
-   `low_quality` and its top-level `confidence` and `conviction` are capped at
-   `agents.low_quality_confidence_cap` (0.3).
+   run showed; an output that could cite but cites nothing at all is uncited too. An agent
+   may also override `check_output(ctx, output) -> problems` (default: none) for checks of
+   its own (a value range, numbers equal to the tool numbers, p10 <= p50 <= p90); they must be
+   deterministic. Problems of both kinds share `agents.evidence_repair_retries` repair turns
+   (step `evidence_repair`, or `output_repair` when only the check failed); if any remain,
+   the output is marked `low_quality` (`AgentOutput.problems` lists what the check still
+   found) and its top-level `confidence` and `conviction` are capped at
+   `agents.low_quality_confidence_cap` (0.3). When the run showed no evidence at all (a
+   symbol with no news), bad citations cannot be repaired, so there is no repair turn: the
+   output goes straight to `low_quality`.
 4. Trace: one `agent_runs` row (status `ok`, `low_quality` or `failed`; prompt version and
    digest, inputs digest, tool calls, evidence ids, output, tokens, cost) and, with an
    `AuditLog`, an `AGENT_REPORT` event.

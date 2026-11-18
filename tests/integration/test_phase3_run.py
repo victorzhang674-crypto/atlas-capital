@@ -70,6 +70,7 @@ from atlas.orchestration import (  # noqa: E402
     ResearchTeam,
     build_research_graph,
     checkpoint_path,
+    integrity_errors,
     resume_graph,
     run_graph,
 )
@@ -426,5 +427,8 @@ def test_a_replay_with_a_missing_recording_drops_only_that_symbol(
     missed = [e for e in state["errors"] if e.symbol == "AAA"]
     assert [(e.node, e.kind) for e in missed] == [("news", "CacheMiss")]
     assert "replay_only" in missed[0].message and lost.key in missed[0].message
+    # The blocked symbol's error is an ordinary one; only the miss marks the replay invalid.
+    assert len(state["errors"]) > len(missed)
+    assert integrity_errors(state["errors"]) == tuple(missed)
     for symbol in ("BBB", "CCC"):
         assert state["reports"][symbol] == recorded.state["reports"][symbol]

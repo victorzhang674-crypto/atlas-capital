@@ -437,6 +437,8 @@ llm:
     max_retries: 3  # retries after the first failed attempt
     backoff_seconds: 1.0  # wait before the first retry, in seconds; doubles on each retry
     max_backoff_seconds: 30.0  # longest wait between attempts, in seconds (a longer Retry-After still wins)
+    outage_failures: 8  # transient failures in a row (rate limits with Retry-After excluded) that mark the vendor down; 0 = off
+    outage_cooldown_seconds: 300  # while marked down, every call fails at once for this many seconds; then the next call tries again
   # Spend caps; exceeding one raises BudgetExceeded and callers fail safe (no new research).
   budgets:
     daily_usd: 5.0  # USD per UTC calendar day, live/paper (spec A8)

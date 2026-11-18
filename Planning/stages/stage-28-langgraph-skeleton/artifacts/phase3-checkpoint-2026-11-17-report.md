@@ -231,6 +231,17 @@ backtests on one lake (56).
   again. A race in the test, not the code; the test now waits for the saved writes (red
   reproduced on purpose, then green; full suite 4967 passed, `make check` exit 0). Fix
   538702a merged into `main` and pushed: CI success on `main` and the branch.
-- Tiers 2–4: not started; they wait for the owner's word. Tier 2 items change behaviour or a
-  brief, so each needs it. Recommended order: Tier 2 items 5 (tools package) and 1 (memory
-  ids) before Stage 29; item 7 (where fixture data comes from) before Stage 29's live run.
+- Tier 2 (2026-11-17, owner: "Start Tier 2"): items 1–6 done test-first (19 failed and 2
+  files did not collect on the code before, [red](phase3-checkpoint-2026-11-17-tier2-red.txt));
+  item 7 drafted for the owner's approval, no brief edited
+  ([brief notes](phase3-checkpoint-2026-11-17-tier2-brief-notes.md)).
+  - Item 1: memory ids through `new_id` (same seed → same ids and prompt text). The other
+    half (a backtest run's own memory) is note C, for Stage 56.
+  - Item 2: `NodeError.integrity` and `integrity_errors(errors)`; the graph's policy unchanged.
+  - Items 3, 4: no repair turn with no evidence shown; `BaseAgent.check_output` shares the
+    repair turn and the `low_quality` rule; the citation-only repair text is unchanged.
+  - Item 5: `atlas.agents.tools` is a package (`registry.py`, `dataview_tools.py`), same names.
+  - Item 6: `llm.retry.outage_failures` (8) / `outage_cooldown_seconds` (300).
+  - After Tier 2: `uv run pytest -q` 5008 passed; `make check` exit 0; Verify 350 / 327 /
+    162 / 200 passed; integration 48 passed, 15 skipped; changed modules 100% covered.
+- Item 7's notes wait for the owner. Tiers 3–4: not started; they wait for the owner's word.

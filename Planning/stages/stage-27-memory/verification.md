@@ -21,3 +21,10 @@ Every command below was run by the AI in this stage's chat (2026-11-15), after t
 - Records commit 1a932c0 (`stage-27: push and CI records`) pushed 2026-11-15 (`main` 38c5903..1a932c0 and the branch). CI on 1a932c0: **`main` run 43718001568 success**, stage-branch run 43718001937 success · raw: [ci-runs-1a932c0.json](artifacts/ci-runs-1a932c0.json). The completeness pass that followed (worklog file list, this line, the status line) is in records commit 1a932c0's successor; its CI result is reported in the chat and on GitHub, since a commit cannot record its own CI run.
 
 **Result:** ALL CRITERIA VERIFIED
+
+
+#### Phase 3 checkpoint Tier 2 — 2026-11-17
+- Item 1 (memory ids from the id source): `test_memory_seeded_ids.py` 4 passed; `tests/unit/agents/memory` 162 passed. Full block and raw output: [../stage-28-langgraph-skeleton/verification.md](../stage-28-langgraph-skeleton/verification.md) (Tier 2) — `uv run pytest -q` 5008 passed; `make check` exit 0.
+- Acceptance criteria unchanged and still evidenced (`tests/unit/agents/memory` 162 passed).
+
+**Result:** ALL CRITERIA VERIFIED

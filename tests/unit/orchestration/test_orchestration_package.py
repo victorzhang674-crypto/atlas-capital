@@ -45,10 +45,13 @@ STAGE_28 = {
 PACKAGE_DIR = Path(orchestration.__file__).resolve().parent
 
 
+PHASE_3_CHECKPOINT = {"INTEGRITY_ERRORS", "integrity_errors"}  # Tier 2 item 2
+
+
 def test_public_api_is_exported() -> None:
-    assert set(orchestration.__all__) == STAGE_28
+    assert set(orchestration.__all__) == STAGE_28 | PHASE_3_CHECKPOINT
     assert len(orchestration.__all__) == len(set(orchestration.__all__))
-    for name in STAGE_28:
+    for name in STAGE_28 | PHASE_3_CHECKPOINT:
         assert getattr(orchestration, name) is not None
 
 

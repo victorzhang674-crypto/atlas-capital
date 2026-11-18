@@ -1,0 +1,28 @@
+........................................................................ [ 22%]
+........................................................................ [ 44%]
+........................................................................ [ 66%]
+........................................................................ [ 88%]
+.......................................                                  [100%]
+327 passed, 3 deselected in 9.16s
+nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "__getitem__"
+ - leaked function ""
+ - leaked function "execute"
+ - leaked function "remove_function"
+ - leaked function "append"
+ - leaked function "fetchall"
+ - leaked function "get_profiling_information"
+ - leaked function ""
+ - leaked function "df"
+ - leaked function "union_type"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlexit 0

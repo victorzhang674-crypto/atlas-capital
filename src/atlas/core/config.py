@@ -801,11 +801,17 @@ class LLMThinking(_Frozen):
 class LLMRetry(_Frozen):
     """Retries of a rate-limited, 5xx, timed-out or dropped LLM call. The wait before retry
     `n` (1-based) is `backoff_seconds * 2**(n-1)` seconds, at most `max_backoff_seconds`, and
-    never less than the server's `Retry-After`."""
+    never less than the server's `Retry-After`.
+
+    `outage_failures` transient failures in a row (across one gateway's calls; a rate limit
+    with a `Retry-After` does not count) mark the vendor down: for `outage_cooldown_seconds`
+    every call fails at once, without calling the provider or waiting. 0 turns this off."""
 
     max_retries: Annotated[int, Field(ge=0)] = 3
     backoff_seconds: _NonNeg = 1.0
     max_backoff_seconds: _NonNeg = 30.0
+    outage_failures: Annotated[int, Field(ge=0)] = 8
+    outage_cooldown_seconds: Annotated[float, Field(gt=0)] = 300.0
 
     @model_validator(mode="after")
     def _cap_not_below_base(self) -> Self:

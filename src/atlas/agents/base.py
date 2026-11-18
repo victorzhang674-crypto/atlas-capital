@@ -6,7 +6,10 @@ a structured output (`output_schema`), an evidence trail and a persisted trace. 
 1. gathers pre-fetched evidence (`gather`, checked against `ctx.as_of`) and renders the
    prompt (`system` and `user` blocks) with the agent's inputs;
 2. asks the model through `LLMGateway` with the output schema and the agent's tools;
-3. checks the output's citations against the evidence the run showed the model;
+3. checks the output's citations against the evidence the run showed the model, and the
+   output itself with `check_output` (default: no check); problems get one repair turn
+   (`evidence_repair_retries`), and any left make the output `low_quality` (confidence
+   capped). With no evidence shown at all, bad citations cannot be repaired: no repair turn;
 4. persists an `AgentTrace` and, given an `AuditLog`, records an `AGENT_REPORT` event.
 
 Any exception (an `LLMError` from the gateway, a `ConfigError` from the prompt, a
@@ -61,8 +64,21 @@ MAX_LISTED_IDS = 200
 """A repair message lists at most this many known evidence ids."""
 
 
-def _repair_text(citations: CitationReport, ledger: EvidenceLedger) -> str:
-    """The user turn asking the model to fix its citations."""
+_ANSWER_AGAIN = "Answer again with the corrected JSON object only."
+
+
+def _repair_text(
+    citations: CitationReport, ledger: EvidenceLedger, problems: Sequence[str] = ()
+) -> str:
+    """The user turn asking the model to fix its citations and the `check_output` `problems`.
+    With citation problems alone the text is the one Stage 26 sent (recordings replay)."""
+    checks = (
+        "Your answer fails these checks:\n" + "".join(f"- {p}\n" for p in problems)
+        if problems
+        else ""
+    )
+    if citations.ok:
+        return checks + _ANSWER_AGAIN
     ids = ledger.ids
     listed = ", ".join(ids[:MAX_LISTED_IDS]) + (", ..." if len(ids) > MAX_LISTED_IDS else "")
     return (
@@ -70,8 +86,8 @@ def _repair_text(citations: CitationReport, ledger: EvidenceLedger) -> str:
         f"{citations.describe()}\n"
         "Cite only these evidence ids (shown as [E:<id>] in the data and tool results): "
         f"{listed or '(none)'}.\n"
-        "Every claim needs at least one of them; drop a claim you cannot support. Answer again "
-        "with the corrected JSON object only."
+        "Every claim needs at least one of them; drop a claim you cannot support. "
+        f"{checks}{_ANSWER_AGAIN}"
     )
 
 
@@ -81,14 +97,16 @@ _log = get_logger(__name__)
 @dataclass(frozen=True)
 class AgentOutput[OutT: BaseModel]:
     """What `BaseAgent.run` returns: the parsed `output`, the `evidence` it cites (known items,
-    in citation order), `low_quality` (citations still invalid after the repairs: the output's
-    confidence was capped), the `citations` check and the run's `trace` (cost, usage, ...)."""
+    in citation order), `low_quality` (citations still invalid or `problems` left after the
+    repairs: the output's confidence was capped), the `citations` check, the run's `trace`
+    (cost, usage, ...) and the `check_output` `problems` left (empty when it passed)."""
 
     output: OutT
     evidence: tuple[Evidence, ...]
     low_quality: bool
     citations: CitationReport
     trace: AgentTrace
+    problems: tuple[str, ...] = ()
 
     @property
     def cost_usd(self) -> float:
@@ -181,6 +199,13 @@ class BaseAgent[OutT: BaseModel]:
         """Template variables besides the reserved ones (default: `ctx.inputs`)."""
         return ctx.inputs
 
+    def check_output(self, ctx: AgentContext, output: OutT) -> Sequence[str]:
+        """Problems with `output` beyond its citations, each a short sentence the model can
+        act on (default: none). They share the citation repair turn; problems left after it
+        make the output `low_quality`. Must be deterministic (its text goes into the repair
+        turn, so into the LLM cache key); an exception fails the run."""
+        return ()
+
     # --- the run --------------------------------------------------------------------------------
 
     def run(self, ctx: AgentContext) -> AgentOutput[OutT]:
@@ -196,12 +221,12 @@ class BaseAgent[OutT: BaseModel]:
         try:
             state.ledger.add(guard_evidence(list(self.gather(ctx)), ctx.as_of))
             rendered = self._render(ctx, state)
-            output, citations = self._converse(ctx, rendered, state)
+            output, citations, problems = self._converse(ctx, rendered, state)
         except Exception as exc:  # traced as failed, then re-raised: never swallowed
             error = str(exc) if isinstance(exc, AtlasError) else f"{type(exc).__name__}: {exc}"
             self._finish(ctx, agent_run_id, started, state, status="failed", error=error)
             raise
-        low_quality = not citations.ok
+        low_quality = not citations.ok or bool(problems)
         status: TraceStatus = "low_quality" if low_quality else "ok"
         if low_quality:
             output = cap_confidence(output, self._settings.low_quality_confidence_cap)
@@ -211,6 +236,7 @@ class BaseAgent[OutT: BaseModel]:
                 agent_run_id=agent_run_id,
                 unknown=list(citations.unknown),
                 uncited=list(citations.uncited_claims),
+                problems=list(problems),
             )
         trace = self._finish(
             ctx, agent_run_id, started, state, status=status, output=output, citations=citations
@@ -221,6 +247,7 @@ class BaseAgent[OutT: BaseModel]:
             low_quality=low_quality,
             citations=citations,
             trace=trace,
+            problems=problems,
         )
 
     def _render(self, ctx: AgentContext, state: _Run) -> RenderedPrompt:
@@ -260,24 +287,36 @@ class BaseAgent[OutT: BaseModel]:
             raise LLMError(f"{self.name}: the model's answer has no {self.output_schema.__name__}")
         return result.parsed
 
+    def _review(
+        self, ctx: AgentContext, output: OutT, state: _Run
+    ) -> tuple[CitationReport, tuple[str, ...]]:
+        return check_citations(output, state.ledger.ids), tuple(self.check_output(ctx, output))
+
     def _converse(
         self, ctx: AgentContext, rendered: RenderedPrompt, state: _Run
-    ) -> tuple[OutT, CitationReport]:
+    ) -> tuple[OutT, CitationReport, tuple[str, ...]]:
         messages: list[Message] = list(rendered.messages)
         result = self._tool_loop(ctx, messages, state)
         output = self._parsed(result)
-        citations = check_citations(output, state.ledger.ids)
+        citations, problems = self._review(ctx, output, state)
         for _ in range(self._settings.evidence_repair_retries):
-            if citations.ok:
+            if citations.ok and not problems:
                 break
+            if not citations.ok and not state.ledger.ids:
+                # Nothing was shown, so nothing can be cited: a repair cannot succeed.
+                _log.info("agent.repair_skipped", agent=self.name, reason="no evidence shown")
+                break
+            step = "output_repair" if citations.ok else "evidence_repair"
             messages.append(Message.assistant(result.content))
-            messages.append(Message.user(_repair_text(citations, state.ledger)))
-            result = self._ask(messages, state, step="evidence_repair", tools=())
+            messages.append(Message.user(_repair_text(citations, state.ledger, problems)))
+            result = self._ask(messages, state, step=step, tools=())
             if result.tool_calls:
-                raise LLMError(f"{self.name}: the model asked for tools in the evidence repair")
+                raise LLMError(
+                    f"{self.name}: the model asked for tools in the {step.replace('_', ' ')}"
+                )
             output = self._parsed(result)
-            citations = check_citations(output, state.ledger.ids)
-        return output, citations
+            citations, problems = self._review(ctx, output, state)
+        return output, citations, problems
 
     def _tool_loop(self, ctx: AgentContext, messages: list[Message], state: _Run) -> LLMResult:
         """Rounds of model turns and tool calls until the model answers; after
