@@ -82,3 +82,4 @@ Filled in only with output from commands run in this stage's chat (Project.md Ru
 - Acceptance criteria of Stages 24 and 28 unchanged and still evidenced (full suite green; the end-to-end test in the integration run).
 
 **Result:** ALL CRITERIA VERIFIED
+- Merge, push and CI (Tier 4): Merged into `main` by fast-forward 68085ce → 6c8526b (commit `phase-3 checkpoint: Tier 4 (docs/llm.md; per-node timeout investigated)`, 16 files, staged diff reviewed, secrets scan 0 hits) in the owner's Terminal panel; trees equal (f1abb8c); merged result `uv run pytest -q` 5034 passed, `make check` exit 0, Phase 3 end-to-end 7 passed ([merged-main check](artifacts/phase3-checkpoint-2026-11-18-tier4-merged-main-check.txt)). Pushed; CI on 6c8526b: **`main` run 44268845492 success**, branch run 44268845408 success ([ci-runs-6c8526b.json](artifacts/ci-runs-6c8526b.json)). The records commit that follows is pushed the same way.
