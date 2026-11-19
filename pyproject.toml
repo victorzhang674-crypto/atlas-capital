@@ -141,6 +141,6 @@ strict_equality = true
 [[tool.mypy.overrides]]
 module = [
     "exchange_calendars", "hmmlearn.*", "pyarrow", "pyarrow.*", "statsmodels.*", "threadpoolctl",
-    "yfinance", "onnxruntime",
+    "yfinance", "onnxruntime", "lxml", "lxml.*",
 ]
 ignore_missing_imports = true

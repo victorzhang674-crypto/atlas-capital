@@ -1,0 +1,15 @@
+Wed Nov 18 17:42:05 EST 2026
+Wed Nov 18 18:34:10 EST 2026
+filing_text      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 748/748 0:51:59
+Run 01M7RD64ZQH9GPWVHCFKWM0A8B: log and audit trail in $TMPDIR/mda/backfill-lake/runs/01M7RD64ZQH9GPWVHCFKWM0A8B
+                      Sync summary (sync 2015-01-01 .. 2026-11-18)                       
+┏━━━━━━━━━━━━━┳━━━━━━┳━━━━━━━━━┳━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━┳━━━━━━┓
+┃ step        ┃ keys ┃ skipped ┃  ok ┃ empty ┃ failed ┃  rows ┃ chunks ┃ seconds ┃ note ┃
+┡━━━━━━━━━━━━━╇━━━━━━╇━━━━━━━━━╇━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━┩
+│ filing_text │  748 │       0 │ 735 │    13 │      0 │ 7,643 │     75 │  3119.4 │      │
+└─────────────┴──────┴─────────┴─────┴───────┴────────┴───────┴────────┴─────────┴──────┘
+uv run atlas data sync --datasets filings  1382.14s user 65.08s system 46% cpu 52:05.00 total
+exit 0
+
+[exited with code 0]
+transport retries logged: 9

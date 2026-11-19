@@ -3,6 +3,7 @@ analyst that the first test set left unpinned: evidence sources and point-in-tim
 staleness and threshold boundaries, a single tool failing inside `prefetch`, the exact
 NOT EVALUATED reasons, the repair-problem texts, the memory query and a caller's registry."""
 
+import dataclasses
 import math
 import re
 from datetime import date, timedelta
@@ -20,6 +21,7 @@ from atlas.agents.trace import TraceStore
 from atlas.core.config import AtlasConfig, RedFlagsConfig
 from atlas.core.errors import ConfigError, DataError
 from atlas.core.types.research import AnalystReport, Direction, Signal
+from atlas.data.view import DataView
 from atlas.llm import FakeLLM, LLMGateway
 
 DAY = AS_OF.isoformat()
@@ -295,11 +297,12 @@ def test_a_sector_failure_keeps_the_summary_and_names_the_reason(
         ),
         (
             ft.going_concern_rule("Substantial doubt about the going concern.", RF),
-            'MD&A mentions "going concern", "substantial doubt"',
+            'MD&A: "Substantial doubt about the going concern."',
         ),
         (
             ft.going_concern_rule("All is well.", RF),
-            'MD&A mentions none of "going concern", "substantial doubt"',
+            'no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with '
+            "a phrase of going_concern_exclusions, such as a standard's name, are left out)",
         ),
     ],
 )
@@ -626,3 +629,124 @@ def test_a_current_multiple_that_is_not_finite_gets_no_percentile(
     text = next(e.text for e in ft.valuation_from(view, sector) if e.id.endswith(":pe"))
     own = r"own history at \d+ fiscal quarter ends \S+: median [\d.]+, low [\d.]+, high [\d.]+; "
     assert re.search(r"now n/m; " + own, text)
+
+
+# --- third pass: the untested edges of the second audit ------------------------------------------
+
+
+def _ends(view: DataView) -> list[date]:
+    return [q.end for q in ft._history_multiples(view, "AAA", ft._history(view, "AAA"))]
+
+
+def test_the_own_history_window_starts_on_its_first_day(fworld: FundamentalWorld) -> None:
+    """With `valuation_years` 1 the window of 2023-06-30 starts on 2022-06-30, a quarter end
+    whose bar is read from `price_tolerance_days` before it; with 2 years, the window of
+    2024-04-01 starts on 2022-04-02, two days after the 2022-03-31 quarter end."""
+    one_year = fworld.view(day=date(2023, 6, 30), config=config(valuation_years=1))
+    assert _ends(one_year)[0] == date(2022, 6, 30)
+    two_years = fworld.view(day=date(2024, 4, 1), config=config(valuation_years=2))
+    assert _ends(two_years)[0] == date(2022, 6, 30)
+
+
+def test_quarter_ends_and_their_bars(
+    fworld: FundamentalWorld, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A quarter end with no bar within `price_tolerance_days` is skipped and the next ones
+    still read; a bar exactly that many days before the end counts; only the last bar's age
+    matters, not the one before it."""
+    view = fworld.view()
+    base = _ends(view)
+    gone = (
+        {date(2022, 9, 15) + timedelta(days=i) for i in range(16)}  # no bar near 2022-09-30
+        | {date(2022, 12, 22) + timedelta(days=i) for i in range(10)}  # last: 2022-12-21
+        | {date(2023, 3, 1) + timedelta(days=i) for i in range(30)}  # keeps 2023-03-31 only
+    )
+    original = DataView.prices
+
+    def prices(self: DataView, symbols: list[str], lookback: int) -> pd.DataFrame:
+        bars = original(self, symbols, lookback)
+        return bars[~bars["date"].isin(gone)].reset_index(drop=True)
+
+    monkeypatch.setattr(DataView, "prices", prices)
+    assert date(2022, 9, 30) in base
+    assert _ends(view) == [e for e in base if e != date(2022, 9, 30)]
+
+
+def test_red_flag_periods_without_a_year_ago_period(fworld: FundamentalWorld) -> None:
+    view = fworld.view()
+    full = ft._history(view, "AAA")
+    end = latest_end(fworld)
+    young = ft._History(
+        rows=full.rows[full.rows["period_end"] > end - timedelta(days=200)], day=full.day
+    )
+    results = ft.red_flag_results(view, "AAA", young)
+    assert [periods for _, periods in results[:3]] == [f"at {end}"] * 3
+
+
+def test_a_peer_without_an_instrument_row_is_skipped_not_the_rest(
+    fworld: FundamentalWorld, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    view = fworld.view()
+    assert ft.sector_panel(view, "AAA").peers == ("AAA", "BBB", "CCC", "DDD")
+    original = DataView.instrument
+
+    def instrument(self: DataView, symbol: str) -> Any:
+        if symbol == "BBB":
+            raise DataError("no instrument row for BBB")
+        return original(self, symbol)
+
+    monkeypatch.setattr(DataView, "instrument", instrument)
+    assert ft.sector_panel(fworld.view(), "AAA").peers == ("AAA", "CCC", "DDD")
+
+
+def test_a_symbol_without_factor_values_is_named(
+    fworld: FundamentalWorld, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    original = ft.factor_panel
+
+    def panel(view: DataView, symbols: Any) -> Any:
+        out = original(view, symbols)
+        return dataclasses.replace(out, raw=out.raw.drop(index="AAA"))
+
+    monkeypatch.setattr(ft, "factor_panel", panel)
+    with pytest.raises(DataError, match=rf"^no factor values for AAA on {DAY}$"):
+        ft.sector_panel(fworld.view(), "AAA")
+
+
+def test_a_piece_that_is_more_than_a_tag_stays_a_sentence() -> None:
+    assert sentences("Revenue rose 5%. X") == ["Revenue rose 5%.", "X"]
+
+
+def test_a_flow_without_a_ttm_at_the_end_does_not_stamp_the_items(
+    fworld: FundamentalWorld,
+) -> None:
+    """The margins and growth items are stamped by their TTM inputs: a net income row with a
+    value but no TTM at the latest end (known later) is not one of them."""
+    view = fworld.view()
+    full = ft._history(view, "AAA")
+    rows = full.rows.copy()
+    hit = (rows["concept"] == "net_income") & (rows["period_end"] == latest_end(fworld))
+    rows.loc[hit, "ttm"] = NAN
+    rows.loc[hit, "available_at"] = rows["available_at"].max() + pd.Timedelta(seconds=1)
+    a = ft._History(rows=rows, day=full.day)
+    b = ft._History(rows=full.rows[~hit], day=full.day)
+    assert ft._derived_items("AAA", a, view) == ft._derived_items("AAA", b, view)
+
+
+def test_a_quarter_without_a_share_count_is_skipped_not_the_rest(
+    fworld: FundamentalWorld, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Without the counts dated 2022-07-28 and 2022-10-28, no count is within
+    `share_count_tolerance_days` (100) of 2022-09-30; its neighbours still have one."""
+    view = fworld.view()
+    base = _ends(view)
+    original = ft.adjusted_shares
+    gone = {date(2022, 7, 28), date(2022, 10, 28)}
+
+    def shares(rows: pd.DataFrame, splits: pd.DataFrame) -> pd.DataFrame:
+        out = original(rows, splits)
+        return out[~out["period_end"].isin(gone)].reset_index(drop=True)
+
+    monkeypatch.setattr(ft, "adjusted_shares", shares)
+    assert date(2022, 9, 30) in base
+    assert _ends(view) == [e for e in base if e != date(2022, 9, 30)]

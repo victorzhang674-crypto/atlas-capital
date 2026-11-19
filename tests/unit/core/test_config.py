@@ -1134,7 +1134,7 @@ def test_sync_defaults() -> None:  # Stage 14 D1
     }  # fmt: skip
     assert s.chunk_size.model_dump() == {
         "prices": 50, "fundamentals": 20, "macro": 2, "news": 50, "earnings": 20,
-        "upcoming": 50, "social": 20,
+        "upcoming": 50, "social": 20, "filing_text": 10,
     }  # fmt: skip
 
 

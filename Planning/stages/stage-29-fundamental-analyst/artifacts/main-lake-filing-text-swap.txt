@@ -1,0 +1,13 @@
+=== check
+=== backup to ~/Projects/atlas-capital/data/cache/backup-stage29-filing-text-2026-11-18
+7aee340f3e36c45628a81ab1e5037510913383a06badf3fdf3b84d08ef7c749a  ~/Projects/atlas-capital/data/curated/_meta.json
+7aee340f3e36c45628a81ab1e5037510913383a06badf3fdf3b84d08ef7c749a  ~/Projects/atlas-capital/data/cache/backup-stage29-filing-text-2026-11-18/_meta.json
+1fd7af52ebf9cb58585ee2f2034d676301f030b0d30f7c8ea35d024117d2653c  ~/Projects/atlas-capital/data/cache/sync_state.json
+1fd7af52ebf9cb58585ee2f2034d676301f030b0d30f7c8ea35d024117d2653c  ~/Projects/atlas-capital/data/cache/backup-stage29-filing-text-2026-11-18/sync_state.json
+=== copy the table
+=== merge _meta.json and the sync state (filing_text entries only)
+~/Projects/atlas-capital/data/curated/_meta.json: added tables.filing_text
+~/Projects/atlas-capital/data/cache/sync_state.json: added steps.filing_text
+=== verify: the copied files equal the scratch lake's
+files EQUAL (     735 files)
+swap exit 0

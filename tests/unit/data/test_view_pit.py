@@ -440,6 +440,7 @@ METHODS: dict[str, Callable[[DataView], Any]] = {
     # Stage 26. `accn` is left out: the test world numbers accessions with one counter per
     # process, so the dirty lake's extra filings shift them (same filings, other numbers).
     "fundamentals_detail": lambda v: v.fundamentals_detail("AAA").drop(columns="accn"),
+    "mda": lambda v: v.mda("AAA"),  # Stage 29 follow-up 2
 }
 """Every public data method of `DataView`, called as strategy or agent code would."""
 
@@ -604,6 +605,7 @@ LEAKS: dict[str, Callable[[pytest.MonkeyPatch], None]] = {
     "split_factors": _leak_bars,
     "macro_vintages": lambda mp: _wrap(mp, Macro, "vintages", _late_frame),  # Stage 21
     "ciks": _leak_ciks,
+    "mda": _leak_ciks,  # Stage 29 follow-up 2: `_known` (pit_filter + assert_no_lookahead)
 }
 """How to make each method's delegate leak a row from after the cutoff."""
 
@@ -640,6 +642,7 @@ SINGLE = {
     "earnings_reactions": lambda v: v.earnings_reactions("BAD"),
     "social": lambda v: v.social("BAD"),
     "instrument": lambda v: v.instrument("bad"),
+    "mda": lambda v: v.mda("BAD"),  # Stage 29 follow-up 2
 }
 MULTI: dict[str, Callable[[DataView], Any]] = {
     "prices": lambda v: set(v.prices(["AAA", "BAD"], 30)["symbol"]),

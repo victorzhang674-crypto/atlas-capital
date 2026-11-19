@@ -153,14 +153,27 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    `known_facts` drops it rather than guess the intended date, and the quality report lists it
    (`fundamentals_period_after_filing`, a warning). On 2026-11-02 the lake held 75 such facts
    in 35 symbols (added in the Phase 1 checkpoint).
-8. **Receivables need a re-ingest; MD&A text is not stored.** Stage 29 added the concept
+8. **Receivables need a re-ingest.** Stage 29 added the concept
    `accounts_receivable` (`AccountsReceivableNetCurrent`, else `ReceivablesNetCurrent`) for the
    fundamental analyst's receivables red flag. Only mapped tags are stored, so a lake ingested
    before it has no receivables rows until its fundamentals are re-ingested from the archived
    companyfacts (offline, `refresh=False`), and the check reads NOT EVALUATED there. The main
    lake was re-ingested on 2026-11-18 (68,846 rows, 609 of 742 symbols; banks and insurers tag
-   none, so their check stays NOT EVALUATED). No filing text (MD&A) is ingested, so the
-   going-concern check is always NOT EVALUATED.
+   none, so their check stays NOT EVALUATED).
+9. **MD&A text: 10-K only, extracted by headings, documents not archived** (Stage 29
+   follow-up 2, `filing_text`). The MD&A is Item 7 of each 10-K, or the Exhibit 13 annual
+   report that Item 7 points to, cut out of the document's text by its headings (the longest
+   section from an "Item 7" heading followed by its title to the next "Item 7A" or "Item 8"
+   heading; a 10-K without "Item 7" headings, laid out as an annual report with a
+   cross-reference index, falls back to its "Management's Discussion and Analysis" heading). A
+   filing whose headings follow neither form is stored with status `not_found` (or
+   `by_reference` when no Exhibit 13 MD&A was found) and no text, and the going-concern check
+   reads NOT EVALUATED for it. On the main lake (2026-11-18): 7,643 10-Ks of 735 symbols filed
+   since 2015, 7,558 with an MD&A (98.9%); none for AEP, CLX, MOS, TWC, TWX, WFC and WIN (their
+   MD&A sits under other headings, e.g. Wells Fargo's "Financial Review"). 10-Q MD&As are not read, so a doubt first
+   disclosed in a quarterly report is seen only at the next 10-K. The documents (1.5–8 MB of
+   HTML each) are not kept under `raw/`: each row keeps the document's URL and SHA-256, and a
+   change to the extraction needs the documents fetched again (delete the rows to refetch).
 
 ## Macro (Stage 10)
 

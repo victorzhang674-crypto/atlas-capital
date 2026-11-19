@@ -1,4 +1,5 @@
-"""SEC EDGAR client: ticker → CIK map, companyfacts and submissions JSON, raw cache.
+"""SEC EDGAR client: ticker → CIK map, companyfacts and submissions JSON, raw cache, and the
+documents of a filing (Stage 29 follow-up 2).
 
 EDGAR's fair-access policy asks for at most 10 requests per second and a User-Agent that
 declares who is calling (with contact details). The client throttles every request to
@@ -22,6 +23,7 @@ from types import TracebackType
 from typing import Annotated, Any, BinaryIO, Self
 
 import httpx
+import lxml.html
 import pandas as pd
 from pydantic import Field, ValidationError, model_validator
 
@@ -281,7 +283,42 @@ class EdgarClient:
         index = pd.concat(frames, ignore_index=True)
         return index.drop_duplicates(subset="accn", keep="first").reset_index(drop=True)
 
+    def filing_documents(self, cik: int, accn: str) -> tuple[tuple[str, str], ...]:
+        """The documents of filing `accn` of `cik` as `(type, file name)` pairs, in the order of
+        the filing's `-index.htm` (`EX-13`, `10-K`, ...). Not archived (Stage 29 follow-up 2)."""
+        url = self._config.filing_index_url.format(cik=cik, folder=_folder(accn), accn=accn)
+        page = lxml.html.fromstring(self._get_bytes(url))
+        out = []
+        for row in page.xpath("//table[contains(@class, 'tableFile')]//tr[td]"):
+            cells = row.xpath("./td")
+            links = row.xpath(".//a/@href")
+            if len(cells) < 4 or not links:
+                continue
+            kind = cells[3].text_content().strip()
+            name = str(links[0]).rsplit("/", 1)[-1]
+            if kind and name:
+                out.append((kind, name))
+        return tuple(out)
+
+    def filing_document(self, cik: int, accn: str, name: str) -> bytes:
+        """The bytes of document `name` of filing `accn` of `cik` (HTML or text, as served).
+        Not archived: the caller keeps what it needs and the document's digest."""
+        if not name or "/" in name or "\\" in name or name.startswith("."):
+            raise DataError(f"invalid filing document name {name!r}")
+        url = self._config.filing_document_url.format(cik=cik, folder=_folder(accn), name=name)
+        return self._get_bytes(url)
+
     # --- plumbing --------------------------------------------------------------------------------
+
+    def _get_bytes(self, url: str) -> bytes:
+        return call_with_retry(
+            lambda: self._request(url),
+            self._policy,
+            self._sleep,
+            f"GET {url}",
+            (httpx.TransportError, _RetryableStatus),
+            event="fundamentals.request_failed",
+        )
 
     def _cache(self, dataset: str, filename: str) -> Path | None:
         if self._lake is None:
@@ -291,14 +328,7 @@ class EdgarClient:
     def _get_json(self, url: str, cache: Path | None, *, refresh: bool) -> dict[str, Any]:
         if cache is not None and not refresh and cache.exists():
             return _decode(cache.read_bytes(), str(cache))
-        body = call_with_retry(
-            lambda: self._request(url),
-            self._policy,
-            self._sleep,
-            f"GET {url}",
-            (httpx.TransportError, _RetryableStatus),
-            event="fundamentals.request_failed",
-        )
+        body = self._get_bytes(url)
         data = _decode(body, url)
         if cache is not None:
 
@@ -316,6 +346,14 @@ class EdgarClient:
         if resp.status_code == 429 or resp.status_code >= 500:
             raise _RetryableStatus(f"HTTP {resp.status_code}")
         raise DataError(f"GET {url} returned HTTP {resp.status_code}")
+
+
+def _folder(accn: str) -> str:
+    """The archive folder of accession number `accn`: its digits without dashes."""
+    folder = accn.replace("-", "")
+    if not folder.isdigit():
+        raise DataError(f"invalid accession number {accn!r}")
+    return folder
 
 
 def _decode(body: bytes, where: str) -> dict[str, Any]:

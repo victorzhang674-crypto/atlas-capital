@@ -28,6 +28,7 @@ plain numbers. A ratio whose denominator is missing, zero or negative is "n/m" (
 guess). Windows and thresholds: `agents.fundamental` (`config/fund.yaml`).
 """
 
+import functools
 import math
 import re
 from collections.abc import Callable, Iterable, Sequence
@@ -234,19 +235,61 @@ def going_concern_hits(text: str, terms: Iterable[str]) -> tuple[str, ...]:
     return tuple(found)
 
 
+_SENTENCE_BREAK = re.compile(r"(?<=[.!?])\s+|\n+")
+_APOSTROPHES = str.maketrans({"\u2019": "'", "\u2018": "'"})
+_QUOTE_MAX = 200
+"""Longest quoted sentence (characters) in a going-concern FLAG."""
+
+
+@functools.lru_cache(maxsize=256)
+def _phrase(phrase: str) -> re.Pattern[str]:
+    words = r"\s+".join(re.escape(w) for w in phrase.translate(_APOSTROPHES).split())
+    return re.compile(rf"(?<!\w){words}(?!\w)", flags=re.IGNORECASE)
+
+
+def going_concern_sentences(
+    text: str, terms: Iterable[str], exclusions: Iterable[str]
+) -> tuple[str, ...]:
+    """The sentences of `text` (split after `.`, `!`, `?` and at line breaks; whitespace
+    collapsed) holding every phrase of `terms` and none of `exclusions` (case-insensitive,
+    whole words, curly apostrophes read as straight ones), each once, in order."""
+    needed, banned = tuple(terms), tuple(exclusions)
+    out: list[str] = []
+    for piece in _SENTENCE_BREAK.split(text):
+        sentence = " ".join(piece.split())
+        plain = sentence.translate(_APOSTROPHES)
+        if (
+            sentence
+            and sentence not in out
+            and all(_phrase(t).search(plain) for t in needed)
+            and not any(_phrase(x).search(plain) for x in banned)
+        ):
+            out.append(sentence)
+    return tuple(out)
+
+
 def going_concern_rule(text: str | None, config: RedFlagsConfig) -> RedFlag:
-    """Going-concern language in the MD&A: FLAG when `text` holds one of
-    `going_concern_terms`; NOT EVALUATED without a text (the lake holds no MD&A text)."""
+    """Going-concern language in the MD&A: FLAG when a sentence of `text` holds all of
+    `going_concern_terms` and none of `going_concern_exclusions` (the first such sentence
+    quoted, at most 200 characters, and how many more); NOT EVALUATED without a text (no MD&A
+    of the symbol in the lake)."""
     check = "going_concern"
     if text is None:
         return RedFlag(check, "NOT EVALUATED", "no MD&A text in the data")
-    hits = going_concern_hits(text, config.going_concern_terms)
-    if hits:
-        return RedFlag(check, "FLAG", "MD&A mentions " + ", ".join(f'"{h}"' for h in hits))
+    found = going_concern_sentences(
+        text, config.going_concern_terms, config.going_concern_exclusions
+    )
+    if found:
+        first = found[0] if len(found[0]) <= _QUOTE_MAX else found[0][: _QUOTE_MAX - 1] + "\u2026"
+        more = len(found) - 1
+        tail = f" and {more} more sentence{'s' if more > 1 else ''}" if more else ""
+        return RedFlag(check, "FLAG", f'MD&A: "{first}"{tail}')
+    terms = ", ".join(f'"{t}"' for t in config.going_concern_terms)
     return RedFlag(
         check,
         "CLEAR",
-        "MD&A mentions none of " + ", ".join(f'"{t}"' for t in config.going_concern_terms),
+        f"no MD&A sentence holds all of {terms} (sentences with a phrase of "
+        "going_concern_exclusions, such as a standard's name, are left out)",
     )
 
 
@@ -923,8 +966,41 @@ def red_flag_results(view: DataView, symbol: str, history: _History) -> list[tup
         )
         out.append((fcf_debt_rule(_fcf(history, end), debt_growth, settings), periods))
         out.append(_dilution(view, symbol, history, settings, tol, staleness))
-    out.append((going_concern_rule(None, settings), ""))
+    out.append(_going_concern(view, symbol, settings))
     return out
+
+
+def _going_concern(view: DataView, symbol: str, settings: RedFlagsConfig) -> tuple[RedFlag, str]:
+    """The going-concern check on the MD&A of `symbol`'s latest filing known at the as-of
+    (`DataView.mda`), with the filing it read; NOT EVALUATED (reason named) without an MD&A,
+    when the filing's fiscal year (else its filing date) is more than `mda_max_age_days` old,
+    or when no MD&A was found in the filing."""
+    mda = view.mda(symbol)
+    if mda is None:
+        return going_concern_rule(None, settings), ""
+    check = "going_concern"
+    periods = f"{mda.form} filed {mda.filed}" + (
+        f", fiscal year ended {mda.period_end}" if mda.period_end is not None else ""
+    )
+    dated = mda.period_end if mda.period_end is not None else mda.filed
+    if (view.day - dated).days > settings.mda_max_age_days:
+        what = (
+            f"covers the fiscal year ended {dated}"
+            if mda.period_end is not None
+            else f"was filed {dated}"
+        )
+        why = (
+            f"the latest {mda.form} MD&A {what}, more than {settings.mda_max_age_days} days "
+            f"before {view.day}"
+        )
+        return RedFlag(check, "NOT EVALUATED", why), periods
+    if mda.text is None:
+        why = (
+            f"the MD&A of the {mda.form} filed {mda.filed} was not found in the filing "
+            f"({mda.status})"
+        )
+        return RedFlag(check, "NOT EVALUATED", why), periods
+    return going_concern_rule(mda.text, settings), periods
 
 
 def _dilution(

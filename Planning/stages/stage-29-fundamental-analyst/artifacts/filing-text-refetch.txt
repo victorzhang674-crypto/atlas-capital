@@ -1,0 +1,5 @@
+rows not ok before: 428 {'by_reference': 90, 'not_found': 338} symbols: 59
+deleted 428
+686s rows=428 ok=59 failed={} statuses={'by_reference': 72, 'ok': 343, 'not_found': 13}
+after: rows 7643 {'ok': 7558, 'by_reference': 72, 'not_found': 13} {'primary': 7536, 'EX-13': 107}
+symbols with no ok MD&A: ['AEP', 'CLX', 'MOS', 'TWC', 'TWX', 'WFC', 'WIN']

@@ -42,6 +42,7 @@ from atlas.core.storage import AVAILABLE_AT, Lake
 from atlas.core.types.instruments import Instrument, normalize_symbol
 from atlas.core.types.research import Evidence
 from atlas.data.events import Events
+from atlas.data.filings.text import FILING_TEXT, MDA, MdaText, mda_text
 from atlas.data.fundamentals import (
     FUNDAMENTALS_FACTS,
     HISTORY_COLUMNS,
@@ -574,6 +575,28 @@ class DataView:
         canonical = normalize_symbol(symbol)
         self._require_unblocked(canonical)
         return canonical
+
+    # --- filing text (Stage 29 follow-up 2) -----------------------------------------------------
+
+    def mda(self, symbol: str) -> MdaText | None:
+        """The MD&A of `symbol`'s latest filing known at `as_of` (`filing_text`, the 10-K's
+        Item 7 or its Exhibit 13), whatever its age: callers compare `period_end` with `as_of`.
+        `None` when the lake holds no MD&A row of the symbol (or no `filing_text` table). A
+        filing whose MD&A was not found has `status` `by_reference` / `not_found` and no text.
+        Raises `DataError` for a blocked symbol and `ValueError` for an invalid one."""
+        sym = self._one(symbol)
+
+        def compute() -> MdaText | None:
+            if not self._shared.lake.has_table(FILING_TEXT.name):
+                return None
+            rows = self._known(FILING_TEXT.name, [("symbol", "=", sym), ("section", "=", MDA)])
+            if rows.empty:
+                return None
+            latest = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="stable").iloc[-1]
+            return mda_text(latest)
+
+        result: MdaText | None = self._cached("mda", (sym,), compute)
+        return result
 
     # --- fundamentals ---------------------------------------------------------------------------
 

@@ -84,8 +84,8 @@ ToOpt = Annotated[
 DatasetsOpt = Annotated[
     str | None,
     typer.Option(
-        help="Comma-separated datasets: universe, prices, fundamentals, macro, news, events, "
-        "sentiment, quality (default: all)."
+        help="Comma-separated datasets: universe, prices, fundamentals, filings, macro, news, "
+        "events, sentiment, quality (default: all)."
     ),
 ]
 SymbolsOpt = Annotated[

@@ -42,3 +42,32 @@ Owner: "please help me to fix the problems and complete what you have not done. 
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED (re-run after the follow-up)
+
+#### Follow-up 2 — Stage 29 — 2026-11-18
+Owner: "please complete the ones that are not done and have a final audit on your own work". MD&A text was added on the owner's approval of the spec change. Graph wiring was kept with Stage 35 at the owner's choice. Records: [audit-report.md › Follow-up 2](artifacts/audit-report.md), [worklog](worklog.md).
+
+- Commands run (this chat, one after another, on the final code):
+  - `uv run pytest tests/unit/agents/research/test_fundamental.py -q` (brief's Verify) → 29 passed, exit 0 · raw: [artifacts/followup2-verify-brief.txt](artifacts/followup2-verify-brief.txt)
+  - `uv run pytest -q` → 5374 passed, 82 deselected, exit 0 · raw: [artifacts/followup2-pytest-full.txt](artifacts/followup2-pytest-full.txt)
+  - `make check` → exit 0 · raw: [artifacts/followup2-make-check.txt](artifacts/followup2-make-check.txt)
+    - `ruff check .` → All checks passed!
+    - `ruff format --check .` → 510 files already formatted
+    - `mypy src/atlas` → Success: no issues found in 188 source files
+    - pytest: 5371 passed + 3 timing passed
+  - `make test-integration` → 48 passed, 15 skipped, exit 0 · raw: [artifacts/followup2-test-integration.txt](artifacts/followup2-test-integration.txt)
+  - Main lake:
+    - `atlas data sync --datasets filings` (scratch lake) → 748 keys, 735 ok, 13 empty, 0 failed, 7,643 rows · [artifacts/filing-text-backfill.txt](artifacts/filing-text-backfill.txt)
+    - refetch after E7 → 7,558 of 7,643 with an MD&A · [artifacts/filing-text-refetch.txt](artifacts/filing-text-refetch.txt)
+    - swap (owner's Terminal panel) → files equal, swap exit 0 · [artifacts/main-lake-filing-text-swap.txt](artifacts/main-lake-filing-text-swap.txt)
+    - read-back → only `filing_text` added; point in time checked · [artifacts/main-lake-filing-text-readback.txt](artifacts/main-lake-filing-text-readback.txt)
+    - rule review → 16 FLAGs of 7,558 MD&As, each reviewed · [artifacts/filing-text-review.txt](artifacts/filing-text-review.txt)
+  - Mutation testing:
+    - Stage 29 modules: 2,335 of 2,396 killed (97.5%);
+    - new code: 778 of 811 killed (95.9%);
+    - every survivor classified · [artifacts/mutation/mutation-summary.md](artifacts/mutation/mutation-summary.md)
+- Acceptance criteria: unchanged and still met.
+  - The recorded-run replay is in the brief's Verify (29 passed). Its lake slice has no `filing_text`, so the evidence and the cached request are byte-identical.
+  - The brief's In-scope item "going-concern keywords if MD&A is available" now has its MD&A: `test_fundamental_going_concern.py`, `test_fundamental_red_flags.py`, and the main-lake read-back.
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED (re-run after follow-up 2)

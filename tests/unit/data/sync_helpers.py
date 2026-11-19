@@ -351,10 +351,27 @@ def serve_sec(request: httpx.Request) -> httpx.Response:
     return httpx.Response(404)
 
 
+TEN_K_HTML = (
+    "<html><body><p>Item 7. Management's Discussion and Analysis</p>"
+    f"<p>{'Revenue grew because demand was strong. ' * 40}</p>"
+    "<p>Item 8. Financial Statements</p></body></html>"
+).encode()
+"""What the mocked EDGAR archive serves for every filing document (Stage 29 follow-up 2)."""
+
+
+def serve_archive(request: httpx.Request) -> httpx.Response:
+    """respx side effect: any document of the EDGAR archive is `TEN_K_HTML`."""
+    if request.url.path.startswith("/Archives/edgar/data/"):
+        return httpx.Response(200, content=TEN_K_HTML)
+    return httpx.Response(404)
+
+
 def sec_router() -> Iterator[respx.MockRouter]:
-    """A respx router answering data.sec.gov from the fixtures (use as a fixture body)."""
+    """A respx router answering data.sec.gov from the fixtures and the EDGAR archive with
+    `TEN_K_HTML` (use as a fixture body)."""
     with respx.mock(assert_all_called=False) as router:
         router.route(host="data.sec.gov").mock(side_effect=serve_sec)
+        router.route(host="www.sec.gov").mock(side_effect=serve_archive)
         yield router
 
 

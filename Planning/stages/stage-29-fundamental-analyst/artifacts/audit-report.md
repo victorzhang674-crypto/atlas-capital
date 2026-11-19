@@ -51,8 +51,10 @@ offline replay of a real recorded run. Three defects or gaps were found and fixe
   were re-parsed offline, the factor and risk stores rebuilt (values equal) and the result swapped
   in with a backup. AAPL's tools now give 29 of 29 items equal on the main lake and the fixture
   (see *Follow-up* below).
-- **A6 — limit (documented).** No MD&A text is ingested: the going-concern check is always NOT
-  EVALUATED; the rule is a pure text scan ready for a text source (`going_concern_hits`).
+- **A6 — limit, closed in follow-up 2.** No MD&A text was ingested, so the going-concern check
+  was always NOT EVALUATED. The owner approved the spec change ("Approve the spec change"):
+  10-K MD&A text now comes from EDGAR (`filing_text`, the `filings` dataset, `DataView.mda`)
+  and the check reads it (see *Follow-up 2*).
 - **A7 — note, closed without change.** The fixture lake is 5.96 MB. About two thirds are peers'
   bars before 2022 that no tool reads. The blobs are already in the pushed history, so a smaller
   re-recording would not shrink the repository. Later fixtures can use per-symbol windows.
@@ -62,7 +64,7 @@ offline replay of a real recorded run. Three defects or gaps were found and fixe
   both budgets; revisit at the first LLM backtest (Stage 56), as the item already says.
 - **A9 — mutation testing, done in the follow-up.** At first not run (estimated two hours);
   coverage of 95–99% was used instead. Follow-up: mutmut over the three modules, 2,396 mutants.
-  Kill rate 85.7% before, **97.0% after** 80 new tests; the 73 survivors are all classified
+  Kill rate 85.7% before, **97.5% after** the follow-up tests; the 61 survivors are all classified
   ([mutation/mutation-summary.md](mutation/mutation-summary.md)). No production defect was found.
 - **A10 — out of scope, noted.** Wiring the analyst into the research graph (a `ResearchTeam`
   analyst callable building `AgentContext(DataView(lake, task.as_of), inputs={"symbol": ...})`)
@@ -112,12 +114,13 @@ please have a final audit and report your progress."
     text and log, exact errors).
 - **A7:** closed without change (above).
 
-### Not done, with reasons
+### Not done, with reasons (as of the first follow-up; see *Follow-up 2* for what changed)
 
-- MD&A text (A6): no filing-text source is ingested. This is a data-pipeline addition, not in
-  this brief's scope.
-- Graph wiring (A10): Stage 35 / 36 / 55 (Rule 2.4 and Rule 4).
-- The 16 untested-edge mutants: recorded in the Backlog.
+- MD&A text (A6): no filing-text source was ingested; a data-pipeline addition outside this
+  brief. **Done in follow-up 2** on the owner's approval.
+- Graph wiring (A10): Stage 35 / 36 / 55 (Rule 2.4 and Rule 4). **Kept with Stage 35** by the
+  owner in follow-up 2.
+- The 16 untested-edge mutants: recorded in the Backlog. **12 killed in follow-up 2.**
 
 ### Final audit
 
@@ -132,3 +135,67 @@ were re-checked for the new files:
 
 Final verification (full suite, `make check`, integration): see [../verification.md](../verification.md),
 section *Follow-up*.
+
+## Follow-up 2 (2026-11-18)
+
+Owner: "please complete the ones that are not done and have a final audit on your own work."
+Two of the open items needed the owner's decision, which was asked and answered in chat:
+- Graph wiring is Stage 35's task 4, and Rule 4 forbids starting it early: **"Leave it to Stage 35"**.
+- MD&A text needs a new data source, a design-spec change (Rule 3): **"Approve the spec change"**.
+
+### Done
+
+- **MD&A text (A6).** Plan addendum decisions E1–E7 ([../plan.md](../plan.md)). Spec §11 has a new "Filing text" row.
+  - `atlas.data.filings`:
+    - `mda.py`: HTML to text; Item 7 extraction, or Exhibit 13; a fallback to the MD&A heading.
+    - `text.py`: the `filing_text` table, the filing list, `ingest_filing_text`, `MdaText`.
+  - `EdgarClient.filing_documents` and `filing_document`.
+  - The `filings` sync dataset (step `filing_text`).
+  - `DataView.mda`, point in time and blocked-aware, in every PIT suite: leak, guard, block.
+  - The going-concern check reads the latest 10-K MD&A. It FLAGs a sentence that holds all of the terms and none of `going_concern_exclusions`, and quotes it.
+  - It is NOT EVALUATED, with the reason named, when there is no MD&A, the 10-K is older than 460 days, or no MD&A was found in the filing.
+  - The recorded fixture has no `filing_text`, so its replay is byte-identical.
+- **Main lake.**
+  - Backfilled in a scratch lake through `atlas data sync --datasets filings`: 748 equities, 0 failed, 7,643 10-Ks, 52 minutes ([filing-text-backfill.txt](filing-text-backfill.txt)).
+  - 428 filings without an MD&A were fetched again after E7 ([filing-text-refetch.txt](filing-text-refetch.txt)).
+  - Swapped in from the owner's Terminal panel with a checked backup; only the new table was added ([main-lake-filing-text-swap.txt](main-lake-filing-text-swap.txt)).
+  - Read back, with point in time checked ([main-lake-filing-text-readback.txt](main-lake-filing-text-readback.txt)).
+  - Coverage: 7,558 of 7,643 10-Ks have an MD&A (98.9%).
+- **The rule on real data** ([filing-text-review.txt](filing-text-review.txt)).
+  - Every MD&A sentence holding both terms was reviewed: 71 MD&As.
+  - The first rule (any term anywhere) would have flagged mostly descriptions of ASU 2014-15.
+  - The final rule flags 16 of 7,558 MD&As. Each was reviewed:
+    - 12 about the company itself;
+    - 3 about a material subsidiary that went bankrupt (FES, GenOn);
+    - 1 about another company (Toshiba, in Western Digital's).
+- **Untested-edge mutants.** 12 of 16 killed by new tests; 4 are recorded with reasons.
+  - Stage 29's run is now 2,335 of 2,396 killed (97.5%).
+- **Mutation testing of the new code.** 778 of 811 killed (95.9%); the 33 survivors are all equivalent ([mutation/mutation-summary.md](mutation/mutation-summary.md)).
+
+### Self-audit of my own follow-up work
+
+I re-read what I built and recorded, and checked it against real data and the rules. Found and fixed:
+1. **Extraction cut a real MD&A short.** Apple's FY2015 10-K breaks lines mid-sentence, so a cross-reference ("Item 8 of this Form 10-K …") started a line and ended the section after 6,128 characters.
+   - Headings must now be followed by their item's title.
+   - Test first: `test_cross_references_at_a_line_start_are_not_headings`. The section is now 58,354 characters.
+2. **Text decoding.**
+   - Documents without a declared charset were read as Latin-1, so curly apostrophes broke the heading match.
+   - Bytes are now decoded as UTF-8, else Windows-1252. Test first.
+3. **30 companies had no MD&A at all,** JPMorgan, Bank of America, GE and Chevron among them: annual-report layouts with no "Item 7" heading. E7 added a fallback; coverage went from 94.4% to 98.9%.
+4. **The keyword rule was noisy:** about 2% of MD&As named a term, almost all as ASU 2014-15 wording. It was replaced by the sentence rule with exclusions; three rounds of review on the whole lake.
+5. **My own record errors:**
+   - a Decisions-log row I first wrote over several lines (a broken table row), rejoined;
+   - "82 new tests" corrected to 80 in the earlier follow-up;
+   - one of my own test assertions kept the old CLEAR wording.
+6. **Dead code removed:** a namespace split that lxml.html never needs, found by mutation testing.
+
+Checked and found right:
+- Hard rules: no `datetime.now()` in the new code; the agent tool reads only `DataView`; no network in unit tests (respx); no `.env` value in any changed or new file; the username appears only in a pre-existing PROGRESS line from the original planning commit.
+- Config: every new setting is in `config/fund.yaml` and `AtlasConfig`, and the yaml-equals-defaults tests cover it.
+- The full suite, `make check` and the integration tests (below).
+
+Still open, with reasons:
+- **10-Q MD&As are not read.** This is the limit you approved; documented. A doubt first disclosed in a 10-Q (Chesapeake 2020) is seen only at the next 10-K.
+- **Seven companies have no MD&A,** because they use other headings (e.g. Wells Fargo's "Financial Review").
+- **Graph wiring stays with Stage 35.**
+- **Four mutants remain untested edges,** all needing a split dated on a boundary day, or a non-default calendar.

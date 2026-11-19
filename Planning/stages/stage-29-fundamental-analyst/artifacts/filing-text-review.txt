@@ -1,0 +1,85 @@
+rows 7643, symbols 735, forms {'10-K': 7643}
+status {'ok': 7558, 'by_reference': 72, 'not_found': 13} source {'primary': 7536, 'EX-13': 107}
+MD&A chars: median 79613 p5 38483 p95 211329 max 964948
+filed 2015-01-20 .. 2026-11-18 | accepted_at missing: 0
+not ok by year: {2015: 12, 2016: 11, 2017: 9, 2018: 8, 2019: 7, 2020: 10, 2021: 6, 2022: 5, 2023: 5, 2024: 4, 2025: 4, 2026: 4}
+symbols with no ok MD&A at all: ['AEP', 'CLX', 'MOS', 'TWC', 'TWX', 'WFC', 'WIN']
+MD&As with a sentence holding both terms: 71; FLAG under the rule:
+  BBBY 10-K filed 2023-06-14 | MD&A: "As a result of the Company’s assessment of going concern considerations, management has determined that the liquidity condition, our need to satisfy certain financial and other covenants in our debto…"
+  DO 10-K filed 2021-02-10 | MD&A: "The risks and uncertainties surrounding the Chapter 11 Cases, the defaults under our Debt Instruments, and the weak industry conditions impacting our business raise substantial doubt as to our abilit…" and 1 more sentence
+  ECHO 10-K filed 2026-03-02 | MD&A: "However, until the closing of these transactions, which are subject to receipt of government approvals and other customary conditions, funding is not deemed committed and because we do not currently …"
+  ENDP 10-K filed 2023-03-06 | MD&A: "As previously disclosed, the Company concluded that there was substantial doubt about its ability to continue as a going concern within one year after the date of issuance of the Condensed Consolidat…" and 1 more sentence
+  ENDP 10-K filed 2024-03-06 | MD&A: "As previously disclosed, the Company concluded that there was substantial doubt about its ability to continue as a going concern within one year after the date of issuance of the Condensed Consolidat…" and 1 more sentence
+  ENPH 10-K filed 2017-03-16 | MD&A: "Based on our cash position at December 31, 2016 and our recent operating losses, we have concluded that substantial doubt exists as to our ability to continue as a going concern within the next year."
+  ESV 10-K filed 2021-03-02 | MD&A: "There can be no assurance that we will confirm and consummate a plan of reorganization as contemplated by the Amended RSA or complete another plan of reorganization with respect to the Chapter 11 Cas…" and 1 more sentence
+  FE 10-K filed 2017-02-21 | MD&A: "Although management is exploring capital and other cost reductions, asset sales, and other options to improve cash flow as well as continuing with legislative efforts to explore a regulatory solution…"
+  FE 10-K filed 2018-02-20 | MD&A: "Although management continues to explore cost reductions and other options to improve cash flow, these obligations and their impact to liquidity raise substantial doubt about FES’ ability to meet its…"
+  FTR 10-K filed 2020-03-31 | MD&A: "These factors, among others, create substantial doubt about Frontier’s ability to continue as a going concern." and 2 more sentences
+  FTR 10-K filed 2021-03-03 | MD&A: "As a result of risks and uncertainties related to (i) the Company’s ability to successfully consummate the Plan and emerge from the Chapter 11 Cases, and (ii) the effects of disruption from the Chapt…" and 1 more sentence
+  MNK 10-K filed 2021-03-10 | MD&A: "As a result, we have concluded that management’s plans at this stage do not alleviate substantial doubt about our ability to continue as a going concern." and 1 more sentence
+  MNK 10-K filed 2022-03-15 | MD&A: "As a result, we have concluded that management's plans at this stage do not alleviate substantial doubt about our ability to continue as a going concern." and 1 more sentence
+  NE 10-K filed 2021-03-12 | MD&A: "Legacy Noble performed the required assessments in conjunction with the filing of its Form 10-Q for the three months ended March 31, 2020 and determined, at that time, that substantial doubt about it…"
+  NRG 10-K filed 2017-02-28 | MD&A: "As a result of these factors, there is substantial doubt about GenOn's ability to continue as a going concern." and 1 more sentence
+  WDC 10-K filed 2017-08-29 | MD&A: "nuclear business and substantial doubt about its ability to continue as a going concern."
+FLAG 16 of 7558 MD&As
+excluded both-term sentences (distinct):
+  3 | This ASU requires an entity's management to evaluate whether there are conditions or events, considered in the aggregate, that raise substantial doubt about the entity's ability to
+  3 | If substantial doubt exists, the entity must disclose the principal conditions or events that raised the substantial doubt, management's evaluation of the significance of these con
+  2 | This update requires management to perform interim and annual assessments on whether there are conditions or events that raise substantial doubt about the entity’s ability to conti
+  2 | Subtopic 40 requires management to evaluate whether there are conditions or events that in aggregate would raise substantial doubt about an entity’s ability to continue as a going 
+  2 | GAAP guidance on management’s responsibility in evaluating whether there is substantial doubt about a company’s ability to continue as a going concern and about related footnote di
+  2 | For each reporting period, management will be required to evaluate whether there are conditions or events that raise substantial doubt about a company’s ability to continue as a go
+  2 | The new guidance clarifies management’s responsibility to evaluate whether there is substantial doubt about an entity’s ability to continue as a going concern and to provide relate
+  2 | ASU 2014-15 defines management's responsibility to evaluate whether there is substantial doubt about an organization's ability to continue as a going concern within one year of the
+  2 | ASU 2014-15 requires management to evaluate, at each annual or interim reporting period, whether there are conditions or events that exist that raise substantial doubt about an ent
+  2 | This standard requires us to evaluate, for each annual and interim reporting period, whether there are conditions and events, considered in the aggregate, that raise substantial do
+  2 | Under this standard, in connection with each annual and interim period, management must assess whether there is substantial doubt about an entity's ability to continue as a going c
+  2 | substantial doubt about an entity’s ability to continue as a going concern and to provide related footnote disclosures.
+  2 | The standard requires an entity’s management to evaluate at each annual and interim reporting period whether there are conditions or events that raise substantial doubt about the e
+  2 | The FASB issued in August 2014 guidance that requires an entity’s management to evaluate the entity’s ability to continue as a going concern on an interim and annual basis and requ
+  2 | conditions or events exist, an entity should disclose that there is substantial doubt about the entity’s ability to continue as a going concern for a period of one year after the d
+  2 | In August 2014, the FASB issued amended guidance that requires an entity’s management to evaluate whether there are conditions or events, considered in the aggregate, that raise su
+  2 | Our conclusion was based on several contributing factors, including: (i) the fair value being less than the carrying value and the uncertainty surrounding Canopy’s stock price reco
+  1 | 2014-15, Disclosure of Uncertainties about an Entity’s Ability to Continue as a Going Concern (“ASU 2014-15”), amending FASB Accounting Standards Subtopic 205-40 to provide guidanc
+  1 | The new guidance requires an entity to evaluate, at each interim and annual period, whether there are conditions or events that raise substantial doubt about the entity’s ability t
+  1 | substantial doubt about a company’s ability to continue as a going concern and to provide related footnote disclosures.
+  1 | ASU 2014-15 requires an entity to evaluate whether there are conditions or events that raise substantial doubt about the entity’s ability to continue as a going concern within
+  1 | there are conditions or events that raise substantial doubt about the entity’s ability to continue as a going concern within one year after the date that the financial statements a
+  1 | The new going concern standard codifies in generally accepted accounting principles (GAAP) management’s responsibility to evaluate whether there is substantial doubt about an entit
+  1 | As of December 31, 2016, we adopted this guidance and based on our evaluation no conditions and events that could raise substantial doubt about the Company’s ability to continue as
+  1 | In August 2014, the FASB issued ASU 2014-15, “Presentation of Financial Statements - Going Concern,” which provides guidance about management's responsibility to evaluate whether t
+  1 | In August 2014, the FASB issued ASU 2014-15, “Presentation of Financial Statements - Going Concern,” which provides guidance about management’s responsibility to evaluate whether t
+  1 | In August 2014, the FASB issued ASU 2014-15, Presentation of Financial Statements - Going Concern (Subtopic 205-40): Disclosure of Uncertainties about an Entity’s Ability to Contin
+  1 | Management has considered the above factors and has concluded that substantial doubt as to our ability to continue as a going concern no longer exists at the time of filing of this
+  1 | Uncertainties about an Entity’s Ability to Continue as a Going Concern.” This ASU provides guidance about management’s responsibility to evaluate whether there is substantial doubt
+  1 | FASB issued ASU 2014-15, “Disclosure of Uncertainties about an Entity’s Ability to Continue as a Going Concern.” This ASU provides guidance about management’s responsibility to eva
+  1 | On August 27, 2014, the FASB issued ASU 2014-15, "Disclosure of Uncertainties about an Entity's Ability to Continue as a Going Concern." In connection with preparing financial stat
+  1 | In connection with the preparation of the Consolidated Financial Statements, we conducted an evaluation as to whether there were conditions and events, considered in the aggregate,
+  1 | In connection with the preparation of our consolidated financial statements, we conducted an evaluation as to whether there were conditions and events, considered in the aggregate,
+  1 | responsibility to evaluate whether there is substantial doubt about an entity's ability to continue as a going concern as well as required disclosures.
+  1 | Substantial doubt about an entity's ability to continue as a going concern exists if it is probable that the entity will be unable to meet its obligations as they become due within
+  1 | Substantial doubt about an entity's ability to continue as a going concern exists if it is probable that the entity will
+  1 | During the preparation of quarterly and annual financial statements, management should evaluate whether conditions or events exist that raise substantial doubt about the entity’s a
+  1 | If this evaluation indicates that it is probable that an entity will be unable to meet its obligations when they become due within one year of the financial statement issuance date
+  1 | 2014-15, which amends ASC Subtopic 205-40, “Disclosure of Uncertainties about an Entity’s Ability to continue as a Going Concern.” The amendments in this ASU provide guidance relat
+  1 | Subsequent to emergence from the Chapter 11 Cases, Noble performed a reassessment and concluded there was no longer substantial doubt regarding the Noble’s ability to continue as a
+  1 | The guidance applies prospectively to all entities, requiring management to evaluate whether there are conditions or events, considered in the aggregate, that raise substantial dou
+  1 | ASU 2014-15 requires management to evaluate whether there is substantial doubt about an entity’s ability to continue as a going concern and to provide related footnote disclosures.
+  1 | ASU 2014-15 will require management to assess an entity's ability to continue as a going concern for each annual and interim reporting period and to provide related footnote disclo
+  1 | there is substantial doubt about the entity's ability to continue as a going concern and, if so, provide certain footnote disclosures.
+  1 | aggregate, that raise substantial doubt about the entity’s ability to continue as a going concern for a period of one year after the date that the financial statements are issued (
+  1 | exist, an entity should disclose that there is substantial doubt about the entity’s ability to continue as a going concern for a period of one year after the date that the financia
+  1 | ability to continue as a going concern, if such substantial doubt were to exist.
+  1 | there is substantial doubt about an entity’s ability to continue as a going concern and when and how an entity must disclose certain relevant conditions and events.
+  1 | events, considered in the aggregate, that raise substantial doubt about the entity’s ability to continue as a going concern for a period of one year after the date that the financi
+  1 | doubt about our ability to continue as a going concern, if such substantial doubt were to exist.
+  1 | substantial doubt about an entity’s ability to continue as a going concern and when and how an entity must disclose certain relevant conditions and events.
+  1 | considered in the aggregate, that raise substantial doubt about the entity’s ability to continue as a going concern for a period of one year after the date that the financial state
+  1 | This guidance will impact the disclosure and presentation of any substantial doubt about our ability to continue as a going concern, if such substantial doubt were to
+  1 | Our conclusion was based primarily on several contributing factors, including: (i) the fair value being less than the carrying value and the uncertainty surrounding Canopy’s stock 
+  1 | In August 2014, the FASB issued guidance defining management’s responsibility to decide whether there is substantial doubt about an organization’s ability to continue as a going co
+  1 | The amendment requires an entity’s management to evaluate for each annual and interim reporting period whether there are conditions or events, considered in the aggregate, that rai
+  1 | In August 2014, the FASB issued ASU 2014-15, “Presentation of Financial Statements - Going Concern - Disclosures of Uncertainties about an entity's Ability to Continue as a Going C
+  1 | The guidance requires an entity to evaluate whether there are conditions or events, in the aggregate, that raise substantial doubt about the entity’s ability to continue as a going
+  1 | Included in such amounts was $91,025,000 relating to Genesis Healthcare whom noted substantial doubt as to their ability to continue as a going concern in August.
+  1 | During the year ended December 31, 2020, we recorded $146,508,000, which included $91,025,000 related to Genesis Healthcare ("Genesis") whom noted substantial doubt as to their abi

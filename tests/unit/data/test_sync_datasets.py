@@ -48,6 +48,7 @@ STEPS = (
     "universe",
     "prices",
     "fundamentals",
+    "filing_text",
     "macro",
     "news",
     "earnings",
@@ -100,6 +101,8 @@ def test_sync_all_datasets_fills_every_table(
     assert symbols_of(tmp_lake, "index_membership") == set(MEMBERS)
     assert {"AAPL", "MSFT", "NEW", "OLD", "SPY", "QQQ"} <= symbols_of(tmp_lake, "instruments")
     assert symbols_of(tmp_lake, "fundamentals_facts") == {"AAPL", "MSFT"}
+    assert symbols_of(tmp_lake, "filing_text") == {"AAPL", "MSFT"}  # Stage 29 follow-up 2
+    assert set(tmp_lake.read_table("filing_text")["status"]) == {"ok"}
     assert symbols_of(tmp_lake, "macro_observations", "series_id") == {"CPIAUCSL", "DGS10"}
     assert set(tmp_lake.read_table("news")["article_id"]) == {f"alpaca-{i}" for i in range(1, 6)}
     events = tmp_lake.read_table("events")
@@ -111,6 +114,7 @@ def test_sync_all_datasets_fills_every_table(
     assert tmp_lake.has_table(DATA_QUALITY_ISSUES.name)
     steps = by_step(report)
     assert steps["fundamentals"].empty == 2  # type: ignore[attr-defined]  # NEW, OLD: no CIK
+    assert steps["filing_text"].empty == 2  # type: ignore[attr-defined]  # NEW, OLD: no CIK
     assert steps["prices"].ok == 6  # type: ignore[attr-defined]
 
 

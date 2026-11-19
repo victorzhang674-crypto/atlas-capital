@@ -189,6 +189,7 @@ Each `Prediction` is settled after its horizon. Scores are Brier scores (directi
 | Vector memory | ChromaDB (local) | Similar-situation retrieval |
 | Market data | yfinance (free), Alpaca market data (free with a paper account) | Free to start |
 | Fundamentals | SEC EDGAR companyfacts (XBRL, keyed by filing date) | Free and point-in-time |
+| Filing text | SEC EDGAR 10-K documents: MD&A (Item 7, or the Exhibit 13 it points to), keyed by acceptance time | Free and point-in-time; added 2026-11-18 with the owner's approval (Stage 29 going-concern check) |
 | Macro | FRED / ALFRED | Free, with vintages |
 | News | Alpaca News API (Benzinga, history from 2015), Yahoo fallback | Free, timestamped |
 | Broker (paper) | Alpaca paper trading | Free, good API |

@@ -578,9 +578,39 @@ def _posts(future: bool) -> pd.DataFrame:
     return out
 
 
+def _filing_text(future: bool) -> pd.DataFrame:
+    """One 10-K MD&A per symbol known before the as-of; with `future`, AAA's next 10-K,
+    accepted after the as-of and before `WORLD_LATER` (Stage 29 follow-up 2)."""
+    rows = [
+        (s, "0000000001-23-00000" + str(i), date(2022, 12, 31), date(2023, 2, 15),
+         utc(2023, 2, 15, 21), f"Item 7. MD&A of {s} for 2022.")
+        for i, s in enumerate(("AAA", "BBB", "BAD"))
+    ]  # fmt: skip
+    if future:
+        rows.append(
+            ("AAA", "0000000001-24-000009", date(2023, 12, 31), date(2024, 3, 5),
+             utc(2024, 3, 5, 21, 5), "Item 7. MD&A of AAA for 2023.")
+        )  # fmt: skip
+    out = pd.DataFrame(
+        [
+            {
+                "symbol": sym, "cik": 1, "accn": accn, "form": "10-K", "period_end": end,
+                "filed": filed, "accepted_at": stamp, "available_at": stamp, "section": "mda",
+                "source": "primary", "document": "doc.htm", "url": "https://x/doc.htm",
+                "sha256": "0" * 64, "status": "ok", "chars": len(text), "text": text,
+            }
+            for sym, accn, end, filed, stamp, text in rows
+        ]
+    )  # fmt: skip
+    for col in ("accepted_at", "available_at"):
+        out[col] = pd.to_datetime(out[col], utc=True).astype("datetime64[us, UTC]")
+    return out
+
+
 def build_world(lake: Any, *, future: bool) -> None:
     """Fill `lake` with the Stage 13 test world: prices, actions, instruments, membership,
-    fundamentals, macro, news, events, macro events, reactions and social posts known at
+    fundamentals, macro, news, events, macro events, reactions, social posts and 10-K MD&A
+    known at
     `WORLD_AS_OF` 08:00; with `future=True` also rows in every table known only later."""
     events, macro_events, reactions = _events(future)
     tables = {
@@ -595,6 +625,7 @@ def build_world(lake: Any, *, future: bool) -> None:
         "macro_events": macro_events,
         "earnings_reactions": reactions,
         "social_posts": _posts(future),
+        "filing_text": _filing_text(future),
     }
     for name, frame in tables.items():
         lake.write_table(name, frame, mode="upsert")

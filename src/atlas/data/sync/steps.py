@@ -19,6 +19,7 @@ from atlas.data.events import (
     ingest_macro_calendar,
     ingest_upcoming_events,
 )
+from atlas.data.filings.text import ingest_filing_text
 from atlas.data.fundamentals import (
     CikMap,
     ConceptMap,
@@ -278,6 +279,35 @@ def _fundamentals_step(run: _Run) -> StepSpec:
     )
 
 
+def _no_filings(reason: str) -> bool:
+    return reason.startswith("no CIK") or (reason.startswith("no ") and " filed since " in reason)
+
+
+def _filing_text_step(run: _Run) -> StepSpec:
+    """The MD&A of each equity's 10-K filings (Stage 29 follow-up 2): a snapshot step whose
+    re-runs fetch only filings not yet stored."""
+    _, equities = run.universe()
+    client, cik_map = _edgar(run)
+
+    def fetch(keys: tuple[str, ...], start: date, end: date) -> ChunkOutcome:
+        report = ingest_filing_text(
+            run.lake, client, keys, cik_map=cik_map, config=run.config, calendar=run.calendar
+        )
+        outcome = _classify(keys, report.symbols_ok, report.failure_reasons, _no_filings)
+        return ChunkOutcome(report.rows, outcome.ok, outcome.empty, outcome.failed)
+
+    return _step(
+        run,
+        "filing_text",
+        "filings",
+        "sec",
+        "snapshot",
+        equities,
+        fetch,
+        chunk_size=run.settings.chunk_size.filing_text,
+    )
+
+
 def _macro_step(run: _Run) -> StepSpec:
     catalog = load_macro_series(run.config.data.macro.series_file)
     client = run.resources.get("fred")
@@ -488,6 +518,7 @@ _BUILDERS: Mapping[str, Callable[[_Run], StepSpec | None]] = FrozenDict(
         "universe": _universe_step,
         "prices": _prices_step,
         "fundamentals": _fundamentals_step,
+        "filing_text": _filing_text_step,
         "macro": _macro_step,
         "news": _news_step,
         "earnings": _earnings_step,

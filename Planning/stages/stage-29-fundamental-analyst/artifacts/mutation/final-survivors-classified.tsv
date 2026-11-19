@@ -56,19 +56,7 @@ agents.tools.fundamental_tools.x__latest_stamp__mutmut_4	unreachable	same (only 
 agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_1	unreachable	default column: every caller passes the column
 agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_2	unreachable	same
 agents.tools.fundamental_tools.x_factor_ranks_from__mutmut_28	unreachable	sector_panel raises before a symbol without factor values reaches it
-agents.tools.fundamental_tools.x__history_multiples__mutmut_8	untested edge	5-year window start (365.25 vs 366.25 days): needs a quarter end inside the 5-day difference
-agents.tools.fundamental_tools.x__history_multiples__mutmut_20	untested edge	a quarter ending exactly on the window start
-agents.tools.fundamental_tools.x__history_multiples__mutmut_27	untested edge	price window start +/- tolerance: needs the first quarter's bar in that band
-agents.tools.fundamental_tools.x__history_multiples__mutmut_54	untested edge	a bar gap before a quarter end (tolerance read off the second-last bar)
-agents.tools.fundamental_tools.x__history_multiples__mutmut_55	untested edge	a bar exactly price_tolerance_days before a quarter end
 agents.tools.fundamental_tools.x__history_multiples__mutmut_61	untested edge	the bar day only feeds the split factor; differs only with a split on the last bar day
-agents.tools.fundamental_tools.x__history_multiples__mutmut_86	untested edge	a quarter without a bar followed by quarters with bars (break vs continue)
 agents.tools.fundamental_tools.x__dilution__mutmut_33	untested edge	share-count window start: needs a count dated in the tolerance band
 agents.tools.fundamental_tools.x__dilution__mutmut_35	untested edge	same
 agents.tools.fundamental_tools.x__window_sessions__mutmut_2	untested edge	the calendar config is passed through; the tests use the default calendar
-agents.tools.fundamental_tools.x_red_flag_results__mutmut_46	untested edge	the periods text when filings are fresh but no year-ago period exists (under a year of history)
-agents.tools.fundamental_tools.x_sector_panel__mutmut_24	untested edge	a universe member without an instrument row before other peers (the A2 test has it last)
-agents.tools.fundamental_tools.x_sector_panel__mutmut_34	untested edge	exact text when the symbol gets no factor values
-agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_7	untested edge	a flow with a value but no TTM at an end where revenue has one (stamp column)
-agents.tools.fundamental_tools.x__stamps_at__mutmut_6	untested edge	same
-agents.research.fundamental.x_sentences__mutmut_14	untested edge	strip set gains "X": differs only for a tag-only piece ending in a literal X

@@ -203,8 +203,22 @@ sentence that states a number carries an `[E:<id>]` tag; problems get one repair
 
 Receivables need the concept `accounts_receivable` (Stage 29). A lake ingested before it has
 no receivables rows until the fundamentals are re-ingested (the main lake was, 2026-11-18), so
-the receivables check reads NOT EVALUATED there; the lake holds no MD&A text, so the
-going-concern check always does.
+the receivables check reads NOT EVALUATED there.
+
+**Going concern** (Stage 29 follow-up 2) reads the MD&A of the latest 10-K known at the as-of
+(`DataView.mda`, the `filings` dataset). The check is FLAG when one MD&A sentence holds all of
+`going_concern_terms` ("going concern", "substantial doubt") and none of
+`going_concern_exclusions`; the evidence quotes that sentence. The exclusions exist because, on
+the main lake, most such sentences describe the ASU 2014-15 standard ("evaluate whether there
+is substantial doubt about an entity's ability …"), are hypothetical, are about another party
+(a tenant, an investee) or deny a doubt ("no longer"). With them, 16 of the main lake's 7,558
+10-K MD&As are flagged: 12 about the company itself (Frontier, Endo, Mallinckrodt, Valaris,
+Bed Bath & Beyond, …), 3 about a subsidiary (FirstEnergy's FES, NRG's GenOn) and 1 about another
+company (Western Digital on Toshiba), all reviewed. The
+check is NOT EVALUATED, with the reason, when the lake has no MD&A of the symbol, when the
+10-K's fiscal year ended more than `mda_max_age_days` (460) days before the as-of, or when no
+MD&A was found in the filing. Only 10-K MD&As are read: a doubt first disclosed in a 10-Q is
+seen at the next 10-K.
 
 **Recorded run.** `tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/` holds a live
 run on AAPL for 2024-05-01: the exported LLM cache, the lake slice it read (`atlas data slice`)

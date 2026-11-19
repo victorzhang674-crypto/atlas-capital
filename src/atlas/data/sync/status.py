@@ -37,6 +37,7 @@ STATUS_TABLES: Mapping[str, tuple[str, str | None, str | None]] = FrozenDict(
         "prices_daily": ("prices", "date", "symbol"),
         "corporate_actions": ("prices", "ex_date", "symbol"),
         "fundamentals_facts": ("fundamentals", "period_end", "symbol"),
+        "filing_text": ("filings", "filed", "symbol"),
         "macro_series": ("macro", None, "series_id"),
         "macro_observations": ("macro", "obs_date", "series_id"),
         "news": ("news", "published_at", "symbols"),

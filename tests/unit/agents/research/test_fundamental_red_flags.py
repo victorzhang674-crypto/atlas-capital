@@ -11,6 +11,7 @@ from atlas.agents.tools.fundamental_tools import (
     fcf_debt_rule,
     going_concern_hits,
     going_concern_rule,
+    going_concern_sentences,
     receivables_rule,
 )
 from atlas.core.config import RedFlagsConfig
@@ -115,13 +116,87 @@ def test_going_concern_terms_are_whole_words_ignoring_case_and_spacing() -> None
     assert going_concern_hits("", CFG.going_concern_terms) == ()
 
 
+DOUBT = "These conditions raise substantial doubt about our ability to continue as a going concern."
+
+
 def test_going_concern_rule() -> None:
+    """Stage 29 follow-up 2 (E5): a FLAG needs one sentence holding every term and no excluded
+    phrase, and quotes it (real MD&As name the terms mostly to describe ASU 2014-15)."""
     assert going_concern_rule(None, CFG).status == "NOT EVALUATED"
     assert "no MD&A text" in going_concern_rule(None, CFG).detail
-    hit = going_concern_rule("substantial doubt exists", CFG)
+    hit = going_concern_rule(f"Revenue fell. {DOUBT} We plan to raise capital.", CFG)
     assert (hit.check, hit.status) == ("going_concern", "FLAG")
-    assert '"substantial doubt"' in hit.detail
+    assert hit.detail == f'MD&A: "{DOUBT}"'
     assert going_concern_rule("Revenue grew.", CFG).status == "CLEAR"
+    # the terms in two sentences are not one statement
+    assert (
+        going_concern_rule("Substantial doubt? No. We are a going concern.", CFG).status == "CLEAR"
+    )
+
+
+@pytest.mark.parametrize(
+    "sentence",
+    [
+        "ASU 2014-15 requires management to evaluate whether there is substantial doubt about an "
+        "entity's ability to continue as a going concern.",
+        "The new guidance requires an entity to evaluate whether there are conditions that raise "
+        "substantial doubt about the entity\u2019s ability to continue as a going concern.",
+        "GAAP guidance on evaluating whether there is substantial doubt about a company's ability "
+        "to continue as a going concern.",
+        "Management concluded that substantial doubt about our ability to continue as a going "
+        "concern no longer exists.",
+        "Based on our evaluation no conditions that could raise substantial doubt about our "
+        "ability to continue as a going concern were known.",
+        "There is no substantial doubt about our ability to continue as a going concern.",
+        "If substantial doubt exists, the entity must disclose the conditions that raised the "
+        "substantial doubt about its ability to continue as a going concern.",
+        "This guidance will impact the disclosure of any substantial doubt about our ability to "
+        "continue as a going concern, if such substantial doubt were to exist.",
+        "We recorded $91 million for a tenant who noted substantial doubt as to their ability to "
+        "continue as a going concern.",
+        "Factors included the substantial doubt about the investee's ability to continue as a "
+        "going concern, as disclosed by the investee.",
+        "After emergence we concluded there was no longer substantial doubt regarding our ability "
+        "to continue as a going concern.",
+    ],
+)
+def test_standards_others_and_negations_are_not_a_flag(sentence: str) -> None:
+    assert (
+        going_concern_sentences(sentence, CFG.going_concern_terms, CFG.going_concern_exclusions)
+        == ()
+    )
+    assert going_concern_rule(sentence, CFG).status == "CLEAR"
+
+
+def test_going_concern_sentences_are_unique_in_order_and_quoted_at_most_200_characters() -> None:
+    long = (
+        "Because "
+        + "the restructuring may fail " * 10
+        + "there is substantial doubt about our ability to continue as a going concern."
+    )
+    text = f"{DOUBT}\n{long} {DOUBT}"
+    assert going_concern_sentences(text, CFG.going_concern_terms, CFG.going_concern_exclusions) == (
+        DOUBT,
+        long,
+    )
+    detail = going_concern_rule(f"{long} {DOUBT}", CFG).detail
+    assert detail == f'MD&A: "{long[:199]}\u2026" and 1 more sentence'
+    assert going_concern_rule(f"{DOUBT} {long} Again: {DOUBT.lower()}", CFG).detail.endswith(
+        " and 2 more sentences"
+    )
+
+
+def test_exclusions_ignore_case_and_curly_apostrophes() -> None:
+    sentence = DOUBT.replace("our ability", "An Entity\u2019s ability")
+    assert going_concern_sentences(sentence, CFG.going_concern_terms, ("an entity's",)) == ()
+    assert going_concern_sentences(sentence, CFG.going_concern_terms, ()) == (sentence,)
+
+
+def test_the_clear_detail_names_the_terms() -> None:
+    assert going_concern_rule("Revenue grew.", CFG).detail == (
+        'no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a '
+        "phrase of going_concern_exclusions, such as a standard's name, are left out)"
+    )
 
 
 def test_thresholds_come_from_config() -> None:
@@ -145,3 +220,10 @@ def test_thresholds_come_from_config() -> None:
 def test_bad_thresholds_are_refused(bad: dict[str, object]) -> None:
     with pytest.raises(ValueError):
         RedFlagsConfig.model_validate(bad)
+
+
+def test_a_sentence_of_exactly_200_characters_is_quoted_whole() -> None:
+    tail = " there is substantial doubt about our ability to continue as a going concern."
+    sentence = "B" * (200 - len(tail)) + tail
+    assert len(sentence) == 200
+    assert going_concern_rule(sentence, CFG).detail == f'MD&A: "{sentence}"'

@@ -612,3 +612,20 @@ atlas.data.slice.x_slice_lake__mutmut_89 0
 # pass 5: two of its 75 survivors vs the non-finite current multiple test
 atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_152 1
 atlas.agents.tools.fundamental_tools.x_valuation_from__mutmut_154 1
+# pass 6: the 16 untested-edge survivors vs the third-pass contract tests (mutant 86 re-run after its share-count test)
+atlas.agents.research.fundamental.x_sentences__mutmut_14 1
+atlas.agents.tools.fundamental_tools.x__dilution__mutmut_33 0
+atlas.agents.tools.fundamental_tools.x__dilution__mutmut_35 0
+atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_20 1
+atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_27 1
+atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_54 1
+atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_55 1
+atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_61 0
+atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_8 1
+atlas.agents.tools.fundamental_tools.x__stamps_at__mutmut_6 1
+atlas.agents.tools.fundamental_tools.x__window_sessions__mutmut_2 0
+atlas.agents.tools.fundamental_tools.x_red_flag_results__mutmut_46 1
+atlas.agents.tools.fundamental_tools.x_sector_panel__mutmut_24 1
+atlas.agents.tools.fundamental_tools.x_sector_panel__mutmut_34 1
+atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_7 1
+atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_86 1

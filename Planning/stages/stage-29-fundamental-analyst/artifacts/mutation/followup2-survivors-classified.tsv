@@ -1,0 +1,34 @@
+# mutant (atlas. prefix dropped)	class	reason
+data.filings.mda.x__decode__mutmut_3	equivalent	codec name casing: Python codec names ignore case
+data.filings.mda.x__decode__mutmut_9	equivalent	codec name casing: Python codec names ignore case
+data.filings.mda.x_html_to_text__mutmut_11	equivalent	XML declaration: the pattern is anchored at the start without MULTILINE, so at most one match
+data.filings.mda.x_html_to_text__mutmut_13	equivalent	XML declaration: the pattern is anchored at the start without MULTILINE, so at most one match
+data.filings.text.x_parse_filing_list__mutmut_30	equivalent	dtype: dates and None infer object; strings infer pandas' str dtype
+data.filings.text.x_parse_filing_list__mutmut_32	equivalent	dtype: dates and None infer object; strings infer pandas' str dtype
+data.filings.text.x_parse_filing_list__mutmut_39	equivalent	dtype: dates and None infer object; strings infer pandas' str dtype
+data.filings.text.x_parse_filing_list__mutmut_41	equivalent	dtype: dates and None infer object; strings infer pandas' str dtype
+data.filings.text.x_filing_list__mutmut_38	equivalent	dedupe: a filing listed twice is the same row; keep='first' is the default
+data.filings.text.x_filing_list__mutmut_40	equivalent	dedupe: a filing listed twice is the same row; keep='first' is the default
+data.filings.text.x_filing_list__mutmut_41	equivalent	dedupe: a filing listed twice is the same row; keep='first' is the default
+data.filings.text.x_filing_list__mutmut_43	equivalent	concat index: the frame is re-indexed after sorting
+data.filings.text.x_filing_list__mutmut_45	equivalent	concat index: the frame is re-indexed after sorting
+data.filings.text.x_filing_list__mutmut_46	equivalent	concat index: the frame is re-indexed after sorting
+data.filings.text.x_filing_list__mutmut_62	equivalent	sort kind: (filed, accn) is unique
+data.filings.text.x_filing_list__mutmut_64	equivalent	sort kind: (filed, accn) is unique
+data.filings.text.x_filing_list__mutmut_69	equivalent	sort kind: (filed, accn) is unique
+data.filings.text.x_filing_list__mutmut_70	equivalent	sort kind: (filed, accn) is unique
+data.filings.text.x__stored_accns__mutmut_6	equivalent	columns: reading all columns gives the same accession set
+data.filings.text.x__stored_accns__mutmut_9	equivalent	columns: reading all columns gives the same accession set
+data.filings.text.x__rows__mutmut_100	equivalent	tz name casing: 'utc' and 'UTC' are the same zone
+data.filings.text.x_ingest_filing_text__mutmut_17	equivalent	calendar config: TradingCalendar(config=None) is the default calendar, equal to cfg.calendar's default
+data.filings.text.x_ingest_filing_text__mutmut_73	equivalent	write: keys default to the primary key; only new rows are written, so append = upsert
+data.filings.text.x_ingest_filing_text__mutmut_76	equivalent	write: keys default to the primary key; only new rows are written, so append = upsert
+data.filings.text.x_ingest_filing_text__mutmut_77	equivalent	write: keys default to the primary key; only new rows are written, so append = upsert
+agents.tools.fundamental_tools.x__going_concern__mutmut_4	equivalent	going_concern_rule(None, ...) never reads its config
+data.view.xǁDataViewǁmda__mutmut_18	equivalent	sort kind: (available_at, filed, accn) is unique
+data.view.xǁDataViewǁmda__mutmut_20	equivalent	sort kind: (available_at, filed, accn) is unique
+data.view.xǁDataViewǁmda__mutmut_25	equivalent	sort kind: (available_at, filed, accn) is unique
+data.view.xǁDataViewǁmda__mutmut_26	equivalent	sort kind: (available_at, filed, accn) is unique
+data.view.xǁDataViewǁmda__mutmut_31	equivalent	cache-key name: no other view method shares the key
+data.view.xǁDataViewǁmda__mutmut_37	equivalent	cache-key name: no other view method shares the key
+data.view.xǁDataViewǁmda__mutmut_38	equivalent	cache-key name: no other view method shares the key

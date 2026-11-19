@@ -1,10 +1,13 @@
 # Stage 29 — mutation testing (audit A9 follow-up, 2026-11-18)
 
-**Result: 2,323 of 2,396 mutants killed (97.0%)**, up from 2,053 (85.7%) before the follow-up
-tests. All 73 survivors are classified, each with its reason, in
+**Result: 2,335 of 2,396 mutants killed (97.5%)**, up from 2,053 (85.7%) before the follow-up
+tests. All 61 survivors are classified, each with its reason, in
 [final-survivors-classified.tsv](final-survivors-classified.tsv): 48 equivalent, 9 unreachable,
-16 untested edges. No production defect was found. Every mutant that was killed was killed by a
+4 untested edges. No production defect was found. Every mutant that was killed was killed by a
 test that also passes on the real code.
+
+The code added later in follow-up 2 (the MD&A text and the going-concern check) has its own
+run: **778 of 811 killed (95.9%)**, and all 33 survivors are equivalent (see the last section).
 
 ## Setup
 
@@ -59,10 +62,11 @@ Re-run passes over the survivors ([after-reruns.txt](after-reruns.txt)):
 | 3 | 86 | 4 | the latest period is the last one with a TTM revenue; leading line break in `sentences` |
 | 4 | 82 | 7 | revenue CAGR when shrinking (negative), zero or negative (n/m); own history counts only finite multiples; a tag-only piece joins the sentence before |
 | 5 | 2 of 75 | 2 | a non-finite current multiple (a loss-maker's P/E) keeps its own history and gets no percentile |
+| 6 | 16 of 73 (the untested edges) | 12 | own-history window start (`valuation_years` 1 and 2); bar gaps; a quarter without a share count; red-flag periods with under a year of history; a peer without an instrument row before others; the no-factor-values message; a flow without a TTM; a tag-like piece |
 
-Total: 343 − 270 = **73 survivors**.
+Total: 343 − 282 = **61 survivors**.
 
-## The 73 survivors
+## The 61 survivors
 
 - **Equivalent (48).** The mutant behaves the same for every input. Examples:
   - `strict=` on zips of equal-length sequences;
@@ -74,19 +78,43 @@ Total: 343 − 270 = **73 survivors**.
   - guards that NaN propagation makes redundant;
   - a write mode on a folder that is always new and empty;
   - arguments that the branch taken never reads.
-- **Unreachable (9).** The fallback stamp in `_derived_items` is never used, because revenue's own
-  TTM row always has one. The default column of `_History.stamp` is never used. The
-  missing-symbol branch of `factor_ranks_from` is never reached (`sector_panel` raises first).
-- **Untested edges (16).** These are recorded, not fixed; by reading, the code is right in each:
-  - date boundaries in the own-history price matching (a quarter end exactly on the window
-    start or the tolerance; a bar gap; a quarter with no bar followed by quarters with bars);
-  - the dilution share-count window start;
-  - the calendar config passed through to `_window_sessions`;
-  - the period text when filings are fresh but there is under a year of history;
-  - `sector_panel` with a member that has no instrument row placed before other peers, and
-    the exact text when the symbol gets no factor values;
-  - the stamp of a flow that has a value but no TTM at the latest end;
-  - a strip-set variant that differs only for a tag-only piece ending in a literal `X`.
+- **Unreachable (9).**
+  - The fallback stamp in `_derived_items` is never used, because revenue's own TTM row always has one.
+  - The default column of `_History.stamp` is never used.
+  - The missing-symbol branch of `factor_ranks_from` is never reached: `sector_panel` raises first.
+- **Untested edges (4).** These are recorded, not fixed; by reading, the code is right in each:
+  - the dilution share-count window start (two mutants), which needs a split dated within the tolerance band;
+  - the split factor of the last bar day, which needs a split on that very day;
+  - the calendar config passed to `_window_sessions`, since the tests use the default calendar.
 
-  Each needs a hand-built boundary world; the cost is not worth it at this stage. They are in the
-  Backlog.
+## Follow-up 2: the MD&A text and the going-concern check
+
+- **Setup:** [../mutmut-setup-followup2.cfg](../mutmut-setup-followup2.cfg).
+  - Mutated: `atlas.data.filings.mda`, `atlas.data.filings.text`, `DataView.mda`, `_going_concern`, `going_concern_rule`, `going_concern_sentences` and `_phrase` (by mutant name).
+  - Tests: the filings tests, the going-concern, red-flag and contracts tests, the view PIT suite and the sync tests.
+  - `test_methods_cover_the_public_api` is deselected, because mutmut's trampolines add methods to `DataView`.
+  - No mutant was "suspicious" in this run.
+- **First run, on the code before the third round of tests:** 613 of 706 killed. Tests were then added for:
+  - history pages that reach `since`;
+  - two tickers of one issuer;
+  - a symbol without filings followed by another;
+  - a given calendar;
+  - the log events;
+  - exact errors;
+  - the decoding of bytes undefined in Windows-1252;
+  - comments in HTML;
+  - the length-not-letters choice of a section;
+  - inclusive `min_chars` and heading width;
+  - the view's per-symbol cache.
+
+  One dead line was removed: lxml.html never yields `{ns}tag` names.
+- **Second run:** 764 of 801 killed. Three more tests (a 200-character quote, the bare-string error, submissions without history pages) killed 4 of the survivors ([followup2-rerun.txt](followup2-rerun.txt)).
+- **Final run, after E7:** E7 added the MD&A-heading fallback and the "Management Discussion" heading. The run gave **778 of 811 killed (95.9%)** ([followup2-mutmut-results.txt](followup2-mutmut-results.txt)). Its 33 survivors are exactly the second run's, less the 4 killed there.
+- **The 33 survivors are all equivalent** ([followup2-survivors-classified.tsv](followup2-survivors-classified.tsv)):
+  - codec and time-zone name casing;
+  - an anchored regex that matches once;
+  - dtype inference;
+  - dedupe, sort and index variants on unique keys;
+  - default arguments equal to the given ones;
+  - cache-key names;
+  - a config never read when there is no text.

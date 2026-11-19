@@ -352,7 +352,10 @@ class FundamentalsConfig(_Frozen):
     quarter (`quarter_days`) and a fiscal year (`annual_days`) are inclusive ranges that admit
     52/53-week years; a metric whose period ended more than `max_staleness_days` before the
     as-of day is not used. `cik_overrides_file` lists verified CIKs of former S&P 500 members
-    (relative to the repo root, not resolved here).
+    (relative to the repo root, not resolved here). `filing_index_url` and
+    `filing_document_url` locate a filing's document list and its documents in the EDGAR
+    archive: `{cik}` is the unpadded CIK, `{folder}` the accession number without dashes,
+    `{accn}` the accession number, `{name}` a document's file name (Stage 29 follow-up 2).
     """
 
     company_tickers_url: str = "https://www.sec.gov/files/company_tickers.json"
@@ -368,12 +371,23 @@ class FundamentalsConfig(_Frozen):
     annual_days: tuple[int, int] = (350, 380)
     max_staleness_days: Annotated[int, Field(gt=0)] = 400
     cik_overrides_file: Path = Path("config/cik_overrides.yaml")
+    filing_index_url: str = (
+        "https://www.sec.gov/Archives/edgar/data/{cik}/{folder}/{accn}-index.htm"
+    )
+    filing_document_url: str = "https://www.sec.gov/Archives/edgar/data/{cik}/{folder}/{name}"
 
     @model_validator(mode="after")
     def _check(self) -> Self:
         for name in ("companyfacts_url", "submissions_url"):
             if "{cik" not in getattr(self, name):
                 raise ValueError(f"{name} must contain a {{cik:010d}} placeholder")
+        for name, fields in (
+            ("filing_index_url", ("{cik}", "{folder}", "{accn}")),
+            ("filing_document_url", ("{cik}", "{folder}", "{name}")),
+        ):
+            missing = [f for f in fields if f not in getattr(self, name)]
+            if missing:
+                raise ValueError(f"{name} must contain the placeholders {missing}")
         if "{name}" not in self.submissions_page_url:
             raise ValueError("submissions_page_url must contain a {name} placeholder")
         for name in ("quarter_days", "annual_days"):
@@ -702,6 +716,19 @@ class SyncWorkers(_Frozen):
     local: Annotated[int, Field(ge=1)] = 1
 
 
+class FilingTextConfig(_Frozen):
+    """Text of SEC filings (Stage 29 follow-up 2): the MD&A of each filing of `forms` filed on
+    or after `since`. A section shorter than `min_mda_chars` characters is not taken for an
+    MD&A (it points to an exhibit or holds nothing usable). The documents come from the EDGAR
+    archive (`data.fundamentals.filing_*_url`) through the same rate-limited client."""
+
+    forms: Annotated[
+        tuple[Annotated[str, Field(min_length=1, pattern=r"\S")], ...], Field(min_length=1)
+    ] = ("10-K",)
+    since: date = date(2015, 1, 1)
+    min_mda_chars: Annotated[int, Field(ge=1)] = 1000
+
+
 class SyncChunks(_Frozen):
     """Keys (symbols, or macro series ids) per sync chunk, per step (Stage 14). The checkpoint
     is written after each chunk, so smaller chunks lose less work when a run stops."""
@@ -713,6 +740,7 @@ class SyncChunks(_Frozen):
     earnings: Annotated[int, Field(ge=1)] = 20
     upcoming: Annotated[int, Field(ge=1)] = 50
     social: Annotated[int, Field(ge=1)] = 20
+    filing_text: Annotated[int, Field(ge=1)] = 10
 
 
 class SyncConfig(_Frozen):
@@ -758,6 +786,7 @@ class DataConfig(_Frozen):
     prices: PriceDataConfig = Field(default_factory=PriceDataConfig)
     reference: ReferenceDataConfig = Field(default_factory=ReferenceDataConfig)
     fundamentals: FundamentalsConfig = Field(default_factory=FundamentalsConfig)
+    filing_text: FilingTextConfig = Field(default_factory=FilingTextConfig)
     macro: MacroConfig = Field(default_factory=MacroConfig)
     news: NewsConfig = Field(default_factory=NewsConfig)
     events: EventsConfig = Field(default_factory=EventsConfig)
@@ -1062,8 +1091,13 @@ class RedFlagsConfig(_Frozen):
     positive level. `receivables_excess_growth`: receivables growth minus TTM revenue growth
     (year on year) above this is flagged. `debt_growth_min`: negative TTM free cash flow with
     total debt up more than this year on year is flagged. `dilution_max`: a split-adjusted
-    share count up more than this year on year is flagged. `going_concern_terms`: phrases
-    that flag an MD&A text (case-insensitive, whole words).
+    share count up more than this year on year is flagged. `going_concern_terms`: an MD&A
+    sentence holding all of these phrases (case-insensitive, whole words) is flagged, unless it
+    holds one of `going_concern_exclusions` (a standard's wording such as ASU 2014-15's, a
+    hypothetical, another party's going concern, a negation; reviewed on every main-lake MD&A,
+    2026-11-18). `mda_max_age_days`: the latest
+    10-K MD&A is read only when its fiscal year ended at most this many days before the as-of
+    (a year plus the longest 10-K filing deadline, 90 days, plus slack).
     """
 
     accruals_max: Annotated[float, Field(gt=0, le=1)] = 0.10
@@ -1074,6 +1108,23 @@ class RedFlagsConfig(_Frozen):
     going_concern_terms: Annotated[
         tuple[Annotated[str, Field(min_length=1, pattern=r"\S")], ...], Field(min_length=1)
     ] = ("going concern", "substantial doubt")
+    going_concern_exclusions: tuple[Annotated[str, Field(min_length=1, pattern=r"\S")], ...] = (
+        "whether there",
+        "an entity",
+        "the entity",
+        "a company's",
+        "ASU",
+        "FASB",
+        "Subtopic",
+        "no longer",
+        "no conditions",
+        "no substantial doubt",
+        "not raise substantial doubt",
+        "if such substantial doubt",
+        "their ability",
+        "as disclosed by",
+    )
+    mda_max_age_days: Annotated[int, Field(gt=0)] = 460
 
 
 class FundamentalAnalystConfig(_Frozen):

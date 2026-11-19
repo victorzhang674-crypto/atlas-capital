@@ -1,0 +1,10 @@
+_meta.json: tables added ['filing_text'] | others unchanged: True
+sync_state: steps added ['filing_text'] | others unchanged: True
+filing_text: 7643 rows, 735 symbols, 7558 with an MD&A
+ENPH at 2017-03-16: latest MD&A 10-K filed 2016-03-01 (ok) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_exclusions, such as a standard's name, ar [10-K filed 2016-03-01, fiscal year ended 2015-12-31]
+ENPH at 2017-03-17: latest MD&A 10-K filed 2017-03-16 (ok) -> FLAG: MD&A: "Based on our cash position at December 31, 2016 and our recent operating losses, we have concluded that substantial doubt exists as to our abil [10-K filed 2017-03-16, fiscal year ended 2016-12-31]
+ENPH at 2018-06-01: latest MD&A 10-K filed 2018-04-02 (ok) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_exclusions, such as a standard's name, ar [10-K filed 2018-04-02, fiscal year ended 2017-12-31]
+FTR at 2020-06-01: latest MD&A 10-K filed 2020-03-31 (ok) -> FLAG: MD&A: "These factors, among others, create substantial doubt about Frontier’s ability to continue as a going concern." and 2 more sentences [10-K filed 2020-03-31, fiscal year ended 2019-12-31]
+AAPL at 2024-05-01: latest MD&A 10-K filed 2023-11-03 (ok) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_exclusions, such as a standard's name, ar [10-K filed 2023-11-03, fiscal year ended 2023-09-30]
+JPM at 2024-05-01: latest MD&A 10-K filed 2024-02-16 (ok) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_exclusions, such as a standard's name, ar [10-K filed 2024-02-16, fiscal year ended 2023-12-31]
+WFC at 2024-05-01: latest MD&A 10-K filed 2024-02-20 (by_reference) -> NOT EVALUATED: the MD&A of the 10-K filed 2024-02-20 was not found in the filing (by_reference) [10-K filed 2024-02-20, fiscal year ended 2023-12-31]

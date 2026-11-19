@@ -1,0 +1,5 @@
+# re-run after the three gap tests: <mutant> <pytest exit> (1 = killed)
+atlas.agents.tools.fundamental_tools.x_going_concern_rule__mutmut_27 1
+atlas.data.filings.text.x_ingest_filing_text__mutmut_3 1
+atlas.data.filings.text.x_filing_list__mutmut_19 1
+atlas.data.filings.text.x_filing_list__mutmut_21 1

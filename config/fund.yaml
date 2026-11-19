@@ -56,6 +56,13 @@ data:
     annual_days: [350, 380]  # a duration in this range of days is a fiscal year
     max_staleness_days: 400  # a metric whose period ended longer ago than this is not used (NaN)
     cik_overrides_file: config/cik_overrides.yaml  # verified CIKs of former S&P 500 members, relative to the repo root
+    filing_index_url: https://www.sec.gov/Archives/edgar/data/{cik}/{folder}/{accn}-index.htm  # a filing's document list ({folder} = accession number without dashes)
+    filing_document_url: https://www.sec.gov/Archives/edgar/data/{cik}/{folder}/{name}  # one document of a filing
+  # Text of SEC filings (Stage 29 follow-up 2): the MD&A of each 10-K, point in time by acceptance time.
+  filing_text:
+    forms: ["10-K"]  # forms whose MD&A is stored (10-Q MD&A is not read)
+    since: 2015-01-01  # first filing date read
+    min_mda_chars: 1000  # a shorter section is not an MD&A (it points to an exhibit or holds nothing usable)
   # FRED / ALFRED macro data (Stage 10). The API key comes from the FRED_API_KEY secret (.env).
   macro:
     api_url: https://api.stlouisfed.org/fred  # FRED API base URL
@@ -196,7 +203,7 @@ data:
     # Threads per provider pool; each client's throttle still bounds its request rate.
     workers: {yahoo: 1, sec: 4, fred: 2, alpaca: 2, wikipedia: 1, local: 1}  # yahoo stays 1: yfinance is not thread-safe
     # Keys (symbols or macro series) per chunk; the checkpoint is written after each chunk.
-    chunk_size: {prices: 50, fundamentals: 20, macro: 2, news: 50, earnings: 20, upcoming: 50, social: 20}  # per step
+    chunk_size: {prices: 50, fundamentals: 20, macro: 2, news: 50, earnings: 20, upcoming: 50, social: 20, filing_text: 10}  # per step
 
 # Quant engine (Phase 2).
 quant:
@@ -522,7 +529,10 @@ agents:
       receivables_excess_growth: 0.15  # receivables growth minus TTM revenue growth above this is flagged
       debt_growth_min: 0.10  # negative TTM free cash flow with total debt up more than this is flagged
       dilution_max: 0.05  # split-adjusted share count up more than this is flagged
-      going_concern_terms: ["going concern", "substantial doubt"]  # phrases that flag an MD&A text (no MD&A text is stored yet)
+      going_concern_terms: ["going concern", "substantial doubt"]  # an MD&A sentence holding all of these is flagged ...
+      # ... unless it holds one of these (ASU 2014-15 wording, hypotheticals, other parties, negations; reviewed on every main-lake MD&A 2026-11-18)
+      going_concern_exclusions: ["whether there", "an entity", "the entity", "a company's", "ASU", "FASB", "Subtopic", "no longer", "no conditions", "no substantial doubt", "not raise substantial doubt", "if such substantial doubt", "their ability", "as disclosed by"]
+      mda_max_age_days: 460  # the latest 10-K MD&A is read only if its fiscal year ended at most this many days before the as-of
 
 # Fund graph (Stage 28): LangGraph research fan-out, checkpoints in data/runs/<run_id>/.
 orchestration:

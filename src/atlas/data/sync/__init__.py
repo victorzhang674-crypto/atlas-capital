@@ -1,7 +1,7 @@
 """Data sync: resumable backfill and incremental update of the whole lake (Stage 14).
 
-A sync is an ordered list of steps (universe → prices → fundamentals → macro → news →
-events → sentiment → quality). Each step covers a set of keys (symbols, macro series ids or
+A sync is an ordered list of steps (universe → prices → fundamentals → filings → macro →
+news → events → sentiment → quality). Each step covers a set of keys (symbols, macro series ids or
 one pseudo-key such as `_all`), belongs to one provider (whose thread pool runs it) and
 fetches a chunk of keys over a date window by calling a Stage 07-13 ingest function.
 
@@ -13,8 +13,8 @@ chunk, so a crashed backfill resumes where it stopped and `update` fetches only 
 - windowed steps (prices, news, news scoring, social posts) fetch what a key's coverage
   lacks: `[to + 1 - update_overlap_days, end]`, or the whole window when the request starts
   before `from`;
-- snapshot steps (universe, fundamentals, macro, earnings, scheduled events, macro calendar,
-  reactions, quality) refetch a key whose snapshot is older than the run's end date.
+- snapshot steps (universe, fundamentals, filing text, macro, earnings, scheduled events,
+  macro calendar, reactions, quality) refetch a key whose snapshot is older than the run's end date.
 
 Modules (split from one 1 767-line `sync.py` in the Phase 1 checkpoint, code unchanged):
 `state` (checkpoint and planning), `engine` (running a step's chunks), `datasets` (names,

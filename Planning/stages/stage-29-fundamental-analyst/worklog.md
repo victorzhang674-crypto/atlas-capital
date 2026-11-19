@@ -102,3 +102,71 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - Fast-forwarded `main` 0b1c74f → e574988 in the owner's Terminal panel ([followup-merged-main-check.txt](artifacts/followup-merged-main-check.txt)). Trees equal.
   - Merged result: `uv run pytest -q` → 5260 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch.
   - This records commit goes onto `main` the same way; it changes only `worklog.md` and `PROGRESS.md`.
+- CI on `addaf65`: `main` run 44368701108 success, branch run 44368701317 success ([ci-runs-addaf65.json](artifacts/ci-runs-addaf65.json)).
+
+## 2026-11-18 18:40 — Follow-up 2 (owner: "please complete the ones that are not done and have a final audit on your own work")
+- Open items: graph wiring (A10), MD&A text (A6), 16 untested-edge mutants, the uncommitted CI record.
+- Asked the owner the two that need a decision.
+  - Graph wiring is Stage 35's task 4 under Rule 4 → **"Leave it to Stage 35"**.
+  - MD&A text is a design-spec change under Rule 3 → **"Approve the spec change"**.
+  - Spec §11 gained the "Filing text" row. Decisions log row added. Plan addendum written before code: decisions E1–E6, tasks F1–F8.
+- Prototype on 20 real 10-Ks (AAPL, CCL, the former CHK):
+  - Item 7 extraction works.
+  - Carnival 2020–22 put the MD&A in Exhibit 13.
+  - Chesapeake's 2020 doubt first appeared in a 10-Q, so a 10-K-only source misses it. This is a recorded limit.
+- F1–F3, test-first:
+  - config `data.filing_text`, `filing_*_url`, `red_flags.mda_max_age_days`, chunk `filing_text`;
+  - `atlas.data.filings.mda` (`html_to_text`, `extract_mda`, `extract_exhibit_mda`);
+  - `EdgarClient.filing_documents` / `filing_document`;
+  - `atlas.data.filings.text` (`FILING_TEXT`, `parse_filing_list`, `filing_list`, `ingest_filing_text`).
+  - Red first, each time. Two fixes:
+    - bytes without a charset were read as Latin-1, so curly apostrophes broke headings: now decoded as UTF-8, else Windows-1252;
+    - ruff RUF001: escapes instead of literal Unicode.
+  - mypy: lxml added to the `ignore_missing_imports` overrides. It was a dependency already, never imported directly until now.
+- F4: the `filings` sync dataset and step `filing_text`, a status row, and the CLI help. The sync test world now mocks the EDGAR archive. `test_sync_defaults` gained the new chunk size; this is a test update for a new setting.
+- F5: `DataView.mda`, registered in every view PIT suite (leak, guard, block) and the test world. Semantics tests in `test_filings_view.py`.
+- F6: `_going_concern` reads `view.mda`. A lake without `filing_text` gives the old reason word for word, so the recorded fixture's replay is unchanged (213 research tests green).
+- Live smoke, scratch lake, 3 symbols:
+  - 36 10-Ks, all `ok`.
+  - Apple FY2015 was only 6,128 characters. **Defect:** a cross-reference starting a line cut the section.
+  - Headings must now be followed by their title. Test first; the section is now 58,354 characters.
+- F7, backfill: scratch lake (copies of `instruments` / `index_membership`), `atlas data sync --datasets filings`.
+  - 748 equities, 735 ok, 13 empty, 0 failed, 7,643 10-Ks, 52 minutes ([filing-text-backfill.txt](artifacts/filing-text-backfill.txt)).
+  - The review showed 30 companies without any MD&A (JPM, BAC, GE, CVX, …: annual-report layouts). Decision E7: a fallback to the MD&A heading, plus IBM's "Management Discussion"; test-first.
+  - The 428 filings without an MD&A were deleted and fetched again: 7,558 of 7,643 now have one ([filing-text-refetch.txt](artifacts/filing-text-refetch.txt)).
+- E5, the rule settled on real data ([filing-text-review.txt](artifacts/filing-text-review.txt)):
+  - Any term anywhere flagged about 2% of MD&As, almost all ASU 2014-15 descriptions.
+  - Now: one sentence must hold all of the terms and none of `going_concern_exclusions` (standard wording, hypotheticals, other parties, negations). The FLAG quotes the sentence.
+  - Three review rounds, each over every both-term sentence. Result: 16 FLAGs, all reviewed (12 own, 3 subsidiary, 1 other company).
+  - Test-first at each round.
+- E6, main lake:
+  - [main_lake_filing_text_swap.sh](artifacts/main_lake_filing_text_swap.sh) ran in the owner's Terminal panel with the absolute scratch path.
+  - Backup in `cache/backup-stage29-filing-text-2026-11-18`; only `tables.filing_text` and `steps.filing_text` were added; 735 files equal ([main-lake-filing-text-swap.txt](artifacts/main-lake-filing-text-swap.txt)).
+  - Read-back ([main-lake-filing-text-readback.txt](artifacts/main-lake-filing-text-readback.txt)): other meta and state entries unchanged. Enphase reads CLEAR on 2017-03-16 (filed that day, after the cutoff) and FLAG on 2017-03-17. Frontier is FLAG in 2020; AAPL and JPM are CLEAR; WFC is NOT EVALUATED with its reason.
+- Untested-edge mutants: third-pass contract tests for:
+  - the window start at `valuation_years` 1 and 2;
+  - bar gaps;
+  - a quarter without a share count;
+  - red-flag periods with under a year of history;
+  - peer order;
+  - the no-factor-values message;
+  - a flow without TTM;
+  - a tag-like piece.
+
+  12 of 16 killed; Stage 29 is now 2,335 of 2,396 (97.5%).
+- Mutation testing of the new code ([mutmut-setup-followup2.cfg](artifacts/mutmut-setup-followup2.cfg)):
+  - First run: 613 of 706.
+  - 15 gap tests added for history pages, a shared CIK, symbol order, a given calendar, logs, exact errors, decoding, comments, longest-not-greatest, inclusive bounds and the view's per-symbol cache. One dead line was removed.
+  - Then 764 of 801. Three more tests killed 4.
+  - Final run after E7: **778 of 811 (95.9%)**; 33 equivalent survivors, classified.
+- Docs: `docs/data.md` (the dataset and source), `docs/agents.md` (going concern), `docs/data-limitations.md` (items 8 and 9).
+- Code files created:
+  - `src/atlas/data/filings/{__init__,mda,text}.py`;
+  - tests `tests/unit/data/filings/test_filings_{mda,ingest,view}.py`, `tests/unit/agents/research/test_fundamental_going_concern.py`.
+- Code files changed:
+  - `src/atlas/core/config.py`, `config/fund.yaml`, `pyproject.toml` (mypy override);
+  - `src/atlas/data/fundamentals/edgar_client.py`;
+  - `src/atlas/data/sync/{__init__,datasets,steps,status}.py`, `src/atlas/cli/data_cmd.py`;
+  - `src/atlas/data/view.py`, `src/atlas/agents/tools/fundamental_tools.py`;
+  - tests `test_fundamental_{contracts,red_flags}.py`, `tests/unit/core/test_config.py`, `tests/unit/data/{sync_helpers,test_sync_datasets,test_view_pit,view_helpers}.py`.
+- Self-audit: [audit-report.md › Follow-up 2](artifacts/audit-report.md).
