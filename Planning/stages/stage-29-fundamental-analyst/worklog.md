@@ -170,3 +170,8 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - `src/atlas/data/view.py`, `src/atlas/agents/tools/fundamental_tools.py`;
   - tests `test_fundamental_{contracts,red_flags}.py`, `tests/unit/core/test_config.py`, `tests/unit/data/{sync_helpers,test_sync_datasets,test_view_pit,view_helpers}.py`.
 - Self-audit: [audit-report.md › Follow-up 2](artifacts/audit-report.md).
+- Commit and merge:
+  - Committed `f97d30e` `stage-29: follow-up 2 (10-K MD&A text, going-concern check, final self-audit)` after reviewing the staged list: 54 files. No `.env`, lake, DuckDB or mutant file; no `.env` value in any file. The only user name is the pre-existing one in a PROGRESS line from the original planning commit; I redacted the home path from my artifacts.
+  - Fast-forwarded `main` addaf65 → f97d30e in the owner's Terminal panel ([followup2-merged-main-check.txt](artifacts/followup2-merged-main-check.txt)). Trees equal.
+  - Merged result: `uv run pytest -q` → 5374 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch.
+  - This records commit goes onto `main` the same way, then I push and check CI.
