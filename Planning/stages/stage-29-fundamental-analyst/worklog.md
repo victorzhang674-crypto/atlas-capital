@@ -175,3 +175,55 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - Fast-forwarded `main` addaf65 → f97d30e in the owner's Terminal panel ([followup2-merged-main-check.txt](artifacts/followup2-merged-main-check.txt)). Trees equal.
   - Merged result: `uv run pytest -q` → 5374 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch.
   - This records commit goes onto `main` the same way, then I push and check CI.
+
+## 2026-11-22 — Follow-up 3 (owner: "can you help me to complete the tasks that are still being opened?")
+- Open items:
+  - 10-Q MD&As;
+  - the seven companies without an MD&A;
+  - the four untested-edge mutants;
+  - the uncommitted CI record `ci-runs-1e32337.json`.
+
+  Graph wiring stays with Stage 35, as the owner decided in follow-up 2. Plan addendum H1–H5 was written before the code ([plan.md](plan.md)). Spec §11's row was widened to 10-Qs, with a Decisions-log row: the owner's request is the approval.
+- H2, the seven companies, test-first:
+  - EX-13 and EX-99 exhibits are read (Clorox files its annual report as EX-99.1);
+  - "Financial Review" and upper-case company-name MD&A headings are accepted (Wells Fargo);
+  - the MD&A heading later in the 10-K itself is used, skipping "Item" lines (AEP, MOS, TWC, TWX, WIN);
+  - bullets and cross-references are not end headings.
+- H1, 10-Qs: `extract_mda(..., form=)` reads Part I Item 2; `data.filing_text.forms` is `["10-K", "10-Q"]`; `DataView.mda` returns the latest filing whose MD&A was found; the check says "period ended".
+- H3: the four edge mutants were killed by three tests (pass 7 in the mutation summary). Stage 29 is now 2,339 of 2,396 killed (97.6%).
+- Mutation testing of the H1–H2 code: 853 of 889 detected (96.0%). One real gap: an inline bullet before an end heading, killed by a new test. 36 equivalent survivors.
+- H4, round 1:
+  - The follow-up 2 scratch lake was re-synced: 748 equities, 0 failed, 30,597 filings, 4 h 8 min ([filing-text-backfill-followup3.txt](artifacts/filing-text-backfill-followup3.txt)).
+  - Swapped into the main lake from the owner's Terminal panel with backup `cache/backup-stage29-filing-text-2026-11-22` ([main-lake-filing-text-replace.txt](artifacts/main-lake-filing-text-replace.txt)).
+  - **The review and the read-back of round 1 showed defects in my own code**, so the round-1 table was not left in place:
+    - H6, going concern: 8 of 79 FLAGs were false, and 3 quoted a sentence from its middle. Sentence joining and three exclusions fixed them, test-first, giving 71 FLAGs.
+    - H7, extraction:
+      - 5,732 10-Qs had taken Part II Item 2's contents entry. A bare "Item 2." now needs "Management…" after it.
+      - Pointer pages (Southern Company, Entergy, TSS, Sempra) give way to a later MD&A section or an exhibit MD&A when shorter than the new `data.filing_text.short_mda_chars` (15,000).
+      - Entergy's heading is accepted, and condensed statements end an MD&A.
+  - Mutation testing of the H6–H7 code: 231, then **237 of 240** after two tests and an assertion. 3 equivalent survivors.
+  - The whole-table read overflow, the XOM CIK change and GE's 10-Q contents entries went to the Backlog.
+- H8, re-ingest:
+  - 7,065 accessions (7,152 rows) were deleted from the scratch lake and fetched again: 748 keys, 0 failed, 7,152 rows, 1 h 14 min ([filing-text-refetch-followup3.txt](artifacts/filing-text-refetch-followup3.txt)).
+  - Control sample: 200 random untouched rows extracted again with the new code from freshly fetched documents. 200 of 200 identical, no document changed ([filing-text-control-sample-followup3.txt](artifacts/filing-text-control-sample-followup3.txt)).
+  - Comparison with round 1 ([filing-text-compare-round1-followup3.txt](artifacts/filing-text-compare-round1-followup3.txt)): 5,700 10-Q texts shorter (no longer running past the MD&A), 101 longer, 36 found that were not, and 6 10-Ks moved to their EX-13.
+  - **Two 10-Qs lost their MD&A.** A. O. Smith's rightly: round 1 had the Part II contents entry. Roper's wrongly.
+- H9: Roper's 2017-11 10-Q heads its MD&A "MANAGMENT'S DISCUSSION".
+  - Fix: the Item 2 and Item 7 headings accept "Managment". Test first: `test_a_heading_that_misspells_management_is_still_read`, red, then green.
+  - The rows the fix could change were extracted again from freshly fetched documents: all 92 not-found rows, the 8 rows whose text holds "managment", and 300 fresh random rows. Only Roper's row differed. It was fetched again ([filing-text-recheck-followup3.txt](artifacts/filing-text-recheck-followup3.txt)).
+- Final review ([filing-text-review-followup3.txt](artifacts/filing-text-review-followup3.txt)): 30,506 of 30,597 filings have an MD&A (99.7%).
+  - 75 FLAGs (23 companies), all read: 59 own, 8 subsidiary, 8 another company's (Toshiba).
+  - Against round 1's fixed review: SO/GAS +6 (the combined MD&A read whole); HST and MNK −2 (round 1 had read the notes to the statements).
+- Main lake, second swap:
+  - From the owner's Terminal panel with backup suffix `2026-11-22b` (the script now takes it as an argument). Old table backed up equal (742 files), new table equal to the scratch lake (742 files), only `steps.filing_text` replaced ([main-lake-filing-text-replace-2.txt](artifacts/main-lake-filing-text-replace-2.txt)).
+  - Read-back ([main-lake-filing-text-readback-followup3.txt](artifacts/main-lake-filing-text-readback-followup3.txt)): `_meta.json` unchanged and only the `filing_text` sync step changed; 21 `DataView` cases as expected. Examples:
+    - BBBY is FLAG on the day after its 10-Q and CLEAR the day before;
+    - SO's combined MD&A is 391,491 characters;
+    - HST in 2020 is CLEAR;
+    - ROP's 10-Q is read;
+    - TSS's 10-K reads its EX-13.
+- Docs: `docs/data-limitations.md` item 9 (10-K and 10-Q, the pointer rule, final numbers, known gaps), `docs/agents.md` (going concern, final numbers), `docs/data.md` (the dataset row).
+- Code files changed (none created):
+  - `src/atlas/data/filings/{mda,text}.py`, `src/atlas/data/view.py`, `src/atlas/agents/tools/fundamental_tools.py`, `src/atlas/core/config.py`, `config/fund.yaml`;
+  - tests `tests/unit/data/filings/test_filings_{mda,ingest,view}.py`, `tests/unit/agents/research/test_fundamental_{contracts,going_concern,red_flags}.py`.
+- Self-audit: [audit-report.md › Follow-up 3](artifacts/audit-report.md).

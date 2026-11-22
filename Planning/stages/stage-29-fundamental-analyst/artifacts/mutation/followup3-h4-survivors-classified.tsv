@@ -1,0 +1,4 @@
+mutant	class	reason
+atlas.data.filings.mda.x_extract_mda__mutmut_1	equivalent	default form "XX10-KXX": any form not starting with 10-Q reads as a 10-K
+atlas.data.filings.mda.x_extract_mda__mutmut_2	equivalent	default form "10-k": read upper-cased, still a 10-K
+atlas.data.filings.text.x__mda_of__mutmut_51	equivalent	`found.text or ""` -> "XXXX" inside `if found.text is not None`: the fallback is never used

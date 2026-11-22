@@ -1,0 +1,14 @@
+2026-11-22T14:10:45.999356Z [warning  ] fundamentals.request_failed    [atlas.data.providers.base] attempt=1 error='[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)' mode=dev run_id=01M81RNKE82E4SMN3REBQPSCH7 stage=data.sync what='GET https://www.sec.gov/Archives/edgar/data/5272/000000527223000045/aig-20230930.htm'
+2026-11-22T14:55:35.818694Z [warning  ] fundamentals.request_failed    [atlas.data.providers.base] attempt=1 error='[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)' mode=dev run_id=01M81RNKE82E4SMN3REBQPSCH7 stage=data.sync what='GET https://data.sec.gov/submissions/CIK0001281761.json'
+2026-11-22T14:55:37.522370Z [warning  ] fundamentals.request_failed    [atlas.data.providers.base] attempt=2 error='[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)' mode=dev run_id=01M81RNKE82E4SMN3REBQPSCH7 stage=data.sync what='GET https://data.sec.gov/submissions/CIK0001281761.json'
+2026-11-22T14:55:46.781404Z [warning  ] fundamentals.request_failed    [atlas.data.providers.base] attempt=1 error='[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)' mode=dev run_id=01M81RNKE82E4SMN3REBQPSCH7 stage=data.sync what='GET https://www.sec.gov/Archives/edgar/data/1137774/000113777420000084/form10q-1q2020.htm'
+2026-11-22T15:00:47.582044Z [warning  ] fundamentals.request_failed    [atlas.data.providers.base] attempt=1 error='[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)' mode=dev run_id=01M81RNKE82E4SMN3REBQPSCH7 stage=data.sync what='GET https://data.sec.gov/submissions/CIK0001466258.json'
+filing_text      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 748/748 1:13:37
+Run 01M81RNKE82E4SMN3REBQPSCH7: log and audit trail in $TMPDIR/mda/full-lake/runs/01M81RNKE82E4SMN3REBQPSCH7
+                      Sync summary (sync 2015-01-01 .. 2026-11-22)                       
+┏━━━━━━━━━━━━━┳━━━━━━┳━━━━━━━━━┳━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━┳━━━━━━━━┳━━━━━━━━━┳━━━━━━┓
+┃ step        ┃ keys ┃ skipped ┃  ok ┃ empty ┃ failed ┃  rows ┃ chunks ┃ seconds ┃ note ┃
+┡━━━━━━━━━━━━━╇━━━━━━╇━━━━━━━━━╇━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━╇━━━━━━━━╇━━━━━━━━━╇━━━━━━┩
+│ filing_text │  748 │       0 │ 742 │     6 │      0 │ 7,152 │     75 │  4417.3 │      │
+└─────────────┴──────┴─────────┴─────┴───────┴────────┴───────┴────────┴─────────┴──────┘
+uv run atlas data sync --datasets filings  894.57s user 69.10s system 21% cpu 1:13:39.65 total

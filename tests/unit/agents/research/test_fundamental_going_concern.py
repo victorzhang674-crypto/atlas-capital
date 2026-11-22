@@ -53,7 +53,7 @@ def going_concern(lake: Lake, day: date = AS_OF) -> tuple[ft.RedFlag, str]:
 
 END = AS_OF - timedelta(days=120)
 FILED = AS_OF - timedelta(days=60)
-PERIODS = f"10-K filed {FILED}, fiscal year ended {END}"
+PERIODS = f"10-K filed {FILED}, period ended {END}"
 
 
 def test_without_an_mda_the_check_reads_as_before(lake: Lake) -> None:
@@ -102,10 +102,10 @@ def test_a_10k_older_than_mda_max_age_days_is_not_evaluated(lake: Lake) -> None:
         ft.RedFlag(
             "going_concern",
             "NOT EVALUATED",
-            f"the latest 10-K MD&A covers the fiscal year ended {stale}, more than "
+            f"the latest 10-K MD&A covers the period ended {stale}, more than "
             f"{RF.mda_max_age_days} days before {AS_OF}",
         ),
-        f"10-K filed {FILED}, fiscal year ended {stale}",
+        f"10-K filed {FILED}, period ended {stale}",
     )
 
 
@@ -141,3 +141,31 @@ def test_the_evidence_item_names_the_filing(lake: Lake) -> None:
     item = next(e for e in ft.red_flags(view, "AAA") if e.id.endswith(":going_concern"))
     assert item.text.endswith(f"({PERIODS}).")
     assert ": CLEAR. no MD&A sentence holds all of " in item.text
+
+
+def test_a_10q_filed_after_the_10k_is_read(lake: Lake) -> None:
+    """Follow-up 3: 10-Qs are stored too, so a doubt disclosed in a quarterly report is read as
+    soon as the 10-Q is known."""
+    q_end, q_filed = AS_OF - timedelta(days=60), AS_OF - timedelta(days=20)
+    write(
+        lake,
+        mda_row("a-1", END, FILED),
+        {**mda_row("a-2", q_end, q_filed, text=DOUBT), "form": "10-Q"},
+    )
+    flag, periods = going_concern(lake)
+    assert flag.status == "FLAG"
+    assert periods == f"10-Q filed {q_filed}, period ended {q_end}"
+
+
+def test_a_later_filing_without_an_mda_does_not_hide_an_earlier_one(lake: Lake) -> None:
+    q_filed = AS_OF - timedelta(days=20)
+    write(
+        lake,
+        mda_row("a-1", END, FILED, text=DOUBT),
+        {
+            **mda_row("a-2", AS_OF - timedelta(days=60), q_filed, text=None, status="not_found"),
+            "form": "10-Q",
+        },
+    )
+    flag, periods = going_concern(lake)
+    assert (flag.status, periods) == ("FLAG", PERIODS)

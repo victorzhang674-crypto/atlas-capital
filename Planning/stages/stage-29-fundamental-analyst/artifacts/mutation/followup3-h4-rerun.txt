@@ -1,0 +1,15 @@
+⠇ Running forced fail test⠏ Running forced fail test⠋ Running forced fail test⠙ Running forced fail test⠹ Running forced fail test⠸ Running forced fail test⠼ Running forced fail test⠴ Running forced fail test⠦ Running forced fail test⠧ Running forced fail test⠇ Running forced fail test⠏ Running forced fail test⠋ Running forced fail test⠙ Running forced fail test⠹ Running forced fail test⠸ Running forced fail test⠼ Running forced fail test⠴ Running forced fail test⠦ Running forced fail test⠧ Running forced fail test⠇ Running forced fail test⠏ Running forced fail test⠋ Running forced fail test⠙ Running forced fail test⠹ Running forced fail test⠸ Running forced fail test⠼ Running forced fail test⠴ Running forced fail test⠦ Running forced fail test⠧ Running forced fail test⠇ Running forced fail test
+    done
+Running mutation testing
+⠏ 240/4267  🎉 231 🫥 0  ⏰ 0  🤔 0  🙁 9  🔇 0  🧙 0⠋ 240/4267  🎉 231 🫥 0  ⏰ 0  🤔 0  🙁 9  🔇 0  🧙 0⠙ 240/4267  🎉 231 🫥 0  ⏰ 0  🤔 0  🙁 9  🔇 0  🧙 0⠹ 240/4267  🎉 231 🫥 0  ⏰ 0  🤔 0  🙁 9  🔇 0  🧙 0⠸ 240/4267  🎉 232 🫥 0  ⏰ 0  🤔 0  🙁 8  🔇 0  🧙 0⠼ 240/4267  🎉 233 🫥 0  ⏰ 0  🤔 0  🙁 7  🔇 0  🧙 0⠴ 240/4267  🎉 237 🫥 0  ⏰ 0  🤔 0  🙁 3  🔇 0  🧙 0
+4.66 mutations/second
+
+Mutant results
+--------------
+🎉 atlas.data.filings.text.x__mda_of__mutmut_36
+🎉 atlas.data.filings.text.x__mda_of__mutmut_37
+🎉 atlas.data.filings.text.x__mda_of__mutmut_47
+🎉 atlas.data.filings.text.x__mda_of__mutmut_85
+🎉 atlas.data.filings.text.x__unless_later__mutmut_16
+🎉 atlas.data.filings.text.x__unless_later__mutmut_3
+

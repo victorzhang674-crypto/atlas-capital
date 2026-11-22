@@ -717,16 +717,20 @@ class SyncWorkers(_Frozen):
 
 
 class FilingTextConfig(_Frozen):
-    """Text of SEC filings (Stage 29 follow-up 2): the MD&A of each filing of `forms` filed on
-    or after `since`. A section shorter than `min_mda_chars` characters is not taken for an
-    MD&A (it points to an exhibit or holds nothing usable). The documents come from the EDGAR
-    archive (`data.fundamentals.filing_*_url`) through the same rate-limited client."""
+    """Text of SEC filings (Stage 29 follow-ups 2 and 3): the MD&A of each filing of `forms`
+    (10-K Item 7, 10-Q Part I Item 2) filed on or after `since`. A section shorter than
+    `min_mda_chars` characters is not taken for an MD&A (it points to an exhibit or holds
+    nothing usable); one shorter than `short_mda_chars` gives way to a longer section under a
+    later MD&A heading of the same document, or to a longer exhibit MD&A when it points to the
+    annual report (it is a page of pointers). The documents come from the EDGAR archive
+    (`data.fundamentals.filing_*_url`) through the same rate-limited client."""
 
     forms: Annotated[
         tuple[Annotated[str, Field(min_length=1, pattern=r"\S")], ...], Field(min_length=1)
-    ] = ("10-K",)
+    ] = ("10-K", "10-Q")
     since: date = date(2015, 1, 1)
     min_mda_chars: Annotated[int, Field(ge=1)] = 1000
+    short_mda_chars: Annotated[int, Field(ge=1)] = 15000
 
 
 class SyncChunks(_Frozen):
@@ -1095,9 +1099,9 @@ class RedFlagsConfig(_Frozen):
     sentence holding all of these phrases (case-insensitive, whole words) is flagged, unless it
     holds one of `going_concern_exclusions` (a standard's wording such as ASU 2014-15's, a
     hypothetical, another party's going concern, a negation; reviewed on every main-lake MD&A,
-    2026-11-18). `mda_max_age_days`: the latest
-    10-K MD&A is read only when its fiscal year ended at most this many days before the as-of
-    (a year plus the longest 10-K filing deadline, 90 days, plus slack).
+    10-Ks 2026-11-18, 10-Qs 2026-11-22). `mda_max_age_days`: the latest
+    MD&A (a 10-K's or a 10-Q's) is read only when its period ended at most this many days before
+    the as-of (a year plus the longest 10-K filing deadline, 90 days, plus slack).
     """
 
     accruals_max: Annotated[float, Field(gt=0, le=1)] = 0.10
@@ -1123,6 +1127,9 @@ class RedFlagsConfig(_Frozen):
         "if such substantial doubt",
         "their ability",
         "as disclosed by",
+        "does not exist",
+        "provide certain disclosure",
+        "borrower's",
     )
     mda_max_age_days: Annotated[int, Field(gt=0)] = 460
 

@@ -98,3 +98,23 @@ def test_each_symbol_gets_its_own_answer_from_one_view(tmp_path: Path) -> None:
     )
     view = DataView(lake, date(2024, 3, 1))
     assert [view.mda(s).text for s in ("AAA", "BBB", "AAA")] == ["a", "b", "a"]  # type: ignore[union-attr]
+
+
+def test_the_latest_filing_with_an_mda_wins_over_a_later_one_without(tmp_path: Path) -> None:
+    """Follow-up 3: a later 10-Q whose MD&A was not found does not hide the 10-K's; with no
+    MD&A found at all, the latest filing is returned to say why."""
+    later = datetime(2024, 2, 20, 21, 0, tzinfo=UTC)
+    lake = lake_with(
+        tmp_path,
+        row("a-1", date(2024, 2, 2), ACCEPTED, text="10-K text"),
+        row("a-2", date(2024, 2, 20), later, form="10-Q", status="not_found", chars=0, text=None),
+    )
+    got = DataView(lake, date(2024, 3, 1)).mda("AAA")
+    assert got is not None and (got.accn, got.text) == ("a-1", "10-K text")
+    only_missing = lake_with(
+        tmp_path / "two",
+        row("b-1", date(2024, 2, 2), ACCEPTED, status="by_reference", chars=0, text=None),
+        row("b-2", date(2024, 2, 20), later, form="10-Q", status="not_found", chars=0, text=None),
+    )
+    got = DataView(only_missing, date(2024, 3, 1)).mda("AAA")
+    assert got is not None and (got.accn, got.status) == ("b-2", "not_found")

@@ -1,0 +1,6 @@
+# Stage 29 follow-up 3 (H8): control sample, 2026-11-22T15:17:05Z
+# uv run python Planning/stages/stage-29-fundamental-analyst/artifacts/filing_text_control_sample_followup3.py (documents fetched from EDGAR again)
+control rows found in round 1: 200 of 200
+forms {'10-Q': 137, '10-K': 63} | sources {'primary': 200}
+identical (status, source, document, text): 200 of 200
+documents whose bytes differ from round 1: 0

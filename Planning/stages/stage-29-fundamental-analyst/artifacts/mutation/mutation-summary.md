@@ -1,9 +1,9 @@
 # Stage 29 — mutation testing (audit A9 follow-up, 2026-11-18)
 
-**Result: 2,335 of 2,396 mutants killed (97.5%)**, up from 2,053 (85.7%) before the follow-up
-tests. All 61 survivors are classified, each with its reason, in
+**Result: 2,339 of 2,396 mutants killed (97.6%)**, up from 2,053 (85.7%) before the follow-up
+tests. All 57 survivors are classified, each with its reason, in
 [final-survivors-classified.tsv](final-survivors-classified.tsv): 48 equivalent, 9 unreachable,
-4 untested edges. No production defect was found. Every mutant that was killed was killed by a
+no untested edge left. No production defect was found. Every mutant that was killed was killed by a
 test that also passes on the real code.
 
 The code added later in follow-up 2 (the MD&A text and the going-concern check) has its own
@@ -64,9 +64,11 @@ Re-run passes over the survivors ([after-reruns.txt](after-reruns.txt)):
 | 5 | 2 of 75 | 2 | a non-finite current multiple (a loss-maker's P/E) keeps its own history and gets no percentile |
 | 6 | 16 of 73 (the untested edges) | 12 | own-history window start (`valuation_years` 1 and 2); bar gaps; a quarter without a share count; red-flag periods with under a year of history; a peer without an instrument row before others; the no-factor-values message; a flow without a TTM; a tag-like piece |
 
-Total: 343 − 282 = **61 survivors**.
+| 7 (follow-up 3) | 4 of 61 (the last untested edges) | 4 | the dilution split window's start; the split factor of a quarter's own bar day; the view's calendar in `_window_sessions` |
 
-## The 61 survivors
+Total: 343 − 286 = **57 survivors**.
+
+## The 57 survivors
 
 - **Equivalent (48).** The mutant behaves the same for every input. Examples:
   - `strict=` on zips of equal-length sequences;
@@ -82,10 +84,7 @@ Total: 343 − 282 = **61 survivors**.
   - The fallback stamp in `_derived_items` is never used, because revenue's own TTM row always has one.
   - The default column of `_History.stamp` is never used.
   - The missing-symbol branch of `factor_ranks_from` is never reached: `sector_panel` raises first.
-- **Untested edges (4).** These are recorded, not fixed; by reading, the code is right in each:
-  - the dilution share-count window start (two mutants), which needs a split dated within the tolerance band;
-  - the split factor of the last bar day, which needs a split on that very day;
-  - the calendar config passed to `_window_sessions`, since the tests use the default calendar.
+- **Untested edges: none left.** The last four were killed in follow-up 3 (pass 7).
 
 ## Follow-up 2: the MD&A text and the going-concern check
 
@@ -118,3 +117,30 @@ Total: 343 − 282 = **61 survivors**.
   - default arguments equal to the given ones;
   - cache-key names;
   - a config never read when there is no text.
+
+## Follow-up 3: 10-Q MD&As, more headings, the view's choice of filing
+
+- **Setup:** the same as follow-up 2 ([../mutmut-setup-followup2.cfg](../mutmut-setup-followup2.cfg)), run on the follow-up 3 code. The changes covered:
+  - 10-Q Part I Item 2;
+  - EX-99 exhibits and an MD&A later in the 10-K (`skip_items`);
+  - the "Financial Review" and upper-case company-name headings;
+  - the bullet and cross-reference rules;
+  - `DataView.mda` choosing the latest filing whose MD&A was found;
+  - the "period ended" wording.
+- **Run:** 851 killed, 1 timeout (a `_sections` loop that never ends, so the mutant is detected), 37 survived ([followup3-mutmut-results.txt](followup3-mutmut-results.txt)).
+  - One survivor was a real gap: an inline bullet ("• Contingencies") before an end heading. The test `test_an_inline_bullet_entry_does_not_end_the_mda_either` killed it ([followup3-rerun.txt](followup3-rerun.txt)).
+- **Result: 853 of 889 detected (96.0%).** The 36 survivors are all equivalent ([followup3-survivors-classified.tsv](followup3-survivors-classified.tsv)): the follow-up 2 kinds, plus a never-zero end position and default-form spellings that still read as a 10-K.
+
+## Follow-up 3, after the data review (H6–H7)
+
+- **Scope:** the review of the full 10-K and 10-Q data changed these functions, so they were mutated again (same setup, selected by mutant name):
+  - `going_concern_sentences` (sentences cut by a line break or "Inc.");
+  - `extract_mda` (Part II Item 2), `extract_exhibit_mda` (Entergy's heading, condensed statements) and `points_elsewhere`;
+  - `_unless_later` and `_mda_of` (a short MD&A gives way to a later section or an exhibit).
+- **First run:** 231 of 240 killed. Six survivors were real gaps:
+  - the `short_mda_chars` bound (twice);
+  - the tie with a later section or an exhibit (twice);
+  - the `source` of a not-found row (twice).
+
+  `test_the_short_bound_and_ties_keep_what_was_found`, `test_a_pointer_at_the_short_bound_or_tied_with_the_exhibit_is_kept` and a `source` assertion killed all six ([followup3-h4-rerun.txt](followup3-h4-rerun.txt)).
+- **Result: 237 of 240 killed (98.75%)** ([followup3-h4-mutmut-results.txt](followup3-h4-mutmut-results.txt)). The 3 survivors are equivalent ([followup3-h4-survivors-classified.tsv](followup3-h4-survivors-classified.tsv)): two default-form spellings that still read as a 10-K, and a fallback string that is never used.

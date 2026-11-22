@@ -58,11 +58,12 @@ data:
     cik_overrides_file: config/cik_overrides.yaml  # verified CIKs of former S&P 500 members, relative to the repo root
     filing_index_url: https://www.sec.gov/Archives/edgar/data/{cik}/{folder}/{accn}-index.htm  # a filing's document list ({folder} = accession number without dashes)
     filing_document_url: https://www.sec.gov/Archives/edgar/data/{cik}/{folder}/{name}  # one document of a filing
-  # Text of SEC filings (Stage 29 follow-up 2): the MD&A of each 10-K, point in time by acceptance time.
+  # Text of SEC filings (Stage 29 follow-ups 2-3): the MD&A of each 10-K and 10-Q, point in time by acceptance time.
   filing_text:
-    forms: ["10-K"]  # forms whose MD&A is stored (10-Q MD&A is not read)
+    forms: ["10-K", "10-Q"]  # forms whose MD&A is stored (10-K Item 7, 10-Q Part I Item 2)
     since: 2015-01-01  # first filing date read
     min_mda_chars: 1000  # a shorter section is not an MD&A (it points to an exhibit or holds nothing usable)
+    short_mda_chars: 15000  # a shorter MD&A gives way to a longer section under a later MD&A heading of the same document (a page of pointers to it)
   # FRED / ALFRED macro data (Stage 10). The API key comes from the FRED_API_KEY secret (.env).
   macro:
     api_url: https://api.stlouisfed.org/fred  # FRED API base URL
@@ -530,9 +531,9 @@ agents:
       debt_growth_min: 0.10  # negative TTM free cash flow with total debt up more than this is flagged
       dilution_max: 0.05  # split-adjusted share count up more than this is flagged
       going_concern_terms: ["going concern", "substantial doubt"]  # an MD&A sentence holding all of these is flagged ...
-      # ... unless it holds one of these (ASU 2014-15 wording, hypotheticals, other parties, negations; reviewed on every main-lake MD&A 2026-11-18)
-      going_concern_exclusions: ["whether there", "an entity", "the entity", "a company's", "ASU", "FASB", "Subtopic", "no longer", "no conditions", "no substantial doubt", "not raise substantial doubt", "if such substantial doubt", "their ability", "as disclosed by"]
-      mda_max_age_days: 460  # the latest 10-K MD&A is read only if its fiscal year ended at most this many days before the as-of
+      # ... unless it holds one of these (ASU 2014-15 wording, hypotheticals, other parties, negations; reviewed on every main-lake MD&A: 10-Ks 2026-11-18, 10-Qs 2026-11-22)
+      going_concern_exclusions: ["whether there", "an entity", "the entity", "a company's", "ASU", "FASB", "Subtopic", "no longer", "no conditions", "no substantial doubt", "not raise substantial doubt", "if such substantial doubt", "their ability", "as disclosed by", "does not exist", "provide certain disclosure", "borrower's"]
+      mda_max_age_days: 460  # the latest MD&A (10-K or 10-Q) is read only if its period ended at most this many days before the as-of
 
 # Fund graph (Stage 28): LangGraph research fan-out, checkpoints in data/runs/<run_id>/.
 orchestration:

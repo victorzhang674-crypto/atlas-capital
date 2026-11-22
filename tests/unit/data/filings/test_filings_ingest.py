@@ -28,10 +28,12 @@ from atlas.core.config import (
 )
 from atlas.core.errors import DataError
 from atlas.core.storage import Lake
+from atlas.data.filings.mda import MdaExtract, extract_exhibit_mda, extract_mda, html_to_text
 from atlas.data.filings.text import (
     FILING_TEXT,
     LIST_COLUMNS,
     FilingTextIngestReport,
+    _unless_later,
     filing_list,
     ingest_filing_text,
     parse_filing_list,
@@ -50,9 +52,10 @@ ARCHIVE = "https://www.sec.gov/Archives/edgar/data"
 def test_filing_text_defaults() -> None:
     cfg = AtlasConfig()
     assert cfg.data.filing_text == FilingTextConfig()
-    assert cfg.data.filing_text.forms == ("10-K",)
+    assert cfg.data.filing_text.forms == ("10-K", "10-Q")
     assert cfg.data.filing_text.since == date(2015, 1, 1)
     assert cfg.data.filing_text.min_mda_chars == 1000
+    assert cfg.data.filing_text.short_mda_chars == 15000
     assert cfg.data.sync.chunk_size.filing_text == 10
     assert cfg.agents.fundamental.red_flags.mda_max_age_days == 460
     f = cfg.data.fundamentals
@@ -70,7 +73,13 @@ def test_fund_yaml_matches_the_defaults() -> None:
 
 @pytest.mark.parametrize(
     "bad",
-    [{"forms": []}, {"forms": [""]}, {"min_mda_chars": 0}, {"unknown_key": 1}],
+    [
+        {"forms": []},
+        {"forms": [""]},
+        {"min_mda_chars": 0},
+        {"short_mda_chars": 0},
+        {"unknown_key": 1},
+    ],
 )
 def test_bad_filing_text_settings_are_refused(bad: dict[str, object]) -> None:
     with pytest.raises(ValidationError):
@@ -94,7 +103,7 @@ def test_filing_urls_need_their_placeholders(key: str, url: str) -> None:
 def test_mda_max_age_must_be_positive() -> None:
     with pytest.raises(ValidationError):
         RedFlagsConfig(mda_max_age_days=0)
-    assert DataConfig().filing_text.forms == ("10-K",)
+    assert DataConfig().filing_text.forms == ("10-K", "10-Q")
 
 
 # --- a mocked EDGAR -----------------------------------------------------------------------------
@@ -117,6 +126,10 @@ def ten_k_html(item7: str) -> bytes:
     ).encode()
 
 
+TEN_Q = (
+    "<html><body><p>PART I</p><p>Item 2. Management\u2019s Discussion and Analysis</p>"
+    f"<p>{BODY}</p><p>Item 4. Controls and Procedures</p><p>Effective.</p></body></html>"
+).encode()
 POINTER = (
     "The information required by Item 7 is shown in Exhibit 13 and is incorporated by reference."
 )
@@ -145,7 +158,7 @@ RECENT = [
         "reportDate": "2023-11-30",
         "primaryDocument": "ccl-20231130.htm",
     },
-    {  # a 10-Q: not read
+    {  # a 10-Q: read by default (follow-up 3), not by the 10-K-only helper below
         "accessionNumber": "0000815097-23-000090",
         "form": "10-Q",
         "filingDate": "2023-09-29",
@@ -196,6 +209,7 @@ class Edgar:
             f"/Archives/edgar/data/{CIK}/000081509721000027/ccl-20201130.htm": ten_k_html(POINTER),
             f"/Archives/edgar/data/{CIK}/000081509721000027/0000815097-21-000027-index.htm": INDEX,
             f"/Archives/edgar/data/{CIK}/000081509721000027/a2020ex-13.htm": EX13,
+            f"/Archives/edgar/data/{CIK}/000081509723000090/ccl-20230831.htm": TEN_Q,
         }
         self.seen: list[str] = []
         router.route(host="data.sec.gov").mock(side_effect=self.data)
@@ -229,7 +243,12 @@ def client(lake: Lake | None = None) -> EdgarClient:
 CIKS = CikMap({"CCL": CIK, "AAPL": 320193})
 
 
+TEN_K_ONLY = AtlasConfig.model_validate({"data": {"filing_text": {"forms": ["10-K"]}}})
+"""The tests written for 10-Ks (before follow-up 3 added 10-Qs to the default forms)."""
+
+
 def ingest(lake: Lake, symbols: list[str], **kw: Any) -> FilingTextIngestReport:
+    kw.setdefault("config", TEN_K_ONLY)
     return ingest_filing_text(lake, client(lake), symbols, cik_map=CIKS, **kw)
 
 
@@ -389,7 +408,7 @@ def test_statuses_are_stored_when_no_mda_is_found(tmp_path: Path, edgar: Edgar) 
     report = ingest(lake, ["CCL"])
     assert dict(report.statuses) == {"not_found": 1, "by_reference": 1}
     rows = lake.read_table(FILING_TEXT.name).set_index("accn")
-    assert rows.loc["0000815097-24-000011", "status"] == "not_found"
+    assert tuple(rows.loc["0000815097-24-000011", ["status", "source"]]) == ("not_found", "primary")
     gone = rows.loc["0000815097-21-000027"]
     assert (gone["status"], gone["source"], gone["document"]) == (
         "by_reference",
@@ -516,9 +535,9 @@ def test_two_tickers_of_one_issuer_each_get_their_rows(tmp_path: Path, edgar: Ed
     report = ingest_filing_text(
         lake, client(lake), ["CCL", "CUK"], cik_map=CikMap({"CCL": CIK, "CUK": CIK})
     )
-    assert (report.rows, report.symbols_ok, dict(report.statuses)) == (4, ("CCL", "CUK"), {"ok": 4})
+    assert (report.rows, report.symbols_ok, dict(report.statuses)) == (6, ("CCL", "CUK"), {"ok": 6})
     stored = lake.read_table(FILING_TEXT.name)
-    assert sorted(stored.groupby("symbol").size().items()) == [("CCL", 2), ("CUK", 2)]
+    assert sorted(stored.groupby("symbol").size().items()) == [("CCL", 3), ("CUK", 3)]
 
 
 def test_a_symbol_without_filings_does_not_stop_the_next(tmp_path: Path, edgar: Edgar) -> None:
@@ -596,3 +615,185 @@ def test_a_10k_without_item_7_headings_falls_back_to_its_mda_heading(
     assert (row["status"], row["source"]) == ("ok", "primary")
     assert row["text"].startswith("Management\u2019s discussion and analysis")
     assert "Assets." not in row["text"]
+
+
+# --- follow-up 3: 10-Qs by default, EX-99 annual reports, an MD&A later in the 10-K --------------
+
+
+def test_10qs_are_read_by_default_with_their_part_i_item_2(tmp_path: Path, edgar: Edgar) -> None:
+    lake = Lake(tmp_path)
+    report = ingest_filing_text(lake, client(lake), ["CCL"], cik_map=CIKS)
+    assert (report.rows, dict(report.statuses)) == (3, {"ok": 3})
+    q = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-23-000090"]
+    assert (q["form"], q["source"], q["period_end"]) == ("10-Q", "primary", date(2023, 8, 31))
+    assert (
+        q["text"].startswith("Item 2. Management\u2019s Discussion")
+        and "Effective." not in q["text"]
+    )
+
+
+def test_an_annual_report_filed_as_exhibit_99_is_read(tmp_path: Path, edgar: Edgar) -> None:
+    """Clorox files its annual report, with the MD&A, as Exhibit 99.1."""
+    folder = f"/Archives/edgar/data/{CIK}/000081509721000027"
+    edgar.docs[f"{folder}/0000815097-21-000027-index.htm"] = INDEX.replace(b"EX-13", b"EX-99.1")
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (row["status"], row["source"], row["document"]) == ("ok", "EX-99", "a2020ex-13.htm")
+
+
+def test_an_mda_later_in_the_10k_is_read_when_no_exhibit_has_one(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """AEP, Mosaic, Time Warner, Windstream: Item 7 points to an annual-report section later
+    in the same document, not to an exhibit."""
+    folder = f"/Archives/edgar/data/{CIK}/000081509721000027"
+    edgar.docs[f"{folder}/ccl-20201130.htm"] = (
+        "<html><body><p>Item 7. Management\u2019s Discussion and Analysis</p>"
+        f"<p>{POINTER}</p><p>Item 8. Financial Statements</p><p>See the annual report.</p>"
+        "<p>Management\u2019s Discussion and Analysis of Results of Operations</p>"
+        f"<p>{BODY}</p><p>Report of Independent Registered Public Accounting Firm</p>"
+        "<p>Opinion.</p></body></html>"
+    ).encode()
+    edgar.docs[f"{folder}/a2020ex-13.htm"] = b"<p>Nothing here.</p>"
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (row["status"], row["source"], row["document"]) == ("ok", "primary", "ccl-20201130.htm")
+    assert row["text"].startswith("Management\u2019s Discussion and Analysis of Results")
+    assert "Opinion." not in row["text"]
+
+
+# --- follow-up 3 (H4 review): a short MD&A pointing later in the document -----------------------
+
+COMBINED = (
+    "<p>Combined Management\u2019s Discussion and Analysis of Financial Condition</p>"
+    f"<p>{BODY * 3}</p><p>Report of Independent Registered Public Accounting Firm</p>"
+    "<p>Opinion.</p>"
+)
+
+
+def test_a_short_mda_gives_way_to_a_longer_one_later_in_the_document(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """Southern Company's Item 7 is a page of pointers to the combined MD&A later in the 10-K:
+    an MD&A shorter than `short_mda_chars` is compared with the longest section under a later
+    MD&A heading (not an "Item" line), and the longer one is kept."""
+    pointers = "See the Combined MD&A of each registrant on page 50. " * 25  # ~1,300 characters
+    doc = f"/Archives/edgar/data/{CIK}/000081509724000011/ccl-20231130.htm"
+    edgar.docs[doc] = ten_k_html(pointers).replace(b"</body>", COMBINED.encode() + b"</body>")
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-24-000011"]
+    assert (row["status"], row["source"]) == ("ok", "primary")
+    assert row["text"].startswith("Combined Management\u2019s Discussion")
+    assert "Opinion." not in row["text"]
+    # a pointer at least `short_mda_chars` long is kept as the MD&A
+    keep = AtlasConfig.model_validate(
+        {"data": {"filing_text": {"forms": ["10-K"], "short_mda_chars": 1000}}}
+    )
+    lake2 = Lake(tmp_path / "keep")
+    ingest(lake2, ["CCL"], config=keep)
+    kept = lake2.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-24-000011"]
+    assert kept["text"].startswith("Item 7. Management\u2019s Discussion")
+
+
+def test_a_short_mda_with_no_longer_one_later_is_kept(tmp_path: Path, edgar: Edgar) -> None:
+    doc = f"/Archives/edgar/data/{CIK}/000081509724000011/ccl-20231130.htm"
+    short_later = (
+        "<p>Management\u2019s Discussion and Analysis (continued)</p><p>A short note here.</p>"
+        "<p>Report of Independent Registered Public Accounting Firm</p>"
+    )
+    edgar.docs[doc] = ten_k_html(BODY).replace(b"</body>", short_later.encode() + b"</body>")
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-24-000011"]
+    assert row["text"].startswith("Item 7. Management\u2019s Discussion")
+
+
+def test_a_pointer_found_by_the_heading_fallback_gives_way_too(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """Entergy's Item 7 says only "Refer to MANAGEMENT'S FINANCIAL DISCUSSION AND ANALYSIS":
+    the Item 7 section is too short, the heading fallback first takes the "Item 7" line, and
+    the registrant's MD&A later in the 10-K is the longer section."""
+    doc = f"/Archives/edgar/data/{CIK}/000081509724000011/ccl-20231130.htm"
+    edgar.docs[doc] = (
+        "<html><body><p>Item 7. Management\u2019s Discussion and Analysis</p>"
+        "<p>Refer to the financial discussion of each registrant.</p>"
+        f"<p>Item 8. Financial Statements</p><p>{'Refer to the statements. ' * 50}</p>"
+        "<p>Consolidated Balance Sheets</p><p>Assets.</p>"
+        "<p>ENTERGY CORPORATION AND SUBSIDIARIES</p>"
+        f"<p>MANAGEMENT'S FINANCIAL DISCUSSION AND ANALYSIS</p><p>{BODY * 2}</p>"
+        "<p>CONSOLIDATED STATEMENTS OF INCOME</p><p>Revenue.</p></body></html>"
+    ).encode()
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-24-000011"]
+    assert (row["status"], row["source"]) == ("ok", "primary")
+    assert row["text"].startswith("MANAGEMENT'S FINANCIAL DISCUSSION AND ANALYSIS")
+    assert "Revenue." not in row["text"]
+
+
+def test_a_short_mda_pointing_to_the_annual_report_reads_its_exhibit(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """Total System Services' Item 7 is a page "incorporated by reference" from the annual
+    report: a short MD&A that points elsewhere gives way to the exhibit's MD&A."""
+    folder = f"/Archives/edgar/data/{CIK}/000081509721000027"
+    edgar.docs[f"{folder}/ccl-20201130.htm"] = ten_k_html(f"{POINTER} " * 12)  # ~1,100 chars
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (row["status"], row["source"], row["document"]) == ("ok", "EX-13", "a2020ex-13.htm")
+    # with no exhibit MD&A, the pointer is kept
+    edgar.docs[f"{folder}/a2020ex-13.htm"] = b"<p>Nothing here.</p>"
+    lake2 = Lake(tmp_path / "none")
+    ingest(lake2, ["CCL"])
+    kept = lake2.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (kept["status"], kept["source"]) == ("ok", "primary")
+    assert kept["text"].startswith("Item 7. Management\u2019s Discussion")
+
+
+def test_the_short_bound_and_ties_keep_what_was_found() -> None:
+    """An MD&A of exactly `short_mda_chars` is not short; a later section only as long as it
+    does not replace it."""
+    text = (
+        f"Management\u2019s Discussion and Analysis (combined)\n{BODY}\nConsolidated Balance Sheets"
+    )
+    later = extract_exhibit_mda(text, min_chars=1, skip_items=True).text
+    assert later is not None
+    settings = FilingTextConfig(short_mda_chars=10)
+    assert _unless_later(MdaExtract("ok", "x" * 10), text, settings).text == "x" * 10
+    assert _unless_later(MdaExtract("ok", "x" * 9), text, settings).text == later
+    tie = FilingTextConfig(short_mda_chars=len(later) + 1)
+    assert _unless_later(MdaExtract("ok", "y" * len(later)), text, tie).text == "y" * len(later)
+    assert _unless_later(MdaExtract("ok", "y" * (len(later) - 1)), text, tie).text == later
+
+
+def test_a_pointer_at_the_short_bound_or_tied_with_the_exhibit_is_kept(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    folder = f"/Archives/edgar/data/{CIK}/000081509721000027"
+    primary = ten_k_html(f"{POINTER} " * 12)
+    edgar.docs[f"{folder}/ccl-20201130.htm"] = primary
+    pointer = extract_mda(html_to_text(primary), min_chars=1000).text
+    assert pointer is not None
+    # exactly `short_mda_chars` long: not short, so no exhibit is read
+    at_bound = AtlasConfig.model_validate(
+        {"data": {"filing_text": {"forms": ["10-K"], "short_mda_chars": len(pointer)}}}
+    )
+    lake = Lake(tmp_path / "bound")
+    ingest(lake, ["CCL"], config=at_bound)
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (row["source"], row["text"]) == ("primary", pointer)
+    # an exhibit MD&A exactly as long as the pointer does not replace it
+    heading = "MANAGEMENT\u2019S DISCUSSION AND ANALYSIS"
+    filler = "x" * (len(pointer) - len(heading) - 1)
+    edgar.docs[f"{folder}/a2020ex-13.htm"] = (
+        f"<p>{heading}</p><p>{filler}</p><p>CONSOLIDATED BALANCE SHEETS</p>".encode()
+    )
+    lake2 = Lake(tmp_path / "tie")
+    ingest(lake2, ["CCL"])
+    tied = lake2.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (tied["source"], tied["text"]) == ("primary", pointer)

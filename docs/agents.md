@@ -205,20 +205,20 @@ Receivables need the concept `accounts_receivable` (Stage 29). A lake ingested b
 no receivables rows until the fundamentals are re-ingested (the main lake was, 2026-11-18), so
 the receivables check reads NOT EVALUATED there.
 
-**Going concern** (Stage 29 follow-up 2) reads the MD&A of the latest 10-K known at the as-of
-(`DataView.mda`, the `filings` dataset). The check is FLAG when one MD&A sentence holds all of
+**Going concern** (Stage 29 follow-ups 2 and 3) reads the MD&A of the latest 10-K or 10-Q known
+at the as-of whose MD&A was found (`DataView.mda`, the `filings` dataset). The check is FLAG when one MD&A sentence holds all of
 `going_concern_terms` ("going concern", "substantial doubt") and none of
 `going_concern_exclusions`; the evidence quotes that sentence. The exclusions exist because, on
 the main lake, most such sentences describe the ASU 2014-15 standard ("evaluate whether there
 is substantial doubt about an entity's ability …"), are hypothetical, are about another party
-(a tenant, an investee) or deny a doubt ("no longer"). With them, 16 of the main lake's 7,558
-10-K MD&As are flagged: 12 about the company itself (Frontier, Endo, Mallinckrodt, Valaris,
-Bed Bath & Beyond, …), 3 about a subsidiary (FirstEnergy's FES, NRG's GenOn) and 1 about another
-company (Western Digital on Toshiba), all reviewed. The
+(a tenant, an investee) or deny a doubt ("no longer"). With them, 75 of the main lake's 30,506
+10-K and 10-Q MD&As are flagged (2026-11-22, 23 companies): 59 about the company itself
+(Frontier, Endo, Mallinckrodt, Valaris, Chesapeake, Bed Bath & Beyond, …), 8 about a subsidiary
+(FirstEnergy's FES, NRG's GenOn, Harley-Davidson's LiveWire) and 8 about another company
+(Toshiba, in Western Digital's and Southern Company's), all reviewed. The
 check is NOT EVALUATED, with the reason, when the lake has no MD&A of the symbol, when the
-10-K's fiscal year ended more than `mda_max_age_days` (460) days before the as-of, or when no
-MD&A was found in the filing. Only 10-K MD&As are read: a doubt first disclosed in a 10-Q is
-seen at the next 10-K.
+filing's period ended more than `mda_max_age_days` (460) days before the as-of, or when no
+filing's MD&A was found. A doubt first disclosed in a 10-Q is read as soon as the 10-Q is known.
 
 **Recorded run.** `tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/` holds a live
 run on AAPL for 2024-05-01: the exported LLM cache, the lake slice it read (`atlas data slice`)

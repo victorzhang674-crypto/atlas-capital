@@ -3,7 +3,13 @@ of the annual-report exhibit (Exhibit 13) that Item 7 points to."""
 
 import pytest
 
-from atlas.data.filings.mda import MdaExtract, extract_exhibit_mda, extract_mda, html_to_text
+from atlas.data.filings.mda import (
+    MdaExtract,
+    extract_exhibit_mda,
+    extract_mda,
+    html_to_text,
+    points_elsewhere,
+)
 
 BODY = "Revenue grew because demand was strong. " * 40  # about 1,600 characters
 
@@ -278,3 +284,249 @@ def test_an_exhibit_heading_may_say_management_discussion() -> None:
         f"Management Discussion\n{BODY}\nReport of Independent Registered Public Accounting Firm\n"
     )
     assert extract_exhibit_mda(text, min_chars=1000).status == "ok"
+
+
+# --- follow-up 3: 10-Q MD&As, "Financial Review", an MD&A later in the 10-K ----------------------
+
+
+def ten_q(item2: str) -> str:
+    return (
+        "PART I. FINANCIAL INFORMATION\nItem 1. Financial Statements\nNumbers.\n"
+        "Item 2. Management's Discussion and Analysis of Financial Condition\n"
+        f"{item2}\nItem 3. Quantitative and Qualitative Disclosures About Market Risk\nRates.\n"
+        "Item 4. Controls and Procedures\nEffective.\nPART II. OTHER INFORMATION\n"
+        "Item 2. Unregistered Sales of Equity Securities and Use of Proceeds\nNone.\n"
+    )
+
+
+def test_a_10q_mda_is_part_i_item_2() -> None:
+    out = extract_mda(ten_q(BODY), min_chars=1000, form="10-Q")
+    assert out.status == "ok"
+    assert out.text is not None
+    assert out.text.startswith("Item 2. Management's Discussion")
+    assert BODY.strip() in out.text and "Rates." not in out.text
+    # a 10-Q has no Item 7, and a 10-K's Item 2 (Properties) is not its MD&A
+    assert extract_mda(ten_q(BODY), min_chars=1000, form="10-K").status == "not_found"
+    assert extract_mda(ten_k(BODY), min_chars=1000, form="10-Q").status == "not_found"
+
+
+@pytest.mark.parametrize(
+    "end",
+    [
+        "Item 3. Quantitative and Qualitative Disclosures",
+        "ITEM 4. CONTROLS AND PROCEDURES",
+        "PART II — OTHER INFORMATION",
+    ],
+)
+def test_a_10q_mda_ends_at_item_3_item_4_or_part_ii(end: str) -> None:
+    text = f"Item 2. Management's Discussion and Analysis\n{BODY}\n{end}\nAfter.\n"
+    out = extract_mda(text, min_chars=1000, form="10-Q")
+    assert out.text is not None and "After." not in out.text
+
+
+@pytest.mark.parametrize(
+    ("form", "kind"), [("10-K405", "10-K"), ("10-KT", "10-K"), ("10-Q/A", "10-Q")]
+)
+def test_form_variants_read_their_base_form(form: str, kind: str) -> None:
+    text = ten_q(BODY) if kind == "10-Q" else ten_k(BODY)
+    assert extract_mda(text, min_chars=1000, form=form).status == "ok"
+
+
+def test_financial_review_is_an_exhibit_mda_heading() -> None:
+    """Wells Fargo's annual report (Exhibit 13) titles its MD&A "Financial Review"."""
+    text = (
+        "Financial Review\nOverview 114\nFinancial Review\n"
+        f"{BODY}\nConsolidated Statement of Income\nRevenue 1.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("Financial Review")
+    # a sentence or a longer title naming it is not the heading
+    assert extract_exhibit_mda(
+        f"Our Financial Review of 2025\n{BODY}\n", min_chars=1000
+    ) == MdaExtract("not_found", None)
+
+
+def test_skip_items_takes_the_mda_heading_after_an_item_7_pointer() -> None:
+    """AEP, Mosaic, Time Warner: Item 7 points to an annual-report section later in the same
+    document, which has its own MD&A heading."""
+    text = (
+        "Item 7. Management's Discussion and Analysis of Financial Condition\n"
+        "The information is in the Annual Report section, incorporated by reference.\n"
+        "Item 8. Financial Statements\nSee the annual report.\nItem 15. Exhibits\nList.\n"
+        f"Management's Discussion and Analysis of Results of Operations\n{BODY}\n"
+        "Report of Independent Registered Public Accounting Firm\nOpinion.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000, skip_items=True)
+    assert out.text is not None and out.text.startswith(
+        "Management's Discussion and Analysis of Results"
+    )
+    assert "Item 8" not in out.text
+    unskipped = extract_exhibit_mda(text, min_chars=1000)
+    assert unskipped.text is not None and unskipped.text.startswith("Item 7.")
+
+
+def test_a_bullet_of_the_mdas_own_contents_does_not_end_it() -> None:
+    """Clorox's MD&A opens with a bulleted list of its parts; one bullet reads like the
+    market-risk heading that would end it."""
+    text = (
+        "MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION\nThe MD&A has these parts:\n"
+        "•\nContingencies\n•\nQuantitative and Qualitative Disclosure About Market Risk\n"
+        f"{BODY}\nQuantitative and Qualitative Disclosure About Market Risk\nRates.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and BODY.strip() in out.text and "Rates." not in out.text
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "See “Management\u2019s Discussion and Analysis of Results of Operations” below.",
+        "“Management\u2019s Discussion and Analysis of Results of Operations — Overview.”",
+        "7 Management\u2019s Discussion and Analysis of Financial Condition 39",
+    ],
+)
+def test_cross_references_and_contents_lines_are_not_mda_headings(line: str) -> None:
+    """Time Warner's cross-references and AEP's table of contents start lines that name the
+    MD&A; the heading itself comes later."""
+    text = (
+        f"{line}\n{BODY}\nItem 9A. Controls\n"
+        f"Management\u2019s Discussion and Analysis\n{BODY}\nConsolidated Balance Sheets\nAssets.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith(
+        "Management\u2019s Discussion and Analysis\n"
+    )
+
+
+def test_a_company_name_may_precede_an_upper_case_mda_heading() -> None:
+    """AEP's combined 10-K heads each registrant's MD&A with the company's name."""
+    heading = (
+        "AMERICAN ELECTRIC POWER COMPANY, INC. AND SUBSIDIARY COMPANIES MANAGEMENT'S DISCUSSION "
+        "AND ANALYSIS OF FINANCIAL CONDITION AND"
+    )
+    text = (
+        f"{heading}\n{BODY}\nQuantitative and Qualitative Disclosures About Market Risk\nRates.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("AMERICAN ELECTRIC POWER")
+    # in mixed case a long prefix is a sentence, not a heading
+    sentence = "For more on our segments and our results, read the management's discussion below"
+    assert extract_exhibit_mda(f"{sentence}\n{BODY}\n", min_chars=1000).status == "not_found"
+
+
+def test_financial_review_may_carry_a_footnote_mark() -> None:
+    text = f"Financial Review1\n{BODY}\nConsolidated Statement of Income\nRevenue 1.\n"
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("Financial Review1")
+
+
+def test_a_page_number_glued_to_the_heading_does_not_hide_it() -> None:
+    """IBM's text reads "18Management Discussion": the previous page's number runs into the
+    heading. A contents entry has the number apart ("7 Management's Discussion ... 39")."""
+    text = (
+        f"18Management Discussion\n{BODY}\n19\nManagement Discussion\nMore.\n"
+        "Consolidated Balance Sheets\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("18Management Discussion")
+
+
+def test_an_inline_bullet_entry_does_not_end_the_mda_either() -> None:
+    text = (
+        "MANAGEMENT'S DISCUSSION AND ANALYSIS\n• Contingencies\n"
+        "Quantitative and Qualitative Disclosures About Market Risk\n"
+        f"{BODY}\nQuantitative and Qualitative Disclosures About Market Risk\nRates.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and BODY.strip() in out.text and "Rates." not in out.text
+
+
+# --- follow-up 3 (H4 review): Part II Item 2, Entergy's MD&A heading ------------------------------
+
+
+def test_part_ii_item_2_listed_in_the_contents_is_not_a_10q_mda_heading() -> None:
+    """A bare "Item 2." line is the MD&A heading only when "Management..." follows on the same
+    or the next line: the contents entry of Part II Item 2 ("Item 2." / "Unregistered Sales
+    ...") would otherwise run through the financial statements to Part I Item 3."""
+    text = "\n".join(
+        [
+            "PART I",
+            "Item 2.",
+            "Management\u2019s Discussion and Analysis",
+            "Item 3.",
+            "Quantitative and Qualitative Disclosures",
+            "PART II",
+            "Item 2.",
+            "Unregistered Sales of Equity Securities and Use of Proceeds",
+            "PART I",
+            "Item 1. Financial Statements",
+            "Balance sheet. " * 200,
+            "Item 2.",
+            "Management\u2019s Discussion and Analysis of Financial Condition",
+            BODY,
+            "Item 3.",
+            "Quantitative and Qualitative Disclosures About Market Risk",
+            "PART II",
+            "Item 2.",
+            "Unregistered Sales of Equity Securities and Use of Proceeds",
+            "Purchases. " * 300,
+        ]
+    )
+    out = extract_mda(text, min_chars=1000, form="10-Q")
+    assert out.text is not None
+    assert out.text.startswith("Item 2.\nManagement\u2019s Discussion and Analysis of Financial")
+    assert "Balance sheet." not in out.text and "Purchases." not in out.text
+    assert BODY.strip() in out.text
+    # without any MD&A title after it, a bare Item 2 is no heading at all
+    bare = f"Item 2.\nUnregistered Sales of Equity Securities\n{BODY}\n"
+    assert extract_mda(bare, min_chars=1000, form="10-Q").status == "not_found"
+
+
+def test_management_s_financial_discussion_is_an_exhibit_mda_heading() -> None:
+    """Entergy's combined 10-K heads each registrant's MD&A "MANAGEMENT'S FINANCIAL DISCUSSION
+    AND ANALYSIS"."""
+    text = (
+        "ENTERGY CORPORATION AND SUBSIDIARIES\nMANAGEMENT'S FINANCIAL DISCUSSION AND ANALYSIS\n"
+        f"{BODY}\nCONSOLIDATED BALANCE SHEETS\nAssets.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("MANAGEMENT'S FINANCIAL DISCUSSION")
+    assert "Assets." not in out.text
+    mixed = f"Management\u2019s Financial Discussion and Analysis\n{BODY}\n"
+    assert extract_exhibit_mda(mixed, min_chars=1000).status == "ok"
+
+
+@pytest.mark.parametrize(
+    "end",
+    [
+        "CONDENSED CONSOLIDATED STATEMENTS OF INCOME (UNAUDITED)",
+        "Condensed Consolidated Balance Sheets",
+    ],
+)
+def test_condensed_statements_end_an_exhibit_mda(end: str) -> None:
+    """A 10-Q's statements are "condensed" (Southern Company's combined 10-Q)."""
+    text = f"MANAGEMENT'S DISCUSSION AND ANALYSIS\n{BODY}\n{end}\nRevenue.\n"
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and "Revenue." not in out.text
+
+
+def test_points_elsewhere() -> None:
+    assert points_elsewhere("The MD&A is incorporated herein by reference to the report.")
+    assert points_elsewhere("See Exhibit 13.")
+    assert not points_elsewhere(BODY)
+
+
+@pytest.mark.parametrize(
+    ("form", "item"),
+    [("10-Q", "ITEM 2.\nMANAGMENT'S DISCUSSION"), ("10-K", "ITEM 7. MANAGMENT\u2019S DISCUSSION")],
+)
+def test_a_heading_that_misspells_management_is_still_read(form: str, item: str) -> None:
+    """Roper's 10-Q of 2017-11 heads its MD&A "MANAGMENT'S DISCUSSION AND ANALYSIS"; with the
+    Part II rule a bare "Item 2." needs the word after it, so the misspelling must count."""
+    end = "Item 3. Quantitative" if form == "10-Q" else "Item 8. Financial Statements"
+    out = extract_mda(f"{item} AND ANALYSIS\n{BODY}\n{end}\nAfter.\n", min_chars=1000, form=form)
+    assert out.status == "ok"
+    assert out.text is not None and out.text.startswith(item) and "After." not in out.text
+    # the Part II entry stays no heading
+    bare = f"Item 2.\nUnregistered Sales of Equity Securities\n{BODY}\n"
+    assert extract_mda(bare, min_chars=1000, form="10-Q").status == "not_found"

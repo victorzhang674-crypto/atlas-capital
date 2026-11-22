@@ -23,7 +23,7 @@ point-in-time rules and known gaps are in [data-limitations.md](data-limitations
 | `universe` | `universe` | Wikipedia: S&P 500 constituents and change log | `index_membership`, `instruments` | snapshot (daily) |
 | `prices` | `prices` | Yahoo Finance (yfinance), Alpaca IEX bars as fallback | `prices_daily`, `corporate_actions` | windowed per symbol |
 | `fundamentals` | `fundamentals` | SEC EDGAR XBRL `companyfacts` + `submissions` | `fundamentals_facts` | snapshot per symbol |
-| `filings` | `filing_text` | SEC EDGAR archive: each 10-K's primary document (Item 7), or its Exhibit 13 when Item 7 points there | `filing_text` | snapshot per symbol; a filing is fetched once |
+| `filings` | `filing_text` | SEC EDGAR archive: each 10-K's and 10-Q's primary document (10-K Item 7, 10-Q Part I Item 2), or the annual report (Exhibit 13 or 99, or a later section) the item points to | `filing_text` | snapshot per symbol; a filing is fetched once |
 | `macro` | `macro` | FRED / ALFRED (every vintage) | `macro_observations`, `macro_series` | snapshot per series |
 | `news` | `news` | Alpaca news (Benzinga); Yahoo (recent only) without Alpaca keys | `news` | windowed per symbol, 90-day windows |
 | `events` | `earnings`, `upcoming`, `macro_calendar`, `reactions` | EDGAR 8-K item 2.02 / 10-Q / 10-K; Yahoo calendar; FOMC YAML + FRED release dates; computed from prices | `events`, `macro_events`, `earnings_reactions` | snapshots |
@@ -51,7 +51,7 @@ snapshot asks only for today's members. `--symbols A,B` replaces the list.
 - **SEC EDGAR** (needs `SEC_USER_AGENT` with contact details) — XBRL company facts and the
   filing index (acceptance times give `available_at`), plus 8-K/10-Q/10-K filings for actual
   earnings dates. Raw JSON is archived under `data/raw/sec/`. The `filings` dataset also
-  reads each 10-K document from the EDGAR archive (`www.sec.gov/Archives/edgar/data/...`,
+  reads each 10-K and 10-Q document from the EDGAR archive (`www.sec.gov/Archives/edgar/data/...`,
   1.5–8 MB of HTML each) and keeps only the MD&A text, the document's URL and its SHA-256:
   the documents themselves are not archived (Stage 29 follow-up 2).
 - **FRED / ALFRED** (needs `FRED_API_KEY`) — the 22 series in `config/macro.yaml` with every

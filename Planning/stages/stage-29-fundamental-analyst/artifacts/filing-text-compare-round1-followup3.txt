@@ -1,0 +1,34 @@
+# Stage 29 follow-up 3 (H8): the final scratch filing_text table against round 1, by accession
+rows round 1 30597, final 30597; keys only in round 1 0, only in final 0
+  10-K source primary -> EX-13: 6
+  10-K text longer: 28
+  10-K unchanged: 7612
+  10-Q status not_found -> ok: 36
+  10-Q status ok -> not_found: 1
+  10-Q text longer: 101
+  10-Q text shorter: 5700
+  10-Q unchanged: 17113
+changed rows by symbol (top 20): [('ETR', 48), ('CF', 36), ('SNA', 36), ('TTWO', 36), ('NVR', 36), ('ABBV', 36), ('VRTX', 36), ('UNH', 36), ('EW', 36), ('AJG', 36), ('AOS', 36), ('NEE', 36), ('MSFT', 36), ('VRSN', 36), ('WU', 36), ('DOC', 36), ('GS', 36), ('MCO', 36), ('A', 36), ('MGM', 36)]
+  SO: rows 48, text changed 22, median chars 285834, ok under 15,000 chars 0
+  GAS: rows 48, text changed 16, median chars 210021, ok under 15,000 chars 0
+  ETR: rows 48, text changed 48, median chars 97048, ok under 15,000 chars 0
+  TSS: rows 19, text changed 3, median chars 61928, ok under 15,000 chars 0
+  SRE: rows 48, text changed 3, median chars 126852, ok under 15,000 chars 0
+  EMR: rows 48, text changed 0, median chars 33146, ok under 15,000 chars 1
+  GE: rows 48, text changed 0, median chars 156680, ok under 15,000 chars 3
+  IBM: rows 48, text changed 0, median chars 131127, ok under 15,000 chars 0
+  CLX: rows 48, text changed 0, median chars 42360, ok under 15,000 chars 0
+final ok rows under short_mda_chars (15,000): {'10-Q': 55, '10-K': 10}
+10-Q rows ok in round 1, not found now:
+   ('AOS', '0001193125-18-154400') 10-Q 64466 'Item 2.\nUnregistered Sales of Equity Securities and Use of Proceeds\n29\nItem 5.\nOther Information\n29\nItem 6.\nExhibits\n29\nIndex to Exhibits\n30\nSignatures\n31\n2\nPART I - FINANCIAL INFORMATION\nITEM 1 - FINANCIAL STATEMENTS\nA. O. SMITH\nCORPORATION\nCONDENSED CONSOLIDATED STATEMENTS OF EARNINGS\n(dollars in '
+final ok rows under 15,000 chars, 10-K:
+   ('EMR', '0000032604-15-000051') 10-K primary 4539 "ITEM 7 - MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS\nThe information from the "
+   ('FTI', '0001681459-17-000013') 10-K primary 1681 'ITEM 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS\nOn May 19, 2016, FMCTI and'
+   ('L', '0001193125-15-058679') 10-K primary 9751 'Item 7. Management’s Discussion and Analysis of Financial Condition\nand Results of Operations.\nManagement’s discussion a'
+   ('LIN', '0001707925-18-000004') 10-K primary 5737 'Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations\nThe information set forth '
+   ('NBL', '0000072207-19-000018') 10-K primary 1065 "Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations\nManagement's Discussion an"
+   ('SCG', '0000754737-19-000008') 10-K primary 14431 "ITEM 7. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF OPERATIONS\nSCANA and SCE&G meet the c"
+   ('TXN', '0000097476-25-000007') 10-K primary 14862 'ITEM 7. Management’s discussion and analysis of financial condition and results of operations\nOverview\nWe design and man'
+   ('VRT', '0001104659-20-032055') 10-K primary 14663 'Management’s Discussion and Analysis of Financial Condition and Results of Operations.\nUnless the context\notherwise requ'
+   ('VRT', '0001193125-19-072362') 10-K primary 13534 'Management’s Discussion and Analysis of Financial Condition and Results of Operations.\nThe following discussion and anal'
+   ('WFM', '0000865436-17-000238') 10-K primary 7944 'Item 7. Management’s Discussion and Analysis of Financial Condition and Results of Operations.\nResults of Operations\nPre'

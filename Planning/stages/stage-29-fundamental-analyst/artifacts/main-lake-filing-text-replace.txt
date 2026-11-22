@@ -1,0 +1,10 @@
+=== check
+schema entry equal: True
+=== backup to ~/Projects/atlas-capital/data/cache/backup-stage29-filing-text-2026-11-22
+=== copy the new table, then move the old one into the backup
+backup of the old table EQUAL to it (     735 files)
+=== the sync state's filing_text step from the scratch lake
+~/Projects/atlas-capital/data/cache/sync_state.json: replaced steps.filing_text (748 keys)
+=== verify: the new table's files equal the scratch lake's
+files EQUAL (     742 files)
+replace exit 0

@@ -158,6 +158,13 @@ def test_going_concern_rule() -> None:
         "going concern, as disclosed by the investee.",
         "After emergence we concluded there was no longer substantial doubt regarding our ability "
         "to continue as a going concern.",
+        # follow-up 3, 10-Q MD&As: a negation, a standard's wording, a borrower's doubt
+        "As a result of the closing, substantial doubt regarding our ability to continue as a "
+        "going concern does not exist.",
+        "The Company must then provide certain disclosure if there is substantial doubt about its "
+        "ability to continue as a going concern.",
+        "Indicators include substantial doubt about the borrower\u2019s ability to continue as a "
+        "going concern.",
     ],
 )
 def test_standards_others_and_negations_are_not_a_flag(sentence: str) -> None:
@@ -184,6 +191,31 @@ def test_going_concern_sentences_are_unique_in_order_and_quoted_at_most_200_char
     assert going_concern_rule(f"{DOUBT} {long} Again: {DOUBT.lower()}", CFG).detail.endswith(
         " and 2 more sentences"
     )
+
+
+def test_a_sentence_cut_by_a_line_break_or_an_abbreviation_is_read_whole() -> None:
+    """Stage 29 follow-up 3: a piece that starts with a lower-case letter goes on with the
+    sentence before it (a line break inside a sentence, or a period after "Inc.")."""
+    inc = (
+        "In the fourth quarter, LiveWire Group, Inc. disclosed conditions that raise substantial "
+        "doubt about its ability to continue as a going concern."
+    )
+    text = f"Revenue fell. {inc}\nWe hold 87%."
+    assert going_concern_sentences(text, CFG.going_concern_terms, ()) == (inc,)
+    assert going_concern_rule(text, CFG).detail.startswith('MD&A: "In the fourth quarter, Live')
+    broken = (
+        "Additionally, the entity must provide certain disclosures if conditions or events raise\n"
+        "substantial doubt about its ability to continue as a going concern."
+    )
+    assert going_concern_sentences(broken, CFG.going_concern_terms, ()) == (
+        " ".join(broken.split()),
+    )
+    assert going_concern_rule(broken, CFG).status == "CLEAR"
+    # a piece starting with a capital, a digit or a bracket is a sentence of its own
+    assert going_concern_sentences(f"Sales rose.\n(a) {DOUBT}", CFG.going_concern_terms, ()) == (
+        f"(a) {DOUBT}",
+    )
+    assert going_concern_sentences(f"lower start. {DOUBT}", CFG.going_concern_terms, ()) == (DOUBT,)
 
 
 def test_exclusions_ignore_case_and_curly_apostrophes() -> None:

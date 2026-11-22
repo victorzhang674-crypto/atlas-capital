@@ -629,3 +629,8 @@ atlas.agents.tools.fundamental_tools.x_sector_panel__mutmut_24 1
 atlas.agents.tools.fundamental_tools.x_sector_panel__mutmut_34 1
 atlas.agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_7 1
 atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_86 1
+# pass 7 (follow-up 3): the last 4 untested-edge survivors vs the three new contract tests (run alone: the old copy predates follow-up 2's texts)
+atlas.agents.tools.fundamental_tools.x__dilution__mutmut_33 1
+atlas.agents.tools.fundamental_tools.x__dilution__mutmut_35 1
+atlas.agents.tools.fundamental_tools.x__history_multiples__mutmut_61 1
+atlas.agents.tools.fundamental_tools.x__window_sessions__mutmut_2 1

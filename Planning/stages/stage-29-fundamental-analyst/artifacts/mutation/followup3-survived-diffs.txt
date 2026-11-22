@@ -1,0 +1,113 @@
+# atlas.data.filings.mda.x__decode__mutmut_3
+-        return body.decode("utf-8")
++        return body.decode("UTF-8")
+# atlas.data.filings.mda.x__decode__mutmut_9
+-        return body.decode("cp1252", errors="replace")
++        return body.decode("CP1252", errors="replace")
+# atlas.data.filings.mda.x_html_to_text__mutmut_11
+-    source = _XML_DECLARATION.sub("", source, count=1)
++    source = _XML_DECLARATION.sub("", source, )
+# atlas.data.filings.mda.x_html_to_text__mutmut_13
+-    source = _XML_DECLARATION.sub("", source, count=1)
++    source = _XML_DECLARATION.sub("", source, count=2)
+# atlas.data.filings.mda.x__after_bullet__mutmut_8
+-    before = text[: max(at - 1, 0)]
++    before = text[: max(at - 1, 1)]
+# atlas.data.filings.mda.x__after_bullet__mutmut_14
+-    return before[before.rfind("\n") + 1 :].strip()[:1] in _BULLETS
++    return before[before.rfind("\n") + 1 :].strip()[:2] in _BULLETS
+# atlas.data.filings.mda.x_extract_mda__mutmut_1
+-def extract_mda(text: str, *, min_chars: int, form: str = "10-K") -> MdaExtract:
++def extract_mda(text: str, *, min_chars: int, form: str = "XX10-KXX") -> MdaExtract:
+# atlas.data.filings.mda.x_extract_mda__mutmut_2
+-def extract_mda(text: str, *, min_chars: int, form: str = "10-K") -> MdaExtract:
++def extract_mda(text: str, *, min_chars: int, form: str = "10-k") -> MdaExtract:
+# atlas.data.filings.text.x_parse_filing_list__mutmut_30
+-    base["period_end"] = pd.Series(ends, dtype="object")
++    base["period_end"] = pd.Series(ends, dtype=None)
+# atlas.data.filings.text.x_parse_filing_list__mutmut_32
+-    base["period_end"] = pd.Series(ends, dtype="object")
++    base["period_end"] = pd.Series(ends, )
+# atlas.data.filings.text.x_parse_filing_list__mutmut_39
+-    base["primary_document"] = pd.Series(documents, dtype="str")
++    base["primary_document"] = pd.Series(documents, dtype=None)
+# atlas.data.filings.text.x_parse_filing_list__mutmut_41
+-    base["primary_document"] = pd.Series(documents, dtype="str")
++    base["primary_document"] = pd.Series(documents, )
+# atlas.data.filings.text.x_filing_list__mutmut_38
+-    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
++    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset=None, keep="first")
+# atlas.data.filings.text.x_filing_list__mutmut_40
+-    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
++    out = pd.concat(frames, ignore_index=True).drop_duplicates(keep="first")
+# atlas.data.filings.text.x_filing_list__mutmut_41
+-    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
++    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", )
+# atlas.data.filings.text.x_filing_list__mutmut_43
+-    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
++    out = pd.concat(frames, ignore_index=None).drop_duplicates(subset="accn", keep="first")
+# atlas.data.filings.text.x_filing_list__mutmut_45
+-    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
++    out = pd.concat(frames, ).drop_duplicates(subset="accn", keep="first")
+# atlas.data.filings.text.x_filing_list__mutmut_46
+-    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
++    out = pd.concat(frames, ignore_index=False).drop_duplicates(subset="accn", keep="first")
+# atlas.data.filings.text.x_filing_list__mutmut_62
+-    return out.sort_values(["filed", "accn"], kind="stable").reset_index(drop=True)
++    return out.sort_values(["filed", "accn"], kind=None).reset_index(drop=True)
+# atlas.data.filings.text.x_filing_list__mutmut_64
+-    return out.sort_values(["filed", "accn"], kind="stable").reset_index(drop=True)
++    return out.sort_values(["filed", "accn"], ).reset_index(drop=True)
+# atlas.data.filings.text.x_filing_list__mutmut_69
+-    return out.sort_values(["filed", "accn"], kind="stable").reset_index(drop=True)
++    return out.sort_values(["filed", "accn"], kind="XXstableXX").reset_index(drop=True)
+# atlas.data.filings.text.x_filing_list__mutmut_70
+-    return out.sort_values(["filed", "accn"], kind="stable").reset_index(drop=True)
++    return out.sort_values(["filed", "accn"], kind="STABLE").reset_index(drop=True)
+# atlas.data.filings.text.x__stored_accns__mutmut_6
+-        FILING_TEXT.name, filters=[("symbol", "=", symbol)], columns=["accn", "section"]
++        FILING_TEXT.name, filters=[("symbol", "=", symbol)], columns=None
+# atlas.data.filings.text.x__stored_accns__mutmut_9
+-        FILING_TEXT.name, filters=[("symbol", "=", symbol)], columns=["accn", "section"]
+-    )
++        FILING_TEXT.name, filters=[("symbol", "=", symbol)], )
+# atlas.data.filings.text.x__rows__mutmut_100
+-        frame[col] = pd.to_datetime(frame[col], utc=True).astype("datetime64[us, UTC]")
++        frame[col] = pd.to_datetime(frame[col], utc=True).astype("datetime64[us, utc]")
+# atlas.data.filings.text.x_ingest_filing_text__mutmut_17
+-    cal = calendar if calendar is not None else TradingCalendar(config=cfg.calendar)
++    cal = calendar if calendar is not None else TradingCalendar(config=None)
+# atlas.data.filings.text.x_ingest_filing_text__mutmut_73
+-                    FILING_TEXT.name, stored, mode="upsert", keys=list(FILING_TEXT.primary_key)
++                    FILING_TEXT.name, stored, mode="upsert", keys=None
+# atlas.data.filings.text.x_ingest_filing_text__mutmut_76
+-                    FILING_TEXT.name, stored, mode="upsert", keys=list(FILING_TEXT.primary_key)
++                    FILING_TEXT.name, stored, keys=list(FILING_TEXT.primary_key)
+# atlas.data.filings.text.x_ingest_filing_text__mutmut_77
+-                    FILING_TEXT.name, stored, mode="upsert", keys=list(FILING_TEXT.primary_key)
+-                )
++                    FILING_TEXT.name, stored, mode="upsert", )
+# atlas.agents.tools.fundamental_tools.x__going_concern__mutmut_4
+-        return going_concern_rule(None, settings), ""
++        return going_concern_rule(None, None), ""
+# atlas.data.view.xǁDataViewǁmda__mutmut_18
+-        ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="stable")
++        ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind=None)
+# atlas.data.view.xǁDataViewǁmda__mutmut_20
+-        ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="stable")
++        ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], )
+# atlas.data.view.xǁDataViewǁmda__mutmut_25
+-        ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="stable")
++        ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="XXstableXX")
+# atlas.data.view.xǁDataViewǁmda__mutmut_26
+-        ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="stable")
++        ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="STABLE")
+# atlas.data.view.xǁDataViewǁmda__mutmut_40
+-    result: MdaText | None = self._cached("mda", (sym,), compute)
++    result: MdaText | None = self._cached(None, (sym,), compute)
+# atlas.data.view.xǁDataViewǁmda__mutmut_46
+-    result: MdaText | None = self._cached("mda", (sym,), compute)
++    result: MdaText | None = self._cached("XXmdaXX", (sym,), compute)
+# atlas.data.view.xǁDataViewǁmda__mutmut_47
+-    result: MdaText | None = self._cached("mda", (sym,), compute)
++    result: MdaText | None = self._cached("MDA", (sym,), compute)

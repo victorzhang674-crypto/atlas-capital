@@ -199,3 +199,50 @@ Still open, with reasons:
 - **Seven companies have no MD&A,** because they use other headings (e.g. Wells Fargo's "Financial Review").
 - **Graph wiring stays with Stage 35.**
 - **Four mutants remain untested edges,** all needing a split dated on a boundary day, or a non-default calendar.
+
+## Follow-up 3 (2026-11-22)
+
+Owner: "can you help me to complete the tasks that are still being opened?" The open items were 10-Q MD&As, the seven companies without an MD&A, the four untested-edge mutants and the uncommitted CI record. Graph wiring stays with Stage 35, as decided in follow-up 2. Widening the approved spec row to 10-Qs is recorded in the Decisions log, with the request as the approval.
+
+### Done
+
+- **10-Q MD&As (H1).** Part I Item 2 is read; `DataView.mda` returns the latest filing whose MD&A was found. A doubt first disclosed in a 10-Q is now seen at once: Chesapeake 2019-11-05, Bed Bath & Beyond 2023-01-26.
+- **The seven companies (H2).** AEP, CLX, MOS, TWC, TWX, WFC and WIN all have their MD&A now, from EX-13/EX-99 exhibits, "Financial Review" headings or the MD&A heading later in the 10-K.
+- **The four edge mutants (H3).** All killed. Stage 29 is 2,339 of 2,396 (97.6%), with no untested edge left.
+- **Main lake.** 30,597 filings (7,646 10-Ks, 22,951 10-Qs) of 742 symbols; 30,506 with an MD&A (99.7%).
+  - Swapped in with checked backups ([main-lake-filing-text-replace-2.txt](main-lake-filing-text-replace-2.txt)).
+  - Read back with 21 `DataView` cases ([main-lake-filing-text-readback-followup3.txt](main-lake-filing-text-readback-followup3.txt)).
+- **Going concern on real data.** 75 FLAGs of 30,506 MD&As, every one read: 59 own, 8 subsidiary, 8 another company's ([filing-text-review-followup3.txt](filing-text-review-followup3.txt)).
+- **Mutation testing of the changed code.** H1–H2: 853 of 889 (96.0%). H6–H7: 237 of 240 (98.75%). All survivors are equivalent ([mutation/mutation-summary.md](mutation/mutation-summary.md)).
+- **The CI record** `ci-runs-1e32337.json` is committed with this follow-up.
+
+### Self-audit of my own follow-up work
+
+I checked my code against the whole real data set twice: the review of every both-term sentence, and a row-by-row comparison of the rebuilt table with round 1. Each check found defects in my own work:
+1. **IBM regression during H2.** The new heading rules first shortened three IBM 10-K MD&As by about 6,000 characters: one of IBM's headings was rejected. A regression check of 142 earlier MD&As caught it, and it was fixed to 142 of 142 identical before the backfill.
+2. **An inline bullet ended an MD&A** ("• Contingencies" before an end heading). Mutation testing found it; a new test covers it.
+3. **The round-1 table I swapped into the main lake was wrong for 5,732 10-Qs.** A bare "Item 2." also heads Part II's "Unregistered Sales …", whose contents entry then ran through the financial statements. The synthetic tests had no Part II contents entry, so they passed. The review exposed it: HST and MNK were "flagged" by sentences in the notes to the statements, not in the MD&A. Fixed test-first (H7), and the affected rows were fetched again.
+4. **Pointer pages were stored as the MD&A.** Southern Company's 10-Q Item 2 is a page of pointers to its combined MD&A; Entergy's and Sempra's likewise. Fixed by `short_mda_chars` and the later-section or exhibit rule (H7).
+5. **The going-concern rule had 8 false FLAGs and 3 truncated quotes** (H6): a negation, ASU wording without the standard's name, a borrower definition, and sentences cut by line breaks or "Inc.". Fixed test-first.
+6. **My own fix caused a regression (H9).** Requiring "Management" after "Item 2." lost Roper's 10-Q, which misspells it "MANAGMENT'S". The row-by-row comparison found it.
+   - Fixed test-first.
+   - I then proved the fix touches nothing else: every not-found row, every row with the misspelling and 300 fresh random rows were extracted again from freshly fetched documents. Only Roper's row differed.
+7. **Record errors I made and corrected:** the Roper filing date (written as 2017-04; it is 2017-11-06), and two read-back cases that pointed at the wrong filing (fixed before saving the output).
+
+Checked and found right:
+- **Re-ingest scope.** 200 random untouched rows came out identical from freshly fetched documents.
+- **Main-lake swaps.** Both swaps kept a hash-checked backup. Only `filing_text` and its sync step changed; `_meta.json` is equal.
+- **Hard rules.**
+  - No `datetime.now()` in changed code.
+  - Agents read only `DataView`.
+  - No network in unit tests.
+  - No `.env` value in any changed or new file. I redacted the home path and the sandbox temp path from new artifacts.
+- **Config.** The new `short_mda_chars` is in `config/fund.yaml` and `FilingTextConfig`, covered by the yaml-equals-defaults test. It is a tuning key, not a spec change.
+
+Still open, with reasons (Backlog):
+- Bank of New York Mellon and Northern Trust 10-Q MD&As are under no heading read here (70 filings).
+- GE's 10-Q MD&A has no heading either, so for three 10-Qs the contents entry is stored.
+- ExxonMobil is read under its 2026 CIK only. That is the Stage 09 `CikMap` (→ 09).
+- A whole-table `Lake.read_table("filing_text")` overflows Arrow's string offsets. No code path does that (→ 06).
+- Windstream's 2019 quote starts at a page header inside the sentence.
+- Graph wiring stays with Stage 35.

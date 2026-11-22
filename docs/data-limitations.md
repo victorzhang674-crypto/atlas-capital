@@ -160,19 +160,27 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    companyfacts (offline, `refresh=False`), and the check reads NOT EVALUATED there. The main
    lake was re-ingested on 2026-11-18 (68,846 rows, 609 of 742 symbols; banks and insurers tag
    none, so their check stays NOT EVALUATED).
-9. **MD&A text: 10-K only, extracted by headings, documents not archived** (Stage 29
-   follow-up 2, `filing_text`). The MD&A is Item 7 of each 10-K, or the Exhibit 13 annual
-   report that Item 7 points to, cut out of the document's text by its headings (the longest
-   section from an "Item 7" heading followed by its title to the next "Item 7A" or "Item 8"
-   heading; a 10-K without "Item 7" headings, laid out as an annual report with a
-   cross-reference index, falls back to its "Management's Discussion and Analysis" heading). A
-   filing whose headings follow neither form is stored with status `not_found` (or
-   `by_reference` when no Exhibit 13 MD&A was found) and no text, and the going-concern check
-   reads NOT EVALUATED for it. On the main lake (2026-11-18): 7,643 10-Ks of 735 symbols filed
-   since 2015, 7,558 with an MD&A (98.9%); none for AEP, CLX, MOS, TWC, TWX, WFC and WIN (their
-   MD&A sits under other headings, e.g. Wells Fargo's "Financial Review"). 10-Q MD&As are not read, so a doubt first
-   disclosed in a quarterly report is seen only at the next 10-K. The documents (1.5–8 MB of
-   HTML each) are not kept under `raw/`: each row keeps the document's URL and SHA-256, and a
+9. **MD&A text: extracted by headings, documents not archived** (Stage 29 follow-ups 2 and 3,
+   `filing_text`). The MD&A of each 10-K is its Item 7, and of each 10-Q its Part I Item 2,
+   cut out of the document's text by its headings: the longest section from an "Item 7" heading
+   to the next "Item 7A" or "Item 8" heading, or from an "Item 2" heading followed by
+   "Management…" (a bare "Item 2." line is also Part II's "Unregistered Sales …" entry) to
+   "Item 3", "Item 4" or "Part II". When the filing has no such heading, its own MD&A heading
+   is used (annual-report layouts with a cross-reference index: JPMorgan, Bank of America, GE).
+   An MD&A shorter than `short_mda_chars` (15,000) is taken as a page of pointers: it gives way
+   to a longer section under a later MD&A heading of the same document (Southern Company's
+   combined MD&A) or, when it points to the annual report, to a longer MD&A in an EX-13 or
+   EX-99 exhibit (Clorox, Wells Fargo's "Financial Review", Total System Services). A filing
+   whose headings follow none of these forms is stored with status `not_found` (or
+   `by_reference`) and no text, and the going-concern check then reads the latest filing whose
+   MD&A was found, or NOT EVALUATED. On the main lake (2026-11-22): 30,597 filings of 742
+   symbols filed since 2015 (7,646 10-Ks, 22,951 10-Qs), 30,506 with an MD&A (99.7%: 7,632 10-Ks,
+   22,874 10-Qs). Known gaps: Bank of New York Mellon and
+   Northern Trust put their 10-Q MD&A under no heading read here; GE's 10-Q MD&A has none either,
+   so the contents entry is stored for some of its 10-Qs; ExxonMobil is read under its 2026
+   holding company's CIK only (two 10-Qs; the older filings sit under its former CIK, Stage 09's
+   `CikMap`). The documents (1.5–8 MB
+   of HTML each) are not kept under `raw/`: each row keeps the document's URL and SHA-256, and a
    change to the extraction needs the documents fetched again (delete the rows to refetch).
 
 ## Macro (Stage 10)

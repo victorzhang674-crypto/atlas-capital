@@ -110,3 +110,56 @@ Tasks (test-first, in order):
 - **F6** — Going-concern check on the view's MD&A: every branch, exact texts; the fixture replay unchanged.
 - **F7** — Live smoke on a few real 10-Ks; main-lake backfill and read-back; every FLAG sentence reviewed and E5 settled.
 - **F8** — Docs and design spec (§11 data row), the 16 untested-edge mutants, verification, records, git.
+
+## Follow-up 3 — the items left open (2026-11-22)
+
+Owner: **"can you help me to complete the tasks that are still being opened?"** These are the open items named in the follow-up 2 report. Graph wiring is not among them: the owner kept it with Stage 35 ("Leave it to Stage 35"; Rule 4).
+- **H1, 10-Q MD&As.** `data.filing_text.forms` becomes `["10-K", "10-Q"]`. The owner's request above is the approval to widen the approved spec row (Rule 3, Decisions log).
+  - `extract_mda(text, min_chars=, form=)` reads Item 7 of a 10-K, or Part I Item 2 of a 10-Q (ending at Item 3 Quantitative…, Item 4 Controls…, or Part II).
+  - `DataView.mda` returns the latest filing whose MD&A was found; only when none was found does it return the latest filing, to name why. The going-concern check therefore reads a 10-Q as soon as it is filed.
+  - The check's text says "period ended" (it was "fiscal year ended").
+- **H2, the seven companies without an MD&A** (AEP, CLX, MOS, TWC, TWX, WFC, WIN), all `by_reference` today. In order:
+  1. Item 7 itself.
+  2. The filing's EX-13 and EX-99 exhibits: CLX files its annual report as EX-99.1. "Financial Review" is accepted as an exhibit heading: Wells Fargo's EX-13 titles its MD&A so.
+  3. The MD&A heading later in the same primary document, skipping "Item" heading lines (AEP, MOS, TWC, TWX, WIN).
+- **H3, the four remaining edge mutants:**
+  - the dilution split window reaches the year-ago tolerance band (two mutants);
+  - the price split factor is read on the last bar's day;
+  - `_window_sessions` uses the view's calendar config.
+- **H4, main lake.**
+  - In the follow-up 2 scratch lake (identical to the main lake's `filing_text`, with its sync state), delete the rows without an MD&A and run `atlas data sync --datasets filings`: every 10-Q since 2015, the deleted rows, and any new 10-K.
+  - Review every both-term sentence again (10-Q MD&As are new text).
+  - Swap the table in from the owner's Terminal panel with a backup of the current table, then read it back.
+- **H5.** Mutation testing of the changed code, verification, self-audit, records, git. This includes the uncommitted CI record of `1e32337`.
+
+Tasks run in order, test-first: H2 extraction, H1, H3, H4, H5.
+
+### Follow-up 3, H4 review — what the full 10-K and 10-Q data showed (2026-11-22)
+
+The backfill (748 symbols, 30,597 filings) was read before the swap, and the readback after it. Both showed defects in this follow-up's own code, so they are fixed in it, test-first:
+- **H6, going concern.** The first review gave 79 FLAGs. Eight were not a company's doubt:
+  - a negation ("… does not exist");
+  - ASU 2014-15 wording without the standard's name;
+  - a definition ("the borrower's ability …");
+  - a fragment of a sentence cut by a line break.
+
+  Two more quoted a sentence from its middle (cut after "Inc." or by a line break).
+  - Fix: a piece starting with a lower-case letter goes on with the sentence before it.
+  - New exclusions: "does not exist", "provide certain disclosure", "borrower's".
+- **H7, extraction.**
+  - **Part II Item 2.** A bare "Item 2." line is a 10-Q's MD&A heading only when "Management…" follows on the same or the next line. 5,732 10-Qs had taken the contents entry of Part II Item 2 ("Unregistered Sales …"), which ran through the financial statements to Part I Item 3.
+  - **Pointers.** An MD&A shorter than `data.filing_text.short_mda_chars` (15,000) gives way to a longer section under a later MD&A heading of the same document (Southern Company's combined MD&A). Failing that, when it points to the annual report, it gives way to a longer exhibit MD&A (TSS, Sempra, Emerson).
+  - **Headings.** Entergy's "MANAGEMENT'S FINANCIAL DISCUSSION AND ANALYSIS" is an MD&A heading, and "condensed" statements end an MD&A.
+- **H8, re-ingest.** Only the rows those fixes can change are fetched again (7,065 filings): the bare-Item-2 10-Qs, MD&As under 15,000 characters, rows without an MD&A, and rows from an exhibit or the heading fallback. A random control sample of 200 untouched rows is extracted again with the new code to show they do not change. Then the review, the swap and the readback are repeated.
+- **H9, found by the re-ingest's comparison with round 1.** Of 30,597 rows, two 10-Qs lost their MD&A:
+  - A. O. Smith (2018): rightly, because round 1 had taken the Part II contents entry.
+  - Roper (2017-11): wrongly. It heads its MD&A "MANAGMENT'S DISCUSSION", and since H7 a bare "Item 2." needs the word after it.
+
+  The fix: the Item 2 and Item 7 headings accept "Managment" (test-first). The rows it could change are then extracted again with the final code and compared with the table, and any row that differs is fetched again before the swap:
+  - every row without an MD&A;
+  - every row whose text holds "managment";
+  - a fresh random sample of 300 rows.
+- **Not fixed here (Backlog):**
+  - A whole-table `Lake.read_table("filing_text")` overflows Arrow's 2 GB string offsets. Every reader in the code reads one symbol at a time.
+  - A ticker whose issuer moved to a new CIK (ExxonMobil, 2026) has only the new CIK's filings and fundamentals (Stage 09's `CikMap`).
+  - GE's 10-Q MD&A sits under no heading the extraction reads, so its contents entry is stored.

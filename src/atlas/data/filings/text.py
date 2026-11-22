@@ -3,10 +3,14 @@
 Per symbol: ticker → CIK (`CikMap`), the filings of `data.filing_text.forms` filed on or after
 `data.filing_text.since` (the submissions JSON, archived in `raw/sec/` like the fundamentals'
 filing index), and for each filing not yet stored: the primary document, its text
-(`html_to_text`) and the MD&A of Item 7 (`extract_mda`). When Item 7 only points to the
-annual report, the filing's Exhibit 13 documents are read instead (`extract_exhibit_mda`); when
-the 10-K has no "Item 7" heading at all (an annual-report layout with a cross-reference
-index), its own MD&A heading is used (`extract_exhibit_mda` on the primary document).
+(`html_to_text`) and its MD&A item (`extract_mda`: 10-K Item 7, 10-Q Part I Item 2). When
+the item only points to the annual report, the filing's Exhibit 13 and 99 documents are read
+(`extract_exhibit_mda`), then a later MD&A section of the same document; when the filing has
+no MD&A item heading at all (an annual-report layout with a cross-reference index), its own
+MD&A heading is used (`extract_exhibit_mda` on the primary document). An MD&A shorter than
+`data.filing_text.short_mda_chars` is a page of pointers when a later MD&A heading of the same
+document holds a longer section (that one is kept) or, failing that, when it points to the
+annual report and an exhibit's MD&A is longer (that one is kept).
 
 One row per filing and section (`section` is `mda`), stored even when no MD&A was found
 (`status` `by_reference` / `not_found`, no `text`), so a filing is fetched once. The documents
@@ -25,13 +29,19 @@ from typing import Any
 import pandas as pd
 
 from atlas.core.calendar import TradingCalendar
-from atlas.core.config import AtlasConfig
+from atlas.core.config import AtlasConfig, FilingTextConfig
 from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
 from atlas.core.storage import AVAILABLE_AT, DEFAULT_REGISTRY, Column, ColumnType, Lake, TableSchema
 from atlas.core.types.base import FrozenDict
 from atlas.core.types.instruments import normalize_symbol
-from atlas.data.filings.mda import MdaExtract, extract_exhibit_mda, extract_mda, html_to_text
+from atlas.data.filings.mda import (
+    MdaExtract,
+    extract_exhibit_mda,
+    extract_mda,
+    html_to_text,
+    points_elsewhere,
+)
 from atlas.data.fundamentals import CikMap, EdgarClient, parse_submissions
 
 _log = get_logger(__name__)
@@ -71,6 +81,10 @@ MDA = "mda"
 
 EXHIBIT_13 = "EX-13"
 """The EDGAR document type of an annual report to shareholders filed with a 10-K."""
+
+EXHIBITS = (EXHIBIT_13, "EX-99")
+"""Exhibit types read, in this order, when a filing's MD&A item points elsewhere: the annual
+report (EX-13) or another exhibit holding it (EX-99, as Clorox files it)."""
 
 
 @dataclass(frozen=True)
@@ -183,27 +197,53 @@ def _stored_accns(lake: Lake, symbol: str) -> set[str]:
     return set(rows.loc[rows["section"] == MDA, "accn"])
 
 
+def _unless_later(found: MdaExtract, text: str, settings: FilingTextConfig) -> MdaExtract:
+    """`found`, or the longest section under a later MD&A heading of the same document (not an
+    "Item" line) when `found` is shorter than `short_mda_chars` and that section is longer:
+    a short Item 7 is then a page of pointers to it (Southern Company's combined MD&A,
+    Entergy's "refer to ...")."""
+    if found.text is None or len(found.text) >= settings.short_mda_chars:
+        return found
+    later = extract_exhibit_mda(text, min_chars=settings.min_mda_chars, skip_items=True)
+    return later if later.text is not None and len(later.text) > len(found.text) else found
+
+
 def _mda_of(
-    client: EdgarClient, cik: int, filing: pd.Series, min_chars: int
+    client: EdgarClient, cik: int, filing: pd.Series, settings: FilingTextConfig
 ) -> tuple[MdaExtract, str, str, bytes]:
     """The MD&A of one filing: `(extract, source, document name, document bytes)`."""
+    min_chars = settings.min_mda_chars
     name = str(filing["primary_document"])
     body = client.filing_document(cik, filing["accn"], name)
     text = html_to_text(body)
-    found = extract_mda(text, min_chars=min_chars)
+    found = extract_mda(text, min_chars=min_chars, form=str(filing["form"]))
     if found.status == "not_found":
         # an annual-report layout with a cross-reference index has no "Item 7" heading
         # (JPMorgan, Bank of America, GE): its MD&A heading is used instead
-        return extract_exhibit_mda(text, min_chars=min_chars), "primary", name, body
-    if found.status == "ok":
-        return found, "primary", name, body
+        found = extract_exhibit_mda(text, min_chars=min_chars)
+        if found.text is None:
+            return found, "primary", name, body
+    if found.text is not None:
+        found = _unless_later(found, text, settings)
+        if len(found.text or "") >= settings.short_mda_chars or not points_elsewhere(
+            found.text or ""
+        ):
+            return found, "primary", name, body
+        # a short MD&A that points to the annual report (Total System Services, Sempra)
     for kind, exhibit in client.filing_documents(cik, filing["accn"]):
-        if not kind.upper().startswith(EXHIBIT_13):
+        prefix = next((p for p in EXHIBITS if kind.upper().startswith(p)), None)
+        if prefix is None:
             continue
         ex_body = client.filing_document(cik, filing["accn"], exhibit)
         ex_found = extract_exhibit_mda(html_to_text(ex_body), min_chars=min_chars)
-        if ex_found.status == "ok":
-            return ex_found, EXHIBIT_13, exhibit, ex_body
+        if ex_found.text is not None and len(ex_found.text) > len(found.text or ""):
+            return ex_found, prefix, exhibit, ex_body
+    if found.text is not None:
+        return found, "primary", name, body
+    # the annual report is a later section of the 10-K itself (AEP, Mosaic, Time Warner)
+    later = extract_exhibit_mda(text, min_chars=min_chars, skip_items=True)
+    if later.status == "ok":
+        return later, "primary", name, body
     return found, "primary", name, body
 
 
@@ -219,7 +259,7 @@ def _rows(
     template = config.data.fundamentals.filing_document_url
     records = []
     for _, filing in filings.iterrows():
-        found, source, document, body = _mda_of(client, cik, filing, settings.min_mda_chars)
+        found, source, document, body = _mda_of(client, cik, filing, settings)
         accepted = filing["accepted_at"]
         available = (
             accepted

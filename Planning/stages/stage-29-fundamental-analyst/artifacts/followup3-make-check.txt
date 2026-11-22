@@ -1,0 +1,42 @@
+$ make check
+ - leaked function "list_type"
+ - leaked function "__init__"
+ - leaked function "df"
+ - leaked function "_register_arrow_source"
+ - leaked function "enable_profiling"
+ - leaked function "__getitem__"
+ - leaked function "_register_values"
+ - leaked function "__new__"
+ - leaked function "union_type"
+ - leaked function "abort"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "df"
+ - leaked function "interrupt"
+ - leaked function "list_filesystems"
+ - leaked function "register_filesystem"
+ - leaked function "extract_statements"
+ - leaked function "abort"
+ - leaked function "array_type"
+ - leaked function "_check_text"
+ - leaked function "__eq__"
+ - leaked function "get_table_names"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.html
+5415 passed in 165.19s (0:02:45)
+uv run pytest -q -m timing
+.
+compute_features: 41 features x 500 symbols x 2000 sessions in 2.75 s (limit 20 s)
+..                                                                      [100%]
+3 passed, 5497 deselected in 17.69s
+exit 0

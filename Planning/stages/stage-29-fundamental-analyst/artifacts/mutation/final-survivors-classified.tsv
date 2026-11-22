@@ -56,7 +56,3 @@ agents.tools.fundamental_tools.x__latest_stamp__mutmut_4	unreachable	same (only 
 agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_1	unreachable	default column: every caller passes the column
 agents.tools.fundamental_tools.xǁ_Historyǁstamp__mutmut_2	unreachable	same
 agents.tools.fundamental_tools.x_factor_ranks_from__mutmut_28	unreachable	sector_panel raises before a symbol without factor values reaches it
-agents.tools.fundamental_tools.x__history_multiples__mutmut_61	untested edge	the bar day only feeds the split factor; differs only with a split on the last bar day
-agents.tools.fundamental_tools.x__dilution__mutmut_33	untested edge	share-count window start: needs a count dated in the tolerance band
-agents.tools.fundamental_tools.x__dilution__mutmut_35	untested edge	same
-agents.tools.fundamental_tools.x__window_sessions__mutmut_2	untested edge	the calendar config is passed through; the tests use the default calendar

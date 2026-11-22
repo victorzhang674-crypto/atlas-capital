@@ -18,6 +18,7 @@ from atlas.agents.research import FundamentalAnalyst, fundamental_registry
 from atlas.agents.research.fundamental import MEMORY_QUERY, SECTIONS, SIGNALS, sentences
 from atlas.agents.tools import fundamental_tools as ft
 from atlas.agents.trace import TraceStore
+from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig, RedFlagsConfig
 from atlas.core.errors import ConfigError, DataError
 from atlas.core.types.research import AnalystReport, Direction, Signal
@@ -750,3 +751,55 @@ def test_a_quarter_without_a_share_count_is_skipped_not_the_rest(
     monkeypatch.setattr(ft, "adjusted_shares", shares)
     assert date(2022, 9, 30) in base
     assert _ends(view) == [e for e in base if e != date(2022, 9, 30)]
+
+
+# --- follow-up 3: the last four untested edges --------------------------------------------------
+
+
+def test_the_dilution_split_window_reaches_the_year_ago_tolerance_band(
+    fworld: FundamentalWorld, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The split factors read for dilution start `_YEAR + tol` days before the latest share
+    count, so a split dated anywhere in the year-ago count's tolerance band is applied."""
+    view = fworld.view()
+    history = ft._history(view, "AAA")
+    tol = ft._tolerance(view)
+    starts: list[date] = []
+    original = ft._window_sessions
+
+    def window(v: DataView, start: date) -> int:
+        starts.append(start)
+        return original(v, start)
+
+    monkeypatch.setattr(ft, "_window_sessions", window)
+    ft._dilution(view, "AAA", history, RF, tol, 400)
+    latest = history.of("shares_outstanding")["period_end"].iloc[-1]
+    assert starts == [latest - timedelta(days=ft._YEAR + tol)]
+
+
+def test_a_quarter_price_takes_the_split_factor_of_its_own_bar_day(
+    fworld: FundamentalWorld, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    view = fworld.view()
+    days: list[date] = []
+    original = ft._factor_at
+
+    def factor_at(splits: pd.DataFrame, symbol: str, day: date) -> float:
+        days.append(day)
+        return original(splits, symbol, day)
+
+    monkeypatch.setattr(ft, "_factor_at", factor_at)
+    ends = _ends(view)
+    bars = view.prices(["AAA"], 2000)
+    assert days == [bars.loc[bars["date"] <= end, "date"].iloc[-1] for end in ends]
+
+
+def test_the_window_counts_sessions_of_the_views_own_calendar(fworld: FundamentalWorld) -> None:
+    """A calendar that starts later (`calendar.start`) bounds the window, as the view's."""
+    cfg = AtlasConfig.model_validate(
+        {**CONFIG.model_dump(mode="json"), "calendar": {"start": "2023-06-01"}}
+    )
+    view = fworld.view(config=cfg)
+    last = view.sessions(1)[-1]
+    expected = len(TradingCalendar(config=cfg.calendar).sessions(date(2023, 6, 1), last))
+    assert ft._window_sessions(view, date(2020, 1, 1)) == expected

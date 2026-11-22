@@ -1,0 +1,10 @@
+# Stage 29 follow-up 3 (H9): re-extraction with the final code (documents fetched again)
+rows re-extracted: {'not ok': 92, 'managment in text': 8, 'random': 300}
+identical: {'random': 300, 'not ok': 91, 'managment in text': 8}
+DIFF ('ROP', '0000882835-17-000031', '10-Q', 'not ok', 'not_found', 'ok', 'primary', 'primary', 0, 27388)
+
+# then filing_text_roper_followup3.py (the one differing row fetched again):
+deleted 1
+rows=1 ok=('ROP',) failed={} statuses={'ok': 1}
+ROP rows 48 | [{'symbol': 'ROP', 'accn': '0000882835-17-000031', 'status': 'ok', 'chars': 27388}]
+table rows 30597

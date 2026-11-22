@@ -71,3 +71,37 @@ Owner: "please complete the ones that are not done and have a final audit on you
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED (re-run after follow-up 2)
+
+#### Follow-up 3 — Stage 29 — 2026-11-22
+Owner: "can you help me to complete the tasks that are still being opened?" The follow-up covered 10-Q MD&As, the seven companies without an MD&A, the last four edge mutants and the CI record of `1e32337`. Graph wiring stays with Stage 35. Records: [audit-report.md › Follow-up 3](artifacts/audit-report.md), [worklog](worklog.md), [plan.md › Follow-up 3](plan.md).
+
+- Commands run (this chat, one after another, on the final code):
+  - `uv run pytest tests/unit/agents/research/test_fundamental.py -q` (brief's Verify) → 29 passed, exit 0 · raw: [artifacts/followup3-verify-brief.txt](artifacts/followup3-verify-brief.txt)
+  - `uv run pytest -q` → 5418 passed, 82 deselected, exit 0 · raw: [artifacts/followup3-pytest-full.txt](artifacts/followup3-pytest-full.txt)
+  - `make check` → exit 0 · raw: [artifacts/followup3-make-check.txt](artifacts/followup3-make-check.txt)
+    - `ruff check .` → All checks passed!
+    - `ruff format --check .` → 510 files already formatted
+    - `mypy src/atlas` → Success: no issues found in 188 source files
+    - pytest: 5415 passed + 3 timing passed
+  - `make test-integration` → 48 passed, 15 skipped, exit 0 · raw: [artifacts/followup3-test-integration.txt](artifacts/followup3-test-integration.txt)
+  - Main lake:
+    - Round 1 sync (scratch lake) → 748 keys, 742 ok, 6 empty, 0 failed, 30,597 rows · [artifacts/filing-text-backfill-followup3.txt](artifacts/filing-text-backfill-followup3.txt)
+    - Re-fetch after H7 → 748 keys, 0 failed, 7,152 rows · [artifacts/filing-text-refetch-followup3.txt](artifacts/filing-text-refetch-followup3.txt)
+    - Control sample → 200 of 200 identical · [artifacts/filing-text-control-sample-followup3.txt](artifacts/filing-text-control-sample-followup3.txt)
+    - H9 recheck → 399 of 400 identical; the one difference (Roper) was fetched again · [artifacts/filing-text-recheck-followup3.txt](artifacts/filing-text-recheck-followup3.txt)
+    - Compared with round 1 · [artifacts/filing-text-compare-round1-followup3.txt](artifacts/filing-text-compare-round1-followup3.txt)
+    - Swap (owner's Terminal panel, backup `-2026-11-22b`) → old table backed up equal, new table equal (742 files), replace exit 0 · [artifacts/main-lake-filing-text-replace-2.txt](artifacts/main-lake-filing-text-replace-2.txt)
+    - Read-back → `_meta.json` equal, only `steps.filing_text` changed, 30,597 rows (30,506 with an MD&A), 21 `DataView` cases as expected · [artifacts/main-lake-filing-text-readback-followup3.txt](artifacts/main-lake-filing-text-readback-followup3.txt)
+    - Rule review → 75 FLAGs of 30,506 MD&As, each read (59 own, 8 subsidiary, 8 another company's) · [artifacts/filing-text-review-followup3.txt](artifacts/filing-text-review-followup3.txt)
+  - Mutation testing:
+    - Stage 29 modules: 2,339 of 2,396 killed (97.6%), no untested edge left;
+    - H1–H2 code: 853 of 889 (96.0%);
+    - H6–H7 code: 237 of 240 (98.75%);
+    - every survivor classified · [artifacts/mutation/mutation-summary.md](artifacts/mutation/mutation-summary.md)
+  - H9 (the "Managment" heading): `test_a_heading_that_misspells_management_is_still_read` was seen to fail (2 failed) before the fix, then pass. The change is a module-level pattern, which mutmut does not mutate.
+- Acceptance criteria: unchanged and still met.
+  - The recorded-run replay is in the brief's Verify (29 passed). Its lake slice has no `filing_text`, so the evidence and the cached request are byte-identical.
+  - The going-concern check now also reads 10-Q MD&As: `test_fundamental_going_concern.py`, `test_filings_view.py` and the main-lake read-back (BBBY FLAG on 2023-01-27, CLEAR on 2023-01-25).
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED (re-run after follow-up 3)

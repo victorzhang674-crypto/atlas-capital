@@ -579,11 +579,12 @@ class DataView:
     # --- filing text (Stage 29 follow-up 2) -----------------------------------------------------
 
     def mda(self, symbol: str) -> MdaText | None:
-        """The MD&A of `symbol`'s latest filing known at `as_of` (`filing_text`, the 10-K's
-        Item 7 or its Exhibit 13), whatever its age: callers compare `period_end` with `as_of`.
-        `None` when the lake holds no MD&A row of the symbol (or no `filing_text` table). A
-        filing whose MD&A was not found has `status` `by_reference` / `not_found` and no text.
-        Raises `DataError` for a blocked symbol and `ValueError` for an invalid one."""
+        """The MD&A of `symbol`'s latest filing known at `as_of` whose MD&A was found
+        (`filing_text`: a 10-K's Item 7 or annual report, a 10-Q's Part I Item 2), whatever its
+        age: callers compare `period_end` with `as_of`. When no known filing has one, the
+        latest filing (`status` `by_reference` / `not_found`, no text), to say why; `None` when
+        the lake holds no MD&A row of the symbol (or no `filing_text` table). Raises
+        `DataError` for a blocked symbol and `ValueError` for an invalid one."""
         sym = self._one(symbol)
 
         def compute() -> MdaText | None:
@@ -592,8 +593,9 @@ class DataView:
             rows = self._known(FILING_TEXT.name, [("symbol", "=", sym), ("section", "=", MDA)])
             if rows.empty:
                 return None
-            latest = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="stable").iloc[-1]
-            return mda_text(latest)
+            ordered = rows.sort_values([AVAILABLE_AT, "filed", "accn"], kind="stable")
+            found = ordered[ordered["status"] == "ok"]
+            return mda_text((found if not found.empty else ordered).iloc[-1])
 
         result: MdaText | None = self._cached("mda", (sym,), compute)
         return result
