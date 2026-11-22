@@ -104,4 +104,6 @@ Owner: "can you help me to complete the tasks that are still being opened?" The 
   - The going-concern check now also reads 10-Q MD&As: `test_fundamental_going_concern.py`, `test_filings_view.py` and the main-lake read-back (BBBY FLAG on 2023-01-27, CLEAR on 2023-01-25).
 - Waivers: none
 
+- Merge into `main`: fast-forward 1e32337 → 4ebcd40 (owner's Terminal panel), trees equal; merged result `uv run pytest -q` → 5418 passed, 82 deselected, exit 0 · `make check` → exit 0 · raw: [artifacts/followup3-merged-main-check.txt](artifacts/followup3-merged-main-check.txt)
+
 **Result:** ALL CRITERIA VERIFIED (re-run after follow-up 3)
