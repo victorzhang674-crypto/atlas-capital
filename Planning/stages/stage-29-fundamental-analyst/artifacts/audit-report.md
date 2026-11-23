@@ -297,3 +297,63 @@ Still open, with reasons (Backlog):
 - Emerson's FY2015 MD&A is its 4.5k pointer page: its annual report has no MD&A heading. A few MD&As where the filer prints no end heading run past their end (SolarEdge 2024).
 - The old lines of `ingest_fundamentals`, `ingest_earnings` and `Lake.read_table` (83 surviving mutants: log fields, report counters, defaults) were never mutation-tested (→ 06/09/12).
 - OKTA and VYLR, members since October 2026, have no fundamentals yet: the main lake's fundamentals sync predates them (a routine sync).
+
+## Follow-up 5 (2026-11-23)
+
+Task (from the session that started this one, on the owner's behalf): close every gap Stage 29 still has open. The gaps were:
+- Emerson's FY2015 pointer page;
+- MD&As running past their end (SolarEdge 2024);
+- 83 old-line surviving mutants;
+- OKTA's and VYLR's fundamentals;
+- the uncommitted CI record of `3d77679`.
+
+Graph wiring stays with Stage 35 (owner). Plan K0–K6 in [plan.md](../plan.md); the decisions are in the `PROGRESS.md` Decisions log.
+
+### Done
+
+- **A full re-extraction instead of candidate rows (K0).** Re-extracting the first 408 marker rows with the current code changed 83 of them, so the lake held rows extracted by earlier code. Every one of the 30,927 stored filings was then fetched again and its text kept, and HEAD's and the final code's extractions were compared row by row ([filing-text-full-recheck-followup5.txt](filing-text-full-recheck-followup5.txt)).
+  - 131 rows were stale (stored by earlier code; HEAD extracts them differently).
+  - The final code changes 533 rows; all 131 stale rows are among them.
+  - Two of the stale groups were **regressions hidden by stored rows**: under HEAD, Comerica's 11 10-Ks and Sempra's 2015–17 10-Ks came out with no MD&A, so a fresh backfill would have lost them. Both are fixed.
+- **Emerson and Comerica, and Sempra (K1).** The MD&A item names its sections; the MD&A is read from the first named title standing as a heading, where nothing longer is found:
+  - Emerson FY2015 → EX-13, 56,539 characters (was its 4,539-character pointer);
+  - Comerica 2015–25 → its Financial Section's MD&A (134k–183k);
+  - Sempra 2015–17 → its EX-13 again.
+- **Run-ons (K2).** New ends and heading forms, each test-first: see `docs/data-limitations.md` item 9.
+  - SolarEdge's 2024 10-K: 242,676 → 75,160 characters, ending at "ITEM" / "7A.".
+  - Over-run markers: from 181 rows (HEAD) to 14, every one a cross-reference inside a real MD&A.
+- **Old-line mutants (K3).** 70 of 83 killed by 9 new tests; 13 shown equivalent ([followup5-old-lines-classified.tsv](mutation/followup5-old-lines-classified.tsv)). No production code changed for them.
+- **OKTA and VYLR (K4).** On the scratch copy:
+  - OKTA: prices since its 2017 IPO, 1,957 facts, 41 earnings events, 41 reactions, trade dates;
+  - VYLR: 72 facts and its 10-Q's event.
+
+  The factor and risk stores were rebuilt; they changed only on 2026-10-30, OKTA's first day as a member ([main-lake-stores-compare-followup5.txt](main-lake-stores-compare-followup5.txt)).
+- **Going concern.** 76 FLAGs of 30,927 MD&As, the same 76 as follow-up 4 ([filing-text-review-followup5.txt](filing-text-review-followup5.txt)).
+- **Mutation testing of the changed functions.** 425 of 440 detected; 15 equivalent ([mutation-summary.md](mutation/mutation-summary.md)).
+
+### Self-audit of my own follow-up work
+
+Reading every kind of change found defects in my own rules, each fixed test-first before the lake was touched:
+1. **"Index to Financial Statements" as an end** cut Waste Management's MD&A to 4k: it is a link in every page header. Dropped.
+2. **Wrapped cross-references** ended or started MD&As:
+   - AIG's "… Part II," / "Item 1A.": a line ending in a comma;
+   - AIG's "Part II, Item 7. MD&A … in the 2015 Annual Report": a line naming another document;
+   - Everest's and General Mills' word-per-line text: a one-word line;
+   - Morgan Stanley's "… in Part II," / "Item 7.": a start that goes on with a sentence.
+3. **"Items 3" as a table column** (Mastercard) once I let end headings be plural. Ends are singular again.
+4. **A named title that is itself an end** started Clorox's MD&A at its market-risk section. Excluded.
+5. **Computer Sciences' "PART I, ITEM 2."** reached only the MD&A-heading path, which knew no Part II ends. Fixed both ways.
+6. **My harness** passed an exhibit-sourced row's exhibit as the primary document. That would have relabelled 162 rows "primary" (the texts were equal). Follow-up 4's scripts had the same assumption but compared text only. The harness now reads the filing index.
+7. **My `check` step** showed a one-column key by its first letter ("O" for OKTA). Fixed and re-run.
+
+Checked and found right:
+- Every table outside `filing_text` changed only for OKTA and VYLR (`check`).
+- In `filing_text`, the changed rows are exactly the 533 the re-extraction found ([main-lake-followup5.txt](main-lake-followup5.txt)).
+- The 14 remaining markers are cross-references.
+- **Hard rules.** No `datetime.now()`. No network in unit tests (fixtures, respx). No `.env` value in any new file. Home and temp paths are redacted in the artifacts.
+
+Still open, with reasons:
+- Graph wiring stays with Stage 35 (owner).
+- A run-on with no end heading or marker after it would not be caught; none was found.
+- In combined multi-registrant filings the longest registrant's MD&A is kept (Entergy 2024: System Energy's).
+- VYLR's earnings reaction waits for prices after 2026-10-30 (the lake's last price day).

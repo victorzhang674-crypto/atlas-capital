@@ -40,7 +40,10 @@ from atlas.data.filings.mda import (
     MdaExtract,
     extract_exhibit_mda,
     extract_mda,
+    extract_titled_mda,
     html_to_text,
+    item_sections,
+    named_sections,
     points_elsewhere,
 )
 from atlas.data.fundamentals import CikMap, CikSource, EdgarClient, parse_submissions
@@ -212,6 +215,26 @@ def _unless_later(found: MdaExtract, text: str, settings: FilingTextConfig) -> M
     return later if later.text is not None and len(later.text) > len(found.text) else found
 
 
+def _named(text: str, form: str) -> tuple[tuple[str, ...], str]:
+    """The section titles the MD&A item of `text` names (`named_sections` of its item
+    sections) and the text after the last item section naming them (where the named sections
+    of the same document are searched)."""
+    titles: dict[str, None] = {}
+    after = text
+    for section in item_sections(text, form):
+        names = named_sections(section)
+        if names:
+            titles.update(dict.fromkeys(names))
+            at = text.find(section)
+            after = text[at + len(section) :]
+    return tuple(titles), after
+
+
+def _longer(found: MdaExtract, other: MdaExtract) -> MdaExtract:
+    """`other` when it is longer than `found`, else `found`."""
+    return other if len(other.text or "") > len(found.text or "") else found
+
+
 def _mda_of(
     client: EdgarClient, cik: int, filing: pd.Series, settings: FilingTextConfig
 ) -> tuple[MdaExtract, str, str, bytes]:
@@ -221,12 +244,18 @@ def _mda_of(
     body = client.filing_document(cik, filing["accn"], name)
     text = html_to_text(body)
     found = extract_mda(text, min_chars=min_chars, form=str(filing["form"]))
+    # the sections a short or missing item names (Emerson, Comerica: Stage 29 follow-up 5)
+    titles, after = _named(text, str(filing["form"]))
     if found.status == "not_found":
         # an annual-report layout with a cross-reference index has no "Item 7" heading
         # (JPMorgan, Bank of America, GE): its MD&A heading is used instead
         found = extract_exhibit_mda(text, min_chars=min_chars)
         if found.text is None:
-            return found, "primary", name, body
+            # an item naming sections of the same document's Financial Section (Comerica)
+            titled = extract_titled_mda(after, titles, min_chars=min_chars)
+            if titled.text is not None or not titles:
+                return titled, "primary", name, body
+            # an item naming sections of the annual report filed as an exhibit (Sempra)
     if found.text is not None:
         found = _unless_later(found, text, settings)
         if len(found.text or "") >= settings.short_mda_chars or not points_elsewhere(
@@ -239,7 +268,12 @@ def _mda_of(
         if prefix is None:
             continue
         ex_body = client.filing_document(cik, filing["accn"], exhibit)
-        ex_found = extract_exhibit_mda(html_to_text(ex_body), min_chars=min_chars)
+        ex_text = html_to_text(ex_body)
+        ex_found = _longer(
+            extract_exhibit_mda(ex_text, min_chars=min_chars),
+            # an annual report whose MD&A sections carry no MD&A heading (Emerson FY2015)
+            extract_titled_mda(ex_text, titles, min_chars=min_chars),
+        )
         if ex_found.text is not None and len(ex_found.text) > len(found.text or ""):
             return ex_found, prefix, exhibit, ex_body
     if found.text is not None:
@@ -248,6 +282,9 @@ def _mda_of(
     later = extract_exhibit_mda(text, min_chars=min_chars, skip_items=True)
     if later.status == "ok":
         return later, "primary", name, body
+    titled = extract_titled_mda(after, titles, min_chars=min_chars)
+    if titled.status == "ok":
+        return titled, "primary", name, body
     return found, "primary", name, body
 
 

@@ -201,3 +201,39 @@ The items were investigated first: every main-lake filing without an MD&A or wit
   - Check every table against the main lake, then rebuild the factor and risk stores.
   - Swap from the owner's Terminal panel with backups, then read back.
 - **J6.** Mutation testing of the changed functions, the review of every going-concern FLAG, verification, self-audit, records, git (with the CI record of `c579104`).
+
+## Follow-up 5 — the gaps follow-up 4 left (2026-11-23)
+
+Task (from the session that started this one, on the owner's behalf): close every gap Stage 29 still has open, recorded as follow-up 5. Confirmed against `PROGRESS.md › Backlog` and the Stage 29 "Known gaps":
+- Emerson's FY2015 10-K stores its 4,539-character Item 7 pointer page;
+- MD&As whose filer prints no end heading run past their end (SolarEdge 2024);
+- 83 surviving mutants on old Stage 06/09/12 lines;
+- OKTA and VYLR have no fundamentals;
+- the CI record `ci-runs-3d77679.json` of follow-up 4 is uncommitted.
+
+Graph wiring stays with Stage 35 (owner). Gate: `uv run pytest -q` → 5472 passed, 82 deselected ([followup5-gate-pytest.txt](artifacts/followup5-gate-pytest.txt)).
+
+Investigation before this plan:
+- A scan of every stored MD&A for text that only follows an MD&A (signatures, "Pursuant to the requirements of …", Items 9A–16, Part III/IV, a 10-Q's Items 5/6, exhibit index, notes, certifications) found 408 rows. Re-extracting them with the current code changed 83, so **some stored rows predate the current rules**. Among them Comerica's 10-Ks (11) come out with no MD&A under the current code: their stored text was the 10-K's contents and Part I, not the MD&A, and the current rules rightly reject it but find nothing else.
+- Comerica's Item 7 says "Reference is made to the sections entitled “2014 Overview …,” “Results of Operations,” …"; Emerson's FY2015 Item 7 says "set forth in Exhibit 13 hereto under “Results of Operations,” … is hereby incorporated by reference". The MD&A item names the sections that make up the MD&A.
+- SolarEdge's 2024 10-K breaks "ITEM" and its number onto two lines ("ITEM" / "7A. Quantitative …"), so no end heading is seen.
+
+So this follow-up re-extracts **every** stored filing, not only pattern-found candidates.
+
+- **K0, full re-extraction.** `filing_text_full_recheck_followup5.py` re-reads all 30,927 stored filings from EDGAR with the current code and keeps each document's text gzipped (the text conversion does not change here), so every later rule change is checked offline on the whole corpus. Each kind of difference is reviewed.
+- **K1, the sections the item names (Emerson, Comerica).** `named_sections` takes the quoted titles from the lines of a short or missing MD&A item that point elsewhere ("incorporated … by reference", "Reference is made to", "set forth … under", Exhibit 13). `extract_titled_mda` reads the MD&A from the first such title standing as a heading (not a contents entry) to the usual annual-report end (statements, auditor's report, …). `_mda_of` uses it only where the present rules find nothing longer: in the same document after the item, and in the EX-13/EX-99 exhibits. Test-first, with Emerson's and Comerica's layouts.
+- **K2, MD&As that run past their end.** From the full re-extraction: every row whose MD&A holds text that only follows an MD&A, plus unusually long ones. Candidate rules, each test-first and kept only if the review shows it right:
+  - "ITEM" on a line of its own before the number in 10-K headings (as the 10-Q rule already allows);
+  - a safe end for every MD&A: a "SIGNATURES" heading or "Pursuant to the requirements of the Securities Exchange Act" (never inside an MD&A; not a contents entry followed by a page number);
+  - a 10-K's later items (9, 9A–9C, 10–16) and Part III/IV headings, and a 10-Q's Part II Items 5 and 6, titled, end the MD&A.
+
+  The follow-up 4 rules stay. A rule that changes rows the review finds wrong is narrowed or dropped.
+- **K3, the 83 old-line mutants.** Re-run mutmut 3.8.1 (scratch install) over the same functions with the current tests. Then, for each survivor: kill it with a real test (exact failure reasons and messages, the summary log events via `structlog.testing.capture_logs`, the report counters over two symbols, the `refresh` default, the config's calendar and concept map), or show in writing why it is equivalent. Code is never weakened to kill a mutant. The decision is logged under Stage 29 in the Decisions log.
+- **K4, OKTA and VYLR.** On the scratch copy: `atlas data sync --datasets prices,fundamentals,filings --symbols OKTA,VYLR --to 2026-10-30`, which is the main lake's last price day. OKTA has no prices at all (its membership starts that day), and the factor store needs them. Then `ingest_earnings` and `ingest_earnings_reactions` for the two symbols: the sync's events steps without the market-wide macro calendar.
+- **K5, main lake.**
+  - On a scratch copy (`main_lake_followup5.py`): K4, then every `filing_text` row whose final extraction differs replaced from the text cache.
+  - Row-by-row check against the main lake: only intended rows change.
+  - Factor and risk stores rebuilt and compared.
+  - Swap from the owner's Terminal panel with a dated backup under `<lake>/cache/` (`main_lake_followup5_swap.sh`), then read back (`main_lake_readback_followup5.py`).
+  - Going-concern review of every MD&A: the 76 FLAGs rechecked, any new or lost FLAG read.
+- **K6.** Mutation testing of the changed functions, verification (`uv run pytest -q`, `make check`, `make test-integration`, the brief's Verify), self-audit, records (`plan.md`, `worklog.md`, `verification.md`, `audit-report.md`, `mutation-summary.md`, `PROGRESS.md`, `docs/data-limitations.md`), commit with the CI record of `3d77679`, fast-forward `main` from the Terminal panel, merged-`main` checks, push, CI.

@@ -175,30 +175,44 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    companyfacts (offline, `refresh=False`), and the check reads NOT EVALUATED there. The main
    lake was re-ingested on 2026-11-18 (68,846 rows, 609 of 742 symbols; banks and insurers tag
    none, so their check stays NOT EVALUATED).
-9. **MD&A text: extracted by headings, documents not archived** (Stage 29 follow-ups 2 to 4,
+9. **MD&A text: extracted by headings, documents not archived** (Stage 29 follow-ups 2 to 5,
    `filing_text`). The MD&A of each 10-K is its Item 7, and of each 10-Q its Part I Item 2,
    cut out of the document's text by its headings. It is the longest section that runs:
-   - from an "Item 7" heading to the next "Item 7A" or "Item 8" heading; a "Part II." prefix
-     is allowed (Expedia);
-   - or from an "Item 2" (or "Items 2 and 3") heading followed by "Management…" to the next
-     "Item 1" with its statements' title, "Item 3", "Item 4" or "Part II". A bare "Item 2."
+   - from an "Item 7" (or "Items 7. and 7A.") heading to the next "Item 7A" or "Item 8"
+     heading, or a later item's (9, 9A–9C, 10–16) or "Part III"/"Part IV"; a "Part II."
+     prefix is allowed (Expedia);
+   - or from an "Item 2" (or "Items 2 and 3") heading followed by "Management…" (a "Part I,"
+     prefix allowed) to the next "Item 1" with its statements' title, "Item 3", "Item 4",
+     "Part II" or one of Part II's titled items (Legal Proceedings … Exhibits). A bare "Item 2."
      line is also Part II's "Unregistered Sales …" entry, and banks file their statements
      after the MD&A.
 
-   An auditor's-report heading also ends it. Some lines that look like an end heading are not
-   one, and the section goes on past them:
-   - a bulleted entry;
+   An auditor's-report heading, the signatures and the exhibit index also end it. An item and
+   its title may be separated by ".", ":", "/", "|" or a dash (AIG). Some lines that look like
+   an end heading are not one, and the section goes on past them:
+   - a bulleted entry, or a contents entry (a page number at its end or on the next line);
    - a link to part of an item ("Item 8. … – Note 5");
-   - a line that goes on with the sentence before it ("… included under" / "Item 8.");
-   - a line holding a closing quote (a quoted cross-reference);
+   - a line that goes on with the sentence before it ("… included under" / "Item 8."; a line
+     ending in a comma; a word per line, "under" / "ITEM" / "8" / "of");
+   - a line holding a closing quote (a quoted cross-reference), or naming another document
+     ("Part II, Item 7. MD&A … in the 2015 Annual Report");
    - the line right under a combined heading ("Item 7." / "Item 7A.").
 
-   Filers' misspellings ("Managment", "Mangement") and an "ITEM" on a line of its own are read.
+   A start heading that goes on with the sentence before it is no heading either (Morgan
+   Stanley's "… in Part II," / "Item 7."). Filers' misspellings ("Managment", "Mangement") and
+   an "ITEM" on a line of its own ("ITEM" / "7A. Quantitative …", SolarEdge) are read.
 
    When the filing has no such heading, its own MD&A heading is used. Such layouts include
    annual reports with a cross-reference index (JPMorgan, Bank of America, GE), a misnumbered
    item (Axon), and a heading run into its first paragraph and marked "(MD&A)" or ", or MD&A,"
-   (GE's and JPMorgan's 10-Qs, Avery Dennison). An MD&A shorter than `short_mda_chars` (15,000)
+   (GE's and JPMorgan's 10-Qs, Avery Dennison); a heading followed by a bare page number is a
+   contents entry, not a start (Entergy, AEP). When the item names the sections that make up
+   the MD&A ("Reference is made to the sections entitled “2014 Overview …,” “Results of
+   Operations,” …", Comerica; "set forth in Exhibit 13 hereto under “Results of Operations,” …",
+   Emerson FY2015; "set forth under “Management's Discussion …” in the Annual Report", Sempra),
+   the MD&A runs from the first of those titles standing as a heading (not a contents entry,
+   not itself an end heading) to the statements, in the same document after the item or in
+   the EX-13/EX-99 exhibit, where nothing longer is found. An MD&A shorter than `short_mda_chars` (15,000)
    is taken as a page of pointers. It gives way to a longer section under a later MD&A heading
    of the same document (Southern Company's combined MD&A). Failing that, when it points to the
    annual report ("incorporated … by reference", Exhibit 13), it gives way to a longer MD&A in
@@ -207,18 +221,21 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    `not_found` (or `by_reference`) and no text, and the going-concern check then reads the
    latest filing whose MD&A was found, or NOT EVALUATED.
 
-   On the main lake (2026-11-23, follow-up 4): 30,927 filings of 744 symbols filed since 2015
-   (7,730 10-Ks, 23,197 10-Qs), all with an MD&A. This includes the issuers' former CIKs (item 2
-   of the fundamentals list) and Twenty-First Century Fox. Three limits remain:
-   - Emerson's FY2015 10-K stores its 4,539-character Item 7 (pointers plus non-GAAP
-     measures): its annual report opens with management's and the auditor's reports before
-     the MD&A sections, which carry no MD&A heading.
-   - A few MD&As still hold text past their end where a filer prints neither an end heading
-     nor an auditor's report after it (for example SolarEdge's 2024 10-K runs to its
-     signatures).
-   - The rules were checked against every stored row they could change (2,513 rows re-read,
-     840 changed and reviewed) and 600 random rows (3 changed, each an improvement). Rows
-     outside those sets were not re-read.
+   On the main lake (2026-11-23, follow-up 5): 30,927 filings of 744 symbols filed since 2015
+   (7,730 10-Ks, 23,197 10-Qs), all with an MD&A, including the issuers' former CIKs (item 2
+   of the fundamentals list) and Twenty-First Century Fox. In follow-up 5 **every stored
+   filing was re-extracted** from its fetched documents with the final rules; 533 rows changed
+   and were reviewed by kind, 131 of them rows stored by earlier code. Over-run markers (text
+   that only follows an MD&A: signatures, later items, the exhibit index) fell from 181 rows
+   under the follow-up 4 rules to 14, all cross-references inside real MD&As. Limits that remain:
+   - A section is cut by headings: a filer whose MD&A ends with no end heading, statement,
+     auditor's report, later item, signatures or exhibit index after it would still run on;
+     the marker scan of the 30,927 filings found none, but a run-on without a marker would
+     not show in it.
+   - Combined filings of several registrants (Southern Company, Entergy, AEP) hold one MD&A
+     per registrant; the longest is kept, which is not always the parent's.
+   - Where an item names sections ("Financial Overview", Total System Services), all of them
+     are read, from the first that stands as a heading.
 
    The documents (1.5–8 MB of HTML each) are not kept under `raw/`: each row keeps the
    document's URL and SHA-256, and a change to the extraction needs the documents fetched

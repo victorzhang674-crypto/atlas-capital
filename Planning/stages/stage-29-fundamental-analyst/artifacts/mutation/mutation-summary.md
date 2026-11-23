@@ -176,3 +176,56 @@ Total: 343 − 286 = **57 survivors**.
     - identical duplicate rows of co-registrants in the earnings frame.
   - **83 on old lines** of the Stage 06, 09 and 12 functions: log fields, report counters, defaults and messages. They were never mutation-tested and are out of this follow-up's scope (Backlog).
   - Inside the new code, the old lines `_not_an_end`'s line start (unreachable), `extract_mda`'s default-form spellings and `_rows`' time-zone casing stay equivalent, as in follow-up 3.
+
+## Follow-up 5: the 83 old-line survivors, and the code follow-up 5 changed
+
+### The 83 survivors on old Stage 06, 09 and 12 lines
+
+- **Setup:** [../mutmut-setup-followup5-old-lines.cfg](../mutmut-setup-followup5-old-lines.cfg), mutmut 3.8.1 from follow-up 4's scratch install. Selected by name: `_not_an_end`, `extract_mda`, `_rows`, `ingest_filing_text`, `ingest_fundamentals`, `ingest_earnings`, `Lake.read_table`. 642 mutants were selected; none were "suspicious".
+- **Before (follow-up 4's tests):** 533 killed, 109 survived ([followup5-old-lines-mutmut-results-before.txt](followup5-old-lines-mutmut-results-before.txt)).
+  - 81 of the 83 old-line survivors still survived.
+  - The two `refresh` default mutants were already killed by follow-up 4's refresh tests, written after that follow-up's first run.
+  - The other 28 survivors are follow-up 4's equivalent new-line ones.
+- **Tests added** (no code changed to kill a mutant):
+  - `test_fundamentals_ingest.py`:
+    - `test_failure_reasons_and_the_request_message_are_exact`;
+    - `test_the_log_events` (`structlog.testing.capture_logs`, the whole event dicts);
+    - `test_fallback_rows_add_up_over_symbols_and_use_the_default_calendar` (AAPL's and MSFT's submissions with no acceptance times);
+    - `test_a_given_calendar_or_the_config_s_calendar_dates_the_fallback_rows`;
+    - `test_the_concept_map_given_or_else_the_config_s_map_file` (a map keeping each concept's first tag).
+  - `test_events_earnings.py`:
+    - `test_rows_and_skipped_filings_add_up_over_symbols_and_are_logged` (two tickers of one CIK, two acceptance times blanked);
+    - `test_failure_reasons_are_exact_and_logged`;
+    - `test_a_given_calendar_or_the_config_s_calendar_dates_the_events`.
+  - `test_filings_ingest.py`: `test_the_config_s_calendar_dates_filings_without_an_acceptance_time`.
+- **After:** 602 killed, 40 survived ([followup5-old-lines-mutmut-results.txt](followup5-old-lines-mutmut-results.txt)). **70 of the 83 are killed.** The 13 left are equivalent, each shown in [followup5-old-lines-classified.tsv](followup5-old-lines-classified.tsv), which also names the test that kills each of the other 70:
+  - `Lake.read_table`'s `format="parquet"` (2, the dataset default) and `schema=` (2). For the schema: every file the lake writes carries the declared schema (`validate_frame`; `_check_meta` refuses a changed schema). A probe over all 19 registered tables found the inferred schema equal to the declared one and the reads identical ([read-table-schema-probe-followup5.txt](read-table-schema-probe-followup5.txt), script `read_table_schema_probe_followup5.py`).
+  - `write_table`'s `keys=None` / omitted (4: the default is the primary key).
+  - `ingest_filing_text`'s `mode="upsert"` omitted (append). Only filings not yet stored are written, and the batch is deduplicated by accession, so no key repeats and append writes the same rows.
+  - `_rows`' `"datetime64[us, utc]"`: pandas 3.1.0 reads `utc` as `datetime.timezone.utc`, so the dtype, Arrow type and values are identical (checked).
+  - `_not_an_end`'s `max(at - 1, 1)`. An end is searched from after a start match, so `at >= 1`, and `at == 1` is a line start only after a newline at 0. Either way the previous line is empty.
+  - `extract_mda`'s default form spelled `"XX10-KXX"` or `"10-k"`: any form not starting with 10-Q selects the 10-K item.
+
+### The functions follow-up 5 changed
+
+- **Setup:** [../mutmut-setup-followup5.cfg](../mutmut-setup-followup5.cfg), tests `tests/unit/data/filings/`. Selected by name:
+  - `mda`: `item_sections`, `named_sections`, `_title_key`, `extract_titled_mda`, `extract_exhibit_mda`, `_not_an_end`, `_continues`, `_sections`;
+  - `text`: `_named`, `_longer`, `_mda_of`.
+
+  The changed regular expressions are module constants, which mutmut does not mutate; the tests in `test_filings_mda.py` cover each rule.
+- **First run** (before the last rule changes): 319 killed, 35 survived ([followup5-mutmut-results-first.txt](followup5-mutmut-results-first.txt)). Real gaps, each killed by a new test:
+  - the closing-quote check reading only the end line;
+  - the 3- and 100-character title bounds;
+  - a title ending in "X" (APPENDIX);
+  - a titled MD&A skipping ends that are no heading, running to the end, and at exactly `min_chars`;
+  - `_longer` on a tie;
+  - `_named` reading the 10-Q item and searching after the first copy;
+  - the titled fallback after a `by_reference` item.
+- **Second run** (final code): 421 killed, 1 timeout, 18 survived. Three more gaps were killed by tests:
+  - `_sections`' combined-heading page check must not look past its own line (2);
+  - a 10-Q item naming sections must be read through the titles, not through the "Financial Review" heading rule (1).
+- **Result: 425 of 440 detected (423 killed, 2 timeouts; 96.6%)** ([followup5-mutmut-results.txt](followup5-mutmut-results.txt)). The 15 survivors are equivalent, each explained in [followup5-survivors-classified.tsv](followup5-survivors-classified.tsv):
+  - positions that cannot occur (an end starts at a line start; `html_to_text` leaves no blank lines; `find` from `at >= 1`): 10, seven of them on follow-up 4's `_sections` lines;
+  - default-form spellings: 2;
+  - `_title_key` transforms applied to both sides of its comparison: 2;
+  - a text that is never `None` in that branch: 1.

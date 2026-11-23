@@ -9,12 +9,13 @@ import pandas as pd
 import pytest
 import respx
 from events_helpers import FIXTURES, NoSleep, config_with, serve_sec, utc
+from structlog.testing import capture_logs
 
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
 from atlas.core.errors import DataError
 from atlas.core.storage import Lake
-from atlas.data.events import EVENT_COLUMNS, EVENTS
+from atlas.data.events import EVENT_COLUMNS, EVENTS, EventsIngestReport
 from atlas.data.events.earnings import (
     earnings_events,
     fetch_filings,
@@ -322,3 +323,97 @@ def test_an_edgar_failure_does_not_stop_the_next_symbol(tmp_lake: Lake) -> None:
             )  # fmt: skip
     assert report.symbols_failed == ("BAD",) and report.symbols_ok == ("AAPL",)
     assert report.rows == len(AAPL_EARNINGS)
+
+
+# --- Stage 29 follow-up 5: the old lines mutation testing left untested ------------------------
+
+
+def _twins(
+    lake: Lake, subs: dict[str, Any] | None = None, **kw: Any
+) -> tuple[EventsIngestReport, list[dict[str, Any]]]:
+    """`ingest_earnings` of two tickers of AAPL's CIK (both get every event), with `subs` (AAPL's
+    submissions JSON) served instead of the recorded file when given; the captured logs."""
+    cik_map = CikMap({"AAPL": AAPL_CIK, "AAPLX": AAPL_CIK})
+    with respx.mock(assert_all_called=False) as mock, capture_logs() as logs:
+        if subs is not None:
+            mock.get("https://data.sec.gov/submissions/CIK0000320193.json").respond(json=subs)
+        mock.get(url__startswith="https://data.sec.gov/submissions/").mock(side_effect=serve_sec)
+        with httpx.Client() as http:
+            kw.setdefault("config", config_with(history_start=date(2018, 1, 1)))
+            report = ingest_earnings(lake, _client(http), ["AAPL", "AAPLX"], cik_map=cik_map, **kw)
+    return report, logs
+
+
+def _unaccepted(n: int) -> dict[str, Any]:
+    """AAPL's recorded submissions with the acceptance time of the first `n` 8-K item 2.02
+    filings blank."""
+    subs = json.loads((FIXTURES / "submissions" / "CIK0000320193.json").read_text())
+    recent = subs["filings"]["recent"]
+    blanked = 0
+    for i, (form, items) in enumerate(zip(recent["form"], recent["items"], strict=True)):
+        if blanked < n and form == "8-K" and "2.02" in items:
+            recent["acceptanceDateTime"][i] = ""
+            blanked += 1
+    return subs
+
+
+def test_rows_and_skipped_filings_add_up_over_symbols_and_are_logged(tmp_lake: Lake) -> None:
+    subs = _unaccepted(2)
+    _, alone = earnings_events(
+        parse_filings(subs["filings"]["recent"]), "AAPL", CAL, periodic_match_days=60
+    )
+    assert alone > 0
+    report, logs = _twins(tmp_lake, subs)
+    assert report.symbols_ok == ("AAPL", "AAPLX")
+    stored = tmp_lake.read_table(EVENTS.name)
+    per = stored.groupby("symbol").size().to_dict()
+    assert per["AAPL"] == per["AAPLX"] > 0 and report.rows == per["AAPL"] * 2
+    assert report.skipped_filings == 2 * alone
+    done = [e for e in logs if e["event"] == "events.ingest_earnings"]
+    assert done == [
+        {
+            "event": "events.ingest_earnings",
+            "rows": report.rows,
+            "symbols_ok": 2,
+            "symbols_failed": 0,
+            "skipped_filings": report.skipped_filings,
+            "log_level": "info",
+        }
+    ]
+
+
+def test_failure_reasons_are_exact_and_logged(tmp_lake: Lake) -> None:
+    cik_map = CikMap({"AAPL": AAPL_CIK})
+    with respx.mock() as mock, capture_logs() as logs:
+        mock.get(url__startswith="https://data.sec.gov/").respond(404)
+        with httpx.Client() as http:
+            report = ingest_earnings(
+                tmp_lake, _client(http), ["MSFT", "AAPL"], cik_map=cik_map,
+                config=config_with(history_start=date(2018, 1, 1)),
+            )  # fmt: skip
+    reasons = dict(report.failure_reasons)
+    assert reasons["MSFT"] == "no CIK (not in company_tickers.json or config/cik_overrides.yaml)"
+    assert isinstance(reasons["AAPL"], str) and "HTTP 404" in reasons["AAPL"]
+    failed = [e for e in logs if e["event"] == "events.symbol_failed"]
+    assert failed == [
+        {
+            "event": "events.symbol_failed",
+            "symbol": "AAPL",
+            "error": reasons["AAPL"],
+            "log_level": "warning",
+        }
+    ]
+
+
+def test_a_given_calendar_or_the_config_s_calendar_dates_the_events(tmp_lake: Lake) -> None:
+    """The calendar given, else the config's (bounds ending in 2016 put the filings since 2018
+    outside it), places each event in its session."""
+    with pytest.raises(ValueError, match="outside the calendar"):
+        _twins(tmp_lake, calendar=TradingCalendar(date(2000, 1, 1), date(2016, 1, 1)))
+    bounded = config_with(history_start=date(2018, 1, 1)).model_copy(
+        update={
+            "calendar": AtlasConfig.model_validate({"calendar": {"end": "2016-01-01"}}).calendar
+        }
+    )
+    with pytest.raises(ValueError, match="outside the calendar"):
+        _twins(tmp_lake, config=bounded)

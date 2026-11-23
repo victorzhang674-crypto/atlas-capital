@@ -147,3 +147,53 @@ Graph wiring stays with Stage 35 (owner).
 - Merge into `main`: fast-forward c579104 → 8611b27 (owner's Terminal panel), trees equal; merged result `uv run pytest -q` → 5472 passed, 82 deselected, exit 0 · `make check` → exit 0 · raw: [artifacts/followup4-merged-main-check.txt](artifacts/followup4-merged-main-check.txt)
 
 **Result:** ALL CRITERIA VERIFIED (re-run after follow-up 4)
+
+#### Follow-up 5 — Stage 29 — 2026-11-23
+Task from the session that started this one, on the owner's behalf: "Close every gap that Stage 29 (fundamental analyst) still has open". The gaps:
+- Emerson's FY2015 pointer page;
+- MD&As running past their end (SolarEdge 2024);
+- the 83 old-line surviving mutants;
+- OKTA's and VYLR's fundamentals;
+- the uncommitted CI record of `3d77679` (now [artifacts/ci-runs-3d77679.json](artifacts/ci-runs-3d77679.json): both runs success).
+
+Graph wiring stays with Stage 35 (owner).
+
+- Gate: `uv run pytest -q` → 5472 passed, 82 deselected, exit 0 · raw: [artifacts/followup5-gate-pytest.txt](artifacts/followup5-gate-pytest.txt)
+- Commands run (this chat, one after another, on the final code):
+  - `uv run pytest tests/unit/agents/research/test_fundamental.py -q` (brief's Verify) → 29 passed, exit 0 · raw: [artifacts/followup5-verify-brief.txt](artifacts/followup5-verify-brief.txt)
+  - `uv run pytest -q` → 5563 passed, 82 deselected, exit 0 · raw: [artifacts/followup5-pytest-full.txt](artifacts/followup5-pytest-full.txt)
+  - `make check` → exit 0 · raw: [artifacts/followup5-make-check.txt](artifacts/followup5-make-check.txt)
+    - `ruff check .` → All checks passed!
+    - `ruff format --check .` → 510 files already formatted
+    - `mypy src/atlas` → Success: no issues found in 188 source files
+    - pytest: 5560 passed + 3 timing passed
+  - `make test-integration` → 48 passed, 15 skipped, exit 0 · raw: [artifacts/followup5-test-integration.txt](artifacts/followup5-test-integration.txt)
+- Main lake:
+  - Full re-extraction of all 30,927 stored filings (HEAD and final code, from the fetched documents' text) → 0 errors · [artifacts/filing-text-full-recheck-followup5.txt](artifacts/filing-text-full-recheck-followup5.txt)
+    - 131 stale rows (stored by earlier code);
+    - 533 rows changed by the final code, every kind reviewed;
+    - over-run markers from 181 rows to 14 (all cross-references);
+    - all 30,927 with an MD&A.
+  - Scratch copy: `copy`, `before`, OKTA/VYLR syncs, `new`, `text`, `check` → only intended rows changed. Outside `filing_text`, only OKTA and VYLR. In `filing_text`, exactly the 533 · [artifacts/main-lake-followup5.txt](artifacts/main-lake-followup5.txt)
+  - Rebuild → factors 142 month-ends, exit 0; risk model, exit 0 · [artifacts/main-lake-rebuild-followup5.txt](artifacts/main-lake-rebuild-followup5.txt)
+  - Store comparison → raw exposures changed only for OKTA (12 values); all changes on 2026-10-30 · [artifacts/main-lake-stores-compare-followup5.txt](artifacts/main-lake-stores-compare-followup5.txt)
+  - Swap (owner's Terminal panel) → 9 tables backed up in `cache/backup-stage29-followup5-2026-11-23` and replaced, each equal to the scratch copy; swap exit 0 · [artifacts/main-lake-swap-followup5.txt](artifacts/main-lake-swap-followup5.txt)
+  - Read-back → row counts equal, `_meta.json` tables equal, 9 `DataView` cases as expected, 30,927 of 30,927 with an MD&A · [artifacts/main-lake-readback-followup5.txt](artifacts/main-lake-readback-followup5.txt)
+  - Going-concern review → 76 FLAGs of 30,927, the same 76 as follow-up 4 (0 new, 0 gone) · [artifacts/filing-text-review-followup5.txt](artifacts/filing-text-review-followup5.txt)
+- Mutation testing → [artifacts/mutation/mutation-summary.md](artifacts/mutation/mutation-summary.md)
+  - old lines: 70 of 83 killed by new tests, 13 equivalent;
+  - changed functions: 425 of 440 detected, 15 equivalent.
+- Each gap, against evidence:
+  - [x] Emerson FY2015 → EX-13, 56,539 characters from "Results of Operations" — `test_an_exhibit_whose_mda_sections_carry_no_mda_heading_is_read_by_their_titles`, the read-back's EMR case. Comerica's and Sempra's hidden regressions are fixed too (`test_a_10k_whose_item_7_names_sections_of_its_own_financial_section_reads_them`, `test_an_item_naming_annual_report_sections_reads_the_exhibit`).
+  - [x] Run-ons:
+    - found by a full re-extraction and a marker scan, with safe end rules (later items, Part II items, signatures, exhibit index, split "ITEM" lines), each with tests in `test_filings_mda.py`;
+    - SolarEdge 2024: 242,676 → 75,160;
+    - markers 181 → 14 (cross-references only).
+  - [x] 83 old-line mutants: 70 killed by real tests, 13 equivalent in writing ([followup5-old-lines-classified.tsv](artifacts/mutation/followup5-old-lines-classified.tsv)). No code weakened. Decision logged under Stage 29.
+  - [x] OKTA and VYLR synced on the main lake: prices, fundamentals, events, reactions, stores. Read-back: OKTA 21 values, revenue TTM $3.07B; VYLR 8 values.
+  - [x] CI record `ci-runs-3d77679.json` committed with this work.
+  - [x] After the MD&A change, the going-concern FLAG count is still 76 (same set).
+- Acceptance criteria: unchanged and still met. The recorded-run replay is in the brief's Verify (29 passed); its fixture lake has no `filing_text`.
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED (re-run after follow-up 5)

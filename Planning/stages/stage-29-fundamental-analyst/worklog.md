@@ -306,3 +306,76 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - Fast-forwarded `main` c579104 → 8611b27 in the owner's Terminal panel ([followup4-merged-main-check.txt](artifacts/followup4-merged-main-check.txt)). Trees equal.
   - Merged result: `uv run pytest -q` → 5472 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch.
   - This records commit goes onto `main` the same way; then I push both branches and check CI.
+
+## 2026-11-23 — Follow-up 5 (task from the session that started this one: "Close every gap that Stage 29 (fundamental analyst) still has open")
+
+- Read-in: `Project.md`, `CLAUDE.md`, `Planning/PROGRESS.md` (Stage 29 DONE, follow-ups 1–4 merged, `main` = `3d77679`; Stage 30 NOT STARTED and not started here). The five gaps were checked against `PROGRESS.md › Backlog` and the Stage 29 "Known gaps": Emerson FY2015, MD&As without an end heading (SolarEdge 2024), 83 old-line mutants, OKTA/VYLR fundamentals, and the uncommitted `ci-runs-3d77679.json`. Graph wiring stays with Stage 35 (owner).
+- Gate: `uv run pytest -q` → 5472 passed, 82 deselected, exit 0 ([followup5-gate-pytest.txt](artifacts/followup5-gate-pytest.txt)).
+- `ci-runs-3d77679.json` copied from the planning-audit worktree into `artifacts/`: both runs of `3d77679` (`main` and `claude/stage-29-planning-audit-3185f8`) completed with success.
+- Investigation, before the plan:
+  - A scan of every stored MD&A for text that only follows an MD&A found 408 rows (`scan_overrun`, kept in the scratch folder).
+  - Re-extracting those 408 with the current code (`filing_text_recheck_followup5.py`, documents cached by `filing_text_caching_followup5.py`) changed 83 of them, so **stored rows exist that the current code extracts differently**. The biggest: Comerica's 11 10-Ks store the 10-K's contents and Part I, not the MD&A, and the current code finds no MD&A at all (its Item 7 is one sentence naming the sections of its Financial Section). Also U.S. Bancorp's 2024–26 10-Ks, FedEx 2018–20, Wells Fargo's 10-Qs, PPL, SolarEdge's 10-Qs, Realty Income.
+  - Hence the plan's K0: re-extract **every** stored filing. `filing_text_full_recheck_followup5.py` re-reads all 30,927 from EDGAR with the current code, keeping each document's text gzipped, so rule changes are checked offline on the whole corpus. It runs in the background (4 workers at 2.5 requests/s each, ~2.4 filings/s).
+- [Plan](plan.md) section "Follow-up 5" written (K0–K6), then carried out without a pause (owner's standing instruction).
+- K1, the sections an MD&A item names (test-first: 5 new tests in `test_filings_mda.py`, 3 in `test_filings_ingest.py`, red, then green):
+  - `item_sections`, `named_sections` and `extract_titled_mda` in `mda.py`;
+  - `_named`, `_longer` and their use in `_mda_of` (`text.py`): only where the present rules find nothing longer, in the same document after the item and in the EX-13/EX-99 exhibits.
+  - On the real documents (text cache, offline): Emerson FY2015 → EX-13, 56,539 characters from "Results of Operations" to the statements (was its 4,539-character Item 7). Comerica 2015–2025 → the Financial Section's MD&A, 134k–183k characters from "<year> OVERVIEW …" to the statements (the current code had found none).
+- K0: the full re-read was first run with 4 workers at 2.5 requests/s each (~2.5 filings/s). It was then stopped and resumed with 8 workers at 1.25 requests/s each (the same 10 requests/s in all; ~3.7 filings/s). Because the resumed run used the worktree's changed code, the online pass now only fills the text cache (`$TMPDIR/s29f5/txt`). HEAD's extraction (from `git archive HEAD src`) and the final code are both run offline over the whole cache and compared.
+- K2, MD&As that run past their end (test-first, each red then green; `mda.py`):
+  - Rules:
+    - "ITEM" on a line of its own in 10-K headings (`_ITEM`);
+    - "Items 7. and 7A." (Freeport-McMoRan);
+    - "/" and "|" between an item and its title (AIG);
+    - a "Part I," prefix on a 10-Q's Item 2 (Computer Sciences);
+    - later 10-K items (9, 9A–9C, 10–16, titled) and "PART III"/"PART IV" lines end Item 7;
+    - a 10-Q's titled Part II items end Item 2;
+    - the signatures and the exhibit index end any MD&A;
+    - none of these when the line is a contents entry (a page number at its end or on the next line) or names its own place ("… of this report", "… in the 2015 Annual Report").
+  - The MD&A-heading path (`extract_exhibit_mda`):
+    - ends at the signatures, the exhibit index, a titled Part II item or "Item <n>. Exhibits";
+    - an MD&A heading followed by a bare page number is a contents entry, not a start (Entergy, AEP, Aetna).
+  - Checked first on the 408 marker rows, then on every cached row. Reading the changes found five defects in my own rules, each fixed test-first:
+    - Waste Management prints "Index to Financial Statements" in every page header, so that end was dropped;
+    - AIG's wrapped "… Retirement and Part II," / "Item 1A. Risk Factors.": a line ending in a comma goes on with its sentence;
+    - AIG's "Part II, Item 7. MD&A — … in the 2015 Annual Report": the 10-Q "Part II" end now skips a line naming another document;
+    - Everest's word-per-line "under" / "ITEM" / "8" / "of": a previous line that is just such a word counts;
+    - CSC's "PART I, ITEM 2." heading had come through the MD&A-heading path, so its Part II items did not end it.
+  - Two existing tests were adjusted (Rule 1.6):
+    - `test_skip_items_takes_the_mda_heading_after_an_item_7_pointer`: its incidental "Item 15. Exhibits" line now (rightly) ends the Item 7 section. The line became "Item 9B. Other Information", which keeps the test's point, and an added assertion pins the new end.
+    - `test_a_10q_mda_before_its_financial_statements_ends_at_item_1`: its "Item 1A. Risk Factors" line is a contents entry by its docstring, so it got its page number ("… 95"). BNY Mellon's real 10-Q has no such heading inside the MD&A (checked).
+- K3: see [mutation-summary.md › Follow-up 5](artifacts/mutation/mutation-summary.md). 70 of the 83 old-line survivors are killed by 9 new tests; the 13 left are equivalent, each with its reason ([followup5-old-lines-classified.tsv](artifacts/mutation/followup5-old-lines-classified.tsv)). No production code changed for them.
+- K4, OKTA and VYLR, on the scratch copy (`main_lake_followup5.py copy` → 1,049.9 MB, 2,405 raw links; `before` digests):
+  - `atlas data sync --from 2015-01-01 --to 2026-10-30 --datasets prices,fundamentals --symbols OKTA,VYLR`: prices 2,405 rows (OKTA from its 2017-04-07 IPO; VYLR's 22 bars were checkpointed already); fundamentals 1,957 rows (OKTA). VYLR's fundamentals were skipped: its checkpoint said "empty" from 2026-11-01, before its first 10-Q (2026-11-12).
+  - `atlas data sync --from 2015-01-01 --to 2026-11-23 --datasets fundamentals --symbols OKTA,VYLR` → 2,029 rows, both ok (VYLR 72 facts).
+  - `new`: OKTA's trade dates set from `prices_daily` (2017-04-07 … 2026-10-30; the universe step was not run, it would apply today's index changes). Then `ingest_earnings` → 42 events (OKTA 41, VYLR 1), and `ingest_earnings_reactions` → 41 (VYLR's 10-Q of 2026-11-12 is after the last price day).
+  - Rebuild ([main-lake-rebuild-followup5.txt](artifacts/main-lake-rebuild-followup5.txt)): `atlas factors build --from 2015 --to 2026` exit 0 (24 min); `atlas risk-model build --from 2017 --to 2026 --cached-factors` exit 0 (39 min).
+  - Store comparison ([main-lake-stores-compare-followup5.txt](artifacts/main-lake-stores-compare-followup5.txt)): the same row counts. Raw exposures changed only for OKTA (12 values filled at 2026-10-30). Other names' standardised values moved on that date alone (5,864 rows, median 0.0002). Factor returns and risk snapshots changed only on 2026-10-30.
+- K2, final rounds on the whole corpus (every cached row, then all 30,927):
+  - More defects in my own rules, each fixed test-first:
+    - Mastercard's "Special" / "Items 3" table column: end headings are singular again;
+    - General Mills' word-per-line "… in" / "Part" / "II,": a line ending in a comma of any length goes on with its sentence;
+    - Morgan Stanley's start at "… in Part II," / "Item 7." / "Competition.": a start that goes on with a sentence is no heading;
+    - Clorox's named "Quantitative and Qualitative Disclosures …" title: a title that is itself an end heading starts nothing;
+    - Southern Company's 10-Qs: "PART II — OTHER INFORMATION" ends the MD&A-heading path.
+  - A hidden regression of the current code: Sempra's 2015–17 10-Ks ("set forth under “Management's Discussion …” in the Annual Report") came out empty under HEAD. Fixed test-first: an item naming its sections reads the exhibits when the same document holds none of them.
+  - **My harness defect:** for the 162 rows whose MD&A came from an exhibit, the lake's `document` is the exhibit's name, and my script passed it as the primary document. The texts were equal, but the source would have read "primary". The script now takes the primary document from the filing index; those rows were re-run online for HEAD and the final code.
+  - Final: HEAD differs from 131 stored rows (stale); the final code differs from 533 (all 131 among them), 0 errors, 30,927 with an MD&A. Every kind was reviewed. Over-run markers fall from 181 rows to 14, all cross-references ([filing-text-full-recheck-followup5.txt](artifacts/filing-text-full-recheck-followup5.txt)). Review scripts: `filing_text_{scan,markers,compare}_followup5.py`.
+- K5, main lake ([main-lake-followup5.txt](artifacts/main-lake-followup5.txt)):
+  - `atlas data sync --datasets filings --symbols OKTA,VYLR --to 2026-11-23` → 0 new filings.
+  - `text` → 533 rows replaced (22 from EX-13).
+  - `check`: outside `filing_text` only OKTA and VYLR changed; in `filing_text` exactly the 533 rows. My script first showed `instruments`' one-column key as "O"; fixed and re-run.
+  - Going-concern review ([filing-text-review-followup5.txt](artifacts/filing-text-review-followup5.txt)): 76 FLAGs, the same 76 as follow-up 4.
+  - The longest MD&As left are Southern Company's combined one (962k) and the big banks'; none carries a marker.
+  - Swap from the owner's Terminal panel ([main_lake_followup5_swap.sh](artifacts/main_lake_followup5_swap.sh), [main-lake-swap-followup5.txt](artifacts/main-lake-swap-followup5.txt)):
+    - 9 tables backed up (digest-checked) in `cache/backup-stage29-followup5-2026-11-23` and replaced, each equal to the scratch copy;
+    - `sync_state.json` replaced (old one in the backup);
+    - raw/sec: 2 files added, 3 replaced.
+  - Read-back ([main-lake-readback-followup5.txt](artifacts/main-lake-readback-followup5.txt)): row counts and `_meta.json` tables equal; 9 `DataView` cases as expected (OKTA revenue TTM $3.07B, VYLR's 10-Q MD&A, EMR EX-13 56,539, CMA 168,720, SEDG 75,160, FCX, AIG; WIN and ENPH FLAG).
+- K6:
+  - Mutation of the changed functions: 425 of 440 detected after 3 more tests; 15 equivalent ([mutation-summary.md](artifacts/mutation/mutation-summary.md)).
+  - Docs: `docs/data-limitations.md` item 9.
+  - Records: `PROGRESS.md` (last updated, Decisions log, Backlog, Known gaps, handoff), `verification.md`, `audit-report.md › Follow-up 5`.
+  - Verification on the final code ([verification.md › Follow-up 5](verification.md)): brief's Verify 29 passed; `uv run pytest -q` 5563 passed, 82 deselected; `make check` exit 0; `make test-integration` 48 passed, 15 skipped.
+- Code files changed (none created): `src/atlas/data/filings/mda.py`, `src/atlas/data/filings/text.py`.
+- Test files changed: `tests/unit/data/filings/test_filings_{mda,ingest}.py`, `tests/unit/data/fundamentals/test_fundamentals_ingest.py`, `tests/unit/data/events/test_events_earnings.py`.

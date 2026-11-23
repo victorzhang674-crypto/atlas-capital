@@ -1,0 +1,25 @@
+=== swap into ~/Projects/atlas-capital/data from $TMPDIR/s29f5/main-copy, 2026-11-23T21:55:05Z
+backed up prices_daily:  48M digest b23f81e5fcff56c8
+backed up instruments:  28K digest 0c1832d1740a1605
+backed up fundamentals_facts:  29M digest c19294735559cba1
+backed up events: 3.8M digest a315523748408519
+backed up earnings_reactions: 1.8M digest cfa3e9672c7548a7
+backed up filing_text: 896M digest fdff4942f15090c6
+backed up factor_exposures:  17M digest d53c85cb7387029f
+backed up factor_returns: 580K digest 05a6dce2e907ec71
+backed up risk_model_snapshots: 6.0M digest 6994964db221ed74
+replaced prices_daily: digest now 44ef13370174a514 (scratch 44ef13370174a514)
+replaced instruments: digest now 083f935de3a12e06 (scratch 083f935de3a12e06)
+replaced fundamentals_facts: digest now e1e962a13b0bc882 (scratch e1e962a13b0bc882)
+replaced events: digest now 040a8b4352af59f0 (scratch 040a8b4352af59f0)
+replaced earnings_reactions: digest now 5efd64b486a6ebeb (scratch 5efd64b486a6ebeb)
+replaced filing_text: digest now 1db6a71b8a28f648 (scratch 1db6a71b8a28f648)
+replaced factor_exposures: digest now 5614ba049f0bab34 (scratch 5614ba049f0bab34)
+replaced factor_returns: digest now 11bc0e4e10b22807 (scratch 11bc0e4e10b22807)
+replaced risk_model_snapshots: digest now 431beb899d033b6b (scratch 431beb899d033b6b)
+sync_state.json: replaced by the scratch copy's (old one in the backup)
+_meta.json: DIFFERS from the scratch copy's
+raw/sec: 2 files added, 3 replaced (old ones in the backup)
+build log kept: runs/factors/build-stage29-followup5-2026-11-23.log
+build log kept: runs/risk_model/build-stage29-followup5-2026-11-23.log
+swap exit 0

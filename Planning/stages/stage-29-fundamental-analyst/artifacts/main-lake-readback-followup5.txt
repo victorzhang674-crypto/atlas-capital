@@ -1,0 +1,21 @@
+prices_daily: main 1840464 rows, scratch copy 1840464: EQUAL
+corporate_actions: main 23073 rows, scratch copy 23073: EQUAL
+instruments: main 891 rows, scratch copy 891: EQUAL
+fundamentals_facts: main 2691253 rows, scratch copy 2691253: EQUAL
+events: main 34457 rows, scratch copy 34457: EQUAL
+earnings_reactions: main 30287 rows, scratch copy 30287: EQUAL
+filing_text: main 30927 rows, scratch copy 30927: EQUAL
+factor_exposures: main 1212389 rows, scratch copy 1212389: EQUAL
+factor_returns: main 49420 rows, scratch copy 49420: EQUAL
+risk_model_snapshots: main 1246260 rows, scratch copy 1246260: EQUAL
+_meta.json tables equal to the scratch copy's: True
+OKTA at 2026-10-30 (new member: fundamentals from CIK 1660134): fundamentals 21 values, revenue_ttm 3073000000.0; MD&A 10-Q filed 2026-08-27 (primary, 38735 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+VYLR at 2026-11-20 (new member: its first 10-Q (2026-11-12)): fundamentals 8 values, revenue_ttm nan; MD&A 10-Q filed 2026-11-12 (primary, 74657 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+EMR at 2016-01-04 (FY2015 MD&A from the sections Item 7 names (EX-13)): fundamentals 21 values, revenue_ttm 22304000000.0; MD&A 10-K filed 2015-11-18 (EX-13, 56539 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+CMA at 2015-03-02 (MD&A from the sections Item 7 names (Financial Section)): fundamentals 16 values, revenue_ttm 2523000000.0; MD&A 10-K filed 2015-02-17 (primary, 168720 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+SEDG at 2024-03-01 (ITEM / 7A. split heading ends the MD&A): fundamentals 21 values, revenue_ttm 2976528000.0; MD&A 10-K filed 2024-02-26 (primary, 75160 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+FCX at 2015-03-02 (Items 7. and 7A. heading): fundamentals 18 values, revenue_ttm 21438000000.0; MD&A 10-K filed 2015-02-27 (primary, 208503 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+AIG at 2017-05-10 (ITEM 2 | heading, ends before Part II): fundamentals 17 values, revenue_ttm 53220000000.0; MD&A 10-Q filed 2017-05-04 (primary, 260266 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+WIN at 2019-03-18 (going-concern FLAG unchanged): fundamentals 18 values, revenue_ttm 5713100000.0; MD&A 10-K filed 2019-03-15 (primary, 164418 chars) -> FLAG: MD&A: "Our financial condition, the defaults under our debt agreements and master lease agreement with Uniti, 
+ENPH at 2017-05-12 (going-concern FLAG unchanged): fundamentals 21 values, revenue_ttm 313221000.0; MD&A 10-Q filed 2017-05-10 (primary, 32181 chars) -> FLAG: MD&A: "As disclosed in our Form 10-K for the year ended December 31, 2016, we concluded that substantial doubt
+whole filing_text read: 30927 rows, statuses {'ok': 30927}

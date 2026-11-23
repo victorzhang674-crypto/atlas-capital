@@ -33,6 +33,8 @@ from atlas.data.filings.text import (
     FILING_TEXT,
     LIST_COLUMNS,
     FilingTextIngestReport,
+    _longer,
+    _named,
     _unless_later,
     filing_list,
     ingest_filing_text,
@@ -933,3 +935,170 @@ def test_a_co_registrants_filing_is_fetched_and_stored_once(tmp_path: Path, edga
     assert report.rows == len(stored) == 2 and stored["accn"].is_unique
     assert set(stored["cik"]) == {CIK}
     assert edgar.seen.count(f"/Archives/edgar/data/{CIK}/000081509724000011/ccl-20231130.htm") == 1
+
+
+# --- follow-up 5: the sections the MD&A item names --------------------------------------------
+
+TITLED_POINTER = (
+    "The information from the 2020 Annual Report set forth in Exhibit 13 hereto under "
+    "“Results of Operations,” “Business Segments” and “Other Items”"
+    " is hereby incorporated by reference."
+)
+
+
+def test_an_exhibit_whose_mda_sections_carry_no_mda_heading_is_read_by_their_titles(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """Emerson's FY2015 10-K: Item 7 names the Exhibit 13 sections it incorporates; the exhibit
+    opens with management's reports and its MD&A sections carry no MD&A heading. The MD&A runs
+    from the first named section to the statements."""
+    folder = f"/Archives/edgar/data/{CIK}/000081509721000027"
+    nongaap = "Non-GAAP measures are reconciled below. " * 30  # the item is ~1,400 characters
+    edgar.docs[f"{folder}/ccl-20201130.htm"] = ten_k_html(f"{TITLED_POINTER}</p><p>{nongaap}")
+    edgar.docs[f"{folder}/a2020ex-13.htm"] = (
+        "<html><body><p>FINANCIAL REVIEW</p><p>Report of Management</p><p>We are responsible.</p>"
+        "<p>Management's Report on Internal Control Over Financial Reporting</p><p>Effective.</p>"
+        f"<p>1</p><p>Results of Operations</p><p>{BODY}</p><p>BUSINESS SEGMENTS</p><p>{BODY}</p>"
+        "<p>Consolidated Statements of Earnings</p><p>Net sales 22,304</p></body></html>"
+    ).encode()
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (row["status"], row["source"], row["document"]) == ("ok", "EX-13", "a2020ex-13.htm")
+    assert row["text"].startswith("Results of Operations\n")
+    assert "BUSINESS SEGMENTS" in row["text"] and "Net sales" not in row["text"]
+    assert "Report of Management" not in row["text"]
+
+
+def test_a_10k_whose_item_7_names_sections_of_its_own_financial_section_reads_them(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """Comerica's 10-Ks: Item 7 is a sentence naming the sections of the 10-K's Financial
+    Section, which follows Item 15 with its own contents. No MD&A heading exists."""
+    folder = f"/Archives/edgar/data/{CIK}/000081509724000011"
+    edgar.docs[f"{folder}/ccl-20231130.htm"] = (
+        "<html><body><p>Item 7. Management\u2019s Discussion and Analysis of Financial Condition"
+        "</p><p>Reference is made to the sections entitled “Overview” and “Results "
+        "of Operations” on pages F-4 through F-9 of the Financial Section of this report.</p>"
+        "<p>Item 7A. Quantitative and Qualitative Disclosures About Market Risk</p>"
+        "<p>Reference is made to “Risk”.</p><p>Item 8. Financial Statements</p>"
+        "<p>See the Financial Section.</p><p>FINANCIAL REVIEW AND REPORTS</p><p>Overview</p>"
+        "<p>F-4</p><p>Results of Operations</p><p>F-6</p><p>Consolidated Balance Sheets</p>"
+        f"<p>F-10</p><p>OVERVIEW</p><p>{BODY}</p><p>RESULTS OF OPERATIONS</p><p>{BODY}</p>"
+        "<p>CONSOLIDATED BALANCE SHEETS</p><p>Cash 12</p></body></html>"
+    ).encode()
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-24-000011"]
+    assert (row["status"], row["source"]) == ("ok", "primary")
+    assert row["text"].startswith("OVERVIEW\n") and "RESULTS OF OPERATIONS" in row["text"]
+    assert "Cash 12" not in row["text"] and "F-4" not in row["text"]
+
+
+def test_named_sections_before_the_item_are_not_read(tmp_path: Path, edgar: Edgar) -> None:
+    """A named title standing as a line before the item that names it (Part I) does not start
+    the MD&A: the named sections are searched after the item."""
+    folder = f"/Archives/edgar/data/{CIK}/000081509724000011"
+    edgar.docs[f"{folder}/ccl-20231130.htm"] = (
+        f"<html><body><p>Overview</p><p>{BODY}</p><p>Consolidated Balance Sheets</p>"
+        "<p>Item 7. Management\u2019s Discussion and Analysis</p><p>Reference is made to the "
+        "section entitled “Overview” of the Financial Section.</p>"
+        "<p>Item 8. Financial Statements</p><p>Numbers.</p></body></html>"
+    ).encode()
+    # the item names sections, so the filing's exhibits are listed too: it has none
+    edgar.docs[f"{folder}/0000815097-24-000011-index.htm"] = INDEX.replace(
+        b'000081509721000027/a2020ex-13.htm">a2020ex-13.htm</a></td><td>EX-13',
+        b'000081509724000011/a.htm">a.htm</a></td><td>EX-4',
+    )
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-24-000011"]
+    assert row["status"] == "not_found"
+
+
+def test_the_config_s_calendar_dates_filings_without_an_acceptance_time(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """Without a calendar given, the config's dates a filing with no acceptance time (bounds
+    ending in 2016 put the 2021 filing outside it)."""
+    bounded = TEN_K_ONLY.model_copy(
+        update={
+            "calendar": AtlasConfig.model_validate({"calendar": {"end": "2016-01-01"}}).calendar
+        }
+    )
+    with pytest.raises(ValueError, match="outside the calendar"):
+        ingest(Lake(tmp_path), ["CCL"], config=bounded)
+
+
+def test_longer_keeps_what_was_found_on_a_tie() -> None:
+    found, other = MdaExtract("ok", "a" * 10), MdaExtract("ok", "b" * 10)
+    assert _longer(found, other) is found
+    assert _longer(found, MdaExtract("ok", "b" * 11)).text == "b" * 11
+
+
+def test_named_reads_the_item_of_the_form_and_searches_after_its_first_copy() -> None:
+    """A 10-Q's Item 2 may name the sections too; the named sections are searched after the
+    first copy of the item naming them."""
+    item = (
+        "Item 2. Management\u2019s Discussion and Analysis\nReference is made to the section "
+        "entitled “Financial Review” of this report.\nItem 3. Quantitative\n"
+    )
+    text = f"{item}FINANCIAL REVIEW\n{BODY}\n{item}"
+    titles, after = _named(text, "10-Q")
+    assert titles == ("Financial Review",)
+    assert after.startswith("\nItem 3. Quantitative\nFINANCIAL REVIEW")
+    assert _named(text, "10-K") == ((), text)
+
+
+def test_an_item_pointing_to_the_annual_report_with_no_exhibit_mda_reads_the_named_sections(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """Item 7 is a short page "incorporated by reference" (by_reference) naming sections that
+    stand later in the same 10-K, and no exhibit holds an MD&A: the named sections are read."""
+    folder = f"/Archives/edgar/data/{CIK}/000081509721000027"
+    edgar.docs[f"{folder}/ccl-20201130.htm"] = (
+        "<html><body><p>Item 7. Management\u2019s Discussion and Analysis</p><p>The sections "
+        "“Overview” and “Liquidity” of the Annual Report are incorporated by "
+        "reference.</p><p>Item 8. Financial Statements</p><p>See the Annual Report.</p>"
+        f"<p>OVERVIEW</p><p>{BODY}</p><p>LIQUIDITY</p><p>{BODY}</p>"
+        "<p>Consolidated Balance Sheets</p><p>Cash 12</p></body></html>"
+    ).encode()
+    edgar.docs[f"{folder}/a2020ex-13.htm"] = b"<p>Nothing here.</p>"
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (row["status"], row["source"]) == ("ok", "primary")
+    assert row["text"].startswith("OVERVIEW\n") and "Cash 12" not in row["text"]
+
+
+def test_a_10q_whose_item_2_names_its_sections_reads_them(tmp_path: Path, edgar: Edgar) -> None:
+    folder = f"/Archives/edgar/data/{CIK}/000081509723000090"
+    edgar.docs[f"{folder}/ccl-20230831.htm"] = (
+        "<html><body><p>PART I</p><p>Item 2. Management\u2019s Discussion and Analysis</p>"
+        "<p>Reference is made to the section entitled \u201cOperating Results\u201d below.</p>"
+        "<p>Item 3. Quantitative and Qualitative Disclosures About Market Risk</p><p>None.</p>"
+        "<p>Item 4. Controls and Procedures</p><p>Effective.</p><p>OPERATING RESULTS</p>"
+        f"<p>{BODY}</p><p>Consolidated Balance Sheets</p><p>Cash 12</p></body></html>"
+    ).encode()
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"], config=AtlasConfig())
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-23-000090"]
+    assert (row["status"], row["source"]) == ("ok", "primary")
+    assert row["text"].startswith("OPERATING RESULTS\n")
+
+
+def test_an_item_naming_annual_report_sections_reads_the_exhibit(
+    tmp_path: Path, edgar: Edgar
+) -> None:
+    """Sempra's 2015-17 10-Ks: Item 7 says the MD&A "is set forth under “Management's
+    Discussion and Analysis ...” in the Annual Report" (no "Exhibit 13", no "incorporated by
+    reference"); the same document holds no such section, so the exhibits are read."""
+    folder = f"/Archives/edgar/data/{CIK}/000081509721000027"
+    edgar.docs[f"{folder}/ccl-20201130.htm"] = ten_k_html(
+        "The information required by Item 7 is set forth under “Management\u2019s Discussion "
+        "and Analysis of Financial Condition” in the Annual Report, on pages 2 through 81."
+    )
+    lake = Lake(tmp_path)
+    ingest(lake, ["CCL"])
+    row = lake.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
+    assert (row["status"], row["source"], row["document"]) == ("ok", "EX-13", "a2020ex-13.htm")

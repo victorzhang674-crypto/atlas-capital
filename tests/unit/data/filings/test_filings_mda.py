@@ -7,7 +7,10 @@ from atlas.data.filings.mda import (
     MdaExtract,
     extract_exhibit_mda,
     extract_mda,
+    extract_titled_mda,
     html_to_text,
+    item_sections,
+    named_sections,
     points_elsewhere,
 )
 
@@ -352,8 +355,8 @@ def test_skip_items_takes_the_mda_heading_after_an_item_7_pointer() -> None:
     text = (
         "Item 7. Management's Discussion and Analysis of Financial Condition\n"
         "The information is in the Annual Report section, incorporated by reference.\n"
-        "Item 8. Financial Statements\nSee the annual report.\nItem 15. Exhibits\nList.\n"
-        f"Management's Discussion and Analysis of Results of Operations\n{BODY}\n"
+        "Item 8. Financial Statements\nSee the annual report.\nItem 9B. Other Information\n"
+        f"None.\nManagement's Discussion and Analysis of Results of Operations\n{BODY}\n"
         "Report of Independent Registered Public Accounting Firm\nOpinion.\n"
     )
     out = extract_exhibit_mda(text, min_chars=1000, skip_items=True)
@@ -363,6 +366,11 @@ def test_skip_items_takes_the_mda_heading_after_an_item_7_pointer() -> None:
     assert "Item 8" not in out.text
     unskipped = extract_exhibit_mda(text, min_chars=1000)
     assert unskipped.text is not None and unskipped.text.startswith("Item 7.")
+    # follow-up 5: an "Item 15. Exhibits" heading ends the Item 7 section, so the MD&A heading's
+    # section is the longest even without skip_items
+    exhibits = text.replace("Item 9B. Other Information", "Item 15. Exhibits")
+    plain = extract_exhibit_mda(exhibits, min_chars=1000)
+    assert plain.text is not None and plain.text.startswith("Management's Discussion")
 
 
 def test_a_bullet_of_the_mdas_own_contents_does_not_end_it() -> None:
@@ -380,7 +388,7 @@ def test_a_bullet_of_the_mdas_own_contents_does_not_end_it() -> None:
 @pytest.mark.parametrize(
     "line",
     [
-        "See “Management\u2019s Discussion and Analysis of Results of Operations” below.",
+        "See \u201cManagement\u2019s Discussion and Analysis of Results of Operations” below.",
         "“Management\u2019s Discussion and Analysis of Results of Operations — Overview.”",
         "7 Management\u2019s Discussion and Analysis of Financial Condition 39",
     ],
@@ -570,12 +578,12 @@ def test_a_10q_mda_before_its_financial_statements_ends_at_item_1() -> None:
         "PART I\nItems 2. and 3. Management's Discussion and Analysis 3\n"
         "Item 1. Financial Statements 50\nItem 4. Controls and Procedures 90\n"
         f"PART I\nItems 2. and 3. Management's Discussion and Analysis\n{BODY}\n"
-        "Item 1A. Risk Factors\nSee the annual report.\n"
+        "Item 1A. Risk Factors 95\nSee the annual report.\n"
         "Item 1. Consolidated Financial Statements (unaudited)\nCONSOLIDATED BALANCE SHEETS\n"
         "Item 4. Controls and Procedures\nEffective.\n"
     )
     out = extract_mda(text, min_chars=1000, form="10-Q")
-    assert out.text is not None and "Item 1A. Risk Factors" in out.text
+    assert out.text is not None and "Item 1A. Risk Factors 95" in out.text
     assert "BALANCE SHEETS" not in out.text
 
 
@@ -821,3 +829,470 @@ def test_an_end_heading_right_under_the_start_heading_is_a_combined_item() -> No
     )
     out = extract_mda(text, min_chars=1000)
     assert out.text is not None and BODY.strip() in out.text and "Numbers." not in out.text
+    # only the start line's own page number makes it a contents entry: a number ending a later
+    # line does not
+    later = text.replace(f"{BODY}\n", f"{BODY}\nTotal 2025\n")
+    out = extract_mda(later, min_chars=1000)
+    assert out.text is not None and BODY.strip() in out.text and "Numbers." not in out.text
+
+
+# --- follow-up 5: the sections an MD&A item names -----------------------------------------------
+
+EMERSON_ITEM_7 = (
+    "ITEM 7 - MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION AND RESULTS OF "
+    "OPERATIONS\nThe information from the 2015 Annual Report set forth in Exhibit 13 hereto "
+    "under \u201cResults of Operations,\u201d \u201cBusiness Segments,\u201d \u201cFinancial "
+    'Position, Capital Resources and Liquidity," "Other Items" and "Safe Harbor Statement" is '
+    "hereby incorporated by reference.\nNon-GAAP Financial Measures\nTo supplement the "
+    "information, management uses certain \u201cnon-GAAP financial measures,\u201d as defined "
+    "in Regulation G."
+)
+COMERICA_ITEM_7 = (
+    "Item 7. Management\u2019s Discussion and Analysis of Financial Condition and Results of "
+    "Operations.\nReference is made to the sections entitled \u201c2014 Overview and 2015 "
+    'Outlook,\u201d \u201cResults of Operations," "Risk Management" and "Forward-Looking '
+    'Statements" on pages F-4 through F-42 of the Financial Section of this report.'
+)
+
+
+def test_named_sections_are_the_quoted_titles_of_the_lines_pointing_elsewhere() -> None:
+    """Emerson's FY2015 Item 7 names the annual-report sections it incorporates; a quote on a
+    line that points nowhere ("non-GAAP financial measures") is no title."""
+    assert named_sections(EMERSON_ITEM_7) == (
+        "Results of Operations",
+        "Business Segments",
+        "Financial Position, Capital Resources and Liquidity",
+        "Other Items",
+        "Safe Harbor Statement",
+    )
+    assert named_sections(COMERICA_ITEM_7) == (
+        "2014 Overview and 2015 Outlook",
+        "Results of Operations",
+        "Risk Management",
+        "Forward-Looking Statements",
+    )
+    assert named_sections(f"Item 7. Management's Discussion\n{BODY}") == ()
+    # a title named twice is kept once; an empty or a very long quote is no title
+    twice = 'See "Liquidity" and "Liquidity" and "" in Exhibit 13, incorporated by reference.'
+    assert named_sections(twice) == ("Liquidity",)
+    assert named_sections(f'Set forth under "{"x" * 101}".') == ()
+
+
+def test_item_sections_are_every_item_heading_s_section() -> None:
+    contents, item = item_sections(ten_k(BODY), "10-K")  # the contents entry and the item
+    assert contents == "Item 7. Management\u2019s Discussion and Analysis 20"
+    assert item.startswith("Item 7. Management\u2019s Discussion and Analysis of Financial")
+    assert BODY.strip() in item and "Rates moved" not in item
+    tenq = f"Item 2. Management's Discussion and Analysis\n{BODY}\nItem 4. Controls\n"
+    assert item_sections(tenq, "10-Q") == [tenq.split("\nItem 4.")[0].strip()]
+    assert item_sections(tenq, "10-K") == []
+
+
+def annual_report(*, reports_first: bool = True) -> str:
+    """Emerson's FY2015 Exhibit 13: management's reports open it, then the MD&A sections, which
+    carry no MD&A heading, then the statements."""
+    reports = (
+        "FINANCIAL REVIEW\nReport of Management\nManagement is responsible.\n"
+        "Management's Report on Internal Control Over Financial Reporting\nControls work.\n"
+        "/s/ David N. Farr\n1\n"
+        if reports_first
+        else ""
+    )
+    return (
+        f"EXHIBIT 13\n{reports}Results of Operations\n{BODY}\nBUSINESS SEGMENTS\n{BODY}\n"
+        "Consolidated Statements of Earnings\nNet sales 22,304\n"
+    )
+
+
+def test_extract_titled_mda_reads_from_the_first_named_section_to_the_statements() -> None:
+    titles = named_sections(EMERSON_ITEM_7)
+    out = extract_titled_mda(annual_report(), titles, min_chars=1000)
+    assert out.status == "ok" and out.text is not None
+    assert out.text.startswith("Results of Operations\n")
+    assert "BUSINESS SEGMENTS" in out.text and "Net sales" not in out.text
+    assert "Report of Management" not in out.text
+    # the present exhibit rule stops at management's reports: 2 lines
+    assert extract_exhibit_mda(annual_report(), min_chars=1000).status == "not_found"
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "RESULTS OF OPERATIONS",
+        "Results of Operations.",
+        "  Results  of Operations:",
+        "Results of Operations\u201d",
+    ],
+)
+def test_a_named_section_heading_matches_whatever_its_case_and_punctuation(line: str) -> None:
+    text = f"{line}\n{BODY}\nConsolidated Balance Sheets\nCash 1\n"
+    out = extract_titled_mda(text, ("Results of Operations",), min_chars=1000)
+    assert out.text is not None and out.text.startswith(line.strip()) and "Cash" not in out.text
+
+
+@pytest.mark.parametrize(
+    "entry",
+    ["Results of Operations\nF-6", "Results of Operations\n6", "Results of Operations 6",
+     "Results of Operations F-6", "Results of Operations\nF - 6"],
+)  # fmt: skip
+def test_a_contents_entry_of_a_named_section_is_no_start(entry: str) -> None:
+    """Comerica's "FINANCIAL REVIEW AND REPORTS" contents list each section with its page."""
+    text = f"{entry}\nRisk Management\nF-21\n{BODY}\nConsolidated Balance Sheets\n"
+    assert extract_titled_mda(text, ("Results of Operations", "Risk Management"),
+                              min_chars=1000).status == "not_found"  # fmt: skip
+
+
+def test_a_titled_mda_needs_titles_a_heading_and_enough_text() -> None:
+    text = f"Results of Operations\n{BODY}\nConsolidated Statements of Earnings\n"
+    assert extract_titled_mda(text, (), min_chars=1000) == MdaExtract("not_found", None)
+    assert extract_titled_mda(text, ("Segments",), min_chars=1000).status == "not_found"
+    assert extract_titled_mda(text, ("Results of Operations",), min_chars=10_000).status == (
+        "not_found"
+    )
+    # a title inside a sentence is no heading
+    inside = f"Our Results of Operations improved.\n{BODY}\n"
+    assert extract_titled_mda(inside, ("Results of Operations",), min_chars=10).status == (
+        "not_found"
+    )
+    with pytest.raises(ValueError, match="min_chars"):
+        extract_titled_mda(text, ("Results of Operations",), min_chars=0)
+
+
+# --- follow-up 5: MD&As that ran past their end --------------------------------------------------
+
+
+def test_item_on_a_line_of_its_own_starts_and_ends_a_10k_mda() -> None:
+    """SolarEdge's 2024 10-K breaks "ITEM" from its number: "ITEM" / "7. MANAGEMENT'S ..." and
+    "ITEM" / "7A. Quantitative ...", "ITEM" / "8." / "FINANCIAL STATEMENTS ..."."""
+    text = (
+        f"ITEM\n7. MANAGEMENT\u2019S DISCUSSION AND ANALYSIS\n{BODY}\n60\nITEM\n"
+        "7A. Quantitative and Qualitative Disclosures About Market Risk\nRates.\nITEM\n8.\n"
+        "FINANCIAL STATEMENTS AND SUPPLEMENTARY DATA.\nNumbers.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("ITEM\n7. MANAGEMENT")
+    assert "Rates." not in out.text and out.text.endswith("60")
+
+
+def test_items_7_and_7a_start_a_combined_10k_mda() -> None:
+    """Freeport-McMoRan heads its MD&A "Items 7. and 7A. Management's Discussion ..."."""
+    text = (
+        "Items 7. and 7A. Management\u2019s Discussion and Analysis of Financial Condition\n"
+        f"{BODY}\n"
+        "Item 8. Financial Statements and Supplementary Data\nNumbers.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("Items 7. and 7A.")
+    assert "Numbers." not in out.text
+
+
+@pytest.mark.parametrize(
+    "end",
+    [
+        "Item 9A. Controls and Procedures",
+        "ITEM 9A. CONTROLS AND PROCEDURES",
+        "Part II - Item 9A. Controls and Procedures",
+        "Item 9. Changes in and Disagreements with Accountants",
+        "Item 9B. Other Information",
+        "ITEM 10. DIRECTORS, EXECUTIVE OFFICERS AND CORPORATE GOVERNANCE",
+        "Item 15. Exhibits, Financial Statement Schedules",
+        "Item 16. Form 10-K Summary",
+        "ITEM\n9A. Controls and Procedures",
+        "PART III",
+        "Part IV.",
+        "SIGNATURES",
+        "Signature",
+        "EXHIBIT INDEX",
+        "Index to Exhibits",
+    ],
+)
+def test_a_later_part_of_the_10k_ends_its_mda(end: str) -> None:
+    """Truist and Hartford (Item 9A), Eaton (its exhibit index) and others print no Item 7A or 8
+    heading after the MD&A."""
+    text = f"Item 7. Management\u2019s Discussion and Analysis\n{BODY}\n{end}\nAfter the MD&A.\n"
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and "After the MD&A." not in out.text
+    assert out.text.endswith(BODY.strip())
+
+
+@pytest.mark.parametrize(
+    "end",
+    [
+        "ITEM 3. DEFAULT UPON SENIOR SECURITIES",
+        "Item 3. Defaults Upon Senior Securities",
+        "Item 4 / Mine Safety Disclosures",
+        "ITEM 4. MINE SAFETY DISCLOSURES",
+        "Item 1. Legal Proceedings",
+        "Item 1A. Risk Factors",
+        "Item 2. Unregistered Sales of Equity Securities and Use of Proceeds",
+        "Item 5. Other Information",
+        "Item\n5. Other Information",
+        "Item 6. Exhibits",
+        "Item\n6. Exhibits",
+        "Item 6 / Exhibits",
+        "SIGNATURES",
+        "INDEX TO EXHIBITS",
+    ],
+)
+def test_a_part_ii_item_of_the_10q_ends_its_mda(end: str) -> None:
+    """Computer Sciences, AIG, Kimco, Garmin, Masco and Entergy print Part II's items without a
+    "Part II" line the rule could see."""
+    text = f"Item 2. Management\u2019s Discussion and Analysis\n{BODY}\n{end}\nAfter the MD&A.\n"
+    out = extract_mda(text, min_chars=1000, form="10-Q")
+    assert out.text is not None and "After the MD&A." not in out.text
+
+
+@pytest.mark.parametrize("sep", ["/", "|"])
+def test_a_slash_or_a_bar_may_separate_an_item_from_its_title(sep: str) -> None:
+    """AIG: "ITEM 2 / MANAGEMENT'S DISCUSSION ..." and "Item 3 / Quantitative ..." (2015-16),
+    "ITEM 2 | Management's ..." and "ITEM 5 | Other Information" (2017 on)."""
+    text = (
+        f"ITEM 2 {sep} MANAGEMENT\u2019S DISCUSSION AND ANALYSIS\n{BODY}\n"
+        f"ITEM 5 {sep} Other Information\nNot applicable.\n"
+    )
+    out = extract_mda(text, min_chars=1000, form="10-Q")
+    assert out.text is not None and out.text.startswith(f"ITEM 2 {sep}")
+    assert "Not applicable." not in out.text
+    tenk = (
+        f"ITEM 7 {sep} MANAGEMENT\u2019S DISCUSSION AND ANALYSIS\n{BODY}\n"
+        f"Item 7A {sep} Quantitative and Qualitative Disclosures\nRates.\n"
+    )
+    out = extract_mda(tenk, min_chars=1000)
+    assert (
+        out.text is not None and out.text.startswith(f"ITEM 7 {sep}") and "Rates." not in out.text
+    )
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "Signatures\n101",  # GE's 10-Q contents: an entry with its page
+        "Exhibit Index\n220",
+        "EXHIBIT INDEX 220",
+        "Item 15 of this report.)",  # EchoStar: a wrapped cross-reference
+        "Item 9A. Controls and Procedures 85",  # a contents entry
+        "Part III of our Annual Report on Form 10-K.",
+    ],
+)
+def test_entries_and_references_of_later_parts_do_not_end_the_mda(line: str) -> None:
+    text = (
+        f"Item 7. Management\u2019s Discussion and Analysis\n{BODY}\n{line}\n{BODY}\n"
+        "Item 8. Financial Statements\nNumbers.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.count(BODY.strip()) == 2
+
+
+def test_a_wrapped_cross_reference_to_a_later_item_does_not_end_the_mda() -> None:
+    """Alexandria: "... to our consolidated financial statements in" / "Item 15 in this annual
+    report on Form 10-K." goes on with the sentence of the line before."""
+    text = (
+        f"Item 7. Management\u2019s Discussion and Analysis\n{BODY}\n"
+        "For more, refer to Note 10 to our consolidated financial statements in\n"
+        "Item 15. Exhibits, Financial Statement Schedules in this annual report.\n"
+        f"{BODY}\nItem 8. Financial Statements\nNumbers.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.count(BODY.strip()) == 2
+
+
+@pytest.mark.parametrize(
+    "end",
+    [
+        "SIGNATURES",
+        "EXHIBIT INDEX",
+        "Item 6. Exhibits",
+        "Item 5. Other Information",
+        "Item 1. Legal Proceedings",
+        "Item 1A. Risk Factors",
+    ],
+)
+def test_signatures_and_exhibits_end_an_exhibit_style_mda(end: str) -> None:
+    """Expedia's and Molina's 10-Q MD&As found by their MD&A heading ran to the signatures and
+    the exhibit index, Entergy's (2024) into Part II's "Item 5. Other Information"."""
+    text = f"MANAGEMENT\u2019S DISCUSSION AND ANALYSIS\n{BODY}\n{end}\nAfter the MD&A.\n"
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and "After the MD&A." not in out.text
+
+
+def test_a_page_header_naming_the_statements_index_does_not_end_the_mda() -> None:
+    """Waste Management heads every page "Table of Contents" / "Index to Financial Statements"
+    (links): no end."""
+    text = (
+        f"Item 7.\nManagement\u2019s Discussion and Analysis\n{BODY}\n31\nTable of Contents\n"
+        f"Index to Financial Statements\n{BODY}\nItem 7A.\nQuantitative and Qualitative\nRates.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.count(BODY.strip()) == 2 and "Rates." not in out.text
+
+
+def test_a_heading_after_a_line_ending_in_a_comma_goes_on_with_its_sentence() -> None:
+    """AIG's 10-Q: "... Market Conditions and Industry Trends \u2013 Retirement and Part II," /
+    "Item 1A. Risk Factors." is a wrapped cross-reference."""
+    text = (
+        f"Item 2. Management\u2019s Discussion and Analysis\n{BODY}\n"
+        "For more, see Item 2. MD&A \u2013 Market Conditions \u2013 Retirement and Part II,\n"
+        f"Item 1A. Risk Factors.\n{BODY}\nItem 4. Controls and Procedures\nEffective.\n"
+    )
+    out = extract_mda(text, min_chars=1000, form="10-Q")
+    assert out.text is not None and out.text.count(BODY.strip()) == 2
+
+
+def test_a_part_ii_line_citing_the_annual_report_does_not_end_a_10q_mda() -> None:
+    """AIG's 10-Q: "... you should read" / "Part II, Item 7. MD&A \u2014 Critical Accounting
+    Estimates in the 2015 Annual" / "Report." cites the 10-K."""
+    text = (
+        f"Item 2. Management\u2019s Discussion and Analysis\n{BODY}\nFor a discussion, read\n"
+        "Part II, Item 7. MD&A \u2014 Critical Accounting Estimates in the 2015 Annual\nReport.\n"
+        f"{BODY}\nPart II\nOther information.\n"
+    )
+    out = extract_mda(text, min_chars=1000, form="10-Q")
+    assert out.text is not None and out.text.count(BODY.strip()) == 2
+    assert "Other information." not in out.text
+
+
+def test_an_mda_heading_followed_by_its_page_is_a_contents_entry() -> None:
+    """Entergy's 10-Q contents: "Management\u2019s Financial Discussion and Analysis" / "169" is
+    an entry, not the start of an MD&A."""
+    text = (
+        f"Management\u2019s Financial Discussion and Analysis\n169\nIncome Statements\n{BODY}\n"
+        f"{BODY}\nMANAGEMENT\u2019S FINANCIAL DISCUSSION AND ANALYSIS\n{BODY}\n"
+        "Consolidated Balance Sheets\nCash.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("MANAGEMENT\u2019S FINANCIAL")
+    # F-pages too
+    fpage = text.replace("\n169\n", "\nF-169\n")
+    assert extract_exhibit_mda(fpage, min_chars=1000).text == out.text
+
+
+def test_a_word_per_line_cross_reference_does_not_end_the_mda() -> None:
+    """Everest's 2023 10-K prints a word per line: "... under" / "ITEM" / "8" / "of" / "this" /
+    "Form" / "10-K." is a cross-reference, not Item 8's heading."""
+    text = (
+        f"ITEM 7.\nMANAGEMENT\u2019S\nDISCUSSION\n{BODY}\nNotes,\nunder\nITEM\n8\nof\nthis\nForm\n"
+        f"10-K.\n{BODY}\nITEM 7A.\nQUANTITATIVE\nAND QUALITATIVE\nRates.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.count(BODY.strip()) == 2 and "Rates." not in out.text
+
+
+def test_a_10q_mda_heading_may_carry_part_i() -> None:
+    """Computer Sciences: "PART I, ITEM 2. MANAGEMENT'S DISCUSSION AND ANALYSIS"."""
+    text = (
+        f"PART I, ITEM 2. MANAGEMENT'S DISCUSSION AND ANALYSIS\n{BODY}\n"
+        "ITEM 3. QUANTITATIVE AND QUALITATIVE DISCLOSURES ABOUT MARKET RISK\nRates.\n"
+    )
+    out = extract_mda(text, min_chars=1000, form="10-Q")
+    assert out.text is not None and out.text.startswith("PART I, ITEM 2.")
+    assert "Rates." not in out.text
+
+
+def test_a_quote_on_a_later_line_does_not_make_an_end_a_cross_reference() -> None:
+    """Only the end line itself is checked for a closing quote; a quoted phrase further on does
+    not keep the section going."""
+    text = (
+        f"Item 7. Management\u2019s Discussion and Analysis\n{BODY}\n"
+        "Item 7A. Quantitative and Qualitative Disclosures\nWe call it “the hedge”.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and "hedge" not in out.text
+    # a quoted cross-reference standing as the last line of the text is still no end
+    last = f"Item 7. Management\u2019s Discussion and Analysis\n{BODY}\nItem 8. Financial ”"
+    out = extract_mda(last, min_chars=1000)
+    assert out.text is not None and out.text.endswith("Financial ”")
+
+
+def test_named_section_titles_at_their_length_bounds_and_ending_in_x() -> None:
+    line = 'Incorporated by reference from "Tax", "{t}" and "APPENDIX".'
+    hundred = "T" * 100
+    assert named_sections(line.replace("{t}", hundred)) == ("Tax", hundred, "APPENDIX")
+    assert named_sections('Incorporated by reference from "Tx".') == ()
+
+
+def test_a_named_title_ending_in_x_matches_its_upper_case_heading() -> None:
+    text = f"APPENDIX\n{BODY}\nConsolidated Balance Sheets\n"
+    out = extract_titled_mda(text, ("Appendix",), min_chars=1000)
+    assert out.text is not None and out.text.startswith("APPENDIX")
+
+
+def test_a_titled_mda_skips_ends_that_are_no_heading_and_may_run_to_the_end() -> None:
+    """An end line going on with the sentence before it ("... are shown in the" / "Consolidated
+    Statements of Earnings ...") is no end; without an end the section runs to the end of the
+    text; a section of exactly `min_chars` is enough."""
+    text = (
+        f"Results of Operations\n{BODY}\n"
+        "The figures of the year and of the year before are shown in the\n"
+        f"Consolidated Statements of Earnings, sales grew.\n{BODY}\n"
+        "Consolidated Statements of Earnings\nNet sales 1.\n"
+    )
+    out = extract_titled_mda(text, ("Results of Operations",), min_chars=1000)
+    assert out.text is not None and out.text.count(BODY.strip()) == 2
+    assert "Net sales" not in out.text
+    open_ended = f"Results of Operations\n{BODY}"
+    out = extract_titled_mda(open_ended, ("Results of Operations",), min_chars=1000)
+    assert out.text == open_ended.strip()
+    exact = extract_titled_mda(open_ended, ("Results of Operations",), min_chars=len(out.text))
+    assert exact.status == "ok"
+    assert extract_titled_mda("Other\n", ("Results of Operations",), min_chars=1).status == (
+        "not_found"
+    )
+
+
+def test_a_start_line_going_on_with_the_sentence_before_it_is_no_heading() -> None:
+    """Morgan Stanley's 2016 10-K: "... Results of Operations” in Part II," / "Item 7." /
+    "Competition." cites the MD&A from Item 1; the real heading comes later."""
+    text = (
+        "See \u201cManagement\u2019s Discussion and Analysis\u201d in Part II,\nItem 7.\n"
+        f"Competition.\n{BODY}\n{BODY}\n{BODY}\n"
+        "Item 7.\nManagement\u2019s Discussion and Analysis\n"
+        f"{BODY}\nItem 7A.\nQuantitative and Qualitative Disclosures\nRates.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.startswith("Item 7.\nManagement")
+
+
+def test_a_short_line_ending_in_a_comma_goes_on_with_its_sentence() -> None:
+    """General Mills prints a word per line: "in" / "Part" / "II," / "Item" / "8" / "of" ..."""
+    text = (
+        f"ITEM 7 - Management\u2019s Discussion and Analysis\n{BODY}\nsee\nNote\n3\nin\nPart\nII,\n"
+        f"Item\n8\nof\nthis\nreport.\n{BODY}\nITEM 7A - Quantitative and Qualitative\nRates.\n"
+    )
+    out = extract_mda(text, min_chars=1000)
+    assert out.text is not None and out.text.count(BODY.strip()) == 2 and "Rates." not in out.text
+
+
+def test_a_table_column_named_items_is_no_item_heading() -> None:
+    """Mastercard's 10-Q tables head a column "Special" / "Items 3" (footnote 3)."""
+    text = (
+        f"ITEM 2. MANAGEMENT'S DISCUSSION AND ANALYSIS\n{BODY}\nOperational Special\nItems 3\n"
+        f"Total\n{BODY}\nITEM 3. QUANTITATIVE AND QUALITATIVE DISCLOSURES\nRates.\n"
+    )
+    out = extract_mda(text, min_chars=1000, form="10-Q")
+    assert out.text is not None and out.text.count(BODY.strip()) == 2 and "Rates." not in out.text
+
+
+def test_the_part_ii_heading_of_a_10q_ends_an_exhibit_style_mda() -> None:
+    """Southern Company's combined 10-Q: its MD&A, found by its heading, ran past
+    "PART II — OTHER INFORMATION"."""
+    text = (
+        f"MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION\n{BODY}\n"
+        "PART II — OTHER INFORMATION\nLegal matters.\n"
+    )
+    out = extract_exhibit_mda(text, min_chars=1000)
+    assert out.text is not None and "PART II" not in out.text
+
+
+def test_a_named_title_that_ends_an_mda_starts_none() -> None:
+    """Clorox's Item 7 names its MD&A and its market-risk section; a title that is itself an
+    end heading ("Quantitative and Qualitative Disclosures About Market Risk") is no start."""
+    titles = (
+        "Management\u2019s Discussion and Analysis",
+        "Quantitative and Qualitative Disclosures About Market Risk",
+    )
+    text = (
+        f"QUANTITATIVE AND QUALITATIVE DISCLOSURES ABOUT MARKET RISK\nRates.\n"
+        f"MANAGEMENT\u2019S DISCUSSION AND ANALYSIS\n{BODY}\nConsolidated Balance Sheets\nCash.\n"
+    )
+    out = extract_titled_mda(text, titles, min_chars=1000)
+    assert out.text is not None and out.text.startswith("MANAGEMENT\u2019S DISCUSSION")

@@ -1,0 +1,16 @@
+== after 2026-11-23T19:57:14Z
+factor_exposures before {'rows': 1212389, 'dates': 142, 'digest': '700ea498fedabb15'} after {'rows': 1212389, 'dates': 142, 'digest': '4899a5c5354dd1f9'} CHANGED
+factor_returns before {'rows': 49420, 'dates': 2471, 'digest': '81be61ca4edc8981'} after {'rows': 49420, 'dates': 2471, 'digest': 'f36837c6bda1f040'} CHANGED
+risk_model_snapshots before {'rows': 1246260, 'dates': 115, 'digest': '0dcc8104f5683c44'} after {'rows': 1246260, 'dates': 115, 'digest': 'f4caa71d5e223e08'} CHANGED
+== stores compare (main_lake_stores_compare_followup5.py)
+rows only in one table: {'both': 1212389, 'left_only': 0, 'right_only': 0}
+raw exposure changed: 12 rows, of which in OKTA and VYLR 12; outside them 0
+  raw changed outside, by factor: {}
+raw NaN -> value: 12 (OKTA and VYLR 12)
+  by symbol: {'OKTA': 12}
+standardised value changed for other symbols: 5864 rows, median |change| 0.0002, p99 0.0161
+factor_returns: 49420 -> 49420 rows
+risk_model_snapshots: 1246260 -> 1246260 rows
+dates with a changed standardised value: ['2026-10-30']
+factor_returns: values changed on dates ['2026-10-30'] ... (1 dates, first 2026-10-30)
+risk_model_snapshots: values changed on dates ['2026-10-30'] ... (1 dates, first 2026-10-30)

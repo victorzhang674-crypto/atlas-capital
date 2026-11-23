@@ -1,0 +1,16 @@
+mutant	class	why equivalent
+atlas.data.filings.mda.x__not_an_end__mutmut_8	equivalent	an end is searched from after a start match (at >= 1); at == 1 is a line start only after a newline at 0: the previous line is empty either way
+atlas.data.filings.mda.x__not_an_end__mutmut_25	equivalent	stop = text.find("\n", at) is -1 or >= at >= 1, so stop > 0 and stop >= 0 agree
+atlas.data.filings.mda.x__not_an_end__mutmut_26	equivalent	as mutmut_25: stop >= 1 and stop >= 0 agree
+atlas.data.filings.mda.x__sections__mutmut_17	equivalent	line_end = text.find("\n", start.end()) is -1 or >= start.end() >= 1, so > 0 and >= 0 agree (follow-up 4 line)
+atlas.data.filings.mda.x__sections__mutmut_18	equivalent	as mutmut_17 (follow-up 4 line)
+atlas.data.filings.mda.x__sections__mutmut_36	equivalent	html_to_text leaves no blank lines, so the line after a start line is never empty and the newline ending it is found from line_end + 2 as from line_end + 1 (follow-up 4 line)
+atlas.data.filings.mda.x__sections__mutmut_37	equivalent	when the heading is not combined, after only bounds line_end < end.start() <= after: with after = 1 no end qualifies (end.start() > line_end >= 1), as with -1 (follow-up 4 line)
+atlas.data.filings.mda.x__sections__mutmut_38	equivalent	as mutmut_37 with after = -2 (follow-up 4 line)
+atlas.data.filings.mda.x__sections__mutmut_51	equivalent	an end match starts at a line start (^), never at the newline position line_end, so <= and < agree (follow-up 4 line)
+atlas.data.filings.mda.x__sections__mutmut_52	equivalent	after is the position of a newline and an end match starts at a line start, so end.start() == after never happens (follow-up 4 line)
+atlas.data.filings.mda.x_item_sections__mutmut_1	equivalent	any default form not starting with 10-Q selects the 10-K item
+atlas.data.filings.mda.x_item_sections__mutmut_2	equivalent	the form is upper-cased before the test
+atlas.data.filings.mda.x__title_key__mutmut_1	equivalent	_title_key is applied to both the titles and the lines it compares: upper() and lower() make the same pairs equal for the ASCII titles filers use (they could differ only on characters such as the German sharp s)
+atlas.data.filings.mda.x__title_key__mutmut_6	equivalent	the same replacement is applied to both sides of the comparison, so equal keys stay equal
+atlas.data.filings.text.x__mda_of__mutmut_69	equivalent	inside the branch where found.text is not None (after _unless_later, which keeps a text), so the "or" fallback is never used

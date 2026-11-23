@@ -2,16 +2,20 @@
 
 from collections.abc import Iterator
 from datetime import date, datetime
+from pathlib import Path
+from typing import Any
 
 import httpx
 import pandas as pd
 import pytest
 import respx
+import yaml
 from fundamentals_helpers import (
     AAPL,
     FIXTURES,
     JPM,
     MSFT,
+    REPO_ROOT,
     companyfacts,
     edgar_client,
     fixture_facts,
@@ -19,7 +23,9 @@ from fundamentals_helpers import (
     repo_concept_map,
     serve_fixture,
 )
+from structlog.testing import capture_logs
 
+from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
 from atlas.core.errors import DataError
 from atlas.core.pit import AsOf
@@ -33,6 +39,7 @@ from atlas.data.fundamentals import (
     FundamentalsIngestReport,
     fundamentals_pit,
     ingest_fundamentals,
+    load_concept_map,
     parse_companyfacts,
 )
 
@@ -263,3 +270,136 @@ def test_refresh_false_reads_the_archived_answers_of_every_cik(
     # (history pages never change and stay archived)
     ingest(tmp_lake, cik_map, ["AAPL"])
     assert sum(route.call_count for route in sec.routes) == calls + 4
+
+
+# --- Stage 29 follow-up 5: the old lines mutation testing left untested ------------------------
+
+NO_CIK = "no CIK (not in company_tickers.json or config/cik_overrides.yaml)"
+
+
+def _no_acceptance(cik: int) -> dict[str, Any]:
+    """The recorded submissions of `cik` with every acceptance time of `filings.recent` blank."""
+    subs: dict[str, Any] = fixture_json(f"submissions/CIK{cik:010d}.json")
+    recent = subs["filings"]["recent"]
+    recent["acceptanceDateTime"] = ["" for _ in recent["acceptanceDateTime"]]
+    return subs
+
+
+@pytest.fixture
+def unaccepted() -> Iterator[respx.MockRouter]:
+    """EDGAR with AAPL's and MSFT's recent filings carrying no acceptance time."""
+    with respx.mock(assert_all_called=False) as router:
+        for cik in (AAPL, MSFT):
+            router.get(f"https://data.sec.gov/submissions/CIK{cik:010d}.json").mock(
+                return_value=httpx.Response(200, json=_no_acceptance(cik))
+            )
+        router.route(host="data.sec.gov").mock(side_effect=serve_fixture)
+        yield router
+
+
+def test_failure_reasons_and_the_request_message_are_exact(
+    sec: respx.MockRouter, tmp_lake: Lake, cik_map: CikMap
+) -> None:
+    report = ingest(tmp_lake, cik_map, ["ZZZZ", "EMPTY"])
+    assert dict(report.failure_reasons) == {
+        "ZZZZ": NO_CIK,
+        "EMPTY": "no mapped facts in companyfacts",
+    }
+    with pytest.raises(
+        ValueError, match=r"^symbols must be a sequence of tickers, not one string$"
+    ):
+        ingest(tmp_lake, cik_map, "AAPL")  # type: ignore[arg-type]
+
+
+def test_the_log_events(sec: respx.MockRouter, tmp_lake: Lake, cik_map: CikMap) -> None:
+    with capture_logs() as logs:
+        report = ingest(tmp_lake, cik_map, ["GOOGL", "AAPL"])
+    failed = [e for e in logs if e["event"] == "fundamentals.symbol_failed"]
+    assert failed == [
+        {
+            "event": "fundamentals.symbol_failed",
+            "symbol": "GOOGL",
+            "error": report.failure_reasons["GOOGL"],
+            "log_level": "warning",
+        }
+    ]
+    assert "HTTP 404" in failed[0]["error"]
+    done = [e for e in logs if e["event"] == "fundamentals.ingest"]
+    assert done == [
+        {
+            "event": "fundamentals.ingest",
+            "rows": report.rows,
+            "symbols_ok": 1,
+            "symbols_failed": 1,
+            "fallback_rows": 0,
+            "log_level": "info",
+        }
+    ]
+    assert report.rows == expected_rows(AAPL) > 0
+
+
+def test_fallback_rows_add_up_over_symbols_and_use_the_default_calendar(
+    unaccepted: respx.MockRouter, tmp_path: Path, cik_map: CikMap
+) -> None:
+    """Facts of filings without an acceptance time are available at the open of the session
+    after the filing date (the default calendar's, `TradingCalendar(config=config.calendar)`),
+    and the report and the log count them over every symbol."""
+    one = {s: ingest(Lake(tmp_path / s), cik_map, [s]).fallback_rows for s in ("AAPL", "MSFT")}
+    assert one["AAPL"] > 0 and one["MSFT"] > 0
+    lake = Lake(tmp_path / "both")
+    with capture_logs() as logs:
+        both = ingest(lake, cik_map, ["AAPL", "MSFT"])
+    assert both.fallback_rows == one["AAPL"] + one["MSFT"]
+    done = [e for e in logs if e["event"] == "fundamentals.ingest"]
+    assert done[0]["fallback_rows"] == both.fallback_rows
+    stored = lake.read_table(FUNDAMENTALS_FACTS.name)
+    late = stored[stored["accepted_at"].isna()].iloc[0]
+    cal = TradingCalendar()
+    expected = pd.Timestamp(cal.session_open(cal.next_session(late["filed"])))
+    assert late["available_at"] == expected
+
+
+def test_a_given_calendar_or_the_config_s_calendar_dates_the_fallback_rows(
+    unaccepted: respx.MockRouter, tmp_path: Path, cik_map: CikMap
+) -> None:
+    """The calendar given, else the config's (`calendar` bounds ending in 2016 put the 2023
+    filings outside it), dates facts without an acceptance time."""
+    narrow = TradingCalendar(date(2000, 1, 1), date(2016, 1, 1))
+    with pytest.raises(ValueError, match="outside the calendar"):
+        ingest_fundamentals(
+            Lake(tmp_path / "given"), edgar_client(), ["AAPL"], cik_map=cik_map,
+            concept_map=repo_concept_map(), calendar=narrow,
+        )  # fmt: skip
+    bounded = AtlasConfig.model_validate({"calendar": {"end": "2016-01-01"}})
+    with pytest.raises(ValueError, match="outside the calendar"):
+        ingest_fundamentals(
+            Lake(tmp_path / "config"), edgar_client(), ["AAPL"], cik_map=cik_map,
+            concept_map=repo_concept_map(), config=bounded,
+        )  # fmt: skip
+
+
+def test_the_concept_map_given_or_else_the_config_s_map_file(
+    sec: respx.MockRouter, tmp_path: Path, cik_map: CikMap
+) -> None:
+    """Only the tags of the concept map are stored: the map given, else the one in the
+    config's `xbrl_map_file`."""
+    data = yaml.safe_load((REPO_ROOT / "config" / "xbrl_map.yaml").read_text())
+    for concept in data["concepts"].values():  # each tagged concept keeps its first tag only
+        if "tags" in concept:
+            concept["tags"] = concept["tags"][:1]
+    small = tmp_path / "small_map.yaml"
+    small.write_text(yaml.safe_dump(data))
+    kept = load_concept_map(small).tags()
+    full = ingest(Lake(tmp_path / "full"), cik_map, ["AAPL"]).rows
+    given = ingest_fundamentals(
+        Lake(tmp_path / "given"), edgar_client(), ["AAPL"], cik_map=cik_map,
+        concept_map=load_concept_map(small),
+    )  # fmt: skip
+    cfg = AtlasConfig.model_validate({"data": {"fundamentals": {"xbrl_map_file": str(small)}}})
+    configured = ingest_fundamentals(
+        Lake(tmp_path / "configured"), edgar_client(), ["AAPL"], cik_map=cik_map, config=cfg
+    )
+    for report, root in ((given, "given"), (configured, "configured")):
+        stored = Lake(tmp_path / root).read_table(FUNDAMENTALS_FACTS.name)
+        assert 0 < report.rows < full
+        assert set(zip(stored["taxonomy"], stored["tag"], strict=True)) <= set(kept)
