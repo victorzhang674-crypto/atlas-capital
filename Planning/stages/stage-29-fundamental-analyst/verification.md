@@ -197,3 +197,5 @@ Graph wiring stays with Stage 35 (owner).
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED (re-run after follow-up 5)
+
+- Merge into `main`: fast-forward 3d77679 → 4b2d460 (owner's Terminal panel), trees equal; merged result `uv run pytest -q` → 5563 passed, 82 deselected, exit 0 · `make check` → exit 0 · raw: [artifacts/followup5-merged-main-check.txt](artifacts/followup5-merged-main-check.txt)
