@@ -28,6 +28,8 @@ from atlas.core.storage import Lake
 from atlas.data.fundamentals import (
     CikMap,
     CikOverride,
+    CikSource,
+    FormerCik,
     build_cik_map,
     build_edgar_client,
     load_cik_overrides,
@@ -199,7 +201,9 @@ OVERRIDES_FILE = REPO_ROOT / "config" / "cik_overrides.yaml"
 
 def test_load_cik_overrides_repo_file() -> None:
     overrides = {o.symbol: o for o in load_cik_overrides(OVERRIDES_FILE)}
-    assert len(overrides) == 242  # 164 leavers since 2018 + 78 from 2015-2017 (Phase 1 checkpoint)
+    # 164 leavers since 2018 + 78 from 2015-2017 (Phase 1 checkpoint) + 16 issuers with a former
+    # CIK and Twenty-First Century Fox (Stage 29 follow-up 4)
+    assert len(overrides) == 258
     assert overrides["APC"].cik == 773910  # the ticker APC now belongs to ARKO Petroleum
     assert overrides["ACE"].cik == 20171  # Chubb Corp, removed under the label "ACE" in 2016
     assert overrides["KRFT"].cik == 1545158  # Kraft Foods Group, not Mondelez
@@ -208,6 +212,16 @@ def test_load_cik_overrides_repo_file() -> None:
     assert overrides["ATVI"].cik == 718877
     assert overrides["FRC"].cik is None  # a bank that filed with the FDIC, not the SEC
     assert all(o.evidence and o.name for o in overrides.values())
+    # follow-up 4: issuers that moved to a new CIK keep their history under the former one
+    xom = overrides["XOM"]
+    assert (xom.cik, [(f.cik, f.until) for f in xom.former]) == (
+        2115436,
+        [(34088, date(2026, 8, 2))],
+    )
+    assert [f.cik for f in overrides["AVGO"].former] == [1649338, 1441634]
+    assert overrides["VTRS"].since == date(2020, 11, 16)  # Upjohn's filings are not Mylan's
+    assert overrides["TFCF"].cik == overrides["TFCFA"].cik == 1308161
+    assert sum(bool(o.former) for o in overrides.values()) == 16
 
 
 @pytest.mark.parametrize(
@@ -219,6 +233,15 @@ def test_load_cik_overrides_repo_file() -> None:
         ("overrides: [{symbol: A, cik: 1, name: x}]", "evidence"),
         ("overrides: [{symbol: A, cik: 1, name: x, evidence: y, note: z}]", "note"),
         ("overrides: [{symbol: 'B@D!', cik: 1, name: x, evidence: y}]", "symbol"),
+        ("overrides: [{symbol: A, cik: 1, name: x, evidence: y, "
+         "former: [{cik: 1, until: 2020-01-01, name: z}]}]", "former CIK 1"),
+        ("overrides: [{symbol: A, cik: 1, name: x, evidence: y, former: ["
+         "{cik: 2, until: 2020-01-01, name: z}, {cik: 2, until: 2019-01-01, name: z}]}]", "twice"),
+        ("overrides: [{symbol: A, cik: null, name: x, evidence: y, "
+         "former: [{cik: 2, until: 2020-01-01, name: z}]}]", "no CIK"),
+        ("overrides: [{symbol: A, cik: null, name: x, evidence: y, since: 2020-01-01}]", "no CIK"),
+        ("overrides: [{symbol: A, cik: 1, name: x, evidence: y, "
+         "former: [{cik: 2, name: z}]}]", "until"),
     ],
 )  # fmt: skip
 def test_load_cik_overrides_rejects_bad_file(tmp_path: Path, body: str, pattern: str) -> None:
@@ -272,4 +295,63 @@ def test_cik_overrides_cover_former_members_since_2015() -> None:
     intervals = build_membership(constituents, changes, ticker_map=ticker_map).intervals
     recent = intervals[intervals["end_date"].isna() | (intervals["end_date"] > date(2015, 1, 1))]
     former = set(recent["symbol"]) - set(constituents["symbol"])
-    assert {o.symbol for o in load_cik_overrides(OVERRIDES_FILE)} == former
+    listed = {o.symbol for o in load_cik_overrides(OVERRIDES_FILE)}
+    assert former <= listed
+    # follow-up 4: current members with a former CIK, and Twenty-First Century Fox (the main
+    # lake's TFCF / TFCFA, which the recorded change table files under FOXA / FOX)
+    assert listed - former == {
+        "APA", "AVGO", "BG", "BLK", "CI", "DD", "DIS", "GOOG", "GOOGL", "LIN", "SKYD", "SNDK",
+        "TFCF", "TFCFA", "VTRS", "XOM",
+    }  # fmt: skip
+
+
+def test_cik_sources_are_the_current_cik_then_the_former_ones() -> None:
+    """Stage 29 follow-up 4: ExxonMobil moved to a new holding company's CIK in 2026; its older
+    filings sit under the former CIK, read up to `until`. `since` drops the current CIK's
+    filings from before the symbol's issuer took it (Upjohn's before it became Viatris)."""
+    base = CikMap({"XOM": 2115436, "VTRS": 1792044, "AAPL": 320193})
+    exxon = FormerCik(cik=34088, until=date(2026, 8, 2), name="Exxon Mobil Corp")
+    mylan = FormerCik(cik=1623613, until=date(2020, 11, 15), name="Mylan N.V.")
+    cik_map = base.with_overrides(
+        (
+            CikOverride(symbol="XOM", cik=2115436, name="Exxon", evidence="e", former=(exxon,)),
+            CikOverride(
+                symbol="VTRS", cik=1792044, name="Viatris", evidence="e",
+                since=date(2020, 11, 16), former=(mylan,),
+            ),
+        )
+    )  # fmt: skip
+    assert cik_map.sources("xom") == (
+        CikSource(cik=2115436, since=None, until=None),
+        CikSource(cik=34088, since=None, until=date(2026, 8, 2)),
+    )
+    assert cik_map.sources("VTRS") == (
+        CikSource(cik=1792044, since=date(2020, 11, 16), until=None),
+        CikSource(cik=1623613, since=None, until=date(2020, 11, 15)),
+    )
+    assert cik_map.sources("AAPL") == (CikSource(cik=320193, since=None, until=None),)
+    assert cik_map.sources("ZZZZ") == () and cik_map.sources("B@D!") == ()
+    assert cik_map.cik("XOM") == 2115436
+    assert base.sources("XOM") == (CikSource(cik=2115436, since=None, until=None),)
+    # an override without former CIKs drops those set before it
+    plain = cik_map.with_overrides((CikOverride(symbol="XOM", cik=1, name="x", evidence="e"),))
+    assert plain.sources("XOM") == (CikSource(cik=1, since=None, until=None),)
+    # `covers`: since and until are both inclusive
+    span = CikSource(cik=1, since=date(2020, 1, 2), until=date(2020, 1, 4))
+    assert [span.covers(date(2020, 1, d)) for d in (1, 2, 4, 5)] == [False, True, True, False]
+    assert CikSource(cik=1, since=None, until=None).covers(date(1990, 1, 1))
+
+
+def test_a_later_override_replaces_since_and_a_blocked_symbol_does_not_stop_the_rest() -> None:
+    first = CikMap({"VTRS": 1}).with_overrides(
+        (CikOverride(symbol="VTRS", cik=1, name="v", evidence="e", since=date(2020, 11, 16)),)
+    )
+    plain = first.with_overrides((CikOverride(symbol="VTRS", cik=1, name="v", evidence="e"),))
+    assert plain.sources("VTRS") == (CikSource(cik=1, since=None, until=None),)
+    blocked_first = CikMap({"FRC": 9}).with_overrides(
+        (
+            CikOverride(symbol="FRC", cik=None, name="First Republic Bank", evidence="e"),
+            CikOverride(symbol="APC", cik=773910, name="Anadarko", evidence="e"),
+        )
+    )
+    assert (blocked_first.cik("FRC"), blocked_first.cik("APC")) == (None, 773910)

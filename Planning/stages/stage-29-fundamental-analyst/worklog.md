@@ -232,3 +232,72 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - Fast-forwarded `main` 1e32337 → 4ebcd40 in the owner's Terminal panel ([followup3-merged-main-check.txt](artifacts/followup3-merged-main-check.txt)). Trees equal.
   - Merged result: `uv run pytest -q` → 5418 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch.
   - This records commit goes onto `main` the same way, then I push both branches and check CI.
+
+## 2026-11-23 — Follow-up 4 (owner: "can you complete the still open ones and complete them?")
+
+- Gate: Stage 29 DONE with evidence; `uv run pytest -q` → 5418 passed before this follow-up (follow-up 3 merged result). Graph wiring stays with Stage 35 (owner, 2026-11-18). The items routed to Stages 06 and 09 are done here on this request (Decisions log, 2026-11-23).
+- Investigation first, then the [plan](plan.md) (J1–J6), then test-first work. I record honestly that J1 and J2 code was written while investigating, before the plan section existed; each change still went red, then green.
+- J1, whole-table read: `Lake.read_table` → `_sorted` / `_large_type` (`src/atlas/core/storage/lake.py`). The scratch lake's and then the main lake's whole `filing_text` read without the overflow ([main-lake-whole-read-followup4.txt](artifacts/main-lake-whole-read-followup4.txt)).
+- J2, MD&A rules (`src/atlas/data/filings/{mda,text}.py`):
+  - First pass: every main-lake filing without an MD&A or with one under 15,000 characters (156) was fetched into a gzip cache (`filing_text_caching_followup4.py`) and read. Rules found:
+    - "Items 2. and 3."; "ITEM" on its own line; "MANGEMENT";
+    - the 10-Q Item 1 end;
+    - run-in "(MD&A)" headings;
+    - "FINANCIAL STATEMENTS" and "Report of Management" ends;
+    - statement lines ending in section words are no end;
+    - link and mid-sentence lines are no end;
+    - more "incorporated … by reference" wordings;
+    - a later heading must follow the short MD&A (Texas Instruments).
+  - Recheck: every stored row those rules could change, found from the stored text (1,816), plus 600 random controls, re-extracted from freshly fetched documents (`filing_text_recheck_followup4.py`). Reading the changes found seven defects in my own rules, each fixed test-first:
+    - Weyerhaeuser's sentence taken as a run-in heading;
+    - Axon's misnumbered "Item 7" running into Part II;
+    - quoted cross-references (Blackstone, Devon) and "Item 1. Business" (Everest) ending 10-Q MD&As;
+    - Expedia's "Part II. Item 7.";
+    - Hartford's and PepsiCo's MD&As running into the statements (the auditor's-report end);
+    - PepsiCo's contents entry of that report;
+    - Regions' combined "Item 7." / "Item 7A." heading.
+
+    Two scans of every stored row added the rows the Part II and auditor rules could change (35 + 62).
+  - Final recheck: 2,513 rows re-read, 840 changed, each kind reviewed. 3 of 600 controls changed (Expedia, PepsiCo, Boston Scientific), each an improvement ([filing-text-recheck-followup4.txt](artifacts/filing-text-recheck-followup4.txt)).
+- J3: `going_concern_sentences` drops page furniture between the halves of a sentence (`src/atlas/agents/tools/fundamental_tools.py`). Windstream now quotes "Our financial condition, … master lease agreement with Uniti, and …".
+- J4, former CIKs:
+  - Found by comparing each member's first 10-K/10-Q filing date with the start of its S&P 500 window: 16 issuers. TFCF / TFCFA had no CIK.
+  - Checked on EDGAR ([former-ciks-followup4.txt](artifacts/former-ciks-followup4.txt)).
+  - Code: `FormerCik`, `CikSource`, `CikOverride.former` / `since`, `CikMap.sources` (`edgar_client.py`); `ingest_fundamentals` (`ingest.py`), `ingest_filing_text` (`_filings_of`, `_rows` take each filing's CIK), `ingest_earnings` (`events/earnings.py`); `config/cik_overrides.yaml` (+16 entries, FTI and LLL extended).
+- J5, main lake ([main-lake-followup4.txt](artifacts/main-lake-followup4.txt), script [main_lake_followup4.py](artifacts/main_lake_followup4.py)):
+  - `copy` → 1,044.9 MB, `raw/sec` as per-file links.
+  - `cik`: facts 24,542 → 70,093 rows for the 18 symbols, SEC events 418 → 769, MD&As 406 → 728, reactions 393 → 703; 0 failed.
+  - `text`: 839 changed rows plus the 18 symbols' MD&As fetched again.
+  - **My defect:** `text` re-read the main lake's archived submissions, which are older than the follow-up 3 sync's (archived in its own scratch lake), so 15 recent MD&As were missing. I copied that sync's 563 newer submissions into the copy, and `missing` added 15 rows.
+  - Comparison ([filing-text-compare-followup4.txt](artifacts/filing-text-compare-followup4.txt)): 839 changed rows, every one of them a recheck-changed row; 10 removed (merger shells, Upjohn); 340 added, all of former-CIK symbols; 30,927 of 30,927 with an MD&A.
+  - `check`: facts, events and reactions changed only for the 18 symbols. The 214 facts and 11 events removed are the merger shells' and Upjohn's.
+  - Rebuild ([main-lake-rebuild-followup4.txt](artifacts/main-lake-rebuild-followup4.txt)):
+    - `atlas factors build --from 2015 --to 2026` → 142 month-ends, exit 0 (25 min);
+    - `atlas risk-model build --from 2017 --to 2026 --cached-factors` → 2,471 sessions, 115 snapshots, exit 0 (27 min).
+
+    Raw exposures changed only for the 18 symbols (13,727 rows, 13,242 filled); other names moved through standardisation, median 0.0043 ([main-lake-stores-compare-followup4.txt](artifacts/main-lake-stores-compare-followup4.txt)).
+  - Swap from the owner's Terminal panel ([main_lake_followup4_swap.sh](artifacts/main_lake_followup4_swap.sh), [main-lake-swap-followup4.txt](artifacts/main-lake-swap-followup4.txt)):
+    - 7 tables backed up (digest-checked) and replaced, each equal to the scratch copy;
+    - raw/sec: 70 files added, 562 replaced (old ones in `cache/backup-stage29-followup4-2026-11-23/raw-sec`);
+    - `_meta.json` differs byte for byte, equal in content.
+  - Read-back ([main-lake-readback-followup4.txt](artifacts/main-lake-readback-followup4.txt)): row counts equal; 11 `DataView` cases as expected (XOM 2020 revenue TTM $255.9B from CIK 34088; VTRS 2020 Mylan's; BNY, NTRS, GE, USB MD&As; WIN and ENPH FLAG).
+- Going-concern review of every MD&A ([filing-text-review-followup4.txt](artifacts/filing-text-review-followup4.txt)): 76 FLAGs of 30,927, the 75 reviewed plus ENPH 10-Q 2017-05-10 (its own doubt, correct).
+- J6, mutation testing ([mutation-summary.md](artifacts/mutation/mutation-summary.md)):
+  - 883 mutants of the changed functions: first 745 killed. Tests added for 14 gaps; then 768 killed.
+  - The survivors on new lines are equivalent (32); 83 are on old Stage 06/09/12 lines (Backlog).
+  - mutmut 3.8.1 was installed into a scratch folder: the `uv run --with` layer would not install it this time.
+- Docs: `docs/data-limitations.md` (fundamentals item 2: former CIKs; item 9: the MD&A rules and numbers), `docs/data.md` (former CIKs), `docs/agents.md` (76 FLAGs).
+- Code files changed (none created):
+  - `src/atlas/core/storage/lake.py`;
+  - `src/atlas/data/filings/{mda,text}.py`;
+  - `src/atlas/data/fundamentals/{__init__,edgar_client,ingest}.py`;
+  - `src/atlas/data/events/earnings.py`;
+  - `src/atlas/agents/tools/fundamental_tools.py`;
+  - `config/cik_overrides.yaml`.
+- Test files changed:
+  - `tests/unit/core/storage/test_storage_lake.py`;
+  - `tests/unit/data/filings/test_filings_{mda,ingest}.py`;
+  - `tests/unit/data/fundamentals/test_fundamentals_{client,ingest}.py`;
+  - `tests/unit/data/events/test_events_earnings.py`;
+  - `tests/unit/agents/research/test_fundamental_red_flags.py`.
+- Self-audit: [audit-report.md › Follow-up 4](artifacts/audit-report.md).

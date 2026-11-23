@@ -1,6 +1,7 @@
 """The `filing_text` table: the MD&A of SEC filings, point in time (Stage 29 follow-up 2).
 
-Per symbol: ticker → CIK (`CikMap`), the filings of `data.filing_text.forms` filed on or after
+Per symbol: ticker → CIKs (`CikMap.sources`: the current CIK and any former CIK of the issuer,
+each over its own filing dates), the filings of `data.filing_text.forms` filed on or after
 `data.filing_text.since` (the submissions JSON, archived in `raw/sec/` like the fundamentals'
 filing index), and for each filing not yet stored: the primary document, its text
 (`html_to_text`) and its MD&A item (`extract_mda`: 10-K Item 7, 10-Q Part I Item 2). When
@@ -42,7 +43,7 @@ from atlas.data.filings.mda import (
     html_to_text,
     points_elsewhere,
 )
-from atlas.data.fundamentals import CikMap, EdgarClient, parse_submissions
+from atlas.data.fundamentals import CikMap, CikSource, EdgarClient, parse_submissions
 
 _log = get_logger(__name__)
 
@@ -199,12 +200,15 @@ def _stored_accns(lake: Lake, symbol: str) -> set[str]:
 
 def _unless_later(found: MdaExtract, text: str, settings: FilingTextConfig) -> MdaExtract:
     """`found`, or the longest section under a later MD&A heading of the same document (not an
-    "Item" line) when `found` is shorter than `short_mda_chars` and that section is longer:
-    a short Item 7 is then a page of pointers to it (Southern Company's combined MD&A,
-    Entergy's "refer to ...")."""
+    "Item" line, after `found`'s section) when `found` is shorter than `short_mda_chars` and
+    that section is longer: a short Item 7 is then a page of pointers to it (Southern
+    Company's combined MD&A, Entergy's "refer to ..."). A heading inside `found` (Texas
+    Instruments' run-in "(MD&A)" sentence) is not a later one."""
     if found.text is None or len(found.text) >= settings.short_mda_chars:
         return found
-    later = extract_exhibit_mda(text, min_chars=settings.min_mda_chars, skip_items=True)
+    at = text.find(found.text)
+    after = text if at < 0 else text[at + len(found.text) :]
+    later = extract_exhibit_mda(after, min_chars=settings.min_mda_chars, skip_items=True)
     return later if later.text is not None and len(later.text) > len(found.text) else found
 
 
@@ -247,18 +251,40 @@ def _mda_of(
     return found, "primary", name, body
 
 
+def _filings_of(
+    client: EdgarClient,
+    sources: Sequence[CikSource],
+    settings: FilingTextConfig,
+    *,
+    refresh: bool,
+) -> pd.DataFrame:
+    """The filings of every CIK of a symbol (`filing_list` plus a `cik` column), each kept over
+    its source's filing dates; a filing listed under two CIKs (co-registrants) once, under the
+    first (current) one; oldest first."""
+    frames = []
+    for source in sources:
+        listed = filing_list(
+            client, source.cik, forms=settings.forms, since=settings.since, refresh=refresh
+        )
+        listed = listed.loc[[source.covers(filed) for filed in listed["filed"]]]
+        frames.append(listed.assign(cik=source.cik))
+    out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
+    return out.sort_values(["filed", "accn"], kind="stable").reset_index(drop=True)
+
+
 def _rows(
     symbol: str,
-    cik: int,
     filings: pd.DataFrame,
     client: EdgarClient,
     config: AtlasConfig,
     calendar: TradingCalendar,
 ) -> pd.DataFrame:
+    """The `filing_text` rows of `filings` (with their `cik` column)."""
     settings = config.data.filing_text
     template = config.data.fundamentals.filing_document_url
     records = []
     for _, filing in filings.iterrows():
+        cik = int(filing["cik"])
         found, source, document, body = _mda_of(client, cik, filing, settings)
         accepted = filing["accepted_at"]
         available = (
@@ -325,19 +351,17 @@ def ingest_filing_text(
     statuses: Counter[str] = Counter()
     rows = 0
     for symbol in requested:
-        cik = cik_map.cik(symbol)
-        if cik is None:
+        sources = cik_map.sources(symbol)
+        if not sources:
             reasons[symbol] = "no CIK (not in company_tickers.json or config/cik_overrides.yaml)"
             continue
         try:
-            filings = filing_list(
-                client, cik, forms=settings.forms, since=settings.since, refresh=refresh
-            )
+            filings = _filings_of(client, sources, settings, refresh=refresh)
             if filings.empty:
                 reasons[symbol] = f"no {'/'.join(settings.forms)} filed since {settings.since}"
                 continue
             new = filings[~filings["accn"].isin(_stored_accns(lake, symbol))]
-            stored = _rows(symbol, cik, new, client, cfg, cal)
+            stored = _rows(symbol, new, client, cfg, cal)
             if not stored.empty:
                 lake.write_table(
                     FILING_TEXT.name, stored, mode="upsert", keys=list(FILING_TEXT.primary_key)

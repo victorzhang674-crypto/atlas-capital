@@ -11,8 +11,17 @@
 # full-text search of the change-log name; accepted when the SEC name or a former name matches
 # and the CIK filed a 10-K/10-Q during the membership window), then reviewed by hand (the
 # write_ scripts beside them list the hand-made picks and why).
+#
+# Stage 29 follow-up 4 (2026-11-23) added Twenty-First Century Fox (TFCF, TFCFA: never mapped)
+# and, for 16 issuers whose fundamentals started years after their S&P 500 window, the CIKs
+# they filed under before (`former`: newest first, each read up to `until`, the day before the
+# next CIK's first 10-K/10-Q or the merger's closing, so a former issuer still filing as a
+# subsidiary adds nothing later) and, where the current CIK first filed as a merger shell,
+# `since` (its first filing that is the member's). Checked with EDGAR's submissions (names,
+# former names, first and last 10-K/10-Q of each CIK) by Planning/stages/
+# stage-29-fundamental-analyst/artifacts/former_ciks_followup4.py.
 
-# The list, by symbol (242 entries).
+# The list, by symbol (258 entries).
 overrides:
   - {symbol: AA, cik: 4281, name: "Alcoa", evidence: "Howmet Aerospace Inc.; 9 10-K/10-Q filed 2014-07-01..2016-11-01; found via full-text search"}
   - {symbol: AAL, cik: 6201, name: "American Airlines Group", evidence: "parent American Airlines Group Inc. (not subsidiary American Airlines, Inc. 4515)"}
@@ -110,7 +119,7 @@ overrides:
   - {symbol: FMC, cik: 37785, name: "FMC Corporation", evidence: "FMC CORP, not the Livent spin-off 1742924"}
   - {symbol: FOSL, cik: 883569, name: "Fossil Group", evidence: "Fossil Group, Inc.; 6 10-K/10-Q filed 2014-07-01..2016-01-05; found via current ticker"}
   - {symbol: FRC, cik: null, name: "First Republic Bank", evidence: "First Republic Bank filed its reports with the FDIC, not the SEC: no SEC fundamentals"}
-  - {symbol: FTI, cik: 1681459, name: "TechnipFMC", evidence: "TechnipFMC plc; 15 10-K/10-Q filed 2017-07-01..2021-02-12; found via current ticker"}
+  - {symbol: FTI, cik: 1681459, name: "TechnipFMC", evidence: "TechnipFMC plc; 15 10-K/10-Q filed 2017-07-01..2021-02-12; found via current ticker. Follow-up 4: the member was FMC Technologies until the merger closed 2017-01-16; TechnipFMC's 10-K of 2017-01-13 is the pre-merger shell's", since: 2017-01-16, former: [{cik: 1135152, until: 2017-01-15, name: "FMC TECHNOLOGIES INC"}]}
   - {symbol: FTR, cik: 20520, name: "Frontier Communications", evidence: "Frontier Communications Parent, Inc.; 11 10-K/10-Q filed 2014-07-01..2017-03-20; found via full-text search"}
   - {symbol: GAS, cik: 1004155, name: "AGL Resources", evidence: "SOUTHERN CO GAS; 12 10-K/10-Q filed 2014-07-01..2016-07-01; found via full-text search"}
   - {symbol: GGP, cik: 1496048, name: "GGP Inc.", evidence: "Brookfield Property REIT Inc.; 5 10-K/10-Q filed 2017-07-01..2018-08-28; found via full-text search"}
@@ -144,7 +153,7 @@ overrides:
   - {symbol: KSU, cik: 54480, name: "Kansas City Southern", evidence: "KANSAS CITY SOUTHERN; 18 10-K/10-Q filed 2017-07-01..2021-12-14 (manual check; name search failed with an SEC-side connection error)"}
   - {symbol: LEG, cik: 58492, name: "Leggett & Platt", evidence: "LEGGETT & PLATT INC; 18 10-K/10-Q filed 2017-07-01..2021-12-20; found via full-text search"}
   - {symbol: LKQ, cik: 1065696, name: "LKQ Corporation", evidence: "LKQ CORP; 34 10-K/10-Q filed 2017-07-01..2025-12-22; found via current ticker"}
-  - {symbol: LLL, cik: 1039101, name: "L3 Technologies", evidence: "L3 TECHNOLOGIES, INC.; 9 10-K/10-Q filed 2017-07-01..2019-07-01; found via full-text search"}
+  - {symbol: LLL, cik: 1039101, name: "L3 Technologies", evidence: "L3 TECHNOLOGIES, INC.; 9 10-K/10-Q filed 2017-07-01..2019-07-01; found via full-text search. Follow-up 4: until its 2016 merger into L-3 Communications Corp the member was L-3 Communications Holdings, whose XBRL facts sit under its own CIK (last 10-Q 2016-10-27; L3 Technologies' first own 10-K 2017-02-23)", former: [{cik: 1056239, until: 2017-02-22, name: "L 3 COMMUNICATIONS HOLDINGS INC"}]}
   - {symbol: LLTC, cik: 791907, name: "Linear Technology", evidence: "LINEAR TECHNOLOGY CORP /CA/; 11 10-K/10-Q filed 2014-07-01..2017-03-13; found via full-text search"}
   - {symbol: LM, cik: 704051, name: "Legg Mason", evidence: "LEGG MASON, INC.; 10 10-K/10-Q filed 2014-07-01..2016-12-02; found via full-text search"}
   - {symbol: LNC, cik: 59558, name: "Lincoln National Corporation", evidence: "LINCOLN NATIONAL CORP, not Lincoln National Life Insurance Co 726865"}
@@ -221,6 +230,8 @@ overrides:
   - {symbol: TDC, cik: 816761, name: "Teradata", evidence: "TERADATA CORP /DE/; 12 10-K/10-Q filed 2014-07-01..2017-06-19; found via current ticker"}
   - {symbol: TE, cik: 350563, name: "TECO Energy", evidence: "TECO ENERGY INC; 8 10-K/10-Q filed 2014-07-01..2016-07-01; found via full-text search"}
   - {symbol: TEG, cik: 916863, name: "Integrys Energy Group", evidence: "INTEGRYS HOLDING, INC.; 4 10-K/10-Q filed 2014-07-01..2015-07-01; found via full-text search"}
+  - {symbol: TFCF, cik: 1308161, name: "Twenty-First Century Fox", evidence: "TWENTY-FIRST CENTURY FOX, INC. (former name NEWS CORP); 37 10-K/10-Q filed 2010-02-04..2019-02-06; acquired by Disney 2019-03-20 (follow-up 4)"}
+  - {symbol: TFCFA, cik: 1308161, name: "Twenty-First Century Fox (Class A)", evidence: "the Class A shares of TWENTY-FIRST CENTURY FOX, INC., the CIK of TFCF (follow-up 4)"}
   - {symbol: TFX, cik: 96943, name: "Teleflex", evidence: "TELEFLEX INC; 25 10-K/10-Q filed 2019-01-18..2025-03-24; found via current ticker"}
   - {symbol: TGNA, cik: 39899, name: "Tegna", evidence: "TEGNA INC; 13 10-K/10-Q filed 2014-07-01..2017-06-02; found via full-text search"}
   - {symbol: THC, cik: 70318, name: "Tenet Healthcare", evidence: "TENET HEALTHCARE CORP; 7 10-K/10-Q filed 2014-07-01..2016-04-18; found via current ticker"}
@@ -256,3 +267,20 @@ overrides:
   - {symbol: XRX, cik: 108772, name: "Xerox", evidence: "XEROX CORP filed throughout the window; Xerox Holdings Corp 1770450 only from 2019"}
   - {symbol: YHOO, cik: 1011006, name: "Yahoo!", evidence: "ALTABA INC.; 19 10-K/10-Q filed 2014-07-01..2017-06-19; found via full-text search"}
   - {symbol: ZION, cik: 109380, name: "Zions Bancorporation", evidence: "ZIONS BANCORPORATION, NATIONAL ASSOCIATION /UT/; 27 10-K/10-Q filed 2017-07-01..2024-03-18; found via current ticker"}
+
+  # Stage 29 follow-up 4: current members whose issuer moved to a new CIK (a holding-company
+  # reorganisation or a merger with a new parent), and SanDisk's reused ticker.
+  - {symbol: APA, cik: 1841666, name: "APA", evidence: "APA Corp, holding company of Apache from 2021-03-01; first 10-Q 2021-05-07 (Apache kept filing as a subsidiary until 2024-11)", former: [{cik: 6769, until: 2021-05-06, name: "APACHE CORP"}]}
+  - {symbol: AVGO, cik: 1730168, name: "Broadcom", evidence: "Broadcom Inc. (redomiciled 2018-04), first 10-Q 2018-06-14; before it Broadcom Ltd (2016-03-10..2018-03-15) and Avago Technologies (..2015-12-17)", former: [{cik: 1649338, until: 2018-06-13, name: "Broadcom Ltd (now Broadcom Pte. Ltd.)"}, {cik: 1441634, until: 2016-03-09, name: "Avago Technologies LTD"}]}
+  - {symbol: BG, cik: 1996862, name: "Bunge Global", evidence: "Bunge Global SA (redomiciled 2023-11-01), first 10-K 2024-02-22; Bunge Ltd's last 10-Q 2023-10-26", former: [{cik: 1144519, until: 2024-02-21, name: "BUNGE LTD"}]}
+  - {symbol: BLK, cik: 2012383, name: "BlackRock", evidence: "BlackRock, Inc. (new holding company 2024-10-01), first 10-Q 2024-11-06; the former BlackRock, Inc. (now BlackRock Finance, Inc.) last 10-Q 2024-08-06", former: [{cik: 1364742, until: 2024-11-05, name: "BlackRock Inc. (now BlackRock Finance, Inc.)"}]}
+  - {symbol: CI, cik: 1739940, name: "Cigna", evidence: "Cigna Corp (formerly Halfmoon Parent; the parent after Express Scripts, 2018-12-20), first 10-K 2019-02-28; the former Cigna Corp (now Cigna Holding Co) last 10-Q 2018-11-01", former: [{cik: 701221, until: 2019-02-27, name: "CIGNA CORP (now Cigna Holding Co)"}]}
+  - {symbol: DD, cik: 1666700, name: "DuPont de Nemours", evidence: "DowDuPont Inc. took the DD ticker when the merger closed 2017-08-31, first 10-Q 2017-11-06; the member before was E. I. du Pont de Nemours (now EIDP, Inc., still filing as Corteva's subsidiary)", former: [{cik: 30554, until: 2017-11-05, name: "DUPONT E I DE NEMOURS & CO (now EIDP, Inc.)"}]}
+  - {symbol: DIS, cik: 1744489, name: "Walt Disney", evidence: "The Walt Disney Company (formerly TWDC Holdco 613, the parent after the 21CF acquisition, 2019-03-20), first 10-Q 2019-05-08; the former Walt Disney Co (now TWDC Enterprises 18) last 10-Q 2019-02-05", former: [{cik: 1001039, until: 2019-05-07, name: "WALT DISNEY CO (now TWDC Enterprises 18 Corp.)"}]}
+  - {symbol: GOOG, cik: 1652044, name: "Alphabet (Class C)", evidence: "Alphabet Inc. (holding company of Google from 2015-10-02), first 10-Q 2015-10-29; Google Inc.'s FY2015 10-K of 2016-02-11 is the subsidiary's", former: [{cik: 1288776, until: 2015-10-28, name: "GOOGLE INC."}]}
+  - {symbol: GOOGL, cik: 1652044, name: "Alphabet (Class A)", evidence: "as GOOG", former: [{cik: 1288776, until: 2015-10-28, name: "GOOGLE INC."}]}
+  - {symbol: LIN, cik: 1707925, name: "Linde", evidence: "Linde plc; the member was Praxair until the merger closed 2018-10-31; Linde plc's 10-Qs of 2017-10-30 and 2018-11-09 and 10-K of 2018-03-23 are the pre-merger shell's (no operations)", since: 2018-11-10, former: [{cik: 884905, until: 2018-11-09, name: "PRAXAIR INC (now LINDE INC)"}]}
+  - {symbol: SKYD, cik: 2041610, name: "Paramount Skydance", evidence: "Skydance Corp (formerly Paramount Skydance Corp, New Pluto Global), parent of Paramount Global after the merger closed 2025-08-07; its 10-Qs of 2025-05-14 and 2025-08-01 are the pre-merger shell's; Paramount Global (formerly ViacomCBS, CBS Corp) last 10-Q 2025-07-31", since: 2025-08-07, former: [{cik: 813828, until: 2025-08-06, name: "Paramount Global (formerly ViacomCBS Inc., CBS CORP)"}]}
+  - {symbol: SNDK, cik: 2023554, name: "Sandisk", evidence: "Sandisk Corp (spun off from Western Digital 2025-02), first 10-Q 2025-03-07; the ticker's earlier member was SanDisk Corp (in the index until 2016-05-13, acquired by Western Digital), last 10-Q 2016-05-02", former: [{cik: 1000180, until: 2016-05-12, name: "SANDISK CORP"}]}
+  - {symbol: VTRS, cik: 1792044, name: "Viatris", evidence: "Viatris Inc. (formerly Upjohn Inc.) from the Mylan combination 2020-11-16; its 10-K of 2020-05-07 and 10-Qs to 2020-11-10 are Upjohn's (Pfizer's business), not the member's; the member was Mylan N.V. (2015-02-27..), before it Mylan Inc.", since: 2020-11-16, former: [{cik: 1623613, until: 2020-11-15, name: "Mylan N.V. (now Mylan II B.V.)"}, {cik: 69499, until: 2015-05-07, name: "MYLAN INC."}]}
+  - {symbol: XOM, cik: 2115436, name: "Exxon Mobil", evidence: "ExxonMobil Holdings Corp (holding company of Exxon Mobil from 2026), first 10-Q 2026-08-03; Exxon Mobil Corp's 10-Q of the same day is the subsidiary's", former: [{cik: 34088, until: 2026-08-02, name: "EXXON MOBIL CORP"}]}

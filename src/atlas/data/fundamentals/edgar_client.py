@@ -17,6 +17,7 @@ change and are always served from the cache once stored.
 import json
 import time
 from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 from types import TracebackType
@@ -47,16 +48,43 @@ class _RetryableStatus(Exception):
     """An HTTP answer worth retrying (429 or 5xx)."""
 
 
+@dataclass(frozen=True)
+class CikSource:
+    """A CIK whose filings belong to a symbol: those filed from `since` through `until` (both
+    inclusive; `None` is open)."""
+
+    cik: int
+    since: date | None
+    until: date | None
+
+    def covers(self, filed: date) -> bool:
+        """Whether a filing filed on `filed` is the symbol's."""
+        return (self.since is None or filed >= self.since) and (
+            self.until is None or filed <= self.until
+        )
+
+
 class CikMap:
     """Maps a ticker (any spelling `normalize_symbol` accepts) to the company's SEC CIK.
 
     Built from EDGAR's `company_tickers.json`, which lists **current** tickers only: a former
-    member that no longer files, or an old ticker, is not found (`cik` returns `None`).
+    member that no longer files, or an old ticker, is not found (`cik` returns `None`). With
+    overrides, a symbol may also have former CIKs (an issuer that moved to a new CIK) and a
+    first filing date for its current CIK (`sources`).
     """
 
-    def __init__(self, ciks: Mapping[str, int]) -> None:
-        """A map from canonical symbols (`BRK.B`) to CIKs."""
+    def __init__(
+        self,
+        ciks: Mapping[str, int],
+        *,
+        former: Mapping[str, tuple["FormerCik", ...]] | None = None,
+        since: Mapping[str, date] | None = None,
+    ) -> None:
+        """A map from canonical symbols (`BRK.B`) to CIKs; `former` and `since` (canonical
+        symbols too) as in `CikOverride`."""
         self._ciks = dict(ciks)
+        self._former = dict(former or {})
+        self._since = dict(since or {})
 
     @classmethod
     def from_company_tickers(cls, payload: Mapping[str, Any]) -> Self:
@@ -91,15 +119,32 @@ class CikMap:
         return cls(ciks)
 
     def with_overrides(self, overrides: Sequence["CikOverride"]) -> "CikMap":
-        """A new map where each override replaces its symbol's CIK (`cik=None` removes the
-        symbol: no verified CIK). This map is unchanged."""
-        ciks = dict(self._ciks)
+        """A new map where each override replaces its symbol's CIK, former CIKs and `since`
+        (`cik=None` removes the symbol: no verified CIK). This map is unchanged."""
+        ciks, former, since = dict(self._ciks), dict(self._former), dict(self._since)
         for override in overrides:
+            former.pop(override.symbol, None)
+            since.pop(override.symbol, None)
             if override.cik is None:
                 ciks.pop(override.symbol, None)
-            else:
-                ciks[override.symbol] = override.cik
-        return CikMap(ciks)
+                continue
+            ciks[override.symbol] = override.cik
+            if override.former:
+                former[override.symbol] = override.former
+            if override.since is not None:
+                since[override.symbol] = override.since
+        return CikMap(ciks, former=former, since=since)
+
+    def sources(self, symbol: str) -> tuple[CikSource, ...]:
+        """The CIKs whose filings are `symbol`'s: its current CIK (from its `since`, if any),
+        then its former CIKs up to their `until`, newest first; none when `symbol` has no CIK
+        (or is not a valid symbol). Stage 29 follow-up 4."""
+        cik = self.cik(symbol)
+        if cik is None:
+            return ()
+        key = normalize_symbol(symbol)
+        own = CikSource(cik=cik, since=self._since.get(key), until=None)
+        return (own, *(CikSource(f.cik, None, f.until) for f in self._former.get(key, ())))
 
     def cik(self, symbol: str) -> int | None:
         """The CIK of `symbol`, or `None` when it is not listed (or not a valid symbol)."""
@@ -113,18 +158,47 @@ class CikMap:
         return len(self._ciks)
 
 
+class FormerCik(AtlasModel):
+    """An earlier CIK of a symbol's issuer (Stage 29 follow-up 4): ExxonMobil before its 2026
+    holding company, Disney before 2019, or the earlier company of a reused ticker (SanDisk).
+    Its filings filed up to `until` (inclusive: the day before the next CIK's first 10-K or
+    10-Q) are the symbol's; later ones (a former issuer still filing as a subsidiary) are not.
+    `name` is the SEC's name for it."""
+
+    cik: Annotated[int, Field(gt=0)]
+    until: date
+    name: NonEmptyStr
+
+
 class CikOverride(AtlasModel):
     """A verified CIK for a symbol `company_tickers.json` cannot resolve correctly (a former
-    S&P 500 member: delisted, or its ticker now used by another company).
+    S&P 500 member: delisted, or its ticker now used by another company), or whose issuer
+    filed under other CIKs before (Stage 29 follow-up 4).
 
     `cik=None` means no verified SEC CIK (e.g. a bank that filed with the FDIC). `name` is the
-    change-log security name; `evidence` says how the CIK was checked.
+    change-log security name; `evidence` says how the CIK was checked. `former` lists the
+    issuer's earlier CIKs, newest first; `since` is the first filing date of `cik` that is the
+    symbol's (Viatris's CIK filed Upjohn's reports before the merger with Mylan).
     """
 
     symbol: Symbol
     cik: Annotated[int, Field(gt=0)] | None
     name: NonEmptyStr
     evidence: NonEmptyStr
+    since: date | None = None
+    former: tuple[FormerCik, ...] = ()
+
+    @model_validator(mode="after")
+    def _consistent(self) -> Self:
+        if self.cik is None and (self.former or self.since is not None):
+            raise ValueError(f"{self.symbol}: former CIKs or since with no CIK (cik: null)")
+        seen = {self.cik}
+        for former in self.former:
+            if former.cik in seen:
+                which = "the current CIK" if former.cik == self.cik else "listed twice"
+                raise ValueError(f"{self.symbol}: former CIK {former.cik} is {which}")
+            seen.add(former.cik)
+        return self
 
 
 class _CikOverridesFile(AtlasModel):

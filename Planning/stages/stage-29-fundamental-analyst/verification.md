@@ -107,3 +107,41 @@ Owner: "can you help me to complete the tasks that are still being opened?" The 
 - Merge into `main`: fast-forward 1e32337 → 4ebcd40 (owner's Terminal panel), trees equal; merged result `uv run pytest -q` → 5418 passed, 82 deselected, exit 0 · `make check` → exit 0 · raw: [artifacts/followup3-merged-main-check.txt](artifacts/followup3-merged-main-check.txt)
 
 **Result:** ALL CRITERIA VERIFIED (re-run after follow-up 3)
+
+#### Follow-up 4 — Stage 29 — 2026-11-23
+Owner: "can you complete the still open ones and complete them?" The follow-up covered:
+- Bank of New York Mellon's and Northern Trust's 10-Q MD&As;
+- GE's 10-Q contents entries;
+- Windstream's quote;
+- ExxonMobil's CIK, which became 16 issuers with former CIKs plus Twenty-First Century Fox (Stages 09 and 12 code);
+- the whole-table read (Stage 06 code);
+- the CI record of `c579104`.
+
+Graph wiring stays with Stage 35 (owner).
+
+- Commands run (this chat, one after another, on the final code):
+  - `uv run pytest tests/unit/agents/research/test_fundamental.py -q` (brief's Verify) → 29 passed, exit 0 · raw: [artifacts/followup4-verify-brief.txt](artifacts/followup4-verify-brief.txt)
+  - `uv run pytest -q` → 5472 passed, 82 deselected, exit 0 · raw: [artifacts/followup4-pytest-full.txt](artifacts/followup4-pytest-full.txt)
+  - `make check` → exit 0 · raw: [artifacts/followup4-make-check.txt](artifacts/followup4-make-check.txt)
+    - `ruff check .` → All checks passed!
+    - `ruff format --check .` → 510 files already formatted
+    - `mypy src/atlas` → Success: no issues found in 188 source files
+    - pytest: 5469 passed + 3 timing passed
+  - `make test-integration` → 48 passed, 15 skipped, exit 0 · raw: [artifacts/followup4-test-integration.txt](artifacts/followup4-test-integration.txt)
+  - Main lake:
+    - Whole-table `filing_text` read (J1) → 30,597 rows, 2.14 GiB of text, 29 s, sorted by key · [artifacts/main-lake-whole-read-followup4.txt](artifacts/main-lake-whole-read-followup4.txt)
+    - Former CIKs checked on EDGAR → 16 pairs and TFCF · [artifacts/former-ciks-followup4.txt](artifacts/former-ciks-followup4.txt)
+    - Recheck of every row the rules could change plus 600 random rows → 2,513 re-read, 840 changed (3 controls, each an improvement), every kind reviewed · [artifacts/filing-text-recheck-followup4.txt](artifacts/filing-text-recheck-followup4.txt)
+    - Scratch copy `cik`, `text`, `missing`, `check` → only the intended rows changed · [artifacts/main-lake-followup4.txt](artifacts/main-lake-followup4.txt), [artifacts/filing-text-compare-followup4.txt](artifacts/filing-text-compare-followup4.txt)
+    - Rebuild → factors 142 month-ends, exit 0; risk model 2,471 sessions, 115 snapshots, exit 0 · [artifacts/main-lake-rebuild-followup4.txt](artifacts/main-lake-rebuild-followup4.txt)
+    - Store comparison → raw exposures changed only for the 18 symbols · [artifacts/main-lake-stores-compare-followup4.txt](artifacts/main-lake-stores-compare-followup4.txt)
+    - Swap (owner's Terminal panel) → 7 tables backed up and replaced, each equal to the scratch copy; swap exit 0 · [artifacts/main-lake-swap-followup4.txt](artifacts/main-lake-swap-followup4.txt)
+    - Read-back → row counts equal, `_meta.json` tables equal, 11 `DataView` cases as expected, 30,927 of 30,927 filings with an MD&A · [artifacts/main-lake-readback-followup4.txt](artifacts/main-lake-readback-followup4.txt)
+    - Rule review → 76 FLAGs of 30,927 MD&As: the 75 reviewed plus Enphase's (own doubt) · [artifacts/filing-text-review-followup4.txt](artifacts/filing-text-review-followup4.txt)
+  - Mutation testing of the changed functions → 768 of 883 killed; new-line survivors equivalent (32), 83 on old lines (Backlog) · [artifacts/mutation/mutation-summary.md](artifacts/mutation/mutation-summary.md)
+  - Each rule change was seen to fail before its fix, then pass (the new tests in `test_filings_mda.py`, `test_filings_ingest.py`, `test_storage_lake.py`, `test_fundamentals_{client,ingest}.py`, `test_events_earnings.py`, `test_fundamental_red_flags.py`).
+- Acceptance criteria: unchanged and still met.
+  - The recorded-run replay is in the brief's Verify (29 passed). Its fixture lake has no `filing_text`, and its symbols' CIKs did not change.
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED (re-run after follow-up 4)

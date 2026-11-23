@@ -1,0 +1,16 @@
+$ uv run python Planning/stages/stage-29-fundamental-analyst/artifacts/filing_text_compare_followup4.py
+main 30597 rows, copy 30927 rows; changed 840 (1 of the former-CIK symbols, 839 others)
+every other changed row is one the recheck found changed: True
+recheck-changed rows of other symbols left unchanged: []
+REMOVED FTI 10-K 2017-01-13 ok 1681
+REMOVED LIN 10-Q 2017-10-30 ok 5680
+REMOVED LIN 10-K 2018-03-23 ok 5737
+REMOVED LIN 10-Q 2018-11-09 ok 4465
+REMOVED SKYD 10-Q 2025-05-14 ok 4927
+REMOVED SKYD 10-Q 2025-08-01 ok 4877
+REMOVED VTRS 10-K 2020-05-07 not_found 0
+REMOVED VTRS 10-Q 2020-05-12 ok 6807
+REMOVED VTRS 10-Q 2020-08-12 ok 12678
+REMOVED VTRS 10-Q 2020-11-10 ok 13612
+added 340, all of former-CIK symbols: True
+statuses now: {'ok': 30927}

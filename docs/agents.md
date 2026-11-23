@@ -211,9 +211,9 @@ at the as-of whose MD&A was found (`DataView.mda`, the `filings` dataset). The c
 `going_concern_exclusions`; the evidence quotes that sentence. The exclusions exist because, on
 the main lake, most such sentences describe the ASU 2014-15 standard ("evaluate whether there
 is substantial doubt about an entity's ability …"), are hypothetical, are about another party
-(a tenant, an investee) or deny a doubt ("no longer"). With them, 75 of the main lake's 30,506
-10-K and 10-Q MD&As are flagged (2026-11-22, 23 companies): 59 about the company itself
-(Frontier, Endo, Mallinckrodt, Valaris, Chesapeake, Bed Bath & Beyond, …), 8 about a subsidiary
+(a tenant, an investee) or deny a doubt ("no longer"). With them, 76 of the main lake's 30,927
+10-K and 10-Q MD&As are flagged (2026-11-23, 23 companies): 60 about the company itself
+(Frontier, Endo, Mallinckrodt, Valaris, Chesapeake, Bed Bath & Beyond, Enphase, …), 8 about a subsidiary
 (FirstEnergy's FES, NRG's GenOn, Harley-Davidson's LiveWire) and 8 about another company
 (Toshiba, in Western Digital's and Southern Company's), all reviewed. The
 check is NOT EVALUATED, with the reason, when the lake has no MD&A of the symbol, when the

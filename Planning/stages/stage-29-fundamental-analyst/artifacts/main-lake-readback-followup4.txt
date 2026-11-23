@@ -1,0 +1,23 @@
+$ uv run python Planning/stages/stage-29-fundamental-analyst/artifacts/main_lake_readback_followup4.py
+fundamentals_facts: main 2689224 rows, scratch copy 2689224: EQUAL
+events: main 34415 rows, scratch copy 34415: EQUAL
+earnings_reactions: main 30246 rows, scratch copy 30246: EQUAL
+filing_text: main 30927 rows, scratch copy 30927: EQUAL
+factor_exposures: main 1212389 rows, scratch copy 1212389: EQUAL
+factor_returns: main 49420 rows, scratch copy 49420: EQUAL
+risk_model_snapshots: main 1246260 rows, scratch copy 1246260: EQUAL
+_meta.json tables equal to the scratch copy's: True
+XOM at 2020-06-01 (former CIK 34088: fundamentals before the 2026 holding company): fundamentals 19 values, revenue_ttm 255871000000.0; MD&A 10-Q filed 2020-05-06 (primary, 24835 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+DIS at 2017-06-01 (former CIK 1001039): fundamentals 20 values, revenue_ttm 55539000000.0; MD&A 10-Q filed 2017-05-09 (primary, 77412 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+GOOGL at 2015-06-01 (Google Inc. before Alphabet): fundamentals 19 values, revenue_ttm 67839000000.0; MD&A 10-Q filed 2015-04-29 (primary, 39062 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+VTRS at 2020-09-01 (Mylan N.V., not Upjohn (since 2020-11-16)): fundamentals 24 values, revenue_ttm 11503900000.0; MD&A 10-Q filed 2020-08-06 (primary, 104092 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+TFCF at 2018-06-01 (Twenty-First Century Fox, newly mapped): fundamentals 17 values, revenue_ttm 29207000000.0; MD&A 10-Q filed 2018-05-10 (primary, 37331 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+BNY at 2024-09-01 (10-Q 'Items 2. and 3.'): fundamentals 17 values, revenue_ttm 17856000000.0; MD&A 10-Q filed 2024-08-02 (primary, 158039 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+NTRS at 2024-09-01 (10-Q 'Items 2 and 3:'): fundamentals 16 values, revenue_ttm 7634100000.0; MD&A 10-Q filed 2024-08-01 (primary, 118149 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+GE at 2020-11-02 (10-Q run-in heading (was a contents entry)): fundamentals 18 values, revenue_ttm 83929000000.0; MD&A 10-Q filed 2020-10-28 (primary, 168876 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+USB at 2020-03-01 (10-K reads its EX-13): fundamentals 15 values, revenue_ttm 22883000000.0; MD&A 10-K filed 2020-02-20 (EX-13, 197612 chars) -> CLEAR: no MD&A sentence holds all of "going concern", "substantial doubt" (sentences with a phrase of going_concern_e
+WIN at 2019-03-18 (going-concern quote read whole): fundamentals 18 values, revenue_ttm 5713100000.0; MD&A 10-K filed 2019-03-15 (primary, 164418 chars) -> FLAG: MD&A: "Our financial condition, the defaults under our debt agreements and master lease agreement with Uniti, 
+ENPH at 2017-05-12 (new FLAG: 10-Q repeating the 10-K's doubt): fundamentals 21 values, revenue_ttm 313221000.0; MD&A 10-Q filed 2017-05-10 (primary, 32181 chars) -> FLAG: MD&A: "As disclosed in our Form 10-K for the year ended December 31, 2016, we concluded that substantial doubt
+whole filing_text read: 30927 rows, statuses {'ok': 30927}
+exit 0
+(_meta.json: the swap log says it differs byte for byte from the scratch copy's; its content is equal, as the line above shows)

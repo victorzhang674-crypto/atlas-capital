@@ -99,7 +99,11 @@ matter most for a backfill:
   a name soon after it delists, so the lake is the only copy of its earlier bars.
 - **Former members' fundamentals.** EDGAR's ticker map lists current registrants only;
   `config/cik_overrides.yaml` adds every former member since 2015 (the default backfill start).
-  Members that left before 2015 get "no CIK" (fundamentals and earnings `empty`).
+  Members that left before 2015 get "no CIK" (fundamentals and earnings `empty`). An issuer
+  that moved to a new CIK lists its `former` CIKs there (each with the last filing date taken
+  from it, `until`) and, when its current CIK first filed as a merger shell, `since`; the
+  fundamentals, filing-text and earnings syncs read every CIK of a symbol over its dates
+  (`CikMap.sources`).
 - **Short histories.** Companies listed after the window start (spin-offs, IPOs) have fewer
   years of prices; `atlas data status` counts them against the 8-year rule in its `prices` line
   and leaves them out of its `prices (listed >= 8y)` line (members whose prices were asked for

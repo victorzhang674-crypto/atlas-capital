@@ -223,12 +223,23 @@ def ingest_earnings(
     reasons: dict[str, str] = {}
     rows = skipped = 0
     for symbol in requested:
-        cik = cik_map.cik(symbol)
-        if cik is None:
+        sources = cik_map.sources(symbol)
+        if not sources:
             reasons[symbol] = "no CIK (not in company_tickers.json or config/cik_overrides.yaml)"
             continue
         try:
-            filings = fetch_filings(client, cik, since=settings.history_start, refresh=refresh)
+            frames = []
+            for source in sources:  # the current CIK, then former ones (Stage 29 follow-up 4)
+                listed = fetch_filings(
+                    client, source.cik, since=settings.history_start, refresh=refresh
+                )
+                frames.append(listed.loc[[source.covers(d) for d in listed["filed"]]])
+            filings = (
+                pd.concat(frames, ignore_index=True)
+                .drop_duplicates(subset="accn", keep="first")
+                .sort_values(["filed", "accn"], kind="stable")
+                .reset_index(drop=True)
+            )
             events, missing = earnings_events(
                 filings, symbol, cal, periodic_match_days=settings.periodic_match_days
             )

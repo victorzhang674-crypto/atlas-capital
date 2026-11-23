@@ -1,0 +1,50 @@
+$ uv run python Planning/stages/stage-29-fundamental-analyst/artifacts/former_ciks_followup4.py
+== XOM
+  CIK 2115436: 'ExxonMobil Holdings Corp' tickers=['XOM'] former=[] 10-K/10-Q since 2010: 2 (2026-08-03 .. 2026-11-02)
+  CIK 34088: 'EXXON MOBIL CORP' tickers=[] former=['EXXON CORP'] 10-K/10-Q since 2010: 67 (2010-02-26 .. 2026-08-03)
+== SKYD
+  CIK 2041610: 'Skydance Corp' tickers=['SKYD', 'SKYD-WT'] former=['Paramount Skydance Corp', 'New Pluto Global, Inc.'] 10-K/10-Q since 2010: 7 (2025-05-14 .. 2026-11-09)
+  CIK 813828: 'Paramount Global' tickers=[] former=['ViacomCBS Inc.', 'CBS CORP', 'VIACOM INC'] 10-K/10-Q since 2010: 63 (2010-02-25 .. 2025-07-31)
+== BLK
+  CIK 2012383: 'BlackRock, Inc.' tickers=['BLK'] former=['BlackRock, Inc.', 'BlackRock Funding, Inc. /DE'] 10-K/10-Q since 2010: 9 (2024-11-06 .. 2026-11-04)
+  CIK 1364742: 'BlackRock Finance, Inc.' tickers=[] former=['BlackRock Inc.', 'BlackRock, Inc.', 'New BlackRock, Inc.'] 10-K/10-Q since 2010: 59 (2010-03-10 .. 2024-08-06)
+== APA
+  CIK 1841666: 'APA Corp' tickers=['APA'] former=[] 10-K/10-Q since 2010: 23 (2021-05-07 .. 2026-11-05)
+  CIK 6769: 'APACHE CORP' tickers=[] former=[] 10-K/10-Q since 2010: 60 (2010-02-26 .. 2024-11-07)
+== VTRS
+  CIK 1792044: 'Viatris Inc' tickers=['VTRS'] former=['Upjohn Inc'] 10-K/10-Q since 2010: 28 (2020-05-07 .. 2026-11-05)
+  CIK 1623613: 'Mylan II B.V.' tickers=[] former=['Mylan N.V.', 'New Moon B.V.'] 10-K/10-Q since 2010: 23 (2015-05-08 .. 2020-11-06)
+  CIK 69499: 'MYLAN INC.' tickers=[] former=['MYLAN LABORATORIES INC'] 10-K/10-Q since 2010: 21 (2010-02-26 .. 2015-03-02)
+== DIS
+  CIK 1744489: 'Walt Disney Co' tickers=['DIS'] former=['TWDC Holdco 613 Corp', 'TWDC Holdco 613 Corp.'] 10-K/10-Q since 2010: 31 (2019-05-08 .. 2026-11-17)
+  CIK 1001039: 'TWDC Enterprises 18 Corp.' tickers=[] former=['WALT DISNEY CO/', 'DC HOLDCO INC'] 10-K/10-Q since 2010: 37 (2010-02-09 .. 2019-02-05)
+== CI
+  CIK 1739940: 'Cigna Group' tickers=['CI'] former=['Cigna Corp', 'Halfmoon Parent, Inc.'] 10-K/10-Q since 2010: 32 (2019-02-28 .. 2026-11-05)
+  CIK 701221: 'Cigna Holding Co' tickers=[] former=['CIGNA CORP'] 10-K/10-Q since 2010: 36 (2010-02-25 .. 2018-11-01)
+== AVGO
+  CIK 1730168: 'Broadcom Inc.' tickers=['AVGO'] former=['Broadcom Ltd'] 10-K/10-Q since 2010: 34 (2018-06-14 .. 2026-09-10)
+  CIK 1649338: 'Broadcom Pte. Ltd.' tickers=[] former=['Broadcom Ltd', 'Pavonia Ltd'] 10-K/10-Q since 2010: 9 (2016-03-10 .. 2018-03-15)
+  CIK 1441634: 'Avago Technologies LTD' tickers=[] former=[] 10-K/10-Q since 2010: 24 (2010-03-04 .. 2015-12-17)
+== DD
+  CIK 1666700: 'DuPont de Nemours, Inc.' tickers=['DD'] former=['DowDuPont Inc.'] 10-K/10-Q since 2010: 37 (2017-11-06 .. 2026-11-03)
+  CIK 30554: 'EIDP, Inc.' tickers=['CTA-PB', 'CTA-PA'] former=['DUPONT E I DE NEMOURS & CO'] 10-K/10-Q since 2010: 68 (2010-02-17 .. 2026-11-12)
+== LIN
+  CIK 1707925: 'LINDE PLC' tickers=['LIN'] former=['ZAMALIGHT PLC'] 10-K/10-Q since 2010: 35 (2017-10-30 .. 2026-10-29)
+  CIK 884905: 'LINDE INC' tickers=[] former=['PRAXAIR INC'] 10-K/10-Q since 2010: 36 (2010-02-24 .. 2018-11-09)
+== LLL
+  CIK 1039101: 'L3 TECHNOLOGIES, INC.' tickers=[] former=['L 3 COMMUNICATIONS CORP'] 10-K/10-Q since 2010: 38 (2010-02-26 .. 2019-05-01)
+  CIK 1056239: 'L 3 COMMUNICATIONS HOLDINGS INC' tickers=[] former=[] 10-K/10-Q since 2010: 28 (2010-02-26 .. 2016-10-27)
+== FTI
+  CIK 1681459: 'TechnipFMC plc' tickers=['FTI'] former=['TechnipFMC Ltd'] 10-K/10-Q since 2010: 40 (2017-01-13 .. 2026-10-29)
+  CIK 1135152: 'FMC TECHNOLOGIES INC' tickers=[] former=[] 10-K/10-Q since 2010: 28 (2010-03-01 .. 2016-10-27)
+== BG
+  CIK 1996862: 'Bunge Global SA' tickers=['BG'] former=[] 10-K/10-Q since 2010: 12 (2024-02-22 .. 2026-10-29)
+  CIK 1144519: 'BUNGELTD' tickers=[] former=['BUNGE LTD', 'Bunge LTD'] 10-K/10-Q since 2010: 56 (2010-03-01 .. 2023-10-26)
+== GOOG
+  CIK 1652044: 'Alphabet Inc.' tickers=['GOOGL', 'GOOG', 'GOOGM', 'GOOGN'] former=[] 10-K/10-Q since 2010: 45 (2015-10-29 .. 2026-10-29)
+  CIK 1288776: 'GOOGLE INC.' tickers=[] former=[] 10-K/10-Q since 2010: 25 (2010-02-12 .. 2016-02-11)
+== SNDK
+  CIK 2023554: 'Sandisk Corp' tickers=['SNDK'] former=[] 10-K/10-Q since 2010: 8 (2025-03-07 .. 2026-10-30)
+  CIK 1000180: 'SANDISK CORP' tickers=[] former=[] 10-K/10-Q since 2010: 26 (2010-02-25 .. 2016-05-02)
+== TFCF
+  CIK 1308161: 'TWENTY-FIRST CENTURY FOX, INC.' tickers=[] former=['NEWS CORP'] 10-K/10-Q since 2010: 37 (2010-02-04 .. 2019-02-06)

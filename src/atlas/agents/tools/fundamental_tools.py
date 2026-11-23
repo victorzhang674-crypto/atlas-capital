@@ -239,6 +239,12 @@ _SENTENCE_BREAK = re.compile(r"(?<=[.!?])\s+|\n+")
 _APOSTROPHES = str.maketrans({"\u2019": "'", "\u2018": "'"})
 _QUOTE_MAX = 200
 """Longest quoted sentence (characters) in a going-concern FLAG."""
+_PAGE_FURNITURE = re.compile(
+    r"[a-z]{0,2}-?\d{1,4}|-\s*\d{1,4}\s*-|table\s+of\s+contents|index|page\s+\d{1,4}",
+    re.IGNORECASE,
+)
+"""A page number ("45", "F-32", "- 7 -", "Page 12") or page header ("Table of Contents",
+"Index") left between the halves of a sentence broken across a page."""
 
 
 @functools.lru_cache(maxsize=256)
@@ -252,14 +258,16 @@ def going_concern_sentences(
 ) -> tuple[str, ...]:
     """The sentences of `text` (split after `.`, `!`, `?` and at line breaks, a piece starting
     with a lower-case letter going on with the one before, as after "Inc." or a line break
-    inside a sentence; whitespace collapsed) holding every phrase of `terms` and none of
-    `exclusions` (case-insensitive, whole words, curly apostrophes read as straight ones), each
-    once, in order."""
+    inside a sentence, past any page number or header between them; whitespace collapsed)
+    holding every phrase of `terms` and none of `exclusions` (case-insensitive, whole words,
+    curly apostrophes read as straight ones), each once, in order."""
     needed, banned = tuple(terms), tuple(exclusions)
     whole: list[str] = []
     for piece in _SENTENCE_BREAK.split(text):
         sentence = " ".join(piece.split())
         if whole and sentence[:1].islower():
+            while len(whole) > 1 and _PAGE_FURNITURE.fullmatch(whole[-1]):
+                whole.pop()
             whole[-1] = f"{whole[-1]} {sentence}"
         elif sentence:
             whole.append(sentence)

@@ -1,0 +1,5 @@
+$ uv run python Planning/stages/stage-29-fundamental-analyst/artifacts/main_lake_whole_read_followup4.py
+pyarrow 26.0.0; filing_text read whole in 29.4 s: 30597 rows, 742 symbols, text 2.14 GiB (32-bit offsets end at 2 GiB)
+sorted by the primary key: True
+columns: ['symbol', 'cik', 'accn', 'form', 'period_end', 'filed', 'accepted_at', 'available_at', 'section', 'source', 'document', 'url', 'sha256', 'status', 'chars', 'text']
+exit 0

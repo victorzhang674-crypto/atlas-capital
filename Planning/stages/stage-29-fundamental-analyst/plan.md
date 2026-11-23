@@ -163,3 +163,41 @@ The backfill (748 symbols, 30,597 filings) was read before the swap, and the rea
   - A whole-table `Lake.read_table("filing_text")` overflows Arrow's 2 GB string offsets. Every reader in the code reads one symbol at a time.
   - A ticker whose issuer moved to a new CIK (ExxonMobil, 2026) has only the new CIK's filings and fundamentals (Stage 09's `CikMap`).
   - GE's 10-Q MD&A sits under no heading the extraction reads, so its contents entry is stored.
+
+## Follow-up 4 — the last open items (2026-11-23)
+
+Owner: "can you complete the still open ones and complete them?" The open items, from the Backlog and the follow-up 3 audit:
+- Bank of New York Mellon and Northern Trust 10-Q MD&As under no heading read here (70 filings);
+- GE's 10-Q contents entries;
+- Windstream's 2019 going-concern quote, which starts at a page header;
+- ExxonMobil read under its 2026 CIK only (Stage 09's `CikMap`);
+- the whole-table `filing_text` read overflowing Arrow's string offsets (Stage 06's `Lake.read_table`);
+- the uncommitted CI record `ci-runs-c579104.json`.
+
+Graph wiring stays with Stage 35 (owner, follow-up 2: "Leave it to Stage 35").
+
+The Stage 06 and Stage 09 items change code of done stages. The owner's request is the authorization; it is recorded in the Decisions log. No spec change: `config/cik_overrides.yaml` gains optional keys; the design spec does not describe it.
+
+The items were investigated first: every main-lake filing without an MD&A or with one under 15,000 characters (156) was fetched again and read by hand, and the symbols whose fundamentals start long after their S&P 500 window were listed. Both showed more than the Backlog said, so this plan covers the whole of what was found. Each change is test-first.
+
+- **J1, whole-table read (Stage 06).** `Lake.read_table` sorts by the key columns alone and takes every column in its 64-bit-offset form (`large_string`, ...), so a text column past 2 GB no longer overflows. Evidence: a whole-table read of the main lake's `filing_text`.
+- **J2, MD&A headings.** The 156 filings were read; the rules below come from them.
+  - 10-Q headings: "Items 2. and 3." (BNY Mellon, Northern Trust), "ITEM" on its own line (A. O. Smith), "MANGEMENT'S" (Gardner Denver).
+  - A 10-Q MD&A ends at a later Part I Item 1 (statements after the MD&A).
+  - Exhibit and fallback headings: a heading run into its first paragraph and marked "(MD&A)" or ", or MD&A," (GE, JPMorgan, Avery Dennison).
+  - Ends: an upper-case "FINANCIAL STATEMENTS" line (GE) and "Report of Management" (U.S. Bancorp) end an MD&A. A statement line ending in "Information", "Analysis", "Overview", "Review", "Data", "Summary", "Highlights" or "Discussion" does not (Synchrony, JPMorgan, PNC).
+  - Ends that are no heading: a link to part of an item ("Item 8. … – Note 5", Noble Energy), or a line going on with the sentence before it ("… included under" / "Item 8.", Loews; PNC).
+  - More wordings of "incorporated … by reference" (U.S. Bancorp, Total System Services), so their annual-report exhibits are read.
+  - A later MD&A heading must follow the short MD&A, not sit inside it (Texas Instruments).
+- **J3, going-concern quote.** A page number or header between the halves of a sentence is left out (Windstream).
+- **J4, former CIKs (Stage 09).** 16 members filed under another CIK before:
+  - holding companies or new parents: ExxonMobil, BlackRock, APA, Disney, Cigna, Broadcom, Alphabet (GOOG, GOOGL), DuPont, Linde, TechnipFMC, L3, Bunge, Paramount (SKYD), Viatris;
+  - SanDisk's reused ticker.
+
+  `CikOverride` gains `former` (CIK, `until`, SEC name) and `since`. `CikMap.sources` gives each symbol's CIKs with their filing dates. The fundamentals, filing-text and earnings ingests read every source over its dates, and a co-registrants' filing is read once. Each pair is checked on EDGAR (`former_ciks_followup4.py`). Twenty-First Century Fox (TFCF, TFCFA), never mapped, gets its CIK.
+- **J5, main lake.**
+  - On a scratch copy (`main_lake_followup4.py`), re-ingest the former-CIK symbols: facts, SEC events, reactions, MD&As.
+  - Re-extract with the new code every stored MD&A row the new rules can change (1,816, found from the stored text), plus 600 random others as a control. Fetch every changed row again.
+  - Check every table against the main lake, then rebuild the factor and risk stores.
+  - Swap from the owner's Terminal panel with backups, then read back.
+- **J6.** Mutation testing of the changed functions, the review of every going-concern FLAG, verification, self-audit, records, git (with the CI record of `c579104`).

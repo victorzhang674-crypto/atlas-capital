@@ -413,8 +413,32 @@ class Lake:
             table = dataset.to_table(filter=expression)
         else:
             table = schema.arrow_schema().empty_table()
-        table = table.sort_by([(k, "ascending") for k in schema.primary_key]).select(wanted)
-        return to_pandas(schema, table)
+        return to_pandas(schema, _sorted(table, schema.primary_key, wanted))
+
+
+def _large_type(dtype: pa.DataType) -> pa.DataType:
+    """`dtype` with 64-bit offsets (`large_string`, `large_binary`, `large_list`); other types
+    unchanged."""
+    if pa.types.is_string(dtype):
+        return pa.large_string()
+    if pa.types.is_binary(dtype):
+        return pa.large_binary()
+    if pa.types.is_list(dtype):
+        return pa.large_list(_large_type(dtype.value_type))
+    return dtype
+
+
+def _sorted(table: pa.Table, keys: Sequence[str], wanted: Sequence[str]) -> pa.Table:
+    """The `wanted` columns of `table` in `keys` order. The order comes from the key columns
+    alone, and each column is taken in its 64-bit-offset form: taking a chunked column joins
+    its chunks, and a text column past 2 GB in all (`filing_text`) would overflow 32-bit
+    string offsets (Stage 29 follow-up 4)."""
+    order = pc.sort_indices(table.select(list(keys)), [(k, "ascending") for k in keys])
+    columns = []
+    for name in wanted:
+        column = table.column(name)
+        columns.append(column.cast(_large_type(column.type)).take(order))
+    return pa.table(columns, names=list(wanted))
 
 
 def to_pandas(schema: TableSchema, table: pa.Table) -> pd.DataFrame:

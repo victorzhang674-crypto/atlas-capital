@@ -1,0 +1,274 @@
+# re-extraction of stored rows with the final follow-up 4 code (filing_text_recheck_followup4.py; candidates: filing_text_candidates_followup4.py plus the Part II and auditor-line scans in the worklog)
+done 2513 same 1673
+                                    size  sum
+why                                          
+auditor_line                          62   58
+control                              600    3
+exhibit_or_fallback                 1320  342
+inner_item1                          278  265
+inner_item1+exhibit_or_fallback       35   19
+inner_item1+open_last_line             2    2
+open_last_line                         9    9
+open_last_line+exhibit_or_fallback    16   16
+part_ii_item                          35   25
+problem                              156  101
+
+# kinds of change (filing_text_recheck_review_followup4.py)
+kind                                different start  found (was none)  longer, same start  shorter, same start
+why                                                                                                           
+auditor_line                                      0                 0                   0                   58
+control                                           1                 0                   0                    2
+exhibit_or_fallback                             166                 0                  42                  134
+inner_item1                                      17                 0                   0                  248
+inner_item1+exhibit_or_fallback                   1                 0                   0                   18
+inner_item1+open_last_line                        0                 0                   2                    0
+open_last_line                                    0                 0                   9                    0
+open_last_line+exhibit_or_fallback                6                 0                  10                    0
+part_ii_item                                     19                 0                   0                    6
+problem                                           7                90                   3                    1
+SHORTER: line now ending the section (first 45 chars):
+    81 ITEM 1. FINANCIAL STATEMENTS
+    63 Item 3. Quantitative and Qualitative Disclosu
+    60 Report of Independent Registered Public Accou
+    37 Item 1. Financial Statements
+    36 Item 1: Financial Statements
+    23 ITEM 1. FINANCIAL STATEMENTS (Unaudited)
+    21 Item 1. Financial Statements and Notes
+    20 ITEM 3. QUANTITATIVE AND QUALITATIVE DISCLOSU
+    15 Item 1. Financial Statements.
+    15 ITEM 1. CONDENSED CONSOLIDATED FINANCIAL STAT
+    14 Item 7A. Quantitative and Qualitative Disclos
+    14 Report of Management
+    12 REPORT OF MANAGEMENT
+    10 FINANCIAL STATEMENTS
+     7 Item 1. Financial Statements and Supplementar
+     7 ITEM 1.
+     6 ITEM 1. FINANCIAL STATEMENTS (UNAUDITED)
+     6 Part II. Item 7A. Quantitative and Qualitativ
+     6 Item 3. QUANTITATIVE AND QUALITATIVE DISCLOSU
+     6 PART II ITEM 7A. QUANTITATIVE AND QUALITATIVE
+     3 Item 3. Quantitative and Qualitative
+     1 ITEM 7A. QUANTITATIVE AND QUALITATIVE DISCLOS
+     1 Item 7A. QUANTITATIVE AND QUALITATIVE DISCLOS
+     1 ITEM 7A. QUANTITATIVE
+     1 ITEM 7A. QUANTITATIVE AND
+     1 Item 7A.Quantitative and Qualitative Disclosu
+LONGER: symbols [('PNC', 28), ('BNY', 12), ('AIG', 4), ('CVS', 3), ('MCD', 3), ('MS', 3), ('CAH', 2), ('AAPL', 1), ('AXP', 1), ('CBRE', 1), ('CLX', 1), ('ED', 1), ('IP', 1), ('L', 1), ('MDLZ', 1), ('NBL', 1), ('NUE', 1), ('STX', 1)]
+DIFFERENT START:
+  AA 10-Q 2017-11-06 53291->40368 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  AET 10-K 2015-02-27 321491->324480 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'Management’s Discussion and Analysis of Financial Condition '
+  AET 10-K 2016-02-19 361715->364704 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'Management’s Discussion and Analysis of Financial Condition '
+  ARNC 10-Q 2017-11-06 53291->40368 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2015-05-08 115828->44144 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2015-08-06 140830->63413 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2015-11-06 157796->73440 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2016-05-10 138439->55593 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2016-08-10 162062->72193 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2016-11-09 166030->73951 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2017-05-10 149357->56437 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2017-08-09 175607->73807 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2017-11-09 189873->82303 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2018-05-10 154745->54228 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  AXON 10-Q 2018-08-09 182107->70067 primary | "Item 2. Management's Discussion and Analysis of Financial Co" -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  BBBY 10-Q 2015-10-07 42581->37568 primary | "2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI" -> "ITEM\n2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CO"
+  BBBY 10-Q 2016-01-07 43157->38301 primary | "2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI" -> "ITEM\n2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CO"
+  BBBY 10-Q 2016-07-06 35145->30019 primary | "2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI" -> "ITEM\n2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CO"
+  BBBY 10-Q 2017-01-04 41287->36432 primary | "2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI" -> "ITEM\n2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CO"
+  BBBY 10-Q 2017-06-30 37009->31770 primary | "2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI" -> "ITEM\n2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CO"
+  BBBY 10-Q 2017-12-28 27136->39481 primary | "2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI" -> "ITEM\n2. MANAGEMENT'S DISCUSSION AND ANALYSIS OF FINANCIAL CO"
+  BMS 10-Q 2015-05-01 19090->12983 primary | 'Management’s Discussion and Analysis should be read in conju' -> 'ITEM 2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  BMS 10-Q 2016-04-29 18611->12156 primary | 'Management’s Discussion and Analysis should be read in conju' -> 'ITEM 2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  CVX 10-K 2016-02-25 48600->52555 primary | "Management's Discussion and Analysis of Financial Condition " -> "Management's Discussion and Analysis of Financial Condition "
+  CVX 10-K 2021-02-25 55626->58690 primary | "Management's Discussion and Analysis of Financial Condition " -> "Management's Discussion and Analysis of Financial Condition "
+  CVX 10-K 2023-02-23 55628->58827 primary | "Management's Discussion and Analysis of Financial Condition " -> "Management's Discussion and Analysis of Financial Condition "
+  CVX 10-K 2025-02-21 55023->58320 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'Management’s Discussion and Analysis of Financial Condition '
+  EMR 10-Q 2015-02-04 20111->15879 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2015-05-06 31962->27287 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2015-08-05 32891->28454 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2016-02-03 22062->17067 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2016-05-05 33146->29396 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2016-08-03 32615->28865 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2017-02-08 20147->16117 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2017-05-04 29205->25080 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2017-08-02 31590->27198 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2018-02-07 19798->16404 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2018-05-02 28993->25790 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2018-08-08 31619->27882 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2019-02-06 19322->15017 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2019-05-09 25922->22492 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2019-08-07 25893->22817 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2020-02-05 16228->12835 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2020-04-24 33928->27582 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2020-08-05 33806->27712 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2021-02-03 19186->15468 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2021-05-05 28016->23570 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2021-08-04 27553->23844 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2022-02-02 25780->20711 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2022-05-04 35130->30911 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2022-08-09 38011->34501 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2023-02-08 29524->24876 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2023-05-03 40963->37178 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2023-08-02 41895->37915 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2024-02-07 23312->19339 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2024-05-08 34354->30826 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2024-08-07 37833->33675 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2025-02-05 24062->17818 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2025-05-07 38359->31056 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2025-08-06 36825->30919 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2026-02-03 21227->16703 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2026-05-05 34160->29563 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EMR 10-Q 2026-08-04 34025->29594 primary | "Management's Discussion and Analysis of Financial Condition " -> "Items 2 and 3.\nManagement's Discussion and Analysis of Finan"
+  EXC 10-Q 2016-08-09 810168->276632 primary | 'ITEM 2. Management’s Discussion and Analysis of Financial Co' -> 'Item 2. Management’s Discussion and Analysis\nof Financial Co'
+  EXC 10-Q 2016-10-26 843967->297534 primary | 'ITEM 2. Management’s Discussion and Analysis of Financial Co' -> 'Item 2. Management’s Discussion and Analysis\nof Financial Co'
+  FITB 10-Q 2015-11-05 241801->261183 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'Management’s Discussion and Analysis of Financial\nCondition '
+  FITB 10-Q 2016-11-09 257552->278131 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'MD&A: Management’s Discussion and Analysis of\nFinancial\nCET1'
+  FITB 10-K 2017-02-24 297489->311835 primary | 'MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION ' -> 'MD&A: Management’s\nDiscussion and Analysis of Financial Cond'
+  FITB 10-Q 2017-08-08 179752->237163 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'MD&A: Management’s Discussion and Analysis of Financial Cond'
+  GAS 10-Q 2017-05-03 391491->297105 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-Q 2017-08-02 440780->330359 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-Q 2017-11-01 493676->365966 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-Q 2018-05-02 323237->205263 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-Q 2018-08-08 447457->342629 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-Q 2018-11-07 519900->377916 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-Q 2019-05-01 258571->244221 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-Q 2019-07-31 319559->289047 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-Q 2019-10-30 360059->320152 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  GAS 10-K 2021-02-18 303960->302453 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nSouthern Compa"
+  GAS 10-K 2022-02-17 290562->289055 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nSouthern Compa"
+  GAS 10-K 2023-02-16 280930->279423 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nOVERVIEW\nBusin"
+  GAS 10-K 2024-02-15 285834->284327 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nOVERVIEW\nBusin"
+  GAS 10-K 2025-02-20 272633->271126 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nOVERVIEW\nBusin"
+  GAS 10-K 2026-02-19 278067->276560 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nOVERVIEW\nBusin"
+  GE 10-Q 2020-10-28 1193->168876 primary | 'Item 2. Management’s Discussion and Analysis of Financial Co' -> 'MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION '
+  GE 10-K 2021-02-12 19552->267692 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION '
+  GE 10-Q 2021-07-27 1189->126766 primary | 'Item 2. Management’s Discussion and Analysis of Financial Co' -> 'MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION '
+  GE 10-Q 2021-10-26 1195->143124 primary | 'Item 2. Management’s Discussion and Analysis of Financial Co' -> 'MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITION '
+  GNW 10-Q 2017-05-03 179776->197478 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  GRMN 10-Q 2019-05-01 26333->26338 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  HAS 10-Q 2016-05-05 43376->45031 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  HAS 10-Q 2016-07-26 62137->63788 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  HAS 10-Q 2016-11-02 46892->67741 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  HAS 10-Q 2017-05-10 53625->53622 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  HAS 10-Q 2017-11-08 73107->73104 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  HAS 10-Q 2018-05-02 56209->57976 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  HAS 10-Q 2018-11-01 59335->88062 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  HAS 10-Q 2019-05-01 54392->54657 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  HWM 10-Q 2017-11-06 53291->40368 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  INTC 10-Q 2020-04-24 18673->17723 primary | "Management's Discussion & Analysis\nMG&A\nMarketing, general a" -> "MANAGEMENT'S DISCUSSION AND ANALYSIS\nFor additional key high"
+  INTC 10-Q 2020-07-24 24595->23724 primary | "MD&A Management's Discussion & Analysis\nMG&A Marketing, gene" -> "MANAGEMENT'S DISCUSSION AND ANALYSIS\nFor additional key high"
+  IR 10-Q 2020-05-15 227289->69268 primary | 'Item 2. Management’s Discussion and Analysis of Financial Co' -> 'ITEM 2. MANGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CON'
+  IR 10-Q 2018-04-27 10771->65696 primary | 'Item 2. Management’s Discussion and Analysis of Financial Co' -> 'ITEM 2.\nMANGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CON'
+  IR 10-Q 2019-04-30 11014->61570 primary | 'Item 2. Management’s Discussion and Analysis of Financial Co' -> 'ITEM 2.\nMANGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CON'
+  JPM 10-K 2015-02-24 405880->452522 primary | 'Management’s discussion and analysis\nOFF-BALANCE SHEET ARRAN' -> 'Management’s discussion and analysis\nThis section of JPMorga'
+  JPM 10-K 2016-02-23 391680->427588 primary | 'Management’s discussion and analysis\nAccrued interest and ac' -> 'Management’s discussion and analysis\nThis section of JPMorga'
+  JPM 10-Q 2016-08-03 33491->269086 primary | 'MD&A: Management discussion and analysis\nMMDA: Money Market ' -> 'The following is management’s discussion and analysis (“MD&A'
+  JPM 10-Q 2016-11-01 33462->290357 primary | 'MD&A: Management discussion and analysis\nMMDA: Money Market ' -> 'The following is management’s discussion and analysis (“MD&A'
+  JPM 10-K 2017-02-28 367212->402200 primary | 'Management’s discussion and analysis\nto loan growth in the a' -> 'Management’s discussion and analysis\nThis section of JPMorga'
+  JPM 10-Q 2017-05-02 37777->245010 primary | 'MD&A: Management’s discussion and analysis\nMMDA: Money Marke' -> 'The following is management’s discussion and analysis (“MD&A'
+  JPM 10-Q 2017-08-02 34276->275964 primary | 'MD&A: Management’s discussion and analysis\nMMDA: Money Marke' -> 'The following is management’s discussion and analysis (“MD&A'
+  JPM 10-Q 2017-11-01 34421->277957 primary | 'MD&A: Management’s discussion and analysis\nMMDA: Money Marke' -> 'The following is management’s discussion and analysis (“MD&A'
+  JPM 10-K 2018-02-27 369467->403355 primary | 'Management’s discussion and analysis\nAccrued interest and ac' -> 'Management’s discussion and analysis\nThis section of JPMorga'
+  JPM 10-Q 2018-05-02 34617->230673 primary | 'MD&A: Management’s discussion and analysis\nMMDA: Money Marke' -> 'The following is management’s discussion and analysis (“MD&A'
+  JPM 10-Q 2018-08-01 34440->257096 primary | 'MD&A: Management’s discussion and analysis\nMoody’s: Moody’s ' -> 'The following is management’s discussion and analysis (“MD&A'
+  JPM 10-Q 2018-10-31 33202->267505 primary | 'MD&A: Management’s discussion and analysis\nMoody’s: Moody’s ' -> 'The following is management’s discussion and analysis (“MD&A'
+  JPM 10-K 2019-02-26 362255->410835 primary | 'Management’s discussion and analysis\nConsolidated cash flows' -> 'Management’s discussion and analysis\nThe following is Manage'
+  JPM 10-Q 2019-05-02 32035->206803 primary | 'MD&A: Management’s discussion and analysis\nMoody’s: Moody’s ' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2019-08-06 32343->238748 primary | 'MD&A: Management’s discussion and analysis\nMoody’s: Moody’s ' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2019-11-04 34093->244511 primary | 'MD&A: Management’s discussion and analysis\nMoody’s: Moody’s ' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-K 2020-02-25 315619->358911 primary | 'Management’s discussion and analysis\nConsolidated cash flows' -> 'Management’s discussion and analysis\nThe following is Manage'
+  JPM 10-Q 2020-05-07 37113->258408 primary | 'MD&A: Management’s discussion and analysis\nMMLF: Money Marke' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2020-08-03 37472->300950 primary | 'MD&A: Management’s discussion and analysis\nMMLF: Money Marke' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2020-11-02 37808->316151 primary | 'MD&A: Management’s discussion and analysis\nMMLF: Money Marke' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-K 2021-02-23 381082->439439 primary | 'Management’s discussion and analysis\ncredit losses were $12.' -> 'Management’s discussion and analysis: 159 Report of Independ'
+  JPM 10-Q 2021-05-04 37657->248014 primary | 'MD&A: Management’s discussion and analysis\nMMLF: Money Marke' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2021-08-02 38249->275189 primary | 'MD&A: Management’s discussion and analysis\nMMLF: Money Marke' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2021-11-02 37845->280519 primary | 'MD&A: Management’s discussion and analysis\nMMLF: Money Marke' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-K 2022-02-22 355029->395558 primary | 'Management’s discussion and analysis\nThere was a $148 millio' -> 'Management’s discussion and analysis: 157 Report of Independ'
+  JPM 10-Q 2022-05-03 32181->240155 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2022-08-03 32621->267525 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2022-11-03 32760->274913 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-K 2023-02-21 356038->397200 primary | 'Management’s discussion and analysis\non the Consolidated bal' -> 'Management’s discussion and analysis: 156 Report of Independ'
+  JPM 10-Q 2023-05-03 34337->239284 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2023-08-03 37838->303331 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2023-11-01 39392->309119 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-K 2024-02-16 287669->426445 primary | 'Management’s discussion and analysis\nFIRMWIDE RISK MANAGEMEN' -> 'Management’s discussion and analysis: 166 Consolidated Finan'
+  JPM 10-Q 2024-05-01 34705->252019 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2024-08-02 32170->281197 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2024-10-30 34264->282887 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-K 2025-02-14 274485->402889 primary | 'Management’s discussion and analysis\nThree lines of defense\n' -> 'Management’s discussion and analysis: 172 Consolidated Finan'
+  JPM 10-Q 2025-05-01 33526->228809 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2025-08-05 32910->261240 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2025-11-04 36912->268854 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-K 2026-02-13 274487->390772 primary | 'Management’s discussion and analysis\nThree lines of defense\n' -> 'Management’s discussion and analysis\nThe following is Manage'
+  JPM 10-Q 2026-05-01 33171->234280 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2026-08-06 33651->266367 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  JPM 10-Q 2026-11-03 35526->271225 primary | 'MD&A: Management’s discussion and analysis\nMeasurement alter' -> 'The following is Management’s discussion and analysis of the'
+  KIM 10-Q 2015-08-03 53519->59686 primary | "2. Management's Discussion and Analysis of Financial Conditi" -> "Item\n2. Management's Discussion and Analysis of Financial Co"
+  LLL 10-Q 2015-04-30 54645->54645 primary | 'MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL\nCONDITION ' -> 'ITEM\n2.\nMANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL\nCO'
+  NOV 10-Q 2018-04-27 56699->39718 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  NTRS 10-Q 2015-07-29 66426->87294 primary | 'of Management’s Discussion and Analysis of Financial Conditi' -> 'Items 2. and 3. Management’s Discussion and Analysis of Fina'
+  ON 10-Q 2017-08-07 78680->58618 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  POM 10-Q 2016-08-09 810168->276632 primary | 'ITEM 2. Management’s Discussion and Analysis of Financial Co' -> 'Item 2. Management’s Discussion and Analysis\nof Financial Co'
+  POM 10-Q 2016-10-26 843967->297534 primary | 'ITEM 2. Management’s Discussion and Analysis of Financial Co' -> 'Item 2. Management’s Discussion and Analysis\nof Financial Co'
+  RF 10-K 2016-02-16 412245->234089 primary | 'MD&A - Management’s Discussion and Analysis of Financial Con' -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  RF 10-K 2017-02-24 410305->233185 primary | 'MD&A - Management’s Discussion and Analysis of Financial Con' -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  RF 10-K 2018-02-26 379749->227166 primary | 'MD&A - Management’s Discussion and Analysis of Financial Con' -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  RF 10-K 2019-02-22 384095->218154 primary | 'MD&A - Management’s Discussion and Analysis of Financial Con' -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  RF 10-K 2020-02-21 375938->212217 primary | 'MD&A - Management’s Discussion and Analysis of Financial Con' -> 'Item 7. Management’s Discussion and Analysis of Financial Co'
+  ROL 10-Q 2016-10-28 28253->23915 primary | '2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI' -> 'ITEM\n2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  ROL 10-Q 2018-10-26 27855->21134 primary | '2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI' -> 'ITEM\n2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  ROL 10-Q 2020-04-30 30986->21592 primary | '2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI' -> 'ITEM\n2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  ROL 10-Q 2020-07-31 33568->23812 primary | '2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI' -> 'ITEM\n2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  ROL 10-Q 2020-10-28 33771->26602 primary | '2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI' -> 'ITEM\n2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  ROL 10-Q 2021-04-30 29364->20677 primary | '2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CONDITI' -> 'ITEM\n2. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  ROL 10-Q 2021-07-30 27210->27207 primary | '2. MANAGEMENT’S\nDISCUSSION AND ANALYSIS OF FINANCIAL CONDITI' -> 'ITEM\n2. MANAGEMENT’S\nDISCUSSION AND ANALYSIS OF FINANCIAL CO'
+  SO 10-Q 2015-05-07 312962->236650 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2015-08-05 421526->317921 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2015-11-05 454778->329510 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2016-05-05 309208->226380 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2016-08-08 365725->264233 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2016-11-04 428680->294810 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2017-05-03 391491->297105 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2017-08-02 440780->330359 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2017-11-01 493676->365966 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2018-05-02 323237->205263 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2018-08-08 447457->342629 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2018-11-07 519900->377916 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2019-05-01 258571->244221 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2019-07-31 319559->289047 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-Q 2019-10-30 360059->320152 primary | "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION " -> "MANAGEMENT'S DISCUSSION AND ANALYSIS OF\nFINANCIAL CONDITION "
+  SO 10-K 2021-02-18 303960->302453 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nSouthern Compa"
+  SO 10-K 2022-02-17 290562->289055 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nSouthern Compa"
+  SO 10-K 2023-02-16 280930->279423 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nOVERVIEW\nBusin"
+  SO 10-K 2024-02-15 285834->284327 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nOVERVIEW\nBusin"
+  SO 10-K 2025-02-20 272633->271126 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nOVERVIEW\nBusin"
+  SO 10-K 2026-02-19 278067->276560 primary | "Combined Management's Discussion and Analysis of Financial C" -> "COMBINED MANAGEMENT'S DISCUSSION AND ANALYSIS\nOVERVIEW\nBusin"
+  SW 10-Q 2024-11-08 73066->40268 primary | 'Item 2. Management’s Discussion and Analysis of Financial Co' -> 'MANAGEMENT’S DISCUSSION AND ANALYSIS OF THE FINANCIAL CONDIT'
+  TWX 10-Q 2015-08-05 56158->73645 primary | 'MANAGEMENT’S DISCUSSION AND ANALYSIS\nOF RESULTS OF OPERATION' -> 'MANAGEMENT’S DISCUSSION AND ANALYSIS\nOF RESULTS OF OPERATION'
+  VNO 10-Q 2015-05-04 73262->67216 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  VNO 10-Q 2015-08-03 102380->97402 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  VNO 10-Q 2015-11-02 105002->99995 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  VNO 10-Q 2016-05-02 70189->64764 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  VRT 10-K 2019-03-13 13534->13533 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'Item 7.\nManagement’s Discussion and Analysis of Financial Co'
+  VRT 10-K 2020-03-12 14663->14662 primary | 'Management’s Discussion and Analysis of Financial Condition ' -> 'Item 7.\nManagement’s Discussion and Analysis of Financial Co'
+  VZ 10-Q 2016-10-26 101236->94891 primary | '2. Management’s Discussion and Analysis of Financial Conditi' -> 'Item\n2. Management’s Discussion and Analysis of Financial Co'
+  EXPE 10-K 2022-02-11 246651->81438 primary | 'Item 7 Management’s Discussion and Analysis of Financial Con' -> 'Part II. Item 7. Management’s Discussion and Analysis of Fin'
+  EXPE 10-K 2023-02-10 233082->73429 primary | 'Item 7 Management’s Discussion and Analysis of Financial Con' -> 'Part II. Item 7. Management’s Discussion and Analysis of Fin'
+  EXPE 10-K 2024-02-09 241737->70741 primary | 'Item 7 Management’s Discussion and Analysis of Financial Con' -> 'Part II. Item 7. Management’s Discussion and Analysis of Fin'
+  EXPE 10-K 2025-02-07 233630->68489 primary | 'Item 7 Management’s Discussion and Analysis of Financial Con' -> 'Part II. Item 7. Management’s Discussion and Analysis of Fin'
+  EXPE 10-K 2026-02-13 218425->64149 primary | 'Item 7. Management’s Discussion and Analysis of Financial Co' -> 'Part II. Item 7. Management’s Discussion and Analysis of Fin'
+  HIG 10-K 2017-02-24 765389->358133 primary | 'Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2018-02-23 714478->333713 primary | 'Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2019-02-22 722187->340409 primary | 'Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2020-02-21 721707->323154 primary | 'Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2021-02-19 798654->370855 primary | 'Item 7. MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2022-02-18 761443->355595 primary | 'Item 7.\nMANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2023-02-24 722286->333713 primary | 'Item 7.\nMANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2024-02-23 703717->315691 primary | 'Item 7.\nMANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2025-02-21 678598->307147 primary | 'Item 7.\nMANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CO' -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  HIG 10-K 2026-02-20 670856->306336 primary | "Item 7.\nManagement's Discussion and Analysis of Financial Co" -> "Part II - Item 7. Management's Discussion and Analysis of Fi"
+  RMD 10-K 2022-08-12 50416->50428 primary | 'ITEM 7 MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CON' -> 'PART II Item 7\nRESMED INC. AND SUBSIDIARIES\nManagement’s Dis'
+  RMD 10-K 2023-08-11 45242->45254 primary | 'ITEM 7 MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CON' -> 'PART II Item 7\nRESMED INC. AND SUBSIDIARIES\nManagement’s Dis'
+  RMD 10-K 2024-08-09 45925->45937 primary | 'ITEM 7 MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CON' -> 'PART II Item 7\nRESMED INC. AND SUBSIDIARIES\nManagement’s Dis'
+  RMD 10-K 2025-08-08 46415->46427 primary | 'ITEM 7 MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CON' -> 'PART II Item 7\nRESMED INC. AND SUBSIDIARIES\nManagement’s Dis'
+  RMD 10-K 2026-08-13 49899->49911 primary | 'ITEM 7 MANAGEMENT’S DISCUSSION AND ANALYSIS OF FINANCIAL CON' -> 'PART II Item 7\nRESMED INC. AND SUBSIDIARIES\nManagement’s Dis'

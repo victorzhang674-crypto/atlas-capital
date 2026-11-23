@@ -9,6 +9,7 @@ import pytest
 import respx
 from fundamentals_helpers import (
     AAPL,
+    FIXTURES,
     JPM,
     MSFT,
     companyfacts,
@@ -26,6 +27,8 @@ from atlas.core.storage import Lake
 from atlas.data.fundamentals import (
     FUNDAMENTALS_FACTS,
     CikMap,
+    CikOverride,
+    FormerCik,
     Fundamentals,
     FundamentalsIngestReport,
     fundamentals_pit,
@@ -174,3 +177,89 @@ def test_ingest_dedupes_after_normalising(
     assert report.symbols_failed == ("BRK.B",)  # CIK known, no companyfacts recorded
     facts_calls = [c for c in sec.calls if "/companyfacts/CIK0000320193" in c.request.url.path]
     assert len(facts_calls) == 1
+
+
+def test_a_former_cik_adds_its_facts_filed_until_its_last_day(
+    sec: respx.MockRouter, tmp_lake: Lake
+) -> None:
+    """Stage 29 follow-up 4: a symbol whose issuer moved to a new CIK (ExxonMobil 2026, Disney
+    2019, ...) reads the former CIK's facts filed up to `until` and the current CIK's facts filed
+    from `since`, each row with the CIK that filed it. Here MSFT's CIK plays the former one."""
+    until, since = date(2020, 6, 30), date(2019, 1, 1)
+    override = CikOverride(
+        symbol="AAPL", cik=AAPL, name="Apple", evidence="e", since=since,
+        former=(FormerCik(cik=MSFT, until=until, name="Microsoft"),),
+    )  # fmt: skip
+    cik_map = CikMap({"AAPL": AAPL}).with_overrides((override,))
+    report = ingest(tmp_lake, cik_map, ["AAPL"])
+    tags = repo_concept_map().tags()
+    own = parse_companyfacts(companyfacts(AAPL), symbol="AAPL", tags=tags)
+    former = parse_companyfacts(companyfacts(MSFT), symbol="AAPL", tags=tags)
+    own, former = own[own["filed"] >= since], former[former["filed"] <= until]
+    assert len(own) and len(former)
+    stored = tmp_lake.read_table(FUNDAMENTALS_FACTS.name)
+    assert report.rows == len(stored) == len(own) + len(former)
+    by_cik = stored.groupby("cik")["filed"].agg(["min", "max", "size"])
+    assert by_cik.loc[MSFT, "max"] <= until and by_cik.loc[MSFT, "size"] == len(former)
+    assert by_cik.loc[AAPL, "min"] >= since and by_cik.loc[AAPL, "size"] == len(own)
+    assert stored["available_at"].notna().all()
+
+
+def test_an_empty_current_cik_does_not_stop_the_former_one(
+    sec: respx.MockRouter, tmp_lake: Lake
+) -> None:
+    """A current CIK with no fact in its window (`since` after every filing) still lets the
+    former CIK's facts in."""
+    override = CikOverride(
+        symbol="AAPL", cik=AAPL, name="Apple", evidence="e", since=date(2099, 1, 1),
+        former=(FormerCik(cik=MSFT, until=date(2099, 1, 1), name="Microsoft"),),
+    )  # fmt: skip
+    report = ingest(tmp_lake, CikMap({"AAPL": AAPL}).with_overrides((override,)), ["AAPL"])
+    assert report.symbols_ok == ("AAPL",)
+    assert set(tmp_lake.read_table(FUNDAMENTALS_FACTS.name)["cik"]) == {MSFT}
+
+
+def test_a_co_registrants_fact_is_stored_once_under_the_current_cik(tmp_lake: Lake) -> None:
+    """A filing of co-registrants (L-3 Holdings and L-3 Communications) carries the same facts
+    under both CIKs: each fact is stored once, with the current CIK."""
+    twin = {**companyfacts(AAPL), "cik": 2}
+    override = CikOverride(
+        symbol="AAPL", cik=AAPL, name="Apple", evidence="e",
+        former=(FormerCik(cik=2, until=date(2099, 1, 1), name="Apple co-registrant"),),
+    )  # fmt: skip
+    with respx.mock(assert_all_called=False) as router:
+        router.get("https://data.sec.gov/api/xbrl/companyfacts/CIK0000000002.json").respond(
+            json=twin
+        )
+        router.get("https://data.sec.gov/submissions/CIK0000000002.json").respond(
+            content=(FIXTURES / "submissions" / "CIK0000320193.json").read_bytes()
+        )
+        router.route(host="data.sec.gov").mock(side_effect=serve_fixture)
+        report = ingest(tmp_lake, CikMap({"AAPL": AAPL}).with_overrides((override,)), ["AAPL"])
+    stored = tmp_lake.read_table(FUNDAMENTALS_FACTS.name)
+    assert report.rows == len(stored) == expected_rows(AAPL)
+    assert set(stored["cik"]) == {AAPL}
+
+
+def test_refresh_false_reads_the_archived_answers_of_every_cik(
+    sec: respx.MockRouter, tmp_lake: Lake
+) -> None:
+    """With `refresh=False` the companyfacts and submissions archived by an earlier run are
+    read for the current and the former CIK alike: no request is made."""
+    override = CikOverride(
+        symbol="AAPL", cik=AAPL, name="Apple", evidence="e",
+        former=(FormerCik(cik=MSFT, until=date(2020, 6, 30), name="Microsoft"),),
+    )  # fmt: skip
+    cik_map = CikMap({"AAPL": AAPL}).with_overrides((override,))
+    first = ingest(tmp_lake, cik_map, ["AAPL"])
+    calls = sum(route.call_count for route in sec.routes)
+    again = ingest_fundamentals(
+        tmp_lake, edgar_client(tmp_lake), ["AAPL"], cik_map=cik_map,
+        concept_map=repo_concept_map(), refresh=False,
+    )  # fmt: skip
+    assert (again.rows, again.symbols_ok) == (first.rows, ("AAPL",))
+    assert calls > 0 and sum(route.call_count for route in sec.routes) == calls
+    # and `refresh=True` asks EDGAR again for both CIKs: companyfacts and submissions of each
+    # (history pages never change and stay archived)
+    ingest(tmp_lake, cik_map, ["AAPL"])
+    assert sum(route.call_count for route in sec.routes) == calls + 4

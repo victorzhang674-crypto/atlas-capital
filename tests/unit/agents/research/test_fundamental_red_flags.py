@@ -259,3 +259,37 @@ def test_a_sentence_of_exactly_200_characters_is_quoted_whole() -> None:
     sentence = "B" * (200 - len(tail)) + tail
     assert len(sentence) == 200
     assert going_concern_rule(sentence, CFG).detail == f'MD&A: "{sentence}"'
+
+
+@pytest.mark.parametrize(
+    "furniture", ["F-32\nTable of Contents", "45", "Index", "Page 12", "- 7 -"]
+)
+def test_page_furniture_inside_a_sentence_is_left_out(furniture: str) -> None:
+    """Stage 29 follow-up 4: Windstream's 10-K of 2019-03-15 breaks its going-concern sentence
+    across a page: "... master lease agreement" / "F-32" / "Table of Contents" / "with Uniti,
+    ...". The page number and header between the two halves are not part of the sentence."""
+    first = (
+        "Our financial condition, the defaults under our debt agreements and master lease agreement"
+    )
+    second = (
+        "with Uniti, and the risks and uncertainties surrounding the Chapter 11 Cases, raise "
+        "substantial doubt about our ability to continue as a going concern."
+    )
+    text = f"Revenue fell.\n{first}\n{furniture}\n{second}\nWe filed a plan."
+    assert going_concern_sentences(text, CFG.going_concern_terms, ()) == (f"{first} {second}",)
+    # furniture followed by a capitalised sentence is kept as its own piece, and never joined
+    kept = f"Revenue fell.\n{furniture}\n{DOUBT}"
+    assert going_concern_sentences(kept, CFG.going_concern_terms, ()) == (DOUBT,)
+
+
+def test_page_furniture_at_the_start_or_after_a_first_broken_sentence() -> None:
+    """A page number that is the text's first piece stays (nothing comes before it to go on
+    with); one right after the first sentence is dropped like any other."""
+    second = "with Uniti, raise substantial doubt about our ability to continue as a going concern."
+    assert going_concern_sentences(f"45\n{second}", CFG.going_concern_terms, ()) == (
+        f"45 {second}",
+    )
+    first = "Our financial condition and the defaults under our master lease agreement"
+    assert going_concern_sentences(f"{first}\n45\n{second}", CFG.going_concern_terms, ()) == (
+        f"{first} {second}",
+    )

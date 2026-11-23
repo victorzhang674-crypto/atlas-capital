@@ -1,0 +1,86 @@
+$ ... main_lake_followup4.py copy  -> copied 17 entries, 1044.9 MB; 2335 raw/sec links
+$ ... main_lake_followup4.py cik
+deleted {'fundamentals_facts': 24542, 'events': 418, 'earnings_reactions': 393, 'filing_text': 406}
+APA [(1841666, 'None', 'None'), (6769, 'None', '2021-05-06')]
+AVGO [(1730168, 'None', 'None'), (1649338, 'None', '2018-06-13'), (1441634, 'None', '2016-03-09')]
+BG [(1996862, 'None', 'None'), (1144519, 'None', '2024-02-21')]
+BLK [(2012383, 'None', 'None'), (1364742, 'None', '2024-11-05')]
+CI [(1739940, 'None', 'None'), (701221, 'None', '2019-02-27')]
+DD [(1666700, 'None', 'None'), (30554, 'None', '2017-11-05')]
+DIS [(1744489, 'None', 'None'), (1001039, 'None', '2019-05-07')]
+FTI [(1681459, '2017-01-16', 'None'), (1135152, 'None', '2017-01-15')]
+GOOG [(1652044, 'None', 'None'), (1288776, 'None', '2015-10-28')]
+GOOGL [(1652044, 'None', 'None'), (1288776, 'None', '2015-10-28')]
+LIN [(1707925, '2018-11-10', 'None'), (884905, 'None', '2018-11-09')]
+LLL [(1039101, 'None', 'None'), (1056239, 'None', '2017-02-22')]
+SKYD [(2041610, '2025-08-07', 'None'), (813828, 'None', '2025-08-06')]
+SNDK [(2023554, 'None', 'None'), (1000180, 'None', '2016-05-12')]
+TFCF [(1308161, 'None', 'None')]
+TFCFA [(1308161, 'None', 'None')]
+VTRS [(1792044, '2020-11-16', 'None'), (1623613, 'None', '2020-11-15'), (69499, 'None', '2015-05-07')]
+XOM [(2115436, 'None', 'None'), (34088, 'None', '2026-08-02')]
+fundamentals rows=70093 ok=18 failed={}
+earnings rows=769 ok=18 failed={} skipped=0
+filing_text rows=728 ok=18 failed={} statuses={'ok': 728}
+reactions rows=703 skipped=66
+$ ... main_lake_followup4.py text
+changed rows to fetch again: 839 of 84 symbols
+deleted 1567
+filing_text rows=1560 ok=102 failed={} statuses={'ok': 1560}
+$ (shell) copied the follow-up 3 sync's submissions into the copy: copied 563 newer submissions, 168 identical
+$ ... main_lake_followup4.py missing
+filing_text rows=15 ok=102 failed={} statuses={'ok': 15}
+$ ... main_lake_followup4.py check
+fundamentals_facts: main 2643673 rows, copy 2689224 rows; removed 214, added 45765, changed 0; symbols touched outside the former-CIK set: 0 []
+  APA: 1077 -> 3975
+  AVGO: 2562 -> 4769
+  BG: 933 -> 5370
+  BLK: 453 -> 4259
+  CI: 1589 -> 3507
+  DD: 2622 -> 4494
+  DIS: 2201 -> 4882
+  FTI: 2439 -> 4079
+  GOOG: 2429 -> 3575
+  GOOGL: 2429 -> 3575
+  LIN: 2397 -> 5334
+  LLL: 875 -> 3257
+  SKYD: 276 -> 4251
+  SNDK: 563 -> 1931
+  TFCF: 0 -> 2309
+  TFCFA: 0 -> 2309
+  VTRS: 1642 -> 4887
+  XOM: 55 -> 3330
+events: main 34064 rows, copy 34415 rows; removed 11, added 362, changed 0; symbols touched outside the former-CIK set: 0 []
+  APA: 28 -> 53
+  AVGO: 35 -> 49
+  BG: 13 -> 51
+  BLK: 10 -> 49
+  CI: 33 -> 52
+  DD: 44 -> 56
+  DIS: 31 -> 48
+  FTI: 42 -> 49
+  GOOG: 46 -> 50
+  GOOGL: 46 -> 50
+  LIN: 39 -> 53
+  SKYD: 7 -> 49
+  SNDK: 8 -> 15
+  TFCF: 0 -> 17
+  TFCFA: 0 -> 17
+  VTRS: 29 -> 50
+  XOM: 4 -> 58
+earnings_reactions: main 29936 rows, copy 30246 rows; removed 11, added 321, changed 0; symbols touched outside the former-CIK set: 0 []
+  APA: 27 -> 52
+  AVGO: 34 -> 48
+  BG: 11 -> 49
+  BLK: 9 -> 48
+  CI: 31 -> 50
+  DD: 42 -> 54
+  DIS: 30 -> 47
+  FTI: 40 -> 47
+  GOOG: 45 -> 49
+  GOOGL: 45 -> 49
+  LIN: 37 -> 51
+  SKYD: 6 -> 48
+  VTRS: 28 -> 49
+  XOM: 1 -> 55
+filing_text: main 30597 rows, copy 30912 rows; removed 25, added 340, changed 1220; symbols touched outside the former-CIK set: 84 ['AA', 'AAPL', 'ADS', 'AET', 'AIG', 'AMCR', 'AOS', 'ARNC', 'AVY', 'AXON', 'AXP', 'BAC', 'BBBY', 'BMS', 'BNY', 'BSX', 'CAH', 'CBRE', 'CFG', 'CLX', 'CMS', 'COF', 'CSRA', 'CVS', 'CVX', 'ED', 'EMR', 'ES', 'ETR', 'EXC', 'EXPE', 'FBHS', 'FITB', 'GAS', 'GE', 'GEV', 'GNW', 'GRMN', 'HAS', 'HBAN']

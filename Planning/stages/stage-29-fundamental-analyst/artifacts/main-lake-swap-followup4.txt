@@ -1,0 +1,20 @@
+=== swap into ~/Projects/atlas-capital/data from $TMPDIR/s29f4/main-copy, 2026-11-23T11:00:45Z
+backed up fundamentals_facts:  28M digest 85185c0050b95ba6
+backed up events: 3.8M digest e6370e86b1a8227b
+backed up earnings_reactions: 1.8M digest 7b3b5040051b845c
+backed up filing_text: 892M digest a92d379a81463c17
+backed up factor_exposures:  16M digest bedc44ad6115e556
+backed up factor_returns: 580K digest 7037d62a64a6916a
+backed up risk_model_snapshots: 5.9M digest 23394e7a6e71d34a
+replaced fundamentals_facts: digest now c19294735559cba1 (scratch c19294735559cba1)
+replaced events: digest now a315523748408519 (scratch a315523748408519)
+replaced earnings_reactions: digest now cfa3e9672c7548a7 (scratch cfa3e9672c7548a7)
+replaced filing_text: digest now fdff4942f15090c6 (scratch fdff4942f15090c6)
+replaced factor_exposures: digest now d53c85cb7387029f (scratch d53c85cb7387029f)
+replaced factor_returns: digest now 05a6dce2e907ec71 (scratch 05a6dce2e907ec71)
+replaced risk_model_snapshots: digest now 6994964db221ed74 (scratch 6994964db221ed74)
+_meta.json: DIFFERS from the scratch copy's
+raw/sec: 70 files added, 562 replaced (old ones in the backup)
+build log kept: runs/factors/build-stage29-followup4-2026-11-23.log
+build log kept: runs/risk_model/build-stage29-followup4-2026-11-23.log
+swap exit 0

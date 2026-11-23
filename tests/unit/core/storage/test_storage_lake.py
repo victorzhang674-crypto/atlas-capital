@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pyarrow as pa
 import pytest
 from storage_helpers import PricesFrame, make_prices_schema
 
@@ -293,3 +294,40 @@ def test_partition_dir_names_for_each_type(lake: Lake) -> None:
         "day=2024-01-03/bucket=8/flag=false/data.parquet",
     ]
     assert lake.read_table("typed_parts")["flag"].tolist() == [True, False]
+
+
+def test_read_sorts_by_key_columns_without_concatenating_32_bit_text(
+    lake: Lake, prices_frame: PricesFrame
+) -> None:
+    """Stage 29 follow-up 4: a whole-table read of `filing_text` (a text column past 2 GB)
+    overflowed Arrow's 32-bit string offsets in `Table.sort_by`. The order now comes from the
+    key columns alone and each column is taken in its 64-bit-offset (`large_*`) form, so the
+    chunks of a text column are never joined into one 32-bit array; the rows read are
+    unchanged."""
+    from atlas.core.storage.lake import _sorted
+
+    lake.write_table("prices_daily", prices_frame(symbols=("MSFT", "AAPL", "IBM"), days=_DAYS))
+    out = lake.read_table("prices_daily")
+    assert list(out["symbol"]) == ["AAPL"] * 3 + ["IBM"] * 3 + ["MSFT"] * 3
+    assert list(out["date"]) == list(_DAYS) * 3
+    only = lake.read_table("prices_daily", columns=["close", "symbol"])
+    assert list(only.columns) == ["close", "symbol"]
+    assert list(only["symbol"]) == list(out["symbol"])
+
+    chunks = pa.chunked_array([["b", "a"], ["c", None]])
+    table = pa.table({"k": pa.chunked_array([[2, 1], [0, 3]]), "text": chunks})
+    taken = _sorted(table, ["k"], ["text", "k"])
+    assert taken.column_names == ["text", "k"]
+    assert taken.schema.field("text").type == pa.large_string()
+    assert taken.column("text").to_pylist() == ["c", "a", "b", None]
+    assert taken.column("k").to_pylist() == [0, 1, 2, 3]
+
+
+def test_large_types_widen_offsets_only() -> None:
+    from atlas.core.storage.lake import _large_type
+
+    assert _large_type(pa.string()) == pa.large_string()
+    assert _large_type(pa.binary()) == pa.large_binary()
+    assert _large_type(pa.list_(pa.string())) == pa.large_list(pa.large_string())
+    for kept in (pa.int64(), pa.float64(), pa.date32(), pa.timestamp("us", tz="UTC"), pa.bool_()):
+        assert _large_type(kept) == kept

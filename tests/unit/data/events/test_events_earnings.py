@@ -21,7 +21,7 @@ from atlas.data.events.earnings import (
     ingest_earnings,
     parse_filings,
 )
-from atlas.data.fundamentals.edgar_client import CikMap, EdgarClient
+from atlas.data.fundamentals.edgar_client import CikMap, CikOverride, EdgarClient, FormerCik
 
 CAL = TradingCalendar()
 AAPL_CIK = 320193
@@ -238,3 +238,87 @@ def test_event_time_is_acceptance_instant() -> None:
     first = events.iloc[0]
     assert first["event_time"].to_pydatetime() == utc(2018, 2, 1, 21, 30, 17)
     assert isinstance(first["event_time"].to_pydatetime(), datetime)
+
+
+def test_ingest_reads_former_cik_events_until_its_last_day(tmp_lake: Lake) -> None:
+    """Stage 29 follow-up 4: a symbol whose issuer moved to a new CIK gets the former CIK's
+    earnings events filed up to `until` and the current CIK's filed from `since`. AAPL's
+    recorded submissions play the former CIK; CIK 2 is the new issuer."""
+    current = {
+        "cik": "2",
+        "filings": {
+            "recent": _table(
+                [
+                    ("new-old", "8-K", "2021-10-28", "2021-10-28T20:30:00.000Z", "2.02"),
+                    ("new-1", "8-K", "2022-01-27", "2022-01-27T21:30:00.000Z", "2.02,9.01"),
+                ]
+            ),
+            "files": [],
+        },
+    }
+    override = CikOverride(
+        symbol="AAPL", cik=2, name="New Apple", evidence="e", since=date(2022, 1, 1),
+        former=(FormerCik(cik=AAPL_CIK, until=date(2021, 12, 31), name="Apple"),),
+    )  # fmt: skip
+    cik_map = CikMap({}).with_overrides((override,))
+    with respx.mock(assert_all_called=False) as mock:
+        mock.get("https://data.sec.gov/submissions/CIK0000000002.json").respond(json=current)
+        mock.get(url__startswith="https://data.sec.gov/submissions/").mock(side_effect=serve_sec)
+        with httpx.Client() as http:
+            report = ingest_earnings(
+                tmp_lake, _client(http), ["AAPL"], cik_map=cik_map,
+                config=config_with(history_start=date(2018, 1, 1)),
+            )  # fmt: skip
+    stored = tmp_lake.read_table(EVENTS.name)
+    days = sorted(str(d) for d in stored["event_date"])
+    assert days == [d for d in AAPL_EARNINGS if d <= "2021-12-31"] + ["2022-01-27"]
+    assert report.rows == len(stored) and "sec-new-old" not in set(stored["event_id"])
+
+
+def test_ingest_reads_each_filing_once_and_archived_answers_with_refresh_false(
+    tmp_lake: Lake,
+) -> None:
+    """A filing listed under two CIKs of the symbol (co-registrants) gives one event, and with
+    `refresh=False` the archived submissions of every CIK are read without a request."""
+    override = CikOverride(
+        symbol="AAPL", cik=AAPL_CIK, name="Apple", evidence="e",
+        former=(FormerCik(cik=2, until=date(2099, 1, 1), name="Apple co-registrant"),),
+    )  # fmt: skip
+    cik_map = CikMap({}).with_overrides((override,))
+    twin = (FIXTURES / "submissions" / "CIK0000320193.json").read_bytes()
+    with respx.mock(assert_all_called=False) as mock:
+        routes = (
+            mock.get("https://data.sec.gov/submissions/CIK0000000002.json").respond(content=twin),
+            mock.get(url__startswith="https://data.sec.gov/submissions/").mock(
+                side_effect=serve_sec
+            ),
+        )
+        with httpx.Client() as http:
+            client = EdgarClient(
+                AtlasConfig().data.fundamentals, user_agent=AGENT, http=http, sleep=NoSleep(),
+                lake=tmp_lake,
+            )  # fmt: skip
+            cfg = config_with(history_start=date(2018, 1, 1))
+            first = ingest_earnings(tmp_lake, client, ["AAPL"], cik_map=cik_map, config=cfg)
+            calls = sum(r.call_count for r in routes)
+            again = ingest_earnings(
+                tmp_lake, client, ["AAPL"], cik_map=cik_map, config=cfg, refresh=False
+            )
+            cached = sum(r.call_count for r in routes)
+            ingest_earnings(tmp_lake, client, ["AAPL"], cik_map=cik_map, config=cfg)
+            refreshed = sum(r.call_count for r in routes) - cached
+    assert first.rows == again.rows == len(AAPL_EARNINGS)
+    assert calls >= 2 and cached == calls and refreshed == calls
+
+
+def test_an_edgar_failure_does_not_stop_the_next_symbol(tmp_lake: Lake) -> None:
+    cik_map = CikMap({"BAD": 999, "AAPL": AAPL_CIK})
+    with respx.mock(assert_all_called=False) as mock:
+        mock.get(url__startswith="https://data.sec.gov/submissions/").mock(side_effect=serve_sec)
+        with httpx.Client() as http:
+            report = ingest_earnings(
+                tmp_lake, _client(http), ["BAD", "AAPL"], cik_map=cik_map,
+                config=config_with(history_start=date(2018, 1, 1)),
+            )  # fmt: skip
+    assert report.symbols_failed == ("BAD",) and report.symbols_ok == ("AAPL",)
+    assert report.rows == len(AAPL_EARNINGS)

@@ -144,3 +144,35 @@ Total: 343 − 286 = **57 survivors**.
 
   `test_the_short_bound_and_ties_keep_what_was_found`, `test_a_pointer_at_the_short_bound_or_tied_with_the_exhibit_is_kept` and a `source` assertion killed all six ([followup3-h4-rerun.txt](followup3-h4-rerun.txt)).
 - **Result: 237 of 240 killed (98.75%)** ([followup3-h4-mutmut-results.txt](followup3-h4-mutmut-results.txt)). The 3 survivors are equivalent ([followup3-h4-survivors-classified.tsv](followup3-h4-survivors-classified.tsv)): two default-form spellings that still read as a 10-K, and a fallback string that is never used.
+
+## Follow-up 4: the changed functions, including old Stage 06, 09 and 12 code
+
+- **Setup:** [../mutmut-setup-followup4.cfg](../mutmut-setup-followup4.cfg). mutmut 3.8.1 was installed into a scratch folder: `uv run --with` would not add it on this run. Selected by mutant name:
+  - `mda`: `_not_an_end`, `_sections`, `extract_mda`, `extract_exhibit_mda`, `points_elsewhere`;
+  - `text`: `_unless_later`, `_filings_of`, `_rows`, `ingest_filing_text`;
+  - `CikSource.covers`, `CikMap.__init__` / `with_overrides` / `sources`;
+  - `ingest_fundamentals`, `ingest_earnings`;
+  - `Lake.read_table`, `_sorted`, `_large_type`;
+  - `going_concern_sentences`.
+
+  Two of these functions had never been mutation-tested: `ingest_fundamentals` (Stage 09) and `ingest_earnings` (Stage 12). `Lake.read_table` (Stage 06) had not been either. No mutant was "suspicious".
+- **First run:** 745 killed, 138 survived. The survivors on lines this follow-up wrote showed 13 real gaps, each killed by a new test:
+  - the short MD&A is searched after its first copy, including when it opens the text, and an "Item" line after it is no later heading (`_unless_later`, 6 mutants);
+  - a later override drops an earlier `since`, and a blocked symbol does not stop the overrides after it (2);
+  - a page number as the first piece, or right after a first broken sentence (2);
+  - an empty current CIK does not stop the former one (1);
+  - `refresh` reaches the companyfacts, filing-index and submissions calls of every CIK, in both directions (6);
+  - an EDGAR failure does not stop the next symbol in the earnings ingest (1; an old line).
+
+  The co-registrant tests also pin the dedupe of facts and MD&A filings.
+- **Result: 768 of 883 killed (87.0%)** ([followup4-mutmut-results.txt](followup4-mutmut-results.txt)). The 115 survivors are classified in [followup4-survivors-classified.tsv](followup4-survivors-classified.tsv):
+  - **32 on lines this follow-up wrote, all equivalent:**
+    - the sort `kind` on several columns;
+    - `ignore_index` / `reset_index` where the index is reset or never read;
+    - `keep="first"` (the default);
+    - `zip(strict=)` on one frame's columns;
+    - an upsert's default keys;
+    - the default calendar;
+    - identical duplicate rows of co-registrants in the earnings frame.
+  - **83 on old lines** of the Stage 06, 09 and 12 functions: log fields, report counters, defaults and messages. They were never mutation-tested and are out of this follow-up's scope (Backlog).
+  - Inside the new code, the old lines `_not_an_end`'s line start (unreachable), `extract_mda`'s default-form spellings and `_rows`' time-zone casing stay equivalent, as in follow-up 3.

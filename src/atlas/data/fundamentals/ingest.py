@@ -1,14 +1,17 @@
 """Ingest SEC EDGAR fundamentals into the lake's `fundamentals_facts` table.
 
-Per symbol: ticker → CIK (`CikMap`), companyfacts JSON (`EdgarClient`, archived in
-`raw/sec/`), the facts of the concept map's tags (`parse_companyfacts`), the filing index for
-their accessions (`EdgarClient.filing_index`) and their `available_at`
+Per symbol: ticker → CIKs (`CikMap.sources`: the current CIK, and the former CIKs of an issuer
+that moved to a new one, each over its own filing dates), companyfacts JSON (`EdgarClient`,
+archived in `raw/sec/`), the facts of the concept map's tags (`parse_companyfacts`), the filing
+index for their accessions (`EdgarClient.filing_index`) and their `available_at`
 (`attach_available_at`), then an upsert keyed by the table's primary key (re-running is
 idempotent; a restating filing adds rows, it never overwrites the original's).
 """
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+
+import pandas as pd
 
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
@@ -26,6 +29,7 @@ from atlas.data.fundamentals.parser import (
 )
 
 _log = get_logger(__name__)
+_KEY = list(FUNDAMENTALS_FACTS.primary_key)
 
 
 @dataclass(frozen=True)
@@ -80,25 +84,32 @@ def ingest_fundamentals(
     reasons: dict[str, str] = {}
     rows = fallback = 0
     for symbol in requested:
-        cik = cik_map.cik(symbol)
-        if cik is None:
+        sources = cik_map.sources(symbol)
+        if not sources:
             reasons[symbol] = "no CIK (not in company_tickers.json or config/cik_overrides.yaml)"
             continue
         try:
-            facts = parse_companyfacts(
-                client.companyfacts(cik, refresh=refresh), symbol=symbol, tags=tags
-            )
-            if facts.empty:
+            parts = []
+            for source in sources:
+                facts = parse_companyfacts(
+                    client.companyfacts(source.cik, refresh=refresh), symbol=symbol, tags=tags
+                )
+                facts = facts.loc[[source.covers(filed) for filed in facts["filed"]]]
+                if facts.empty:
+                    continue
+                needed = dict(zip(facts["accn"], facts["filed"], strict=True))
+                index = client.filing_index(source.cik, needed, refresh=refresh)
+                parts.append(attach_available_at(facts, index, cal))
+            if not parts:
                 reasons[symbol] = "no mapped facts in companyfacts"
                 continue
-            needed = dict(zip(facts["accn"], facts["filed"], strict=True))
-            index = client.filing_index(cik, needed, refresh=refresh)
-            stored = attach_available_at(facts, index, cal)
+            # a filing of co-registrants appears under both CIKs: the current CIK's row is kept
+            stored = pd.concat(parts, ignore_index=True).drop_duplicates(subset=_KEY, keep="first")
             lake.write_table(
                 FUNDAMENTALS_FACTS.name,
                 stored,
                 mode="upsert",
-                keys=list(FUNDAMENTALS_FACTS.primary_key),
+                keys=_KEY,
             )
         except DataError as exc:
             reasons[symbol] = str(exc)

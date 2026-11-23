@@ -38,7 +38,7 @@ from atlas.data.filings.text import (
     ingest_filing_text,
     parse_filing_list,
 )
-from atlas.data.fundamentals import CikMap, EdgarClient
+from atlas.data.fundamentals import CikMap, CikOverride, EdgarClient, FormerCik
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 UA = "Atlas test suite tests@example.invalid"
@@ -797,3 +797,139 @@ def test_a_pointer_at_the_short_bound_or_tied_with_the_exhibit_is_kept(
     ingest(lake2, ["CCL"])
     tied = lake2.read_table(FILING_TEXT.name).set_index("accn").loc["0000815097-21-000027"]
     assert (tied["source"], tied["text"]) == ("primary", pointer)
+
+
+def test_a_later_mda_heading_must_follow_the_short_mda_not_sit_inside_it() -> None:
+    """Texas Instruments' 10-Q MD&A (about 12,000-15,000 characters) opens with "Management's
+    discussion and analysis ... (MD&A) should be read ...": that run-in heading lies inside
+    the Item 2 section, and the section under it runs past Part II to the signatures, so it
+    must not replace the MD&A. Only a heading after the short MD&A counts."""
+    intro = (
+        "Management\u2019s discussion and analysis of financial condition and results of "
+        "operations (MD&A) should be read in conjunction with the financial statements and the "
+        "related notes that appear elsewhere in this document."
+    )
+    item2 = f"ITEM 2. Management\u2019s discussion and analysis\n{intro}\n{'Revenue grew. ' * 80}"
+    text = (
+        f"PART I\nITEM 1. Financial statements\nNumbers.\n{item2}\n"
+        "ITEM 3. Quantitative and qualitative disclosures about market risk\nRates.\n"
+        f"PART II\nITEM 6. Exhibits\n{'Signatures follow. ' * 60}\n"
+    )
+    found = extract_mda(text, min_chars=1000, form="10-Q")
+    assert found.text is not None and found.text.startswith("ITEM 2.")
+    settings = FilingTextConfig(short_mda_chars=15000)
+    assert _unless_later(found, text, settings) == found
+    # a later MD&A after it still replaces it (Southern Company)
+    later = (
+        f"MANAGEMENT'S DISCUSSION AND ANALYSIS\n{'Combined. ' * 300}\nCONDENSED BALANCE SHEETS\n"
+    )
+    longer = _unless_later(found, text + later, settings)
+    assert longer.text is not None and longer.text.startswith("MANAGEMENT'S DISCUSSION")
+
+
+FORMER = 111
+
+
+def test_a_former_cik_adds_its_filings_until_its_last_day(tmp_path: Path, edgar: Edgar) -> None:
+    """Stage 29 follow-up 4: the MD&As of a symbol whose issuer moved to a new CIK come from the
+    former CIK's filings filed up to `until` and the current CIK's filed from `since`; each row
+    keeps the CIK and URL of its filing. A filing listed under both CIKs (co-registrants, as L-3
+    Holdings and L-3 Communications) is read once, under the current CIK."""
+    former_recent = [
+        {  # read: filed before `until`
+            "accessionNumber": "0000000111-19-000001", "form": "10-K", "filingDate": "2019-01-25",
+            "acceptanceDateTime": "2019-01-25T16:00:00.000Z", "reportDate": "2018-11-30",
+            "primaryDocument": "old-2018.htm",
+        },
+        {  # not read: filed after `until` (the former issuer kept filing as a subsidiary)
+            "accessionNumber": "0000000111-22-000001", "form": "10-K", "filingDate": "2022-01-25",
+            "acceptanceDateTime": "2022-01-25T16:00:00.000Z", "reportDate": "2021-11-30",
+            "primaryDocument": "old-2021.htm",
+        },
+        dict(RECENT[0]),  # the same filing under both CIKs
+    ]  # fmt: skip
+    former_subs = {
+        "cik": str(FORMER),
+        "filings": {"recent": subs_table(former_recent), "files": []},
+    }
+    original = edgar.data
+
+    def data(request: httpx.Request) -> httpx.Response:
+        if request.url.path == f"/submissions/CIK{FORMER:010d}.json":
+            return httpx.Response(200, json=former_subs)
+        return original(request)
+
+    edgar.router.routes.clear()
+    edgar.router.route(host="data.sec.gov").mock(side_effect=data)
+    edgar.router.route(host="www.sec.gov").mock(side_effect=edgar.www)
+    edgar.docs[f"/Archives/edgar/data/{FORMER}/000000011119000001/old-2018.htm"] = ten_k_html(BODY)
+    override = CikOverride(
+        symbol="CCL", cik=CIK, name="Carnival", evidence="e", since=date(2022, 1, 1),
+        former=(FormerCik(cik=FORMER, until=date(2021, 12, 31), name="Old Carnival"),),
+    )  # fmt: skip
+    lake = Lake(tmp_path)
+    report = ingest_filing_text(
+        lake, client(lake), ["CCL"], cik_map=CIKS.with_overrides((override,)), config=TEN_K_ONLY
+    )
+    assert (report.rows, dict(report.statuses)) == (2, {"ok": 2})
+    stored = lake.read_table(FILING_TEXT.name).set_index("accn")
+    assert list(stored.index) == ["0000000111-19-000001", "0000815097-24-000011"]
+    old = stored.loc["0000000111-19-000001"]
+    assert old["cik"] == FORMER and old["url"].startswith(f"{ARCHIVE}/{FORMER}/000000011119000001/")
+    assert stored.loc["0000815097-24-000011", "cik"] == CIK  # current CIK, read once
+    assert not any("old-2021" in p for p in edgar.seen)  # after `until`: never fetched
+    assert not any("ccl-20201130" in p for p in edgar.seen)  # before `since`: never fetched
+
+
+def test_the_later_section_is_searched_after_the_first_copy_of_the_short_mda() -> None:
+    """The text after the short MD&A is searched from the end of its first copy (the section
+    `extract_mda` returns), also when the MD&A opens the text; an "Item" line after it is no
+    later MD&A heading (a cross-reference index)."""
+    settings = FilingTextConfig(short_mda_chars=15000)
+    short = f"ITEM 7. Management's Discussion and Analysis\n{'Sales rose. ' * 100}"
+    later = (
+        f"MANAGEMENT'S DISCUSSION AND ANALYSIS\n{'Combined. ' * 300}\nCONSOLIDATED BALANCE SHEETS\n"
+    )
+    found = MdaExtract("ok", short)
+    # a later heading between two copies of the short MD&A is after the first copy
+    twice = f"{short}\nItem 8. Financial Statements\n{later}{short}\nEnd."
+    assert (
+        _unless_later(found, twice, settings).text == extract_exhibit_mda(later, min_chars=1).text
+    )
+    # the MD&A opens the text: its own run-in heading is not a later one
+    intro = "Management\u2019s discussion and analysis (MD&A) should be read with the statements."
+    opening = f"ITEM 2. Management\u2019s discussion and analysis\n{intro}\n{'Sales rose. ' * 100}"
+    tail = f"\nPART II\n{'Signatures follow. ' * 60}"
+    starts = MdaExtract("ok", opening)
+    assert _unless_later(starts, opening + tail, settings) == starts
+    # an "Item 7. Management's ..." line after it (a cross-reference index) is not a start
+    index = f"\nItem 7. Management's Discussion and Analysis 22\n{'Index entry. ' * 300}"
+    assert _unless_later(found, short + index, settings) == found
+
+
+def test_a_co_registrants_filing_is_fetched_and_stored_once(tmp_path: Path, edgar: Edgar) -> None:
+    """A filing listed under the current and a former CIK (co-registrants filing one
+    document) is read once, under the current CIK."""
+    twin = {"cik": str(FORMER), "filings": {"recent": subs_table([dict(RECENT[0])]), "files": []}}
+    original = edgar.data
+
+    def data(request: httpx.Request) -> httpx.Response:
+        if request.url.path == f"/submissions/CIK{FORMER:010d}.json":
+            return httpx.Response(200, json=twin)
+        return original(request)
+
+    edgar.router.routes.clear()
+    edgar.router.route(host="data.sec.gov").mock(side_effect=data)
+    edgar.router.route(host="www.sec.gov").mock(side_effect=edgar.www)
+    override = CikOverride(
+        symbol="CCL", cik=CIK, name="Carnival", evidence="e",
+        former=(FormerCik(cik=FORMER, until=date(2099, 1, 1), name="Co-registrant"),),
+    )  # fmt: skip
+    lake = Lake(tmp_path)
+    report = ingest_filing_text(
+        lake, client(lake), ["CCL"], cik_map=CIKS.with_overrides((override,)), config=TEN_K_ONLY
+    )
+    stored = lake.read_table(FILING_TEXT.name)
+    assert report.rows == len(stored) == 2 and stored["accn"].is_unique
+    assert set(stored["cik"]) == {CIK}
+    assert edgar.seen.count(f"/Archives/edgar/data/{CIK}/000081509724000011/ccl-20231130.htm") == 1

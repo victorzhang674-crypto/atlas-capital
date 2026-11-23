@@ -246,3 +246,54 @@ Still open, with reasons (Backlog):
 - A whole-table `Lake.read_table("filing_text")` overflows Arrow's string offsets. No code path does that (→ 06).
 - Windstream's 2019 quote starts at a page header inside the sentence.
 - Graph wiring stays with Stage 35.
+
+## Follow-up 4 (2026-11-23)
+
+Owner: "can you complete the still open ones and complete them?" The open items were the six above (graph wiring stays with Stage 35) and the uncommitted CI record `ci-runs-c579104.json`. Investigating them showed more than the Backlog said, so the follow-up covers what was found. Plan J1–J6 in [plan.md](../plan.md); the Decisions log records that code of Stages 06, 09 and 12 changed on this request.
+
+### Done
+
+- **Whole-table read (J1, Stage 06).** `Lake.read_table` sorts by the key columns alone and takes each column in its 64-bit-offset form. The main lake's whole `filing_text` (2.14 GiB of text) now reads in 29 s, sorted by key ([main-lake-whole-read-followup4.txt](main-lake-whole-read-followup4.txt)).
+- **MD&A headings (J2).** Every main-lake filing without an MD&A, or with one under 15,000 characters (156), was fetched and read. The rules found from them are listed in `docs/data-limitations.md` item 9, each with a test.
+  - Bank of New York Mellon and Northern Trust ("Items 2. and 3."), GE (a run-in heading), U.S. Bancorp and Total System Services (more wordings of "incorporated by reference", so their EX-13 is read), JPMorgan's 2015-16 10-Qs, A. O. Smith, Gardner Denver ("MANGEMENT'S"), Synchrony, Loews, PNC, Noble Energy and Avery Dennison now all have their MD&A.
+  - Before: 91 filings had no MD&A. Now every one of the 30,927 filings has one.
+- **Windstream (J3).** The going-concern quote now reads the whole sentence: a page number or header inside it is left out.
+- **Former CIKs (J4, Stage 09 and 12).** Comparing each member's first 10-K/10-Q with the start of its S&P 500 window found **16 issuers**, not just ExxonMobil, whose history sat under a former CIK:
+  - ExxonMobil, BlackRock, Bunge, APA, Viatris/Mylan, Disney, Cigna, Broadcom, Linde/Praxair, DuPont, L3, TechnipFMC, Alphabet (GOOG, GOOGL), Paramount (SKYD);
+  - SanDisk's reused ticker.
+
+  Twenty-First Century Fox (TFCF, TFCFA) had no CIK at all. Each pair was checked on EDGAR ([former-ciks-followup4.txt](former-ciks-followup4.txt)). `CikOverride.former` / `since` and `CikMap.sources` feed the fundamentals, filing-text and earnings ingests.
+- **Main lake (J5).** On a scratch copy ([main-lake-followup4.txt](main-lake-followup4.txt)):
+  - **Facts:** +45,765 rows (ExxonMobil 55 → 3,330); 214 removed, all merger shells' or Upjohn's filings that are not the member's.
+  - **SEC events:** +362, 11 removed. **Reactions:** +321, 11 removed.
+  - **MD&As:** 840 rows changed, 340 added, 10 removed; every change elsewhere is one the recheck found ([filing-text-compare-followup4.txt](filing-text-compare-followup4.txt)).
+  - **Other symbols:** not one other symbol's row changed in facts, events or reactions.
+- **Going concern on real data.** 76 FLAGs of 30,927 MD&As: the 75 reviewed in follow-up 3, plus Enphase's 10-Q of 2017-05-10 (its own doubt, correct) ([filing-text-review-followup4.txt](filing-text-review-followup4.txt)).
+- **Mutation testing (J6).** 768 of 883 killed. The 32 survivors on new lines are equivalent; the 83 others are on old, never-tested lines of the Stage 06/09/12 functions ([mutation/mutation-summary.md](mutation/mutation-summary.md)).
+
+### Self-audit of my own follow-up work
+
+Each check below found defects in my own new code before the swap. Each was fixed test-first.
+1. **The run-in heading rule was too loose (twice).**
+   - Texas Instruments: the MD&A's own opening sentence, inside Item 2, replaced the MD&A with a section that ran to the signatures. Fixed: a later heading must follow the short MD&A.
+   - Weyerhaeuser: a sentence in Item 1 ("In our Management's Discussion … (MD&A) section you will find …") started a 180k-character "MD&A". Fixed: a run-in heading must open with "Management…".
+2. **The new "Item 1" end cut five MD&As** at a quoted cross-reference (Blackstone, Devon) or at "Item 1. Business" (Everest). Fixed: a line holding a closing quote is no end, and Item 1 needs its statements' title.
+3. **The auditor's-report end cut PepsiCo's 10-Ks to 1,700 characters.** Its MD&A opens with its own contents, which list that report. Fixed: an entry followed by a page number is no end.
+4. **The combined-heading rule first swallowed contents lines** (two existing tests failed). Fixed: a start line ending in a page number is a contents entry.
+5. **My re-ingest dropped 15 recent MD&As** filed in November 2026. It read the main lake's archived submissions, which are older than the follow-up 3 sync's (archived in its own scratch lake). The row-by-row comparison found it. That sync's submissions were copied in, and the swap brings them into the main archive.
+6. **My first recheck script crashed twice** (an SEC 502; an accession shared by GOOG and GOOGL) and was fixed. Its candidate list missed two rule kinds ("Part II. Item 7", the auditor line), and a scan of every stored row added them (97 rows).
+7. **13 mutation gaps in my new code** (the "after" search, override order, page furniture, refresh, co-registrants) were killed by new tests.
+
+Checked and found right:
+- **The control sample.** 600 random rows: 3 changed (Expedia, PepsiCo, Boston Scientific), each an improvement.
+- **Former CIKs.**
+  - Every `until` is the day before the next CIK's first 10-K/10-Q, or the merger's close. Former issuers that kept filing as subsidiaries add nothing later.
+  - A co-registrant filing is stored once.
+  - Facts of other symbols are unchanged.
+- **Hard rules.** No `datetime.now()`. No network in unit tests: new tests use respx and fixtures. No `.env` value in any new file. Home and temp paths are redacted in the artifacts.
+
+Still open, with reasons (Backlog):
+- Graph wiring stays with Stage 35 (owner).
+- Emerson's FY2015 MD&A is its 4.5k pointer page: its annual report has no MD&A heading. A few MD&As where the filer prints no end heading run past their end (SolarEdge 2024).
+- The old lines of `ingest_fundamentals`, `ingest_earnings` and `Lake.read_table` (83 surviving mutants: log fields, report counters, defaults) were never mutation-tested (→ 06/09/12).
+- OKTA and VYLR, members since October 2026, have no fundamentals yet: the main lake's fundamentals sync predates them (a routine sync).
