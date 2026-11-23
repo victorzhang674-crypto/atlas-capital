@@ -301,3 +301,8 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - `tests/unit/data/events/test_events_earnings.py`;
   - `tests/unit/agents/research/test_fundamental_red_flags.py`.
 - Self-audit: [audit-report.md › Follow-up 4](artifacts/audit-report.md).
+- Commit and merge:
+  - Committed `8611b27` `stage-29: follow-up 4 (former CIKs, MD&A headings, whole-table read)` after reviewing the staged list: 55 files, all under `Planning/`, `src/`, `tests/`, `docs/` or `config/cik_overrides.yaml`. No `.env`, lake, DuckDB or mutant file. A scan of the staged diff for the 5 `.env` values found none, and no home path, temp path or email address. Hooks passed.
+  - Fast-forwarded `main` c579104 → 8611b27 in the owner's Terminal panel ([followup4-merged-main-check.txt](artifacts/followup4-merged-main-check.txt)). Trees equal.
+  - Merged result: `uv run pytest -q` → 5472 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the stage branch.
+  - This records commit goes onto `main` the same way; then I push both branches and check CI.

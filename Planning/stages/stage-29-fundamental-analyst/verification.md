@@ -144,4 +144,6 @@ Graph wiring stays with Stage 35 (owner).
   - The recorded-run replay is in the brief's Verify (29 passed). Its fixture lake has no `filing_text`, and its symbols' CIKs did not change.
 - Waivers: none
 
+- Merge into `main`: fast-forward c579104 → 8611b27 (owner's Terminal panel), trees equal; merged result `uv run pytest -q` → 5472 passed, 82 deselected, exit 0 · `make check` → exit 0 · raw: [artifacts/followup4-merged-main-check.txt](artifacts/followup4-merged-main-check.txt)
+
 **Result:** ALL CRITERIA VERIFIED (re-run after follow-up 4)
