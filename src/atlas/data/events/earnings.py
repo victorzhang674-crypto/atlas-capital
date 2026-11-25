@@ -127,7 +127,7 @@ def fetch_filings(
         except (KeyError, TypeError, ValueError) as exc:
             raise DataError(f"submissions of CIK {cik}: bad history entry {page!r}") from exc
         if high >= since:
-            frames.append(parse_filings(client.submissions_page(name)))
+            frames.append(parse_filings(client.submissions_page(name, page if refresh else None)))
     out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
     out = out.loc[[d >= since for d in out["filed"]]]
     return out.reset_index(drop=True)

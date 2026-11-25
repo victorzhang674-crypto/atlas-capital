@@ -173,7 +173,9 @@ def filing_list(
         except (KeyError, TypeError, ValueError) as exc:
             raise DataError(f"submissions of CIK {cik}: bad history entry {page!r}") from exc
         if high >= since:
-            frames.append(parse_filing_list(client.submissions_page(name)))
+            frames.append(
+                parse_filing_list(client.submissions_page(name, page if refresh else None))
+            )
     out = pd.concat(frames, ignore_index=True).drop_duplicates(subset="accn", keep="first")
     out = out[out["form"].isin(list(forms)) & (out["filed"] >= since)]
     return out.sort_values(["filed", "accn"], kind="stable").reset_index(drop=True)

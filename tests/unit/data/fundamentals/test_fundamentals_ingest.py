@@ -266,10 +266,11 @@ def test_refresh_false_reads_the_archived_answers_of_every_cik(
     )  # fmt: skip
     assert (again.rows, again.symbols_ok) == (first.rows, ("AAPL",))
     assert calls > 0 and sum(route.call_count for route in sec.routes) == calls
-    # and `refresh=True` asks EDGAR again for both CIKs: companyfacts and submissions of each
-    # (history pages never change and stay archived)
+    # and `refresh=True` asks EDGAR again for both CIKs: companyfacts and submissions of each,
+    # plus the history pages that no longer match their index entry (Stage 29 follow-up 7:
+    # SEC rewrites them; the recorded pages are trimmed, so both are fetched again)
     ingest(tmp_lake, cik_map, ["AAPL"])
-    assert sum(route.call_count for route in sec.routes) == calls + 4
+    assert sum(route.call_count for route in sec.routes) == calls + 4 + 2
 
 
 # --- Stage 29 follow-up 5: the old lines mutation testing left untested ------------------------

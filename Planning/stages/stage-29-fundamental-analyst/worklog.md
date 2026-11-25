@@ -403,3 +403,38 @@ Append entries in order. Record failures and dead ends as honestly as successes.
   - Fast-forwarded `main` 83c91c1 → 98c7671 in the owner's Terminal panel, trees equal ([followup6-merged-main-check.txt](artifacts/followup6-merged-main-check.txt)). Merged result: `uv run pytest -q` → 5563 passed, 82 deselected, exit 0; `make check` → exit 0; `git branch --merged main` lists the branch.
   - Pushed `main` and the branch at `98c7671`; `git status -sb` → `## main...origin/main`. CI on `98c7671` (full SHA): `main` run 45628846076 success, branch run 45628845883 success ([ci-runs-98c7671.json](artifacts/ci-runs-98c7671.json)).
   - This records commit goes onto `main` and `origin` the same way; its CI result is reported in the reply (Rule 6A.7).
+
+## 2026-11-25 — Follow-up 7: the full data sync (owner: "run the full data sync for the rest")
+
+- Started in a new session from [handoffs/handoff-1.md](handoffs/handoff-1.md) (Project.md Rule 7). The session that did follow-ups 5 and 6 was close to a full context.
+- Rule 0: read `Project.md` (Rules 7 and 8 new), `CLAUDE.md`, `PROGRESS.md` and the hand-off.
+- State as stated:
+  - clean tree; HEAD = `main` = `origin/main` = `f800722`;
+  - this session runs in its own worktree, branch `claude/exciting-faraday-bba38a`, cut from `f800722`. The old worktree is not writable from this session, so follow-up 7 is committed on this branch and fast-forwarded into `main` as before;
+  - the worktree's venv was installed with `uv sync --group dev`.
+- [Plan](plan.md) section "Follow-up 7" (M1–M8) and the Decisions log row written first; no code change is planned.
+- M1: `main_lake_followup7.py copy` → `$TMPDIR/s29f7/main-copy`, 1,244.1 MB. It includes `news` and `news_sentiment` this time; 2,407 raw links.
+- M2: `atlas data sync` on the copy, every dataset, to today, started 2026-11-25T14:57Z in the background. Allowed hosts: Wikipedia, SEC EDGAR, Yahoo, FRED, Alpaca news, and the lexicon host. Social posts are off in `config/fund.yaml`.
+- **Gate:** `uv run pytest -q` → 5563 passed, 82 deselected, exit 0 ([followup7-gate-pytest.txt](artifacts/followup7-gate-pytest.txt)). CI on `f800722` (full SHA): `main` 45637903881 success, branch `claude/stage-29-followup-5-235c7b` 45637903307 success.
+- **Sync run 1** (raw log kept as `$TMPDIR/s29f7/sync-run1.txt`):
+  - universe ok (no membership change since 2026-11-01: 880 rows equal);
+  - prices: all 778 skipped as current to 2026-11-24 (today's bar was not published yet);
+  - fundamentals 746 ok, 2 empty; filings 745 ok, 3 empty, 27 rows.
+  - **The macro step crashed:** the copy's `raw/fred` was one link to the main folder, which the sandbox cannot write. Fixed in `main_lake_followup7.py` (`link_fred`: per-file links, as `raw/sec`). The resumed run: macro 22 ok, news 778 ok (9,764 rows), earnings 746 ok, upcoming 503 ok, macro calendar ok, reactions ok, quality ok.
+  - **The news-sentiment step failed:** this worktree has no `data/reference/lm_lexicon.csv`, and the download from Google Drive answered "Quota exceeded" (an HTML page). The code read that page as a CSV and refused it ("lacks columns"), so it failed safe but with a misleading message (Backlog). Re-run with `ATLAS__DATA__SENTIMENT__LEXICON_FILE` set to the main checkout's file (the one the main lake's sentiment was built with since 2026-10-29) → ok.
+  - **M3, members:** SNDK's bars stop at 2026-11-19, yet its price checkpoint (set in follow-up 6) said 2026-11-24. This is the same checkpoint defect, which follow-up 6's check ("a bar after 2026-10-30") missed. A retry with its checkpoint reset stored nothing new: Yahoo's bars after SNDK's 8-for-1 split (2026-11-20) lack values (11-20, 11-24) or are missing (11-23). Its checkpoint is kept at 2026-11-19 so the next sync tries again.
+  - **M3, members (upstream gap):** 24 current members have no fundamentals fact filed since 2026-08-01 (8 none since 2026-05-01, Citigroup none since 2026-02-20): AEP, C, CMS, CNP, D, DLR, DTE, DUK, ESS, ETR, EVRG, EXC, FE, FRT, LNT, MAA, NEE, PCG, PLD, PPL, REG, SO, SRE, VMRK. Their 10-Qs are filed (in `filing_text`), but SEC's own `companyfacts` answer, fetched fresh, stops there: Citigroup's us-gaap facts end at 2026-02-20, and only its filing-fee taxonomy (`ffd`) is current. This is an upstream gap, already in the main lake; a sync cannot fill it (Backlog: read the filings' own XBRL).
+  - **M4 check of run 1 found a point-in-time regression:** 10,573 stored facts in 178 old filings lost their acceptance time. Cause: SEC rewrote the history page (Agilent's `-001`: 1,364 filings archived, 1,382 now), and `EdgarClient.submissions_page` reused the archived page. Not swapped in.
+- **M2b, Stage 09 client fix** (test-first; the new tests failed on the old code, 7 of 8, and pass on the new):
+  - `submissions_page(name, entry)` fetches a cached page again when it no longer matches its index entry (`filingCount`, `filingFrom`, `filingTo`). `filing_index`, `filing_list` and `fetch_filings` pass the entry when `refresh=True`; `refresh=False` still reuses every archived answer.
+  - Tests in `test_fundamentals_client.py`:
+    - `test_a_history_page_sec_rewrote_is_fetched_again`;
+    - `test_each_field_of_the_entry_can_show_a_page_is_stale` (3 cases);
+    - `test_a_page_without_an_index_entry_is_reused_as_before`;
+    - `test_the_filing_index_reads_a_rewritten_page_and_keeps_acceptance_times`;
+    - `test_refresh_false_reuses_an_archived_page_even_when_it_looks_stale`.
+  - One existing assertion changed (Rule 1.6): `test_refresh_false_reads_the_archived_answers_of_every_cik` counted `refresh=True` as 4 requests "(history pages never change and stay archived)". The recorded fixture pages are trimmed (their README says so) and so never match their index entries; they are now fetched again, so the count is 4 + 2 and the comment says why.
+  - Code changed: `src/atlas/data/fundamentals/edgar_client.py`, `src/atlas/data/filings/text.py`, `src/atlas/data/events/earnings.py`.
+- **Sync run 2:** a fresh scratch copy, then `atlas data sync` again with the fixed client and the lexicon override, started 2026-11-25 (`$TMPDIR/s29f7/sync.txt`).
+- **Run 2 check (fundamentals, while the sync ran):** lost acceptance times went from 10,573 down to 193 (123 facts gained one). The 193 are a second Stage 09 limit: a needed filing whose companyfacts `filed` date falls between two history pages' ranges (Citigroup `0000831001-23-000037`: filed 2023-02-27, in page 016, which ends 2023-02-26). Fixed test-first: `filing_index` reads the other pages when a needed filing is still missing (`test_a_needed_filing_between_two_pages_date_ranges_is_still_found`, red then green; 568 tests of fundamentals/filings/events pass; ruff and mypy clean).
+- **Stopped here (usage limit):** sync run 2 was still running in the background on `$TMPDIR/s29f7/main-copy`, with the code from before the page fallback. Next: [handoffs/handoff-2.md](handoffs/handoff-2.md).

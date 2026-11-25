@@ -313,15 +313,25 @@ class EdgarClient:
             refresh=refresh,
         )
 
-    def submissions_page(self, name: str) -> dict[str, Any]:
+    def submissions_page(self, name: str, entry: Mapping[str, Any] | None = None) -> dict[str, Any]:
         """A submissions history page (`CIK##########-submissions-NNN.json`): column arrays
-        like `filings.recent`. Pages never change, so a cached page is always reused."""
+        like `filings.recent`. SEC rewrites a page as filings leave `filings.recent`, so a
+        cached page is reused only while it matches `entry`, its row of the submissions'
+        `filings.files` (`filingCount`, `filingFrom`, `filingTo`: each one given is checked);
+        otherwise it is fetched again and the archive replaced (Stage 29 follow-up 7). Without
+        an entry a cached page is reused (callers pass none with `refresh=False`, which reuses
+        every archived answer)."""
         if "/" in name or "\\" in name or not name.endswith(".json"):
             raise DataError(f"invalid submissions page name {name!r}")
+        cache = self._cache("submissions", name)
+        stale = (
+            entry is not None
+            and cache is not None
+            and cache.exists()
+            and not _page_matches(_decode(cache.read_bytes(), str(cache)), entry)
+        )
         return self._get_json(
-            self._config.submissions_page_url.format(name=name),
-            self._cache("submissions", name),
-            refresh=False,
+            self._config.submissions_page_url.format(name=name), cache, refresh=stale
         )
 
     def filing_index(
@@ -331,7 +341,9 @@ class EdgarClient:
 
         Reads `filings.recent`, then the history pages: all of them when `needed` is `None`,
         else only those whose date range covers the filing date of a `needed` accession
-        (accession → filing date) that `recent` lacks. A filing in two tables is kept once.
+        (accession → filing date) that `recent` lacks, and the others too when a needed
+        accession is still missing (its date can fall between two pages' ranges). A filing in
+        two tables is kept once.
         """
         subs = self.submissions(cik, refresh=refresh)
         filings = subs.get("filings")
@@ -344,6 +356,7 @@ class EdgarClient:
             if needed is None
             else {filed for accn, filed in needed.items() if accn not in have}
         )
+        skipped = []
         for page in filings.get("files", []):
             try:
                 low = date.fromisoformat(page["filingFrom"])
@@ -352,8 +365,21 @@ class EdgarClient:
             except (KeyError, TypeError, ValueError) as exc:
                 raise DataError(f"submissions of CIK {cik}: bad history entry {page!r}") from exc
             if wanted is not None and not any(low <= d <= high for d in wanted):
+                skipped.append(page)
                 continue
-            frames.append(parse_submissions(self.submissions_page(name)))
+            frames.append(parse_submissions(self.submissions_page(name, page if refresh else None)))
+        if needed is not None:
+            # companyfacts' `filed` can fall outside the date range of the page holding the
+            # filing (Citigroup's filing of 2023-02-27 sits in a page ending 2023-02-26): a
+            # needed filing still missing sends the search through the other pages
+            found = set(pd.concat(frames, ignore_index=True)["accn"])
+            if any(accn not in found for accn in needed):
+                for page in skipped:
+                    frames.append(
+                        parse_submissions(
+                            self.submissions_page(page["name"], page if refresh else None)
+                        )
+                    )
         index = pd.concat(frames, ignore_index=True)
         return index.drop_duplicates(subset="accn", keep="first").reset_index(drop=True)
 
@@ -420,6 +446,23 @@ class EdgarClient:
         if resp.status_code == 429 or resp.status_code >= 500:
             raise _RetryableStatus(f"HTTP {resp.status_code}")
         raise DataError(f"GET {url} returned HTTP {resp.status_code}")
+
+
+def _page_matches(page: Mapping[str, Any], entry: Mapping[str, Any]) -> bool:
+    """Whether a cached history page still holds what its index entry says: as many filings
+    as `filingCount`, the first filing date `filingFrom` and the last `filingTo` (each one the
+    entry gives). A page whose columns cannot be read does not match."""
+    dates = page.get("filingDate")
+    if not isinstance(dates, list) or not isinstance(page.get("accessionNumber"), list):
+        return False
+    count = entry.get("filingCount")
+    if count is not None and len(page["accessionNumber"]) != int(count):
+        return False
+    days = sorted(str(d) for d in dates if d)
+    first, last = entry.get("filingFrom"), entry.get("filingTo")
+    if first is not None and (not days or days[0] != str(first)):
+        return False
+    return last is None or (bool(days) and days[-1] == str(last))
 
 
 def _folder(accn: str) -> str:

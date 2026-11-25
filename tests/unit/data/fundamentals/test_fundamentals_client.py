@@ -355,3 +355,133 @@ def test_a_later_override_replaces_since_and_a_blocked_symbol_does_not_stop_the_
         )
     )
     assert (blocked_first.cik("FRC"), blocked_first.cik("APC")) == (None, 773910)
+
+
+# --- history pages SEC rewrites (Stage 29 follow-up 7) ----------------------------------------
+
+PAGE = "CIK0000000007-submissions-001.json"
+PAGE_URL = f"https://data.sec.gov/submissions/{PAGE}"
+
+
+def _page(rows: list[tuple[str, str, str]]) -> dict[str, list[str]]:
+    """A history page from (accession, filing date, acceptance time) rows."""
+    return {
+        "accessionNumber": [r[0] for r in rows],
+        "form": ["10-Q" for _ in rows],
+        "filingDate": [r[1] for r in rows],
+        "acceptanceDateTime": [r[2] for r in rows],
+    }
+
+
+OLD_ROWS = [("a-1", "2016-05-01", "2016-05-01T20:00:00.000Z"),
+            ("a-2", "2016-08-01", "2016-08-01T20:00:00.000Z")]  # fmt: skip
+NEW_ROWS = [*OLD_ROWS, ("a-3", "2016-12-20", "2016-12-20T21:22:19.000Z")]
+RECENT_ROWS = [("b-1", "2017-03-01", "2017-03-01T20:00:00.000Z")]
+
+
+def _entry(rows: list[tuple[str, str, str]]) -> dict[str, object]:
+    return {"name": PAGE, "filingCount": len(rows), "filingFrom": rows[0][1],
+            "filingTo": rows[-1][1]}  # fmt: skip
+
+
+def test_a_history_page_sec_rewrote_is_fetched_again(tmp_lake: Lake) -> None:
+    """SEC rewrites a history page as filings leave `filings.recent` (Agilent's page 001: 1,364
+    filings archived, 1,382 now). A cached page that no longer matches its index entry (count,
+    first or last date) is fetched again; one that matches is reused."""
+    with respx.mock() as router:
+        route = router.get(PAGE_URL).mock(return_value=httpx.Response(200, json=_page(OLD_ROWS)))
+        client = edgar_client(tmp_lake)
+        assert client.submissions_page(PAGE, _entry(OLD_ROWS))["accessionNumber"] == ["a-1", "a-2"]
+        assert client.submissions_page(PAGE, _entry(OLD_ROWS))["accessionNumber"] == ["a-1", "a-2"]
+        assert route.call_count == 1  # matching: reused
+        route.mock(return_value=httpx.Response(200, json=_page(NEW_ROWS)))
+        page = client.submissions_page(PAGE, _entry(NEW_ROWS))
+        assert page["accessionNumber"] == ["a-1", "a-2", "a-3"] and route.call_count == 2
+        cached = json.loads((tmp_lake.raw_dir / "sec" / "submissions" / PAGE).read_text())
+        assert cached["accessionNumber"] == ["a-1", "a-2", "a-3"]  # the archive is refreshed
+
+
+@pytest.mark.parametrize(
+    "change",
+    [{"filingCount": 3}, {"filingFrom": "2016-04-01"}, {"filingTo": "2016-12-20"}],
+)
+def test_each_field_of_the_entry_can_show_a_page_is_stale(
+    tmp_lake: Lake, change: dict[str, object]
+) -> None:
+    with respx.mock() as router:
+        route = router.get(PAGE_URL).mock(return_value=httpx.Response(200, json=_page(OLD_ROWS)))
+        client = edgar_client(tmp_lake)
+        client.submissions_page(PAGE, _entry(OLD_ROWS))
+        client.submissions_page(PAGE, _entry(OLD_ROWS) | change)
+        assert route.call_count == 2
+
+
+def test_a_page_without_an_index_entry_is_reused_as_before(tmp_lake: Lake) -> None:
+    """Without the entry (or with an entry naming none of these fields) a cached page is
+    reused, as before."""
+    with respx.mock() as router:
+        route = router.get(PAGE_URL).mock(return_value=httpx.Response(200, json=_page(OLD_ROWS)))
+        client = edgar_client(tmp_lake)
+        client.submissions_page(PAGE)
+        client.submissions_page(PAGE)
+        client.submissions_page(PAGE, {"name": PAGE})
+        assert route.call_count == 1
+
+
+def test_the_filing_index_reads_a_rewritten_page_and_keeps_acceptance_times(
+    tmp_lake: Lake,
+) -> None:
+    """A filing that moved out of `filings.recent` into a rewritten history page keeps its
+    acceptance time (Agilent's 10-K of 2016-12-20 lost it on 2026-11-25)."""
+    recent = {"cik": "7", "filings": {"recent": _page(RECENT_ROWS), "files": [_entry(NEW_ROWS)]}}
+    with respx.mock() as router:
+        router.get("https://data.sec.gov/submissions/CIK0000000007.json").respond(json=recent)
+        route = router.get(PAGE_URL).mock(return_value=httpx.Response(200, json=_page(OLD_ROWS)))
+        client = edgar_client(tmp_lake)
+        client.submissions_page(PAGE)  # the archive holds the old page
+        route.mock(return_value=httpx.Response(200, json=_page(NEW_ROWS)))
+        index = client.filing_index(7, {"a-3": date(2016, 12, 20)}, refresh=True)
+    row = index.set_index("accn").loc["a-3"]
+    assert str(row["accepted_at"]) == "2016-12-20 21:22:19+00:00"
+
+
+def test_refresh_false_reuses_an_archived_page_even_when_it_looks_stale(tmp_lake: Lake) -> None:
+    """With `refresh=False` every archived answer is reused (offline re-parses), so the filing
+    index passes no entry and makes no request."""
+    recent = {"cik": "7", "filings": {"recent": _page(RECENT_ROWS), "files": [_entry(NEW_ROWS)]}}
+    with respx.mock() as router:
+        router.get("https://data.sec.gov/submissions/CIK0000000007.json").respond(json=recent)
+        route = router.get(PAGE_URL).mock(return_value=httpx.Response(200, json=_page(OLD_ROWS)))
+        client = edgar_client(tmp_lake)
+        client.submissions(7, refresh=True)
+        client.submissions_page(PAGE)  # the archive holds the old page
+        index = client.filing_index(7, {"a-2": date(2016, 8, 1)}, refresh=False)
+        assert route.call_count == 1 and "a-2" in set(index["accn"])
+
+
+def test_a_needed_filing_between_two_pages_date_ranges_is_still_found(tmp_lake: Lake) -> None:
+    """companyfacts' `filed` can differ from the submissions' filing date (Citigroup's
+    `0000831001-23-000037`: filed 2023-02-27 in companyfacts, in page 016 which ends
+    2023-02-26). When the pages chosen by date leave a needed filing missing, the other pages
+    are read too."""
+    page_a = "CIK0000000007-submissions-001.json"
+    page_b = "CIK0000000007-submissions-002.json"
+    rows_a = [("c-1", "2023-03-01", "2023-03-01T20:00:00.000Z")]
+    rows_b = [("c-0", "2023-02-24", "2023-02-25T02:45:33.000Z")]
+    entries = [
+        {"name": page_a, "filingCount": 1, "filingFrom": "2023-02-28", "filingTo": "2023-03-01"},
+        {"name": page_b, "filingCount": 1, "filingFrom": "2023-02-24", "filingTo": "2023-02-26"},
+    ]
+    recent = {"cik": "7", "filings": {"recent": _page(RECENT_ROWS), "files": entries}}
+    with respx.mock() as router:
+        router.get("https://data.sec.gov/submissions/CIK0000000007.json").respond(json=recent)
+        router.get(f"https://data.sec.gov/submissions/{page_a}").respond(json=_page(rows_a))
+        route_b = router.get(f"https://data.sec.gov/submissions/{page_b}").respond(
+            json=_page(rows_b)
+        )
+        client = edgar_client(tmp_lake)
+        index = client.filing_index(7, {"c-0": date(2023, 2, 27)}, refresh=True)
+        # a filing found by date needs no other page
+        again = client.filing_index(7, {"c-1": date(2023, 3, 1)}, refresh=True)
+    assert str(index.set_index("accn").loc["c-0", "accepted_at"]) == "2023-02-25 02:45:33+00:00"
+    assert route_b.call_count == 1 and "c-0" not in set(again["accn"])

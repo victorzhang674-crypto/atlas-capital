@@ -260,3 +260,34 @@ Not done here:
 - the factor and risk stores' new sessions (no new month-end before 2026-11-30).
 
 These come with the next full sync and the month-end store build (Backlog).
+
+## Follow-up 7 — the full data sync (2026-11-25)
+
+Owner: "run the full data sync for the rest". After follow-up 6 brought prices to 2026-11-24, this brings every other `atlas data sync` dataset to today: `universe`, `fundamentals`, `filings`, `macro`, `news`, `events`, `sentiment`, `quality`. The prices step runs too, for new members and today's bar. Started from [handoffs/handoff-1.md](handoffs/handoff-1.md) (Project.md Rule 7), in a new session and worktree (branch `claude/exciting-faraday-bba38a`, cut from `f800722`). No code change is planned.
+
+- **M1, scratch copy** (`main_lake_followup7.py copy`). Unlike follow-ups 5 and 6, it includes the `news` and `news_sentiment` tables, which the news and sentiment steps write.
+- **M2, sync:**
+  - `atlas data sync` on the copy, every dataset, to today.
+  - `universe` applies the index changes since 2026-11-01. A full sync must keep membership point-in-time correct (Rule 8), so new members get their price history, fundamentals, filings and events from the later steps.
+- **M3, silently skipped symbols:** for every current member, check each dataset's new rows. Follow-up 6 found the prices step checkpointing symbols with no data. For any such symbol, put its checkpoint back to the main lake's value and re-run that dataset with `--symbols`.
+- **M4, check:** every table against the main lake, row by row. Removed, added and changed rows, per date where the table is dated; each kind of change reviewed before it is accepted:
+  - prices change only after 2026-11-24, apart from the sync's overlap;
+  - old MD&A rows unchanged;
+  - membership changes listed.
+- **M5, going-concern review:** every MD&A; the 76 FLAGs of follow-ups 4 and 5 rechecked, any new FLAG read.
+- **M6, stores:** decide from what changed whether the factor and risk stores need a rebuild, and record why.
+  - The next factor month-end is 2026-11-30, after today.
+  - If the universe or the October fundamentals changed, the 2026-10-30 month-end exposures change, and the stores are rebuilt.
+- **M7, swap** from the owner's Terminal panel with a dated backup; read back.
+- **M8:**
+  - records;
+  - commit `stage-29: follow-up 7 (...)`;
+  - fast-forward `main`, with `uv run pytest -q` and `make check` on the merged result;
+  - push both branches; CI by full SHA.
+- **M2b, added during the work: stale history pages (Stage 09 client).**
+  - Found by the M4 check of the first sync: 10,573 stored facts in 178 old filings lost their acceptance time. They would have been known only from the next session's open instead of the minute SEC accepted them.
+  - Cause: SEC rewrites a submissions history page (`CIK…-submissions-001.json`) as filings move out of `filings.recent`. `EdgarClient.submissions_page` reused the archived copy forever ("Pages never change"), so filings between the old page's end and the new `recent` were in neither. Agilent's page `-001` holds 1,364 filings archived and 1,382 now.
+  - Fix, test-first:
+    - `submissions_page(name, entry)` reuses a cached page only while it matches its entry in the submissions index (`filingCount`, `filingFrom`, `filingTo`), else fetches it again;
+    - the three callers (`filing_index`, `filing_list`, `fetch_filings`) pass the entry.
+  - Then a fresh scratch copy and the whole sync again, and the M4 check again: facts keep their acceptance times, and no spurious events.
