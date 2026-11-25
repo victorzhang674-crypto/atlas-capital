@@ -214,8 +214,8 @@ def test_missing_bars_inside_the_window_are_counted(
     assert "52-week low" in levels and "-session) low" not in levels
 
 
-def test_a_blocked_symbol_or_one_without_bars_fails(tworld: TechnicalWorld) -> None:
-    with pytest.raises(DataError, match="no bars known for ZZZ"):
+def test_a_symbol_without_bars_in_the_window_fails(tworld: TechnicalWorld) -> None:
+    with pytest.raises(DataError, match="no bars known for ZZZ in the 252 sessions to 2024-03-01"):
         tt.price_summary(tworld.view(), "ZZZ")
 
 

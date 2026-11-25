@@ -350,6 +350,25 @@ def test_the_model_may_look_at_a_peer_with_a_tool(tworld: TechnicalWorld) -> Non
     assert "pxs:DWN:2024-02-29:range" in out.trace.cited_ids
 
 
+def test_a_peer_snapshot_repeats_the_regime_item_without_conflict(tworld: TechnicalWorld) -> None:
+    """The snapshot tool also returns the market regime; for a peer it is the item already
+    prefetched (same id, same text), which the evidence ledger accepts."""
+    call = ToolCall(id="t1", name="get_technical_snapshot", arguments={"symbol": "DWN"})
+    fake = FakeLLM(
+        {
+            STEP: FakeReply(tool_calls=(call,)),
+            (AGENT, "round-2"): report(
+                ids=("tsnap:DWN:2024-02-29:trend", "regime:2024-03-01:market")
+            ),
+        }
+    )
+    out = analyst(fake).run(ctx(tworld))
+    assert [(c.name, c.error) for c in out.trace.tool_calls] == [("get_technical_snapshot", None)]
+    assert out.trace.status == "ok"
+    assert out.trace.evidence_ids.count("regime:2024-03-01:market") == 1
+    assert "tsnap:DWN:2024-02-29:trend" in out.trace.evidence_ids
+
+
 def test_memories_reach_the_prompt_point_in_time(tworld: TechnicalWorld) -> None:
     from datetime import UTC, datetime
 

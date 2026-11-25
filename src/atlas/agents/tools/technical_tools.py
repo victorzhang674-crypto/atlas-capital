@@ -34,6 +34,7 @@ from collections.abc import Sequence
 from datetime import date, datetime
 from typing import Annotated
 
+import numpy as np
 import pandas as pd
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
@@ -157,7 +158,19 @@ def fmt_feature(value: float | None, unit: FeatureUnit) -> str:
 
 def _pct(fraction: float | None) -> str:
     """A percentile fraction as 0-100 (`n/a` when undefined)."""
-    return f"{fraction * 100:.0f}" if _finite(fraction) else NA  # type: ignore[operator]
+    value = _value(fraction)
+    return f"{value * 100:.0f}" if value is not None else NA
+
+
+def _value(x: float | None) -> float | None:
+    """`x` when it is a finite number, else `None`."""
+    return x if x is not None and math.isfinite(x) else None
+
+
+def _at(series: pd.Series, which: str) -> int:
+    """The position of the highest (`which="max"`) or lowest value of `series`, NaN skipped."""
+    values = series.to_numpy(dtype="float64")
+    return int(np.nanargmax(values) if which == "max" else np.nanargmin(values))
 
 
 def _signed(x: float) -> str:
@@ -191,7 +204,9 @@ def _adjusted_bars(view: DataView, symbol: str, sessions: int) -> pd.DataFrame:
     _require(view, symbol)
     bars = view.prices([symbol], sessions)
     if bars.empty:
-        raise DataError(f"no bars known for {symbol} on {view.day.isoformat()}")
+        raise DataError(
+            f"no bars known for {symbol} in the {sessions} sessions to {view.day.isoformat()}"
+        )
     bars = bars.sort_values("date").reset_index(drop=True)
     factor = bars["adj_close"] / bars["close"]
     splits = view.split_factors([symbol], sessions)[symbol]
@@ -231,9 +246,16 @@ def _feature_values(
 
 def _ohlc_text(symbol: str, bars: pd.DataFrame, latest: date, behind: int) -> str:
     rows = "; ".join(
-        f"{r.date} O {r.open:.2f} H {r.high:.2f} L {r.low:.2f} C {r.close:.2f} "
-        f"V {r.volume / 1e6:.2f}M"
-        for r in bars.itertuples()
+        f"{d} O {o:.2f} H {h:.2f} L {lo:.2f} C {c:.2f} V {v / 1e6:.2f}M"
+        for d, o, h, lo, c, v in zip(
+            bars["date"],
+            bars["open"].astype(float),
+            bars["high"].astype(float),
+            bars["low"].astype(float),
+            bars["close"].astype(float),
+            bars["volume"].astype(float),
+            strict=True,
+        )
     )
     stale = ""
     if behind:
@@ -252,20 +274,21 @@ def _range_text(symbol: str, bars: pd.DataFrame, want: int, window_start: date) 
     """The 52-week range over `bars`, the symbol's bars in the `want` sessions that end at
     its last bar (from `window_start`): fewer bars are a short history (the first bar is
     after `window_start`) or sessions without a bar."""
-    hi, lo = bars["high"].idxmax(), bars["low"].idxmin()
-    high, low = float(bars["high"][hi]), float(bars["low"][lo])
+    hi, lo = _at(bars["high"], "max"), _at(bars["low"], "min")
+    high, low = float(bars["high"].iloc[hi]), float(bars["low"].iloc[lo])
     close = float(bars["close"].iloc[-1])
     n = len(bars)
+    first = bars["date"].iloc[0]
     short = ""
-    if bars["date"][0] > window_start:
-        short = f" (only {n} sessions of history, first bar {bars['date'][0]})"
+    if first > window_start:
+        short = f" (only {n} sessions of history, first bar {first})"
     elif n < want:
         short = f" ({want - n} sessions in the window without a bar)"
     position = (close - low) / (high - low) if high > low else math.nan
     where = f"at {position * 100:.1f}% of the range" if _finite(position) else "range n/a"
     return (
-        f"{symbol} 52-week range ({n} sessions {bars['date'][0]}..{bars['date'].iloc[-1]}){short}: "
-        f"high {high:.2f} on {bars['date'][hi]}, low {low:.2f} on {bars['date'][lo]} "
+        f"{symbol} 52-week range ({n} sessions {first}..{bars['date'].iloc[-1]}){short}: "
+        f"high {high:.2f} on {bars['date'].iloc[hi]}, low {low:.2f} on {bars['date'].iloc[lo]} "
         f"(adjusted USD). The last close {close:.2f} is {_signed(close / high - 1)} from the "
         f"high and {_signed(close / low - 1)} from the low, {where}."
     )
@@ -274,16 +297,16 @@ def _range_text(symbol: str, bars: pd.DataFrame, want: int, window_start: date) 
 def _ma_text(symbol: str, close: float, mas: dict[str, float | None]) -> str:
     parts = []
     for name, label in MA_FEATURES:
-        value = mas[name]
+        value = _value(mas[name])
         parts.append(
             f"{label} {value:.2f} (close {_signed(close / value - 1)} vs it)"
-            if _finite(value)
+            if value is not None
             else f"{label} n/a"
         )
-    s50, s200 = mas["sma_50"], mas["sma_200"]
-    if _finite(s50) and _finite(s200):
-        side = "above" if s50 >= s200 else "below"  # type: ignore[operator]
-        cross = f"SMA50 is {abs(s50 / s200 - 1) * 100:.2f}% {side} SMA200"  # type: ignore[operator]
+    s50, s200 = _value(mas["sma_50"]), _value(mas["sma_200"])
+    if s50 is not None and s200 is not None:
+        side = "above" if s50 >= s200 else "below"
+        cross = f"SMA50 is {abs(s50 / s200 - 1) * 100:.2f}% {side} SMA200"
     else:
         cross = "SMA50 vs SMA200 n/a"
     return (
@@ -301,24 +324,28 @@ def _levels_text(
 ) -> str:
     close = float(bars["close"].iloc[-1])
     n = len(bars)
-    year = f"52-week ({n}-session)" if bars["date"][0] > window_start else "52-week"
+    year = f"52-week ({n}-session)" if bars["date"].iloc[0] > window_start else "52-week"
     candidates: list[tuple[str, float, date | None]] = []
     notes = []
     for window in settings.swing_sessions:
         if n < window:
             notes.append(f"no {window}-session level (only {n} sessions)")
             continue
-        tail = bars.tail(window).reset_index(drop=True)
-        lo, hi = tail["low"].idxmin(), tail["high"].idxmax()
-        candidates.append((f"{window}-session low", float(tail["low"][lo]), tail["date"][lo]))
-        candidates.append((f"{window}-session high", float(tail["high"][hi]), tail["date"][hi]))
-    lo, hi = bars["low"].idxmin(), bars["high"].idxmax()
-    candidates.append((f"{year} low", float(bars["low"][lo]), bars["date"][lo]))
-    candidates.append((f"{year} high", float(bars["high"][hi]), bars["date"][hi]))
+        tail = bars.tail(window)
+        lo, hi = _at(tail["low"], "min"), _at(tail["high"], "max")
+        candidates.append(
+            (f"{window}-session low", float(tail["low"].iloc[lo]), tail["date"].iloc[lo])
+        )
+        candidates.append(
+            (f"{window}-session high", float(tail["high"].iloc[hi]), tail["date"].iloc[hi])
+        )
+    lo, hi = _at(bars["low"], "min"), _at(bars["high"], "max")
+    candidates.append((f"{year} low", float(bars["low"].iloc[lo]), bars["date"].iloc[lo]))
+    candidates.append((f"{year} high", float(bars["high"].iloc[hi]), bars["date"].iloc[hi]))
     for name, label in MA_FEATURES:
-        value = mas[name]
-        if _finite(value):
-            candidates.append((label, float(value), None))  # type: ignore[arg-type]
+        value = _value(mas[name])
+        if value is not None:
+            candidates.append((label, value, None))
 
     def show(label: str, level: float, day: date | None) -> str:
         on = f" on {day}" if day is not None else ""
@@ -339,12 +366,12 @@ def _stops_text(
     symbol: str, bars: pd.DataFrame, atr: float | None, settings: TechnicalAnalystConfig
 ) -> str:
     close = float(bars["close"].iloc[-1])
-    if _finite(atr):
+    atr = _value(atr)
+    if atr is not None:
         multiples = ", ".join(
-            f"{k:g} x ATR = {k * atr / close * 100:.2f}%"  # type: ignore[operator]
-            for k in settings.atr_stop_multiples
+            f"{k:g} x ATR = {k * atr / close * 100:.2f}%" for k in settings.atr_stop_multiples
         )
-        head = f"ATR(14) {atr:.2f} USD = {atr / close * 100:.2f}% of the last close {close:.2f}"  # type: ignore[operator]
+        head = f"ATR(14) {atr:.2f} USD = {atr / close * 100:.2f}% of the last close {close:.2f}"
     else:
         multiples = "ATR multiples n/a"
         head = f"ATR(14) n/a (last close {close:.2f})"
@@ -353,9 +380,10 @@ def _stops_text(
         if len(bars) < window:
             continue
         tail = bars.tail(window)
+        low, high = float(tail["low"].min()), float(tail["high"].max())
         swings.append(
-            f"to the {window}-session low {(1 - tail['low'].min() / close) * 100:.2f}% (LONG), "
-            f"to the {window}-session high {(tail['high'].max() / close - 1) * 100:.2f}% (SHORT)"
+            f"to the {window}-session low {(1 - low / close) * 100:.2f}% (LONG), "
+            f"to the {window}-session high {(high / close - 1) * 100:.2f}% (SHORT)"
         )
     return (
         f"{symbol} stop references: {head}. Stop distances as a percentage of the last close "
@@ -449,7 +477,8 @@ def _num(x: float | None, spec: str) -> str:
 
 
 def _frac(x: float | None, spec: str = "+.2f") -> str:
-    return f"{format(x * 100, spec)}%" if _finite(x) else NA  # type: ignore[operator]
+    value = _value(x)
+    return f"{format(value * 100, spec)}%" if value is not None else NA
 
 
 def regime_item(view: DataView, regime: RegimeState | None) -> Evidence:

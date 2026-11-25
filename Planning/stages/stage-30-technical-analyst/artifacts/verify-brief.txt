@@ -1,0 +1,5 @@
+$ uv run pytest tests/unit/agents/research/test_technical.py -q -p no:cacheprovider
+...............................                                          [100%]
+31 passed in 25.89s
+
+exit 0
