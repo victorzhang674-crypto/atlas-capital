@@ -88,6 +88,12 @@ def members() -> None:
     out.to_csv(f5.WORK / "members.csv")
 
 
+def _differs(a: pd.Series, b: pd.Series) -> pd.Series:
+    """Cells that differ, a missing value (None, NaN, NaT) equal to another missing one."""
+    both_missing = a.isna().to_numpy() & b.isna().to_numpy()
+    return pd.Series((a.astype(str).to_numpy() != b.astype(str).to_numpy()) & ~both_missing)
+
+
 def _date_col(schema, keys: list[str]) -> str | None:  # noqa: ANN001
     for name in (*keys, *schema.column_names):
         if name in DATE_NAMES:
@@ -143,8 +149,7 @@ def check() -> None:
             print(f"  removed: {span(g)}; symbols {symbols(gone)[:30]}")
         if len(changed):
             c_old, c_new = o.loc[changed], n.loc[changed]
-            per_col = {c: int((c_old[c].astype(str) != c_new[c].astype(str)).sum())
-                       for c in cols if c not in keys}
+            per_col = {c: int(_differs(c_old[c], c_new[c]).sum()) for c in cols if c not in keys}
             per_col = {c: k for c, k in per_col.items() if k}
             print(f"  changed: {span(c_new.reset_index())}; columns {per_col}; "
                   f"symbols {len(symbols(changed))} {symbols(changed)[:20]}")

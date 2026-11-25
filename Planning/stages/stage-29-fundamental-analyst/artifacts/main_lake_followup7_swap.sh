@@ -46,6 +46,9 @@ digest() { (cd $1 && find . -type f -print0 | sort -z | xargs -0 shasum -a 256 |
     cmp -s $SCRATCH/raw/$f $LAKE/raw/$f || { echo "raw $f differs"; echo "swap exit 1"; exit 1; }
   done
   echo "raw: $added files added, $replaced replaced (old ones in the backup)"
+  for kind in factors risk_model; do
+    cp -p $SCRATCH/runs/$kind/build.log $LAKE/runs/$kind/build-stage29-followup7-2026-11-25.log && echo "build log kept: runs/$kind/build-stage29-followup7-2026-11-25.log"
+  done
   echo "swap exit 0"
 } > $OUT 2>&1
 echo "swap finished: $(tail -1 $OUT)"

@@ -1,0 +1,31 @@
+corporate_actions: main 23228 rows, scratch copy 23228: EQUAL
+data_quality_issues: main 257 rows, scratch copy 257: EQUAL
+earnings_reactions: main 30663 rows, scratch copy 30663: EQUAL
+events: main 35329 rows, scratch copy 35329: EQUAL
+factor_exposures: main 1212389 rows, scratch copy 1212389: EQUAL
+factor_returns: main 49760 rows, scratch copy 49760: EQUAL
+filing_text: main 30954 rows, scratch copy 30954: EQUAL
+fundamentals_facts: main 2708712 rows, scratch copy 2708712: EQUAL
+index_membership: main 880 rows, scratch copy 880: EQUAL
+instruments: main 891 rows, scratch copy 891: EQUAL
+macro_events: main 392 rows, scratch copy 392: EQUAL
+macro_observations: main 528553 rows, scratch copy 528553: EQUAL
+macro_series: main 22 rows, scratch copy 22: EQUAL
+news: main 853433 rows, scratch copy 853433: EQUAL
+news_sentiment: main 853433 rows, scratch copy 853433: EQUAL
+prices_daily: main 1851139 rows, scratch copy 1851139: EQUAL
+regime_history: main 2724 rows, scratch copy 2724: EQUAL
+risk_model_snapshots: main 1246260 rows, scratch copy 1246260: EQUAL
+_meta.json tables equal to the scratch copy's: True
+ABT: fundamentals 21 values, revenue_ttm 48229000000.0; MD&A 10-Q filed 2026-11-04 (27113 chars) -> going concern CLEAR
+KVUE: fundamentals 24 values, revenue_ttm 15530000000.0; MD&A 10-Q filed 2026-10-30 (66674 chars) -> going concern CLEAR
+CRWD: fundamentals 21 values, revenue_ttm 5745320000.0; MD&A 10-Q filed 2026-11-23 (67626 chars) -> going concern CLEAR
+JPM: fundamentals 16 values, revenue_ttm 203153000000.0; MD&A 10-Q filed 2026-11-03 (271225 chars) -> going concern CLEAR
+C: fundamentals 17 values, revenue_ttm 85225000000.0; MD&A 10-Q filed 2026-11-05 (256640 chars) -> going concern CLEAR
+ABT at 2026-08-31 (its 10-Q of 2026-07-28 added by this sync): revenue_ttm 46585000000.0
+AAPL news items in the 7 days to 2026-11-25: 14 latest: None
+JPM 0000019617-23-000524 accepted_at: <DatetimeArray>
+['2023-11-01 20:29:55+00:00']
+Length: 1, dtype: datetime64[us, UTC] available_at: <DatetimeArray>
+['2023-11-01 20:29:55+00:00']
+Length: 1, dtype: datetime64[us, UTC]

@@ -1,0 +1,158 @@
+### sync run 1 (discarded: SEC rewrote history pages; the client reused archived ones)
+== check 2026-11-25T15:46:03Z
+corporate_actions: main 23228, copy 23228; removed 0, added 0, changed 0 (equal)
+data_quality_issues: main 88, copy 256; removed 0, added 168, changed 0
+  added: date 2026-10-28 .. 2026-11-24; symbols 161
+earnings_reactions: main 30287, copy 30697; removed 0, added 410, changed 0
+  added: ; symbols 349
+events: main 34457, copy 35363; removed 0, added 906, changed 0
+  added: event_date 2015-02-17 .. 2027-03-15; symbols 549
+factor_exposures: main 1212389, copy 1212389; removed 0, added 0, changed 0 (equal)
+factor_returns: main 49420, copy 49420; removed 0, added 0, changed 0 (equal)
+filing_text: main 30927, copy 30954; removed 0, added 27, changed 0
+  added: period_end 2023-04-02 .. 2026-11-01; symbols 13
+fundamentals_facts: main 2691253, copy 2708707; removed 0, added 17454, changed 10696
+  added: period_end 2021-12-31 .. 2026-11-22; symbols 262
+  changed: period_end 2007-12-31 .. 2025-10-31; columns {'period_start': 3497, 'accepted_at': 10696, 'available_at': 10696}; symbols 122 ['A', 'ACN', 'ADI', 'ADM', 'ADP', 'AEE', 'AIZ', 'AJG', 'AMG', 'AMZN', 'ANET', 'ATO', 'AXON', 'BAC', 'BE', 'BIO', 'BLK', 'BR', 'BSX', 'C']
+index_membership: main 880, copy 880; removed 0, added 0, changed 0 (equal)
+instruments: main 891, copy 891; removed 0, added 0, changed 0 (equal)
+macro_events: main 392, copy 392; removed 0, added 0, changed 0 (equal)
+macro_observations: main 523749, copy 528551; removed 0, added 4802, changed 0
+  added: realtime_start 2026-10-23 .. 2026-11-25; symbols 0
+macro_series: main 22, copy 22; removed 0, added 0, changed 0 (equal)
+news: main 845313, copy 853417; removed 0, added 8104, changed 0
+  added: published_at 2026-04-29 13:02:00+00:00 .. 2026-11-25 14:33:57+00:00; symbols 0
+news_sentiment: main 845313, copy 853417; removed 0, added 8104, changed 0
+  added: published_at 2026-04-29 13:02:00+00:00 .. 2026-11-25 14:33:57+00:00; symbols 0
+prices_daily: main 1851139, copy 1851139; removed 0, added 0, changed 0 (equal)
+regime_history: main 2724, copy 2724; removed 0, added 0, changed 0 (equal)
+risk_model_snapshots: main 1246260, copy 1246260; removed 0, added 0, changed 0 (equal)
+exit 0
+
+### sync run 3 (final, after both Stage 09 client fixes)
+== members (run 3) 2026-11-25T19:18:01Z
+current members: 503
+price: none for 0; latest 2026-11-24; by value (top 6): {'2026-11-24': 502, '2026-11-19': 1}
+fact_filed: none for 0; latest 2026-11-25; by value (top 6): {'2026-10-29': 53, '2026-11-04': 47, '2026-10-28': 44, '2026-11-05': 42, '2026-11-03': 37, '2026-10-30': 35}
+filing: none for 0; latest 2026-11-24; by value (top 6): {'2026-10-29': 55, '2026-11-05': 48, '2026-10-28': 48, '2026-11-04': 47, '2026-10-30': 40, '2026-11-03': 37}
+sec_event: none for 0; latest 2027-03-15; by value (top 6): {'2027-02-02': 37, '2027-02-04': 37, '2027-02-03': 36, '2027-01-28': 35, '2027-01-27': 29, '2027-02-10': 28}
+members whose last bar is before the latest: ['SNDK']
+members with no fact filed since 2026-08-01: ['AEP', 'C', 'CMS', 'CNP', 'D', 'DLR', 'DTE', 'DUK', 'ESS', 'ETR', 'EVRG', 'EXC', 'FE', 'FRT', 'LNT', 'MAA', 'NEE', 'PCG', 'PLD', 'PPL', 'REG', 'SO', 'SRE', 'VMRK']
+exit 0
+== check (run 3) 2026-11-25T19:18:03Z
+corporate_actions: main 23228, copy 23228; removed 0, added 0, changed 0 (equal)
+data_quality_issues: main 88, copy 257; removed 0, added 169, changed 0
+  added: date 2026-10-28 .. 2026-11-25; symbols 162
+earnings_reactions: main 30287, copy 30663; removed 0, added 376, changed 0
+  added: ; symbols 337
+events: main 34457, copy 35329; removed 0, added 872, changed 0
+  added: event_date 2026-11-02 .. 2027-03-15; symbols 548
+factor_exposures: main 1212389, copy 1212389; removed 0, added 0, changed 0 (equal)
+factor_returns: main 49420, copy 49420; removed 0, added 0, changed 0 (equal)
+filing_text: main 30927, copy 30954; removed 0, added 27, changed 0
+  added: period_end 2023-04-02 .. 2026-11-01; symbols 13
+fundamentals_facts: main 2691253, copy 2708712; removed 0, added 17459, changed 123
+  added: period_end 2021-12-31 .. 2026-11-22; symbols 262
+  changed: period_end 2021-12-31 .. 2023-09-30; columns {'accepted_at': 123, 'available_at': 123}; symbols 2 ['JPM', 'MS']
+index_membership: main 880, copy 880; removed 0, added 0, changed 0 (equal)
+instruments: main 891, copy 891; removed 0, added 0, changed 0 (equal)
+macro_events: main 392, copy 392; removed 0, added 0, changed 0 (equal)
+macro_observations: main 523749, copy 528553; removed 0, added 4804, changed 0
+  added: realtime_start 2026-10-23 .. 2026-11-25; symbols 0
+macro_series: main 22, copy 22; removed 0, added 0, changed 0 (equal)
+news: main 845313, copy 853433; removed 0, added 8120, changed 0
+  added: published_at 2026-04-29 13:02:00+00:00 .. 2026-11-25 18:01:21+00:00; symbols 0
+news_sentiment: main 845313, copy 853433; removed 0, added 8120, changed 0
+  added: published_at 2026-04-29 13:02:00+00:00 .. 2026-11-25 18:01:21+00:00; symbols 0
+prices_daily: main 1851139, copy 1851139; removed 0, added 0, changed 0 (equal)
+regime_history: main 2724, copy 2724; removed 0, added 0, changed 0 (equal)
+risk_model_snapshots: main 1246260, copy 1246260; removed 0, added 0, changed 0 (equal)
+exit 0
+
+### review of the run 3 changes
+fundamentals changed: 123 | NaT->value 123 | value->NaT 0 | value->other 0
+  available_at moved earlier for all changed: True | accns ['0000019617-23-000524', '0000895421-23-000374']
+fundamentals added: 17459 | filed 2026-07-28 .. 2026-11-25 | filed before 2026-11-01: 501 | accns 266 | no acceptance time: 0
+symbol  accn                  form_n  filed_n   
+AAL     0000006201-26-000065  10-Q    2026-10-22    59
+ABT     0001628280-26-050134  10-Q    2026-07-28    65
+HUM     0000049071-26-000050  10-Q    2026-07-29    71
+JCI     0000833444-26-000087  10-Q    2026-07-29    59
+TYC     0000833444-26-000087  10-Q    2026-07-29    59
+UDR     0000074208-26-000073  10-Q    2026-07-28    67
+V       0001403161-26-000104  10-Q    2026-07-29    44
+VRSK    0001437749-26-024749  10-Q    2026-07-29    77
+filing_text added:
+      symbol                  accn  form       filed  period_end status   source   chars
+16639   KVUE  0001944048-23-000013  10-Q  2023-06-02  2023-04-02     ok  primary   63528
+16640   KVUE  0001944048-23-000020  10-Q  2023-08-02  2023-07-02     ok  primary   71650
+16641   KVUE  0001944048-23-000102  10-Q  2023-11-03  2023-10-01     ok  primary   74686
+16642   KVUE  0001944048-24-000057  10-K  2024-03-01  2023-12-31     ok  primary   71448
+16643   KVUE  0001944048-24-000100  10-Q  2024-05-09  2024-03-31     ok  primary   44746
+16644   KVUE  0001944048-24-000139  10-Q  2024-08-06  2024-06-30     ok  primary   65853
+16645   KVUE  0001944048-24-000152  10-Q  2024-11-07  2024-09-29     ok  primary   69244
+16646   KVUE  0001944048-25-000033  10-K  2025-02-24  2024-12-29     ok  primary   83591
+16647   KVUE  0001944048-25-000129  10-Q  2025-05-08  2025-03-30     ok  primary   44606
+16648   KVUE  0001944048-25-000177  10-Q  2025-08-07  2025-06-29     ok  primary   68199
+16649   KVUE  0001944048-25-000198  10-Q  2025-11-03  2025-09-28     ok  primary   73430
+16650   KVUE  0001944048-26-000030  10-K  2026-02-20  2025-12-28     ok  primary   89307
+16651   KVUE  0001944048-26-000098  10-Q  2026-05-07  2026-03-29     ok  primary   42235
+16652   KVUE  0001944048-26-000142  10-Q  2026-08-06  2026-06-28     ok  primary   63143
+16653   KVUE  0001944048-26-000168  10-Q  2026-10-30  2026-09-27     ok  primary   66674
+15513      J  0001628280-26-075495  10-K  2026-11-23  2026-10-02     ok  primary   66318
+7018    CRWD  0001535527-26-000038  10-Q  2026-11-23  2026-10-31     ok  primary   67626
+24032    RJF  0000720005-26-000086  10-K  2026-11-24  2026-09-30     ok  primary  169082
+24973    SJM  0000091419-26-000111  10-Q  2026-11-24  2026-10-31     ok  primary   37297
+585      ADI  0000006281-26-000089  10-K  2026-11-24  2026-10-31     ok  primary   38101
+13058    GPS  0001628280-26-075650  10-Q  2026-11-24  2026-10-31     ok  primary   21302
+8519    DLTR  0000935703-26-000137  10-Q  2026-11-24  2026-10-31     ok  primary   46279
+6539     COR  0001140859-26-000044  10-K  2026-11-24  2026-09-30     ok  primary   71248
+3524     BDX  0000010795-26-000039  10-K  2026-11-24  2026-09-30     ok  primary   85256
+1897    AMTM  0001628280-26-075740  10-K  2026-11-24  2026-10-02     ok  primary   35602
+29546   WDAY  0001327811-26-000058  10-Q  2026-11-24  2026-10-31     ok  primary   49796
+30060    WSM  0000719955-26-000248  10-Q  2026-11-24  2026-11-01     ok  primary   31711
+news added 8120 key ['article_id'] | published before 2026-11-01: 104 | before 2026-10-25: 102
+published_at
+2026-04-29    2
+2026-04-30    2
+2026-05-01    4
+2026-05-04    2
+2026-05-05    2
+2026-05-06    2
+2026-05-07    1
+2026-05-19    1
+2026-05-20    1
+2026-05-21    1
+2026-05-26    1
+2026-05-28    1
+2026-05-29    6
+2026-06-01    2
+2026-06-02    1
+2026-06-04    1
+2026-06-09    1
+2026-06-15    1
+2026-06-17    1
+2026-06-19    1
+2026-06-22    1
+2026-06-23    1
+2026-06-24    1
+2026-06-25    1
+2026-06-29    1
+2026-06-30    1
+2026-07-01    1
+2026-07-02    1
+2026-07-06    2
+2026-07-08    1
+2026-07-10    3
+2026-07-13    2
+2026-07-15    1
+2026-07-16    1
+2026-07-20    2
+2026-07-24    1
+2026-07-28 
+events added by source/type:
+source   event_type 
+sec_10q  earnings        13
+sec_8k   earnings       235
+yahoo    earnings       302
+         ex_dividend     95

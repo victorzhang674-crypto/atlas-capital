@@ -438,3 +438,43 @@ Append entries in order. Record failures and dead ends as honestly as successes.
 - **Sync run 2:** a fresh scratch copy, then `atlas data sync` again with the fixed client and the lexicon override, started 2026-11-25 (`$TMPDIR/s29f7/sync.txt`).
 - **Run 2 check (fundamentals, while the sync ran):** lost acceptance times went from 10,573 down to 193 (123 facts gained one). The 193 are a second Stage 09 limit: a needed filing whose companyfacts `filed` date falls between two history pages' ranges (Citigroup `0000831001-23-000037`: filed 2023-02-27, in page 016, which ends 2023-02-26). Fixed test-first: `filing_index` reads the other pages when a needed filing is still missing (`test_a_needed_filing_between_two_pages_date_ranges_is_still_found`, red then green; 568 tests of fundamentals/filings/events pass; ruff and mypy clean).
 - **Stopped here (usage limit):** sync run 2 was still running in the background on `$TMPDIR/s29f7/main-copy`, with the code from before the page fallback. Next: [handoffs/handoff-2.md](handoffs/handoff-2.md).
+- **Part 2** (a teammate session relayed the owner's "Try again"):
+  - Resumed from [handoffs/handoff-2.md](handoffs/handoff-2.md); state matched (`2138e84`, clean).
+  - Gate on `2138e84`: `uv run pytest -q` → 5571 passed, 82 deselected, exit 0 ([followup7-gate2-pytest.txt](artifacts/followup7-gate2-pytest.txt)): the 5,563 plus the 8 new client tests.
+  - Run 2 was discarded: it started before the page-fallback fix.
+  - `check`'s per-column counts are now null-aware (`_differs`): run 1 had shown `None` against `NaN` as a change.
+- **Sync run 3** (fresh copy; both client fixes; lexicon override) → exit 0:
+  - universe ok; prices 778 skipped (current to 2026-11-24);
+  - fundamentals 746 ok / 2 empty; filings 745 ok / 3 empty, 27 rows;
+  - macro 22 ok; news 778 ok, 9,780 rows; earnings 746 ok / 2 empty; upcoming 503 ok;
+  - macro calendar, reactions, news sentiment and quality ok; 0 failed in any step.
+  - SNDK's price checkpoint was set back to 2026-11-19, as in run 1.
+- **M3 members:** all 503 current members have bars to 2026-11-24 except SNDK (2026-11-19, split gap). The 24 members with stale SEC companyfacts are as in run 1 (upstream).
+- **M4 check** ([main-lake-check-followup7.txt](artifacts/main-lake-check-followup7.txt), with run 1's for comparison). No row was removed in any table.
+  - **fundamentals:** +17,459 facts from 266 filings, all with acceptance times. 501 come from 8 filings of 2026-07-28 … 10-22 the lake lacked: AAL, ABT, HUM, JCI/TYC, UDR, V, VRSK. 123 existing facts changed, all JPMorgan's `0000019617-23-000524` and Morgan Stanley's `0000895421-23-000374`; each gained the acceptance time it lacked, so `available_at` moved earlier to the true acceptance. None lost one: run 1's 10,573 losses are gone.
+  - **filing text:** +27 rows, all `ok`. Kenvue's whole history (15 filings from 2023-06-02, which the lake lacked) plus 12 filings of 2026-11-23/24. Old rows unchanged.
+  - **events:** +872 (2026-11-02 … 2027-03-15): SEC 8-K 235 and 10-Q 13 earnings, Yahoo 302 upcoming earnings and 95 ex-dividend dates. Run 1's spurious events back to 2015 (from the stale pages) are gone.
+  - **reactions** +376; **news** +8,120 and **news sentiment** +8,120 (104 articles were published before November: late-indexed by Alpaca, kept with their publication time); **macro observations** +4,804 vintages (2026-10-23 … 11-25); **data-quality issues** +169.
+  - **Unchanged:** prices, corporate actions, instruments, membership, macro series and events, regime history, and the stores.
+- **M5 going concern** ([filing-text-review-followup7.txt](artifacts/filing-text-review-followup7.txt)): 30,954 MD&As, all `ok`; 76 FLAGs, the same 76 (0 new, 0 gone).
+- **M6 stores, decision:**
+  - The 8 late-found filings change what the factor store should have seen at its 2026-07-31, 08-31, 09-30 and 10-30 month-ends. JPMorgan's and Morgan Stanley's 2023 acceptance times move availability by hours within the same day, across no month-end.
+  - So `atlas factors build --from 2026-07-01 --to 2026-10-31 --refresh` (stored month-ends are skipped without `--refresh`), then the full `atlas risk-model build --from 2017 --to 2026 --cached-factors` as in follow-ups 4 and 5.
+  - No membership changed, so no other month-end changes.
+- **Rebuild:** `atlas factors build --from 2026-07-01 --to 2026-10-31 --refresh` exit 0 (1 min); `atlas risk-model build --from 2017 --to 2026 --cached-factors` exit 0 (32 min).
+- **Store comparison** ([main-lake-stores-compare-followup7.txt](artifacts/main-lake-stores-compare-followup7.txt)):
+  - same rows;
+  - raw exposures changed only for the 8 issuers (300 values); other names' standardised values moved only on 2026-07-31, 08-31, 09-30 and 10-30 (median 0.0001);
+  - factor returns +340 rows (17 November sessions × 20 factors), values changed from 2026-07-31; risk snapshots changed only on those 4 month-ends.
+- **M7 swap** from the owner's Terminal panel ([main_lake_followup7_swap.sh](artifacts/main_lake_followup7_swap.sh), [main-lake-swap-followup7.txt](artifacts/main-lake-swap-followup7.txt)):
+  - 11 tables backed up in `cache/backup-stage29-followup7-2026-11-25` (digest-checked) and replaced, each equal to the scratch copy;
+  - `sync_state.json` replaced; raw: 38 files added, 2,427 replaced (old ones backed up); build logs kept; swap exit 0.
+- **Read-back** ([main-lake-readback-followup7.txt](artifacts/main-lake-readback-followup7.txt)):
+  - all 18 tables' row counts and `_meta.json` tables equal;
+  - ABT's July 10-Q now visible at 2026-08-31 (revenue TTM $46.6B);
+  - Kenvue's MD&A present; CrowdStrike's 10-Q of 2026-11-23 present;
+  - JPMorgan's 2023 filing has its acceptance time (2023-11-01 20:29:55Z);
+  - AAPL: 14 news items in the last 7 days.
+- **Verification on the final code:** `make test-integration` → 48 passed, 15 skipped, exit 0 ([followup7-test-integration.txt](artifacts/followup7-test-integration.txt)). `make check` before the commit, and `uv run pytest -q` / `make check` on the merged `main`: see [verification.md › Follow-up 7](verification.md).
+- **Docs:** `docs/data-limitations.md`, fundamentals item 1 (rewritten history pages; SEC companyfacts lag for 24 members) and item 9 (30,954 MD&As).
+- **Code files changed:** `src/atlas/data/fundamentals/edgar_client.py`, `src/atlas/data/filings/text.py`, `src/atlas/data/events/earnings.py`. **Test files changed:** `tests/unit/data/fundamentals/test_fundamentals_client.py`, `tests/unit/data/fundamentals/test_fundamentals_ingest.py`.

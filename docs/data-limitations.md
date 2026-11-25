@@ -98,7 +98,20 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    Stage 09 artifacts). A filing accepted after 17:30 ET carries the next day's filing date
    but is public the same evening (AAPL's FY2023 10-K: accepted 2023-11-02 18:08 ET, filed
    2023-11-03). When a filing is not in the index, `available_at` falls back to the open of the
-   first session after the filing date (conservative, at most a day late).
+   first session after the filing date (conservative, at most a day late). SEC rewrites the
+   submissions' history pages as filings leave `filings.recent`, so an archived page is fetched
+   again when it no longer matches its index entry, and a filing whose companyfacts date falls
+   between two pages' ranges is looked for in the other pages too (Stage 29 follow-up 7: before
+   that, a sync lost the acceptance time of 10,573 facts in 178 old filings).
+
+   **SEC's companyfacts can lag the filings.** On 2026-11-25, 24 current members had no fact
+   filed since 2026-08-01 although their 10-Qs were filed, because SEC's own companyfacts
+   answer stops early for them (Citigroup's us-gaap facts end at 2026-02-20). Most are
+   multi-registrant utilities and REITs with operating partnerships: AEP, C, CMS, CNP, D, DLR,
+   DTE, DUK, ESS, ETR, EVRG, EXC, FE, FRT, LNT, MAA, NEE, PCG, PLD, PPL, REG, SO, SRE, VMRK.
+   Their point-in-time fundamentals stay at the last quarter SEC published, flagged `stale` by
+   `fundamentals_detail` once older than the staleness limit. Reading the filings' own XBRL
+   would fill the gap (Backlog).
 2. **Former members need a reviewed CIK.** EDGAR's `company_tickers.json` lists current
    registrants only, and an old ticker may now belong to another company (APC is now ARKO
    Petroleum, STI is now Solidion). `config/cik_overrides.yaml` pins a verified **CIK** for every
@@ -221,8 +234,8 @@ from the moment the restating filing was accepted (JPM's 2012 10-Q/A cut Q1 2012
    `not_found` (or `by_reference`) and no text, and the going-concern check then reads the
    latest filing whose MD&A was found, or NOT EVALUATED.
 
-   On the main lake (2026-11-23, follow-up 5): 30,927 filings of 744 symbols filed since 2015
-   (7,730 10-Ks, 23,197 10-Qs), all with an MD&A, including the issuers' former CIKs (item 2
+   On the main lake (2026-11-25, follow-up 7): 30,954 filings of 745 symbols filed since 2015
+   (7,739 10-Ks, 23,215 10-Qs), all with an MD&A, including the issuers' former CIKs (item 2
    of the fundamentals list) and Twenty-First Century Fox. In follow-up 5 **every stored
    filing was re-extracted** from its fetched documents with the final rules; 533 rows changed
    and were reviewed by kind, 131 of them rows stored by earlier code. Over-run markers (text

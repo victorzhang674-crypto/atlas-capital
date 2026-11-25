@@ -210,3 +210,26 @@ Owner: "Sync prices to today". A routine data sync of the main lake; no code cha
   - Merged `main`: `uv run pytest -q` and `make check` → [artifacts/followup6-merged-main-check.txt](artifacts/followup6-merged-main-check.txt)
 - Criterion: [x] the main lake's prices reach the last published session (2026-11-24) for every current member — evidence: `check` and read-back above.
 - Waivers: none
+
+#### Follow-up 7 — Stage 29 — 2026-11-25
+Owner: "run the full data sync for the rest". A full `atlas data sync` of the main lake, plus 2 Stage 09 EDGAR client fixes it exposed (rewritten submissions history pages). Records: [worklog.md › Follow-up 7](worklog.md), [plan.md › Follow-up 7](plan.md), hand-offs [1](handoffs/handoff-1.md) and [2](handoffs/handoff-2.md).
+- Commands run (this chat):
+  - Gate: `uv run pytest -q` → 5563 passed, 82 deselected, exit 0 · [artifacts/followup7-gate-pytest.txt](artifacts/followup7-gate-pytest.txt)
+  - After the client fixes: `uv run pytest -q` → 5571 passed, 82 deselected, exit 0 · [artifacts/followup7-gate2-pytest.txt](artifacts/followup7-gate2-pytest.txt)
+  - `make test-integration` → 48 passed, 15 skipped, exit 0 · [artifacts/followup7-test-integration.txt](artifacts/followup7-test-integration.txt)
+  - `make check` (lint, format, mypy, tests) → ruff all checks passed, 510 files formatted, mypy no issues in 188 files, 5568 + 3 timing tests passed, exit 0 · [artifacts/followup7-make-check.txt](artifacts/followup7-make-check.txt)
+  - `atlas data sync` run 3 on a fresh scratch copy (runs 1 and 2 discarded) → 12 steps, 0 failed, exit 0 · [artifacts/main-lake-followup7.txt](artifacts/main-lake-followup7.txt)
+  - `main_lake_followup7.py members` / `check` (run 3) → no rows removed; fundamentals +17,459, changed 123 (`accepted_at`/`available_at` NaT → value, JPM and MS only); filing_text +27; events +872; reactions +376; news and news_sentiment +8,120; macro observations +4,804; data quality +169 · [artifacts/main-lake-check-followup7.txt](artifacts/main-lake-check-followup7.txt)
+  - Going-concern review → 76 FLAGs, the same 76; 30,954 MD&As · [artifacts/filing-text-review-followup7.txt](artifacts/filing-text-review-followup7.txt)
+  - `atlas factors build --from 2026-07-01 --to 2026-10-31 --refresh` and `atlas risk-model build --from 2017 --to 2026 --cached-factors` → exit 0; store comparison shows only the intended changes · [artifacts/main-lake-stores-compare-followup7.txt](artifacts/main-lake-stores-compare-followup7.txt)
+  - Swap (owner's Terminal panel) → 11 tables backed up and replaced, each equal to the scratch copy; raw 38 added, 2,427 replaced; exit 0 · [artifacts/main-lake-swap-followup7.txt](artifacts/main-lake-swap-followup7.txt)
+  - Read-back → all 18 tables' counts and `_meta.json` equal to the scratch copy · [artifacts/main-lake-readback-followup7.txt](artifacts/main-lake-readback-followup7.txt)
+- Criteria:
+  - [x] Every dataset is synced to today, or the gap is recorded with its reason — evidence: run 3 step summaries (0 failed); `members`: 502 of 503 members with bars to 2026-11-24 (the last published session); SNDK stops at 2026-11-19 (Yahoo's bars after its 8:1 split of 2026-11-20 are missing; checkpoint kept at 2026-11-19 so the next sync retries; Backlog → 07); 24 members whose SEC companyfacts lag their filings (upstream; `docs/data-limitations.md` fundamentals item 1; Backlog → 09).
+  - [x] No stored row is lost or silently changed — evidence: `check` run 3 (removed 0 in every table; the 123 changed facts only gain acceptance times).
+  - [x] The main lake equals the checked scratch copy — evidence: swap and read-back above.
+  - [x] The going-concern FLAG set is unchanged (76) — evidence: filing-text review.
+  - [x] The EDGAR client fixes are test-first, each new test red on the old code — evidence: 8 new tests in `tests/unit/data/fundamentals/test_fundamentals_client.py`; gate 2 above.
+- Waivers: none
+
+**Result:** ALL CRITERIA VERIFIED (follow-up 7)

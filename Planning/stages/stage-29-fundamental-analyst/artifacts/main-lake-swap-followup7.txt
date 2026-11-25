@@ -1,0 +1,29 @@
+=== swap into ~/Projects/atlas-capital/data from $TMPDIR/s29f7/main-copy, 2026-11-25T19:59:46Z
+backed up data_quality_issues:  12K digest 38233ee3469ea096
+backed up earnings_reactions: 1.8M digest 5efd64b486a6ebeb
+backed up events: 3.8M digest 040a8b4352af59f0
+backed up filing_text: 891M digest 1db6a71b8a28f648
+backed up fundamentals_facts:  29M digest e1e962a13b0bc882
+backed up macro_observations: 3.4M digest 23a50f3dc536a309
+backed up news: 168M digest 391ca679a6b7dc02
+backed up news_sentiment:  21M digest 6b6be1b69762d730
+backed up factor_exposures:  17M digest 5614ba049f0bab34
+backed up factor_returns: 580K digest 11bc0e4e10b22807
+backed up risk_model_snapshots: 6.0M digest 431beb899d033b6b
+replaced data_quality_issues: digest now f5c53c913bea51db (scratch f5c53c913bea51db)
+replaced earnings_reactions: digest now 8b0f1113c12dcb86 (scratch 8b0f1113c12dcb86)
+replaced events: digest now 34de8a0c3dbf61de (scratch 34de8a0c3dbf61de)
+replaced filing_text: digest now a0bef06e5306ee57 (scratch a0bef06e5306ee57)
+replaced fundamentals_facts: digest now ca4ca9247d8abf8a (scratch ca4ca9247d8abf8a)
+replaced macro_observations: digest now 68ad43ff90e229b4 (scratch 68ad43ff90e229b4)
+replaced news: digest now 343e6cdd143caf18 (scratch 343e6cdd143caf18)
+replaced news_sentiment: digest now 090417525c76fc00 (scratch 090417525c76fc00)
+replaced factor_exposures: digest now f2ff3212df1b86fe (scratch f2ff3212df1b86fe)
+replaced factor_returns: digest now 7381554594bed8f1 (scratch 7381554594bed8f1)
+replaced risk_model_snapshots: digest now 8dacb46377d3074a (scratch 8dacb46377d3074a)
+sync_state.json: replaced by the scratch copy's (old one in the backup)
+_meta.json: DIFFERS from the scratch copy's
+raw: 38 files added, 2427 replaced (old ones in the backup)
+build log kept: runs/factors/build-stage29-followup7-2026-11-25.log
+build log kept: runs/risk_model/build-stage29-followup7-2026-11-25.log
+swap exit 0

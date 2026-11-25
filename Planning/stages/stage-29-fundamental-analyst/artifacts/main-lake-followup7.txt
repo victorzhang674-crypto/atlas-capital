@@ -1,0 +1,51 @@
+== copy 2026-11-25T14:56:20Z
+copied 19 entries, 1244.1 MB; 2407 raw file links
+exit 0
+== link_fred 2026-11-25T15:11:19Z
+raw/fred: 83 file links
+exit 0
+== copy (run 2, after the Stage 09 client fix) 2026-11-25T15:57:37Z
+copied 19 entries, 1244.1 MB; 2407 raw file links
+raw/fred: 83 file links
+exit 0
+== copy (run 3, after both Stage 09 client fixes; run 2 discarded) 2026-11-25T18:36:40Z
+copied 19 entries, 1244.1 MB; 2407 raw file links
+raw/fred: 83 file links
+exit 0
+== run 3: atlas data sync (all datasets, to today; both client fixes; lexicon: the main checkout's) 2026-11-25T18:37:02Z
+Run 01M89ZYPHPFK0TSF8J2MXH0NV7: log and audit trail in $TMPDIR/s29f7/main-copy/runs/01M89ZYPHPFK0TSF8J2MXH0NV7
+┃ step           ┃ keys ┃ skipped ┃  ok ┃ empty ┃ failed ┃      rows ┃ chunks ┃ seconds ┃ note ┃
+│ universe       │    1 │       0 │   1 │     0 │      0 │     1,771 │      1 │     8.1 │      │
+│ prices         │  778 │     778 │   0 │     0 │      0 │         0 │      0 │     0.0 │      │
+│ fundamentals   │  748 │       0 │ 746 │     2 │      0 │ 2,708,712 │     38 │   515.9 │      │
+│ filing_text    │  748 │       0 │ 745 │     3 │      0 │        27 │     75 │   323.1 │      │
+│ macro          │   22 │       0 │  22 │     0 │      0 │   528,515 │     11 │    57.1 │      │
+│ news           │  778 │       0 │ 778 │     0 │      0 │     9,780 │     17 │   101.7 │      │
+│ earnings       │  748 │       0 │ 746 │     2 │      0 │    34,083 │     38 │   228.8 │      │
+│ upcoming       │  503 │       0 │ 503 │     0 │      0 │       624 │     11 │   802.0 │      │
+│ macro_calendar │    1 │       0 │   1 │     0 │      0 │       392 │      1 │     5.7 │      │
+│ reactions      │    1 │       0 │   1 │     0 │      0 │    30,617 │      1 │   370.9 │      │
+│ news_sentiment │    1 │       0 │   1 │     0 │      0 │    87,891 │      1 │     1.1 │      │
+│ quality        │    1 │       0 │   1 │     0 │      0 │       169 │      1 │    22.2 │      │
+└────────────────┴──────┴─────────┴─────┴───────┴────────┴───────────┴────────┴─────────┴──────┘
+exit 0
+== SNDK prices checkpoint set to its last stored bar, 2026-11-19 (Yahoo's bars after its 8:1 split of 2026-11-20 lack values or are missing; the next sync retries them)
+== run 3 step summaries (runs/01M89ZYPHPFK0TSF8J2MXH0NV7/audit.jsonl)
+{'step': 'universe', 'provider': 'wikipedia', 'keys': 1, 'ok': 1, 'empty': 0, 'failed': 0, 'rows': 1771, 'skipped': 0, 'error': None}
+{'step': 'prices', 'provider': 'yahoo', 'keys': 778, 'ok': 0, 'empty': 0, 'failed': 0, 'rows': 0, 'skipped': 778, 'error': None}
+{'step': 'fundamentals', 'provider': 'sec', 'keys': 748, 'ok': 746, 'empty': 2, 'failed': 0, 'rows': 2708712, 'skipped': 0, 'error': None}
+{'step': 'filing_text', 'provider': 'sec', 'keys': 748, 'ok': 745, 'empty': 3, 'failed': 0, 'rows': 27, 'skipped': 0, 'error': None}
+{'step': 'macro', 'provider': 'fred', 'keys': 22, 'ok': 22, 'empty': 0, 'failed': 0, 'rows': 528515, 'skipped': 0, 'error': None}
+{'step': 'news', 'provider': 'alpaca', 'keys': 778, 'ok': 778, 'empty': 0, 'failed': 0, 'rows': 9780, 'skipped': 0, 'error': None}
+{'step': 'earnings', 'provider': 'sec', 'keys': 748, 'ok': 746, 'empty': 2, 'failed': 0, 'rows': 34083, 'skipped': 0, 'error': None}
+{'step': 'upcoming', 'provider': 'yahoo', 'keys': 503, 'ok': 503, 'empty': 0, 'failed': 0, 'rows': 624, 'skipped': 0, 'error': None}
+{'step': 'macro_calendar', 'provider': 'fred', 'keys': 1, 'ok': 1, 'empty': 0, 'failed': 0, 'rows': 392, 'skipped': 0, 'error': None}
+{'step': 'reactions', 'provider': 'local', 'keys': 1, 'ok': 1, 'empty': 0, 'failed': 0, 'rows': 30617, 'skipped': 0, 'error': None}
+{'step': 'news_sentiment', 'provider': 'local', 'keys': 1, 'ok': 1, 'empty': 0, 'failed': 0, 'rows': 87891, 'skipped': 0, 'error': None}
+{'step': 'quality', 'provider': 'local', 'keys': 1, 'ok': 1, 'empty': 0, 'failed': 0, 'rows': 169, 'skipped': 0, 'error': None}
+== rebuild
+--- before: store digests 19:25:45Z
+--- atlas factors build --from 2026-07-01 --to 2026-10-31 --refresh, start 19:25:52Z
+exit 0 end 19:26:58Z
+--- atlas risk-model build --from 2017 --to 2026 --cached-factors, start 19:26:58Z
+exit 0 end 19:59:10Z

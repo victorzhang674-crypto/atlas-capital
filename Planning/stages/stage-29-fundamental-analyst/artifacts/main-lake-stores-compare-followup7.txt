@@ -1,0 +1,11 @@
+rows only in one table: {'both': 1212389, 'left_only': 0, 'right_only': 0}
+raw exposure changed: 300 rows, of which in the 8 issuers 300; outside them 0
+  raw changed outside, by factor: {}
+raw NaN -> value: 0 (the 8 issuers 0)
+  by symbol: {}
+standardised value changed for other symbols: 33198 rows, median |change| 0.0001, p99 0.0141
+factor_returns: 49420 -> 49760 rows
+risk_model_snapshots: 1246260 -> 1246260 rows
+dates with a changed standardised value: ['2026-07-31', '2026-08-31', '2026-09-30', '2026-10-30']
+factor_returns: values changed on dates ['2026-07-31', '2026-08-03', '2026-08-04', '2026-08-05', '2026-08-06'] ... (65 dates, first 2026-07-31)
+risk_model_snapshots: values changed on dates ['2026-07-31', '2026-08-31', '2026-09-30', '2026-10-30'] ... (4 dates, first 2026-07-31)
