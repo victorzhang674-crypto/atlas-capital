@@ -233,3 +233,6 @@ Owner: "run the full data sync for the rest". A full `atlas data sync` of the ma
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED (follow-up 7)
+
+- Merge into `main`: fast-forward f800722 → bb43abf (owner's Terminal panel), trees equal; merged result `uv run pytest -q` → 5571 passed, 82 deselected, exit 0 · `make check` → exit 0 · raw: [artifacts/followup7-merged-main-check.txt](artifacts/followup7-merged-main-check.txt)
+- Pushed `main` and the branch at bb43abf (level with `origin`); CI success on both runs (45693828359 main, 45693828271 branch) · [artifacts/ci-runs-bb43abf.json](artifacts/ci-runs-bb43abf.json)

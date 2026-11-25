@@ -1475,3 +1475,4 @@ Full block and raw output: [verification.md](stages/stage-29-fundamental-analyst
   - Swap (owner's Terminal panel) with backup `cache/backup-stage29-followup7-2026-11-25`: 11 tables, each equal to the scratch copy; read-back equal; 76 going-concern FLAGs unchanged
   - Gaps recorded: SNDK bars stop at 2026-11-19 (Yahoo, after its 8:1 split; Backlog → 07); 24 members' SEC companyfacts lag their filings (upstream; Backlog → 09)
   - Waivers: none · **Result:** ALL CRITERIA VERIFIED (follow-up 7)
+  - Merged into `main` (fast-forward to bb43abf); merged result `uv run pytest -q` 5571 passed, `make check` exit 0; pushed; CI success on bb43abf (main and branch)
