@@ -1,0 +1,921 @@
+== sync prices to today 2026-11-25T12:42:06Z
+2026-11-25T12:42:39.612712Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:42:42.823557Z [error    ] $ABMD: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:06.996388Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:09.766674Z [error    ] $ALXN: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:34.633577Z [error    ] $ALTR: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:35.012047Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:35.773855Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:36.497107Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:37.238528Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:37.995996Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:38.737426Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:39.432977Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:40.164815Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:40.940804Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:41.703610Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:42.443142Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:43.458217Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:44.231605Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:44.966022Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:45.697961Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:46.452770Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:47.191171Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:47.911560Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:48.665745Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:49.387369Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:50.113827Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:50.890272Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:51.609117Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:52.333980Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:53.034244Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:54.616496Z [error    ] $ADS: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:54.617383Z [error    ] 
+4 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:43:54.617570Z [error    ] ['ABMD', 'ALXN', 'ALTR', 'ADS']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:45:58.781084Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'ADT': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:45:58.992578Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ABMD
+2026-11-25T12:45:58.992694Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ADS
+2026-11-25T12:45:58.992767Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ADT
+2026-11-25T12:45:58.992844Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ALTR
+2026-11-25T12:45:58.992919Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ALXN
+2026-11-25T12:46:51.608089Z [error    ] $CA: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:46:57.952815Z [error    ] $ARNC: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:46:58.335825Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:46:59.091749Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:46:59.867877Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:47:00.667314Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:47:01.484663Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:47:02.235545Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:47:03.053356Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:47:07.044409Z [error    ] $ATVI: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:47:20.185666Z [error    ] 
+3 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:47:20.186018Z [error    ] ['CA']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:47:20.186105Z [error    ] ['ARNC', 'ATVI']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:09.673909Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'APC': 22, 'BBBY': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:09.883967Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=APC
+2026-11-25T12:50:09.884092Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ARNC
+2026-11-25T12:50:09.884147Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ATVI
+2026-11-25T12:50:09.884209Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=AVB
+2026-11-25T12:50:09.884267Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=BBBY
+2026-11-25T12:50:09.884303Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CA
+2026-11-25T12:50:21.882781Z [error    ] $CERN: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:22.274805Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:23.053101Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:24.140184Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:24.888414Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:25.704749Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:26.444836Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:27.217428Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:27.920561Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:28.716804Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:29.407585Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:30.130991Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:30.845067Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:31.638670Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:32.392287Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:33.136327Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:33.842592Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:34.188702Z [error    ] $CMA: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:34.584974Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:35.363903Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:36.161239Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:37.213186Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:37.993352Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:38.710594Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:39.489626Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:50:45.601588Z [error    ] $CHK: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:51:34.920900Z [error    ] 
+3 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:51:34.921459Z [error    ] ['CERN', 'CHK']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:51:34.921620Z [error    ] ['CMA']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:53:55.893571Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'CAM': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:53:56.101236Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CAM
+2026-11-25T12:53:56.101328Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CERN
+2026-11-25T12:53:56.101377Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CHK
+2026-11-25T12:53:56.101421Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CMA
+2026-11-25T12:54:15.610666Z [error    ] $CTRA: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:28.474542Z [error    ] $DISH: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:30.109033Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:33.247415Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:35.074967Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:35.898943Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:36.794644Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:37.784877Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:39.891473Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:40.944831Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:42.512553Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:45.068374Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:46.196946Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:50.275621Z [error    ] $DAY: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:54.381336Z [error    ] $DNB: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:56.286909Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:54:58.763263Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:00.604108Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:05.333758Z [error    ] $DISCA: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:07.511948Z [error    ] $DO: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:07.963319Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:08.798979Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:10.377833Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:12.937626Z [error    ] $DISCK: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:22.638047Z [error    ] $DFS: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:23.116674Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:24.668560Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:27.931422Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:29.225515Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:33.394225Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:55:37.026432Z [error    ] $CTLT: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:01.977230Z [error    ] $DRE: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:02.501537Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:03.456276Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:04.628412Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:05.668759Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:07.114268Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:08.503681Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:09.668063Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:12.553943Z [error    ] $CXO: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:31.605784Z [error    ] $DNR: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:32.197436Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:34.574811Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:36.564362Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:38.104578Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:39.427743Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:40.279366Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:41.168540Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:43.349570Z [error    ] $CTXS: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:43.351394Z [error    ] 
+13 Failed downloads:          [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:43.351752Z [error    ] ['CTRA']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:56:43.351891Z [error    ] ['DISH', 'DAY', 'DNB', 'DISCA', 'DO', 'DISCK', 'DFS', 'CTLT', 'DRE', 'CXO', 'DNR', 'CTXS']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:58:36.327689Z [error    ] $DHI: possibly delisted; no price data found  (1d 1927-12-20 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:58:36.353290Z [warning  ] prices.no_split_history        [atlas.data.providers.yfinance_provider] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DHI vendor=yfinance
+2026-11-25T12:58:48.321508Z [error    ] $DHR: possibly delisted; no price data found  (1d 1927-12-20 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:58:48.324454Z [warning  ] prices.no_split_history        [atlas.data.providers.yfinance_provider] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DHR vendor=yfinance
+2026-11-25T12:58:59.261669Z [error    ] $DIS: possibly delisted; no price data found  (1d 1927-12-20 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:58:59.264516Z [warning  ] prices.no_split_history        [atlas.data.providers.yfinance_provider] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DIS vendor=yfinance
+2026-11-25T12:59:42.063442Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'CSRA': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T12:59:42.247198Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CSRA
+2026-11-25T12:59:42.247294Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CTLT
+2026-11-25T12:59:42.247345Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CTRA
+2026-11-25T12:59:42.247390Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CTXS
+2026-11-25T12:59:42.247428Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=CXO
+2026-11-25T12:59:42.247464Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DAY
+2026-11-25T12:59:42.247501Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DFS
+2026-11-25T12:59:42.247536Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DHI
+2026-11-25T12:59:42.247576Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DHR
+2026-11-25T12:59:42.247619Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DIS
+2026-11-25T12:59:42.247653Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DISCA
+2026-11-25T12:59:42.247733Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DISCK
+2026-11-25T12:59:42.247767Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DISH
+2026-11-25T12:59:42.247800Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DNB
+2026-11-25T12:59:42.247832Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DNR
+2026-11-25T12:59:42.247864Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DO
+2026-11-25T12:59:42.247895Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=DRE
+2026-11-25T13:00:31.979767Z [error    ] $FBHS: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:32.384735Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:33.168929Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:33.916524Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:34.661146Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:35.532037Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:36.342082Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:38.083109Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:41.576703Z [error    ] $ETFC: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:00:45.424740Z [error    ] $EA: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:00.693323Z [error    ] $ENDP: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:01.121534Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:01.821027Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:02.500290Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:03.219893Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:03.819671Z [error    ] 
+4 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:03.819947Z [error    ] ['FBHS', 'ETFC', 'ENDP']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:03.820069Z [error    ] ['EA']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:04.759091Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:05.630222Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:10.084832Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:10.770493Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:14.792227Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:15.525242Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:17.508778Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:18.223433Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:20.637901Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:23.466690Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:24.689879Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:29.349961Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:33.711911Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:37.327933Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:40.204819Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:40.980353Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:44.044735Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:46.506867Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:49.057814Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:50.607542Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:51.337239Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:53.741337Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:56.243988Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:01:59.206452Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:01.025545Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:03.483885Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:04.233395Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:06.147474Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:08.803678Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:11.851482Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:12.581210Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:14.884740Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:18.150726Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:21.234483Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:22.079285Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:25.313350Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:26.117027Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:28.768786Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:31.089441Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:34.409699Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:35.172196Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:37.525935Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:39.527295Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:42.485212Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:43.272307Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:45.054253Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:45.870505Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:48.550316Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:50.667626Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:51.371178Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:53.436208Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:57.358879Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:02:58.099765Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:00.131733Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:02.906789Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:06.941688Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:10.373789Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:11.099106Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:15.441009Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:16.723062Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:17.469992Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:21.344197Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:22.127317Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:24.691946Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:25.849350Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:29.663209Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:30.500285Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:33.770464Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:34.518988Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:35.902941Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'EMC': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:36.101600Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=EA
+2026-11-25T13:03:36.101681Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=EMC
+2026-11-25T13:03:36.101731Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ENDP
+2026-11-25T13:03:36.101772Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=ETFC
+2026-11-25T13:03:36.101810Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=FBHS
+2026-11-25T13:03:39.045504Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:41.670166Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:42.408770Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:43.165565Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:43.893476Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:44.631190Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:45.471112Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:51.624938Z [error    ] $FLIR: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:03:59.807648Z [error    ] $HES: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:00.225640Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:01.041483Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:01.902320Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:02.722896Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:03.505184Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:04.240571Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:04.576271Z [error    ] $HBI: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:05.000213Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:05.833993Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:06.629851Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:07.416520Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:08.146980Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:08.906876Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:09.713603Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:10.493943Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:11.275073Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:12.020810Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:12.752382Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:13.487474Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:14.680357Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:15.462761Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:16.237347Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:17.271320Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:18.041025Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:18.773630Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:19.574286Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:20.321542Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:21.114205Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:21.876973Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:23.122225Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:23.888307Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:24.683444Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:26.368049Z [error    ] $HFC: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:30.539330Z [error    ] $GPS: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:30.965528Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:31.723607Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:32.511040Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:33.648148Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:34.449401Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:35.308151Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:36.072840Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:36.809708Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:37.601140Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:38.342930Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:39.109436Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:39.889651Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:40.701212Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:41.459014Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:42.218120Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:42.992649Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:44.215958Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:45.014445Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:45.806012Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:04:47.467312Z [error    ] $FRC: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:01.013208Z [error    ] $FL: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:01.430103Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:02.187984Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:03.034094Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:03.791619Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:04.177344Z [error    ] 
+7 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:04.177901Z [error    ] ['FLIR', 'HES', 'HFC', 'GPS', 'FRC', 'FL']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:04.178180Z [error    ] ['HBI']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:05.148045Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:07.963153Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:08.750828Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:11.637284Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:13.993580Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:16.824699Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:19.269659Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:22.108306Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:28.329412Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:29.104561Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:32.290796Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:34.023294Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:35.770890Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:36.518175Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:40.178237Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:40.893074Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:43.111009Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:47.822599Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:48.564382Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:51.478302Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:54.236368Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:05:55.085796Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:00.660364Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:02.755152Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:08.890578Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:10.424272Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:12.829641Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:13.602942Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:15.121352Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:17.484992Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:18.277467Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:21.621359Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:24.133416Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:24.929648Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:29.893138Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:32.221928Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:32.966602Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:35.844511Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:38.034586Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:40.532795Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:41.281693Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:44.265814Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:44.987418Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:47.592007Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:48.393682Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:50.985475Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:53.117809Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:55.346296Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:57.595528Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:06:58.394490Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:00.921673Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:01.755771Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:04.368520Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:07.074002Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:07.915336Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:10.287338Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:12.405597Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:13.149993Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:15.067803Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:17.376819Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:18.130657Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:19.527459Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=FL
+2026-11-25T13:07:19.527584Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=FLIR
+2026-11-25T13:07:19.527644Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=FRC
+2026-11-25T13:07:19.527692Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=GPS
+2026-11-25T13:07:19.527733Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=HBI
+2026-11-25T13:07:19.527772Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=HES
+2026-11-25T13:07:19.527811Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=HFC
+2026-11-25T13:07:22.291265Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:24.952913Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:25.723207Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:26.467933Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:27.229964Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:27.940454Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:28.659431Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:29.475984Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:30.255243Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:31.032539Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:31.783502Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:32.563010Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:33.478041Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:34.236846Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:35.109778Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:35.904583Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:36.700364Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:37.424239Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:38.201739Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:38.982123Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:39.793737Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:40.599599Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:41.439137Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:42.240194Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:43.014689Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:43.790758Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:44.547228Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:45.346293Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:46.126225Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:46.879230Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:47.675906Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:48.734238Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:49.514704Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:07:55.580946Z [error    ] $JWN: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:05.385167Z [error    ] $JNPR: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:05.790416Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:06.517547Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:07.255399Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:08.247495Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:09.424938Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:10.639963Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:11.422795Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:12.150647Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:12.919874Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:13.691558Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:14.455818Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:15.216560Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:16.054771Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:16.788962Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:17.662313Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:18.410414Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:19.147658Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:19.901928Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:20.676876Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:21.446735Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:22.473548Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:23.249269Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:24.007429Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:24.732814Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:25.569644Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:26.412977Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:27.313496Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:28.882249Z [error    ] $HOLX: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:43.208799Z [error    ] $IPG: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:45.677485Z [error    ] 
+4 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:45.677688Z [error    ] ['JWN', 'JNPR', 'HOLX']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:08:45.677752Z [error    ] ['IPG']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:10:52.001589Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'INFO': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:10:52.199741Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=HOLX
+2026-11-25T13:10:52.199862Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=INFO
+2026-11-25T13:10:52.199911Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=IPG
+2026-11-25T13:10:52.199951Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=JNPR
+2026-11-25T13:10:52.199989Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=JWN
+2026-11-25T13:11:14.138414Z [error    ] $LM: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:14.537954Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:15.320001Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:16.186784Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:16.989190Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:17.903840Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:18.785886Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:19.597579Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:20.363012Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:21.180928Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:21.924183Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:22.281866Z [error    ] $LEG: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:22.677244Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:23.475546Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:24.295196Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:25.051714Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:25.869927Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:26.682985Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:27.465429Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:28.236578Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:29.041399Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:29.792372Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:30.591449Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:31.397497Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:32.196627Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:32.917917Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:33.637894Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:34.425860Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:35.236136Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:36.054092Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:36.825209Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:37.765859Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:38.603730Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:39.412139Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:40.199058Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:43.873776Z [error    ] $KSU: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:46.674277Z [error    ] $LLL: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:47.082111Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:47.813822Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:48.148532Z [error    ] $K: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:48.577026Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:49.371446Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:50.141419Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:51.239506Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:52.362159Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:53.117661Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:53.949066Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:54.658948Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:55.467226Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:56.281407Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:57.131896Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:57.943041Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:58.792005Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:11:59.571200Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:00.317390Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:01.073091Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:01.866688Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:02.649703Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:03.415880Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:04.215597Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:05.073892Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:05.905550Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:06.684389Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:07.490190Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:08.308985Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:09.085366Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:09.873043Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:10.663850Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:11.482216Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:12.462341Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:13.383933Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:14.237894Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:15.053976Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:15.859155Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:16.707613Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:17.530117Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:18.346328Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:19.150874Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:19.949188Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:20.796790Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:21.602319Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:22.428189Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:23.288722Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:24.499291Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:26.654524Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:27.457846Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:28.279883Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:29.105978Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:29.945236Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:30.831577Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:31.310913Z [error    ] 
+5 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:31.311385Z [error    ] ['LM', 'KSU', 'LLL']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:31.312546Z [error    ] ['LEG', 'K']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:32.300003Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:33.117820Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:36.069642Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:38.775302Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:39.553803Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:41.623509Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:42.415426Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:44.322794Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:47.329117Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:49.581867Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:53.321190Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:57.105817Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:57.926089Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:12:59.948970Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:02.265054Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:08.270940Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:12.899400Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:16.221040Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:17.036597Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:18.776806Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:22.614232Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:25.047397Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:26.020919Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:29.425796Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:32.000769Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:34.732710Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:35.507372Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:37.772643Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:40.130420Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:42.104648Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:42.877240Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:46.481684Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:50.196699Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:53.483017Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:56.335595Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:13:57.174338Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:00.117187Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:00.981490Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:05.289301Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:10.428615Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:11.539471Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:14.703110Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:15.486078Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:19.462503Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:23.553985Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:27.546673Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:30.017081Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:30.816336Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:34.897354Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:37.372414Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:40.375256Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:42.683891Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:43.484797Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:46.046525Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:48.606901Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:51.022736Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:51.821893Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:54.490451Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:55.283437Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:58.039164Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:14:58.833038Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:00.368034Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:01.186352Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:03.157671Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=K
+2026-11-25T13:15:03.159324Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=KSU
+2026-11-25T13:15:03.161086Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=LEG
+2026-11-25T13:15:03.161289Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=LLL
+2026-11-25T13:15:03.161353Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=LM
+2026-11-25T13:15:06.010276Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:09.413438Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:10.168690Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:15.881206Z [error    ] $NBL: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:21.490588Z [error    ] $MON: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:21.888600Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:23.683643Z [error    ] $MRO: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:28.156789Z [error    ] $MXIM: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:28.628068Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:29.433407Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:30.386999Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:31.084524Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:31.839805Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:32.579326Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:33.276265Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:15:35.105751Z [error    ] $MNK: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:16:27.404897Z [error    ] 
+5 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:16:27.405757Z [error    ] ['NBL', 'MON', 'MRO', 'MXIM', 'MNK']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:18:40.615225Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'NE': 22, 'NFX': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:18:42.325055Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=MNK
+2026-11-25T13:18:42.325324Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=MON
+2026-11-25T13:18:42.325804Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=MRO
+2026-11-25T13:18:42.326011Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=MXIM
+2026-11-25T13:18:42.326136Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=NBL
+2026-11-25T13:18:42.326268Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=NE
+2026-11-25T13:18:42.326371Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=NFX
+2026-11-25T13:19:08.960471Z [error    ] $PLL: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:09.359510Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:10.178312Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:11.004357Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:11.787809Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:12.643836Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:13.995172Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:14.808413Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:19.905081Z [error    ] $PDCO: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:41.197245Z [error    ] $PBCT: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:41.629322Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:42.413992Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:43.260562Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:44.324363Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:45.277121Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:46.124290Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:46.965110Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:47.773841Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:48.632542Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:49.443429Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:50.419735Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:51.170179Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:52.814565Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:54.120301Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:54.953956Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:55.748109Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:56.587803Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:57.386127Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:58.237877Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:59.056742Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:19:59.882264Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:20:00.723761Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:20:01.578139Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:20:02.691066Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:20:05.276632Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:20:06.983177Z [error    ] $NLSN: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:20:20.674529Z [error    ] 
+4 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:20:20.675141Z [error    ] ['PLL', 'PDCO', 'PBCT', 'NLSN']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:44.824869Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'PCL': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:45.205759Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=NLSN
+2026-11-25T13:22:45.205963Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=PBCT
+2026-11-25T13:22:45.206076Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=PCL
+2026-11-25T13:22:45.206174Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=PDCO
+2026-11-25T13:22:45.206262Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=PLL
+2026-11-25T13:22:53.239968Z [error    ] $PXD: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:53.643682Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:54.874693Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:55.676342Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:56.487023Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:57.320584Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:58.148556Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:58.978961Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:22:59.771655Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:00.608058Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:01.457799Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:02.572174Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:03.370737Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:04.218934Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:05.005162Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:05.893314Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:06.699311Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:07.902625Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:09.100439Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:09.945523Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:10.772994Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:11.593083Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:12.444345Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:13.573989Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:14.376030Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:15.187494Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:15.934042Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:16.307297Z [error    ] $QRVO: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:16.767966Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:17.895871Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:18.761114Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:19.592379Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:21.103268Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:22.031499Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:22.937223Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:23.758873Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:24.568209Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:25.347223Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:26.105099Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:26.845578Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:27.688283Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:28.626396Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:29.429266Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:30.325439Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:31.111811Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:34.737710Z [error    ] $QEP: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:23:41.572118Z [error    ] $SEE: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:24:12.116123Z [error    ] 
+4 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:24:12.116864Z [error    ] ['PXD', 'QEP']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:24:12.117012Z [error    ] ['QRVO', 'SEE']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:26:16.583676Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'POM': 22, 'SBNY': 22, 'SE': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:26:16.772949Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=POM
+2026-11-25T13:26:16.773035Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=PXD
+2026-11-25T13:26:16.773087Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=QEP
+2026-11-25T13:26:16.773131Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=QRVO
+2026-11-25T13:26:16.773170Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=SBNY
+2026-11-25T13:26:16.773208Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=SE
+2026-11-25T13:26:16.773247Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=SEE
+2026-11-25T13:26:34.672382Z [error    ] $TGNA: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:26:55.101972Z [error    ] $SWN: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:26:55.502720Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:26:59.161897Z [error    ] $SRCL: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:27:19.330163Z [error    ] $TIF: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:27:19.776559Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:27:21.577948Z [error    ] $SIVB: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:27:39.218523Z [error    ] 
+5 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:27:39.219020Z [error    ] ['TGNA']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:27:39.219141Z [error    ] ['SWN', 'SRCL', 'TIF', 'SIVB']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:29:45.474007Z [warning  ] prices.reused_ticker_dropped   [atlas.data.prices] bars={'SPLS': 22, 'STI': 22, 'TE': 22} mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:29:45.636404Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=SIVB
+2026-11-25T13:29:45.636476Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=SPLS
+2026-11-25T13:29:45.636524Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=SRCL
+2026-11-25T13:29:45.636565Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=STI
+2026-11-25T13:29:45.636603Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=SWN
+2026-11-25T13:29:45.636640Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=TE
+2026-11-25T13:29:45.636677Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=TGNA
+2026-11-25T13:29:45.636714Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=TIF
+2026-11-25T13:29:45.636756Z [warning  ] prices.bars_dropped            [atlas.data.prices] dates=['2026-11-20', '2026-11-24'] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD sessions=2 stage=data.sync symbol=SNDK
+2026-11-25T13:30:28.149462Z [error    ] $TWTR: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:28.511192Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:29.216725Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:29.885367Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:30.560940Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:31.243095Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:32.056517Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:32.813601Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:33.503839Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:34.218382Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:34.906270Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:35.567797Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:36.209503Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:36.870114Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:37.559854Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:38.468524Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:39.185304Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:39.889561Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:40.569963Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:41.439297Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:42.208709Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:42.980819Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:43.733117Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:44.495008Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:45.265706Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:46.033483Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:46.876266Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:47.680447Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:48.409440Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:49.162599Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:49.881732Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:50.616243Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:51.410340Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:52.149249Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:52.872912Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:53.627863Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:54.386414Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:55.106381Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:55.847286Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:56.616353Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:57.357879Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:30:58.084852Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:31:01.650209Z [error    ] $VAR: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:31:02.950285Z [error    ] 
+2 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:31:02.950647Z [error    ] ['TWTR', 'VAR']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:05.599806Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=TWTR
+2026-11-25T13:33:05.599896Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=VAR
+2026-11-25T13:33:42.725139Z [error    ] $WBD: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:46.757853Z [error    ] $XL: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:47.108108Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:47.915569Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:48.589689Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:49.240650Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:49.921778Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:50.580502Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:51.431081Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:52.159006Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:52.870302Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:53.544925Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:54.234404Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:54.916333Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:55.590163Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:33:58.629836Z [error    ] $XLNX: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:06.092303Z [error    ] $WBA: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:06.453089Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:07.168722Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:07.851774Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:08.564291Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:09.641730Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:10.331214Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:11.064761Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:11.723729Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:12.562321Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:13.261713Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:13.969578Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:14.709506Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:15.384458Z [warning  ] Cookie/crumb fetch failed (ConnectionError), continuing without crumb [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:16.925796Z [error    ] $XEC: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:18.107694Z [error    ] 
+5 Failed downloads:           [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:18.108039Z [error    ] ['WBD']: possibly delisted; no price data found  (1d 2026-10-26 -> 2026-11-25) [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:34:18.108152Z [error    ] ['XL', 'XLNX', 'WBA', 'XEC']: possibly delisted; no timezone found [yfinance] mode=dev run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync
+2026-11-25T13:36:11.671335Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=WBA
+2026-11-25T13:36:11.671435Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=WBD
+2026-11-25T13:36:11.671484Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=XEC
+2026-11-25T13:36:11.671524Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=XL
+2026-11-25T13:36:11.671563Z [warning  ] prices.symbol_failed           [atlas.data.prices] mode=dev reason='no price data returned' run_id=01M89BMM4TBC7R29AQWEAETZXD stage=data.sync symbol=XLNX
+Run 01M89BMM4TBC7R29AQWEAETZXD: log and audit trail in $TMPDIR/s29f6/main-copy/runs/01M89BMM4TBC7R29AQWEAETZXD
+                    Sync summary (sync 2015-01-01 .. 2026-11-25)                     
+┃ step   ┃ keys ┃ skipped ┃  ok ┃ empty ┃ failed ┃   rows ┃ chunks ┃ seconds ┃ note ┃
+│ prices │  778 │      63 │ 627 │    88 │      0 │ 13,928 │     15 │  3293.6 │      │
+└────────┴──────┴─────────┴─────┴───────┴────────┴────────┴────────┴─────────┴──────┘
+exit 0
+== retry DHI, DHR, DIS (checkpoints put back to the main lake's) 2026-11-25T13:38:20Z
+Run 01M89EVJ2Y7BJTCZJWBK2XKTV4: log and audit trail in $TMPDIR/s29f6/main-copy/runs/01M89EVJ2Y7BJTCZJWBK2XKTV4
+                   Sync summary (sync 2015-01-01 .. 2026-11-25)                   
+┃ step   ┃ keys ┃ skipped ┃ ok ┃ empty ┃ failed ┃ rows ┃ chunks ┃ seconds ┃ note ┃
+│ prices │    3 │       0 │  3 │     0 │      0 │   67 │      1 │    20.5 │      │
+└────────┴──────┴─────────┴────┴───────┴────────┴──────┴────────┴─────────┴──────┘
+exit 0
+== dates 2026-11-25T13:37:20Z
+instruments: 828 of 891 rows got new trade dates; last trade dates now 2026-11-24
+exit 0
+== check 2026-11-25T13:37:23Z
+main lake's last bar: 2026-10-30
+prices_daily: main 1840464 rows, copy 1851088 rows; removed 0, added 10624, changed 826; added rows' days 2026-11-02 .. 2026-11-24 (17 days), 626 symbols; added on or before the main lake's last bar: 0
+  symbols by last bar (top 5): {datetime.date(2026, 11, 24): 625, datetime.date(2026, 10, 30): 4, datetime.date(2022, 4, 1): 2, datetime.date(2022, 4, 8): 2, datetime.date(2022, 12, 21): 1}
+corporate_actions: main 23073 rows, copy 23227 rows; removed 0, added 154, changed 0; added rows' days 2026-11-02 .. 2026-11-24 (16 days), 154 symbols; added on or before the main lake's last bar: 0
+instruments: main 891 rows, copy 891 rows; removed 0, added 0, changed 626
+exit 0
+== dates (after the retry) 2026-11-25T13:38:51Z
+instruments: 205 of 891 rows got new trade dates; last trade dates now 2026-11-24
+exit 0
+== check (after the retry) 2026-11-25T13:38:53Z
+main lake's last bar: 2026-10-30
+prices_daily: main 1840464 rows, copy 1851139 rows; removed 0, added 10675, changed 831; added rows' days 2026-11-02 .. 2026-11-24 (17 days), 629 symbols; added on or before the main lake's last bar: 0
+  symbols by last bar (top 5): {datetime.date(2026, 11, 24): 628, datetime.date(2022, 4, 1): 2, datetime.date(2022, 4, 8): 2, datetime.date(2022, 12, 21): 1, datetime.date(2021, 7, 20): 1}
+corporate_actions: main 23073 rows, copy 23228 rows; removed 0, added 155, changed 0; added rows' days 2026-11-02 .. 2026-11-24 (16 days), 155 symbols; added on or before the main lake's last bar: 0
+instruments: main 891 rows, copy 891 rows; removed 0, added 0, changed 629
+exit 0
+== notes (from the worklog)
+- The 831 changed bars are the sync's 5-session overlap (2026-10-26 .. 2026-10-30): adj_close of 154 symbols that went ex-dividend since (adj_close is not point-in-time, Stage 07 Backlog), volume (71) and high (2) revised by Yahoo; open and close unchanged.
+- DHI, DHR and DIS: Yahoo returned no data in the first run, yet the step checkpointed them as synced to 2026-11-24; their checkpoints were put back to the main lake's (2026-10-30) and the sync re-run for them (Backlog: Stage 14).
+- After the retry: all 503 current members have bars to 2026-11-24; instruments changed only in last_trade_date (629 rows, null-aware comparison).

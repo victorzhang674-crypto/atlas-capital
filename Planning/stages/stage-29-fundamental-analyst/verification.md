@@ -199,3 +199,14 @@ Graph wiring stays with Stage 35 (owner).
 **Result:** ALL CRITERIA VERIFIED (re-run after follow-up 5)
 
 - Merge into `main`: fast-forward 3d77679 → 4b2d460 (owner's Terminal panel), trees equal; merged result `uv run pytest -q` → 5563 passed, 82 deselected, exit 0 · `make check` → exit 0 · raw: [artifacts/followup5-merged-main-check.txt](artifacts/followup5-merged-main-check.txt)
+
+#### Follow-up 6 — Stage 29 — 2026-11-25
+Owner: "Sync prices to today". A routine data sync of the main lake; no code changed.
+- Commands run (this chat):
+  - `atlas data sync --datasets prices` (scratch copy) → 627 ok, 88 empty, 0 failed, exit 0. Then the same for DHI, DHR and DIS after their checkpoints were put back → 3 ok, exit 0 · [artifacts/main-lake-followup6.txt](artifacts/main-lake-followup6.txt)
+  - `main_lake_followup6.py check` → prices +10,675 bars (2026-11-02 … 24), none removed, changed bars only in the 5-session overlap; corporate actions +155; instruments only `last_trade_date`; 503 of 503 current members with bars to 2026-11-24 · same file
+  - Swap (owner's Terminal panel) → 3 tables backed up and replaced, each equal to the scratch copy, exit 0 · [artifacts/main-lake-swap-followup6.txt](artifacts/main-lake-swap-followup6.txt)
+  - Read-back → counts and `_meta.json` equal; `DataView` bars to 2026-11-24 · [artifacts/main-lake-readback-followup6.txt](artifacts/main-lake-readback-followup6.txt)
+  - Merged `main`: `uv run pytest -q` and `make check` → [artifacts/followup6-merged-main-check.txt](artifacts/followup6-merged-main-check.txt)
+- Criterion: [x] the main lake's prices reach the last published session (2026-11-24) for every current member — evidence: `check` and read-back above.
+- Waivers: none

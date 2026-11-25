@@ -237,3 +237,26 @@ So this follow-up re-extracts **every** stored filing, not only pattern-found ca
   - Swap from the owner's Terminal panel with a dated backup under `<lake>/cache/` (`main_lake_followup5_swap.sh`), then read back (`main_lake_readback_followup5.py`).
   - Going-concern review of every MD&A: the 76 FLAGs rechecked, any new or lost FLAG read.
 - **K6.** Mutation testing of the changed functions, verification (`uv run pytest -q`, `make check`, `make test-integration`, the brief's Verify), self-audit, records (`plan.md`, `worklog.md`, `verification.md`, `audit-report.md`, `mutation-summary.md`, `PROGRESS.md`, `docs/data-limitations.md`), commit with the CI record of `3d77679`, fast-forward `main` from the Terminal panel, merged-`main` checks, push, CI.
+
+## Follow-up 6 — prices up to today (2026-11-25)
+
+Owner, asked which performance work to do (the rest belongs to Stages 35, 39 and 58, which Rule 4 holds back): "Sync prices to today". The main lake's prices stopped at 2026-10-30, the last day of the follow-up 4/5 work, and paper trading needs current bars. This is a routine data sync, recorded here because Stage 29's follow-ups have kept the main lake; no code changes.
+
+- **L1, scratch copy** (`main_lake_followup6.py copy`).
+- **L2, sync:** `atlas data sync --datasets prices` on the copy. The prices step resumes from its checkpoint (2026-10-30) and ends at the last published session.
+- **L3, trade dates:** every instrument's first and last trade date from `prices_daily` (`trade_date_ranges`, the universe step's rule). The universe step is not run: it would also apply today's index changes, which is not this task.
+- **L4, check:**
+  - no stored bar removed or changed;
+  - new bars only after 2026-10-30;
+  - corporate actions only added (splits and dividends since then);
+  - instruments: trade dates only.
+- **L5, swap** from the owner's Terminal panel with a dated backup, then read back (row counts, a `DataView` on today's last session).
+- **L6:**
+  - `uv run pytest -q` and `make check`; no code changed, but the records commit is checked like any other;
+  - records, commit, merge, push, CI.
+
+Not done here:
+- fundamentals, events, filings and news since 2026-11-01;
+- the factor and risk stores' new sessions (no new month-end before 2026-11-30).
+
+These come with the next full sync and the month-end store build (Backlog).

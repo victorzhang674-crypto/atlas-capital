@@ -1,0 +1,11 @@
+prices_daily: main 1851139 rows, scratch copy 1851139: EQUAL
+corporate_actions: main 23228 rows, scratch copy 23228: EQUAL
+instruments: main 891 rows, scratch copy 891: EQUAL
+_meta.json tables equal to the scratch copy's: True
+AAPL: 25 bars, last 2026-11-24
+SPY: 25 bars, last 2026-11-24
+OKTA: 25 bars, last 2026-11-24
+VYLR: 25 bars, last 2026-11-24
+DHI: 25 bars, last 2026-11-24
+DHR: 25 bars, last 2026-11-24
+DIS: 25 bars, last 2026-11-24

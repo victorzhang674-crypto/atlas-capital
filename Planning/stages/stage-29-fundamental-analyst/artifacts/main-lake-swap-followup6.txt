@@ -1,0 +1,11 @@
+=== swap into ~/Projects/atlas-capital/data from $TMPDIR/s29f6/main-copy, 2026-11-25T13:39:53Z
+backed up prices_daily:  48M digest 44ef13370174a514
+backed up corporate_actions: 136K digest e4817861d4519a3f
+backed up instruments:  28K digest 083f935de3a12e06
+replaced prices_daily: digest now 171795860aec8b7c (scratch 171795860aec8b7c)
+replaced corporate_actions: digest now de63e09b1603fac7 (scratch de63e09b1603fac7)
+replaced instruments: digest now d3930963f01af407 (scratch d3930963f01af407)
+sync_state.json: replaced by the scratch copy's (old one in the backup)
+_meta.json: DIFFERS from the scratch copy's
+raw/sec: 0 files added, 0 replaced (old ones in the backup)
+swap exit 0
