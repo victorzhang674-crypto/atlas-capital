@@ -193,7 +193,12 @@ The owner never runs git commands or inspects git state by hand. The AI does eve
 4. **`main` must never be left red.** A stage branch is merged into `main` only after the stage is `DONE`, and only if the merged result passes the full verification. If the merged result fails, the AI fixes it on the stage branch first; the stage is not `DONE` until the merged result is green.
 5. **Conflicts:** the AI resolves them itself, following Rule 3 precedence. If a resolution would change the meaning of a higher-ranked document, or the right answer is genuinely unclear, it asks the owner.
 6. **Failures** (a lock file, a failing hook, a merge conflict, a detached HEAD) are diagnosed and fixed by the AI. The owner is involved only if a Rule 6 exception truly applies.
-7. **Remote:** there is none at the moment. If one is configured later, the AI pushes `main` and the stage branch after each verified commit or merge (a normal push, never a force-push), and confirms the push with `git status -sb`.
+7. **Remote and CI:** the repository has one remote, `origin` (GitHub: `victorzhang674-crypto/atlas-capital`), with GitHub Actions CI (`.github/workflows/ci.yml`: `make check` plus `make test-integration` on every push and pull request).
+   - **Push** `main` and the stage branch after each verified commit or merge, records-only commits included. Use a normal push, never a force-push.
+   - **Confirm the push** with `git status -sb`: the branch must show as level with `origin`, with no "ahead" or "behind".
+   - **Check CI on the pushed commit** (looked up by its full SHA) and wait until it finishes. A failed CI run means that commit is red: fix it under Rule 6A.4 before calling the work done. A run cancelled because a newer push to the same branch superseded it is not a failure; the newer run is the one that counts.
+   - **Record** the pushed hash and the CI result in `worklog.md` (or in the reply, for work outside a stage).
+   - If the sandbox cannot reach GitHub, try another route first (for example the owner's Terminal panel through the AI's terminal tool). Use a Rule 6 exception only if every route fails.
 8. **Still needs the owner's approval first** (a Rule 6 exception): rewriting history (rebasing or amending commits already on `main`, `reset --hard` that discards work), force-pushing, deleting branches or worktrees that hold unmerged work, and deleting tags. Once approved, the AI runs the operation itself and verifies it. Cleaning up branches that are already merged may be proposed, and is done only with approval.
 
 ---
