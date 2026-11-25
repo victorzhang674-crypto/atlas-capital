@@ -9,6 +9,7 @@ At the start of a stage, after its gate check passes (Project.md Rule 4), the st
 | `worklog.md` | During the stage | A dated, in-order record of what was done, what failed and how it was fixed |
 | `verification.md` | Before claiming DONE | Real command output from this chat plus evidence for each acceptance criterion |
 | `artifacts/` | As produced | Logs, test and coverage output, reports, screenshots and other non-code outputs of the stage |
+| `handoffs/` | Only when a chat's context runs low | `handoff-<k>.md` in the format given in Project.md Rule 7.3. Not copied at stage start; created when the first hand-off happens |
 
 Code and tests do **not** go here. They live in the shared `src/atlas/` and `tests/` trees, because later stages import earlier code.
 

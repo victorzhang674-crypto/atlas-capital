@@ -35,3 +35,5 @@ Full tables: `Planning/02-stage-protocol.md` §4–§5.
 4. Run `make check` plus the brief's Verify commands; record real output in `verification.md`.
 5. Only then tick the stage `DONE` in `PROGRESS.md` and commit `stage-NN: <title>`.
 6. Do every git step yourself and verify it (Project.md Rule 6A): review the staged diff, commit, check `git status` / `git log`, merge into `main`, re-run `uv run pytest -q` and `make check` on the merged result, and record the hashes. Never ask the owner to run git.
+
+Throughout: quality over convenience in every task (Project.md Rule 8). When the context is close to full, never compact: commit at a safe boundary, write a hand-off file and start the new chat yourself (Project.md Rule 7).
