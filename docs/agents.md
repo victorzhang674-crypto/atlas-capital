@@ -223,3 +223,50 @@ filing's MD&A was found. A doubt first disclosed in a 10-Q is read as soon as th
 **Recorded run.** `tests/fixtures/recorded/stage-29-fundamental-aapl-2024-05-01/` holds a live
 run on AAPL for 2024-05-01: the exported LLM cache, the lake slice it read (`atlas data slice`)
 and the report. Its test replays it with no lake, no key and no provider call.
+
+## The technical analyst
+
+Stage 30, `atlas.agents.research.TechnicalAnalyst` (quick tier, `TechnicalReport`). It
+interprets precomputed technical features, prices, levels and the market regime; it never
+computes an indicator itself.
+
+```python
+analyst = TechnicalAnalyst(build_gateway(cfg, lake=lake), config=cfg)
+inputs = {"symbol": "AAPL", "regime": regime}  # regime: the day's RegimeState (optional)
+out = analyst.run(AgentContext(DataView(lake, day, cfg), inputs=inputs))
+out.output  # TechnicalReport: signals trend, momentum, volatility, levels
+```
+
+**Output.** `TechnicalReport` is an `AnalystReport` (spec §7) whose signals are
+`TechnicalSignal`s: each also has a `timing` (`NOW`, `WAIT_FOR_PULLBACK`, `AVOID`) and a
+`suggested_stop_pct`, the stop distance as a fraction of the last close (0.08 = 8% below it
+for a LONG view, above it for a SHORT view). Every consumer of an `AnalystReport` takes it.
+
+**Tools** (`agents/tools/technical_tools.py`; settings `agents.technical`):
+
+| Tool | Evidence ids | What it shows |
+|---|---|---|
+| `get_technical_snapshot` | `tsnap:<SYM>:<session>:<group>`, `regime:<day>:market` | Every Stage 15 feature in five groups (trend, momentum, volatility, levels, participation) with its percentile (0-100) against the stock's own last 252 sessions and against the index members (USD levels have none); the fund's market regime (Stage 21: vol and trend regimes, HMM, macro quadrant, stress, risk scalar) |
+| `get_price_summary` | `pxs:<SYM>:<last bar>:<ohlc, range, ma, levels, stops>` | The last `ohlc_sessions` (10) bars; the 52-week (`range_sessions`, 252) high and low with dates and the close's place in the range; SMA 20/50/200 (Stage 15 values); support below and resistance above the close (`swing_sessions` 20 and 63 lows and highs, 52-week high and low, the averages); stop references (ATR(14) and `atr_stop_multiples` 2 and 3 x ATR, distances to the swing lows and highs) |
+
+Prices are split- and dividend-adjusted with the actions known at the as-of, relative to the
+stock's last bar, so every level is comparable with the last close; volume is in today's
+shares. A short history says so ("only 80 sessions of history"); a last bar older than the
+latest session is named, and the price summary's windows end at it. The snapshot is taken at
+the cross-section's latest session (Stage 15), so for such a stale symbol most features read
+n/a (a delisted or halted name), never a stale value passed off as today's. The regime comes from `inputs["regime"]` (the fund graph's
+`FundState.regime`) or, without it, from `regime_at(view)` (about 15 s on the main lake); a
+regime of another day is refused before any LLM call.
+
+The run prefetches both tools for the symbol and still offers them for a peer. A snapshot or
+regime that cannot be computed leaves a `gap:` item; a blocked symbol, or one without bars,
+fails the run. `check_output` holds the report to the six summary sections (trend, momentum,
+volatility regime, levels, timing and entry, invalidation), the four signals, "every number
+cited" (Stage 29's rule, `atlas.agents.research.checks`) and the stop rules: a LONG or SHORT
+signal has a stop within [`min_stop_pct`, `max_stop_pct`] (0.01 to 0.25); a FLAT signal has
+none and timing `AVOID`. Problems get one repair turn.
+
+**Recorded run.** `tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/` holds a live
+run on AAPL for 2024-05-01: the lake slice (the S&P 500 members on the day and SPY, prices
+since 2021-10-01), the day's regime computed on the main lake (`regime.json`), the exported
+LLM cache and the report. Its test replays it with no lake, no key and no provider call.

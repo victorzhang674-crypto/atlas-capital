@@ -1,0 +1,3 @@
+502 members on 2024-05-01; 503 symbols with AAPL and the benchmark
+blocked on the main lake: []
+uv run python $A/record_fixture.py members  5.86s user 0.54s system 88% cpu 7.257 total

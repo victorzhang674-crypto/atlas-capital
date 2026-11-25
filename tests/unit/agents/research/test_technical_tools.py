@@ -116,7 +116,11 @@ def test_the_52_week_range(tworld: TechnicalWorld) -> None:
 
 def test_a_short_history_says_so(tworld: TechnicalWorld) -> None:
     items = by_id(tt.price_summary(tworld.view(), "NEW"))
-    assert "only 80 sessions of history" in items["pxs:NEW:2024-02-29:range"].text
+    first = adjusted(tworld, "NEW")["date"].iloc[0]
+    assert (
+        f"(only 80 sessions of history, first bar {first})"
+        in items["pxs:NEW:2024-02-29:range"].text
+    )
     assert "SMA200 n/a" in items["pxs:NEW:2024-02-29:ma"].text
     assert "252-session" not in items["pxs:NEW:2024-02-29:levels"].text
     assert "52-week (80-session) low" in items["pxs:NEW:2024-02-29:levels"].text
@@ -188,6 +192,26 @@ def test_a_stale_last_bar_is_named(tworld: TechnicalWorld, tmp_path: object) -> 
     items = tt.price_summary(DataView(lake, AS_OF, CONFIG), "M01")
     assert items[0].id == "pxs:M01:2024-02-26:ohlc"
     assert "last bar 2024-02-26 is 3 sessions before the latest session 2024-02-29" in items[0].text
+    # the 52-week window ends at the last bar: 252 sessions, not 249 of a window ending later
+    bars = adjusted(tworld, "M01")
+    bars = bars[bars["date"] <= date(2024, 2, 26)].tail(252)
+    range_text = items[1].text
+    assert f"252 sessions {bars['date'].iloc[0]}..2024-02-26)" in range_text
+    assert "only" not in range_text and "without a bar" not in range_text
+    assert f"high {bars['high'].max():.2f}" in range_text
+
+
+def test_missing_bars_inside_the_window_are_counted(
+    tworld: TechnicalWorld, tmp_path: object
+) -> None:
+    lake = Lake(tmp_path / "gaps", registry=DEFAULT_REGISTRY.copy())  # type: ignore[operator]
+    gone = {date(2023, 6, 1), date(2023, 6, 2), date(2023, 6, 5)}
+    bars = tworld.bars[~((tworld.bars["symbol"] == "M02") & tworld.bars["date"].isin(gone))]
+    lake.write_table("prices_daily", bars, mode="upsert")
+    text = tt.price_summary(DataView(lake, AS_OF, CONFIG), "M02")[1].text
+    assert "(249 sessions 2023-03-01..2024-02-29) (3 sessions in the window without a bar)" in text
+    levels = tt.price_summary(DataView(lake, AS_OF, CONFIG), "M02")[3].text
+    assert "52-week low" in levels and "-session) low" not in levels
 
 
 def test_a_blocked_symbol_or_one_without_bars_fails(tworld: TechnicalWorld) -> None:

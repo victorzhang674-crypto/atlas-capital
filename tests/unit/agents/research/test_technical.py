@@ -379,3 +379,45 @@ def test_without_a_memory_the_prompt_says_so(tworld: TechnicalWorld) -> None:
 
 def test_uncited_numbers_is_the_shared_check() -> None:
     assert uncited_numbers("Support at 182.5.") == ["Support at 182.5."]
+
+
+# --- the recorded live run --------------------------------------------------------------------
+
+
+def test_the_recorded_aapl_run_replays_offline(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Brief acceptance: the report validates (schema), cites evidence for its numbers, obeys
+    the stop and timing rules and runs offline from the cache: no main lake, no key, no
+    provider call, the recorded report."""
+    from recorded import recorded_run, replay_config, replay_lake
+    from recorded_technical import AS_OF as DAY
+    from recorded_technical import FIXTURE, SYMBOL, recorded_regime
+
+    from atlas.data.view import DataView
+    from atlas.llm import build_gateway
+    from atlas.llm.providers.offline import OfflineProvider
+
+    for name in ("DEEPSEEK_API_KEY", "ANTHROPIC_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+    lake = replay_lake(tmp_path, FIXTURE)
+    config = replay_config(lake.root)
+    gateway = build_gateway(config, lake=lake)
+    assert isinstance(gateway.provider, OfflineProvider)
+    agent = TechnicalAnalyst(gateway, config=config, traces=TraceStore())
+    inputs = {"symbol": SYMBOL, "regime": recorded_regime()}
+    out = agent.run(AgentContext(DataView(lake, DAY, config), inputs=inputs))
+    run = recorded_run(FIXTURE)
+    expected = TechnicalReport.model_validate_json((FIXTURE / "expected_report.json").read_text())
+    assert out.output == expected
+    assert agent.prompt_version == run["prompt_version"]
+    assert out.trace.llm_calls == out.trace.cache_hits == run["llm_calls"]
+    assert out.trace.cost_usd == 0.0
+    assert out.trace.status == run["status"] == "ok"
+    assert out.citations.ok and out.problems == ()
+    assert set(out.citations.cited) <= set(out.trace.evidence_ids)
+    assert uncited_numbers(out.output.summary) == []
+    assert all(uncited_numbers(risk) == [] for risk in out.output.risks)
+    assert sorted(s.name for s in out.output.signals) == sorted(SIGNALS)
+    assert all(stop_problems(s, config.agents.technical) == [] for s in out.output.signals)
+    assert (out.output.ticker, out.output.as_of) == (SYMBOL, DAY)

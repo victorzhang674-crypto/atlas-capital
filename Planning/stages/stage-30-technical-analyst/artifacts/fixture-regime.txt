@@ -1,0 +1,33 @@
+regime_at in 15.4 s:
+{
+  "as_of": "2024-05-01",
+  "data_date": "2024-04-30",
+  "vol_regime": "NORMAL",
+  "trend_regime": "UP",
+  "hmm_probs": [
+    1.2371034646170053e-17,
+    0.9987624910085069,
+    0.0012375089914931085
+  ],
+  "hmm_labels": [
+    "calm",
+    "normal",
+    "turbulent"
+  ],
+  "macro_quadrant": "Reflation",
+  "stress_flag": false,
+  "risk_scalar": 1.0,
+  "credit_source": "proxy",
+  "realised_vol": 0.13503876470508247,
+  "vix": 15.65,
+  "vol_score": 0.44841269841269843,
+  "price_to_sma_200": 1.0774965784325734,
+  "momentum_12_1": 0.27358319984504065,
+  "breadth": 0.7292929292929293,
+  "credit_z": -1.4569229479777106,
+  "nfci": -0.50758,
+  "growth_score": 0.3333333333333333,
+  "inflation_gap": 0.7335244378106731,
+  "missing": []
+}
+uv run python $A/record_fixture.py regime  17.94s user 1.20s system 96% cpu 19.780 total

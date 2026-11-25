@@ -9,7 +9,7 @@ How to write the report:
   trend: the trend state. momentum: momentum and its confirmation of the trend. volatility: LONG when volatility is calm or contracting in a way that favours holding, SHORT when it is high or expanding against the position, FLAT when neutral. levels: LONG when the price sits near support with room to resistance, SHORT when it presses against resistance or has broken support.
 - Each signal also has timing and suggested_stop_pct:
   timing: NOW (enter now), WAIT_FOR_PULLBACK (wait for a better level named in the summary) or AVOID (do not enter). A FLAT signal has timing AVOID.
-  suggested_stop_pct: the stop distance as a FRACTION of the last close, between 0.01 and 0.25: 0.08 means a stop 8% below the last close for a LONG signal (8% above it for a SHORT signal). Base it on the stop references shown (ATR multiples, swing lows and highs). A FLAT signal has suggested_stop_pct null.
+  suggested_stop_pct: the stop distance as a FRACTION of the last close, between 0.01 and 0.25: 0.08 means a stop 8% below the last close for a LONG signal (8% above it for a SHORT signal). Every LONG or SHORT signal has one, whatever its timing (it is the stop to use when the position is taken). Base it on the stop references shown (ATR multiples, swing lows and highs). A FLAT signal has suggested_stop_pct null.
 - risks: the main ways the price action could turn against the view, one short sentence each, tagged when it states a number.
 - confidence in [0, 1]: lower it when data is missing or short (n/a values, a short history, a gap), when the signals disagree, or when the market regime is turbulent.
 - An item starting with "gap:" names data that could not be gathered.

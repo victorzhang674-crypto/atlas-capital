@@ -1,0 +1,5 @@
+
+LIVE technical: status=ok llm_calls=2 tools=[] cited=10 problems=[] tokens=4607+2974 cost_usd=0.002494 signals=[('trend', 'FLAT', 'AVOID', None), ('momentum', 'FLAT', 'AVOID', None), ('volatility', 'SHORT', 'AVOID', 0.06), ('levels', 'LONG', 'WAIT_FOR_PULLBACK', 0.06)]
+.
+1 passed in 20.02s
+exit 0

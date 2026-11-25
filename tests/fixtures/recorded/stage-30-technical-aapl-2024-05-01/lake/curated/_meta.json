@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "tables": {
+    "corporate_actions": {
+      "fingerprint": "b73376f2e05e35fbeb50f11e64000b6912bf7e0660105068ef4bcc8fa9b4a052",
+      "partition_by": [],
+      "version": 1
+    },
+    "index_membership": {
+      "fingerprint": "eaca3c8fe8ff3db2968319af7742785404c0210d09d755994d0f3080f20dbbab",
+      "partition_by": [],
+      "version": 1
+    },
+    "instruments": {
+      "fingerprint": "6d9255a6e72ec08e0f26c1edc379233798bf8dd22ef7a0e9c9671b3e891095d2",
+      "partition_by": [],
+      "version": 1
+    },
+    "prices_daily": {
+      "fingerprint": "a366759a0b0132e7c603e339894b3944829d0d348abb2b1751ebfe8afc08d34d",
+      "partition_by": [
+        "year"
+      ],
+      "version": 1
+    }
+  }
+}

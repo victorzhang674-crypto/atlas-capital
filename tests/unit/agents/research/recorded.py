@@ -31,15 +31,15 @@ def replay_config(lake: Path, mode: str = "replay_only") -> AtlasConfig:
     )
 
 
-def replay_lake(root: Path) -> Lake:
-    """A writable copy of the fixture's lake under `root`, with the recorded cache loaded."""
+def replay_lake(root: Path, fixture: Path = FIXTURE) -> Lake:
+    """A writable copy of `fixture`'s lake under `root`, with the recorded cache loaded."""
     target = root / "lake"
-    shutil.copytree(FIXTURE / "lake", target)
+    shutil.copytree(fixture / "lake", target)
     lake = Lake(target)
-    LLMCache(get_database(lake)).load(read_export(FIXTURE / "llm_cache.jsonl"))
+    LLMCache(get_database(lake)).load(read_export(fixture / "llm_cache.jsonl"))
     return lake
 
 
-def recorded_run() -> dict[str, Any]:
+def recorded_run(fixture: Path = FIXTURE) -> dict[str, Any]:
     """`run.json`: what the live run recorded."""
-    return dict(json.loads((FIXTURE / "run.json").read_text(encoding="utf-8")))
+    return dict(json.loads((fixture / "run.json").read_text(encoding="utf-8")))

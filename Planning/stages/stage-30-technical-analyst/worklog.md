@@ -38,3 +38,23 @@ Dated, in order. Branch `claude/stage-30-planning-audit-d30ece` (worktree `.clau
 ### Task 8 — prompt and analyst
 - `src/atlas/agents/prompts/technical_analyst.j2` v1, `src/atlas/agents/research/technical.py` (`TechnicalAnalyst`, `technical_registry`, `stop_problems`, `SIGNALS`, `SECTIONS`, `MEMORY_QUERY`), exported from `atlas.agents.research`; golden prompt `tests/unit/agents/research/golden/technical_analyst_prompt.txt`.
 - `test_technical.py`: 30 tests; three test mistakes fixed on the first run (`ToolRegistry.names` is a property; a hand-made `RegimeState` with `data_date == as_of` is invalid; the stop problem text carries its unit hint). Agents + core tests: 1682 passed.
+
+### Commit
+- `dd90db7` "stage-30 (part 1): technical analyst contract, config, tools, analyst and tests" (staged diff reviewed: 25 files, no secrets or data; the pre-commit ruff hook re-sorted `__all__` in `core/types/__init__.py`, recommitted).
+
+### Task 9 — recorded live fixture (D7)
+- `artifacts/record_fixture.py` (steps `members`, `regime`, `fixture`, `compare`, `live`, `export`), read-only on the main lake.
+- `members` → 502 members on 2024-05-01, 503 symbols with AAPL and SPY; none blocked · [fixture-members.txt](artifacts/fixture-members.txt).
+- `regime` → `regime_at` on the main lake in 15.4 s: NORMAL / UP, HMM normal 0.999, Reflation, no stress, risk scalar 1.0 → `regime.json` · [fixture-regime.txt](artifacts/fixture-regime.txt).
+- `fixture` → `atlas data slice` since 2021-10-01, 4 tables, 325,899 rows (320,863 bars), 10.05 MB · [fixture-slice.txt](artifacts/fixture-slice.txt).
+- `compare` → AAPL's 11 items equal on the main lake and the slice (11 of 11); AAPL's last close 170.33 (2024-04-30) is the real close · [fixture-compare.txt](artifacts/fixture-compare.txt).
+- `live` (first recording) → status ok in 2 calls: the first answer had a SHORT volatility signal without a stop and my D3 check sent the repair. The prompt said a FLAT signal has no stop but never that a LONG or SHORT one must have one, so the prompt now says "Every LONG or SHORT signal has one, whatever its timing" (golden updated), and the run was recorded again: status ok, **1 LLM call**, 4,352 + 1,662 tokens, USD 0.0017, no problems · [live-run.txt](artifacts/live-run.txt). `export` → 1 cache entry. Fixture grep for keys: none.
+- Replay test `test_the_recorded_aapl_run_replays_offline` (no keys, `OfflineProvider`, `replay_only`): passes. `recorded.py` takes the fixture as an argument (Stage 29's callers unchanged); `recorded_technical.py` adds the Stage 30 constants and `recorded_regime()`.
+- Live test `test_technical_live.py -m llm -s` → 1 passed, status ok (that run needed a repair turn: the model is not deterministic), USD 0.0025 · [live-test.txt](artifacts/live-test.txt).
+
+### Task 10 — docs and real-lake check
+- `docs/agents.md` "The technical analyst"; fixture `README.md`. Docs tests 4 passed.
+- `artifacts/main_lake_check.py` on the main lake (regime computed, the default path), 11–34 s per case · [main-lake-check.txt](artifacts/main-lake-check.txt): NVDA after its 10:1 split (levels post-split, 52-week high 125.58 on 2024-06-06), GEV and KVUE (young: "only 46/60 sessions of history", no 63-session level), JPM on 2020-03-17 (CRISIS, risk scalar 0.25, vol_21d 110.6%), ATVI after delisting and SNDK (stale last bar named), AAPL today.
+- **Defect found and fixed test-first:** for a stale symbol the 52-week window ended at the latest session, so ATVI read "only 248 sessions of history" (wrong: it had years of history). The window now ends at the symbol's last bar (re-read with `range_sessions + behind` sessions); fewer bars mean a short history (first bar after the window start: "only N sessions of history, first bar D") or sessions without a bar ("K sessions in the window without a bar"). Two new tests (`test_a_stale_last_bar_is_named` extended, `test_missing_bars_inside_the_window_are_counted`) were red (3 failures) before the fix.
+- SNDK checked against its raw bars: its 8:1 split (ex 2026-11-20) is known at the as-of, so every bar, including the last (pre-split) one, is on the post-split basis; ratios and levels are consistent and its -68% from the high is real. The module docstring's "relative to the symbol's last bar" was inaccurate for that case and is corrected.
+- Stale symbols: the Stage 15 snapshot is taken at the cross-section's latest session, so most of their features read n/a (fail-safe); documented in `docs/agents.md`.

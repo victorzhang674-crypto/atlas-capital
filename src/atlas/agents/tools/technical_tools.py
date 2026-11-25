@@ -8,9 +8,11 @@ Evidence, one item per group of numbers the analyst may cite, with a stable id:
 - `pxs:<SYM>:<last bar>:<ohlc | range | ma | levels | stops>` (`get_price_summary`): the
   recent OHLC table, the 52-week range, the key moving averages, support and resistance
   candidates and stop references. Prices are USD, split- and dividend-adjusted with the
-  actions known today relative to the symbol's last bar (Stage 15's `PricePanel` convention),
-  so every level is comparable with the last close; volume is in today's shares. The items'
-  time is the latest `available_at` of the bars read.
+  actions known today (`DataView.prices`, Stage 15's `PricePanel` convention), so every level
+  is on today's share basis and comparable with the last close (a split known after the last
+  bar rescales that bar too); volume is in today's shares. The windows end at the symbol's
+  last bar, which may be older than the latest session (said so in the text). The items' time
+  is the latest `available_at` of the bars read.
 - `tsnap:<SYM>:<session>:<group>` (`get_technical_snapshot`): every Stage 15 feature of
   `FEATURE_GROUPS` with its percentile against the symbol's own recent history and against
   the index cross-section (Stage 15 `build_snapshots`).
@@ -246,12 +248,19 @@ def _ohlc_text(symbol: str, bars: pd.DataFrame, latest: date, behind: int) -> st
     )
 
 
-def _range_text(symbol: str, bars: pd.DataFrame, want: int) -> str:
+def _range_text(symbol: str, bars: pd.DataFrame, want: int, window_start: date) -> str:
+    """The 52-week range over `bars`, the symbol's bars in the `want` sessions that end at
+    its last bar (from `window_start`): fewer bars are a short history (the first bar is
+    after `window_start`) or sessions without a bar."""
     hi, lo = bars["high"].idxmax(), bars["low"].idxmin()
     high, low = float(bars["high"][hi]), float(bars["low"][lo])
     close = float(bars["close"].iloc[-1])
     n = len(bars)
-    short = f" (only {n} sessions of history: the range covers those)" if n < want else ""
+    short = ""
+    if bars["date"][0] > window_start:
+        short = f" (only {n} sessions of history, first bar {bars['date'][0]})"
+    elif n < want:
+        short = f" ({want - n} sessions in the window without a bar)"
     position = (close - low) / (high - low) if high > low else math.nan
     where = f"at {position * 100:.1f}% of the range" if _finite(position) else "range n/a"
     return (
@@ -284,11 +293,15 @@ def _ma_text(symbol: str, close: float, mas: dict[str, float | None]) -> str:
 
 
 def _levels_text(
-    symbol: str, bars: pd.DataFrame, mas: dict[str, float | None], settings: TechnicalAnalystConfig
+    symbol: str,
+    bars: pd.DataFrame,
+    mas: dict[str, float | None],
+    settings: TechnicalAnalystConfig,
+    window_start: date,
 ) -> str:
     close = float(bars["close"].iloc[-1])
     n = len(bars)
-    year = "52-week" if n >= settings.range_sessions else f"52-week ({n}-session)"
+    year = f"52-week ({n}-session)" if bars["date"][0] > window_start else "52-week"
     candidates: list[tuple[str, float, date | None]] = []
     notes = []
     for window in settings.swing_sessions:
@@ -356,10 +369,14 @@ def price_summary(view: DataView, symbol: str) -> list[Evidence]:
     `SUMMARY_PARTS`. `DataError` for a blocked symbol or one without bars."""
     symbol = normalize_symbol(symbol)
     settings = _settings(view)
-    bars = _adjusted_bars(view, symbol, settings.range_sessions)
+    want = settings.range_sessions
+    bars = _adjusted_bars(view, symbol, want)
     latest = view.sessions(1)[-1]
     last = bars["date"].iloc[-1]
-    behind = _sessions_behind(view, last, settings.range_sessions)
+    behind = _sessions_behind(view, last, want)
+    if behind:  # a stale last bar: the window is the `want` sessions that end at it
+        bars = _adjusted_bars(view, symbol, want + behind)
+    window_start = view.sessions(want + behind)[0]
     feats = _feature_values(
         view, symbol, [name for name, _ in MA_FEATURES] + ["atr_14"], last, behind
     )
@@ -367,9 +384,9 @@ def price_summary(view: DataView, symbol: str) -> list[Evidence]:
     at = pd.Timestamp(bars["available_at"].max()).tz_convert("UTC").to_pydatetime()
     texts = {
         "ohlc": _ohlc_text(symbol, bars.tail(settings.ohlc_sessions), latest, behind),
-        "range": _range_text(symbol, bars, settings.range_sessions),
+        "range": _range_text(symbol, bars, want, window_start),
         "ma": _ma_text(symbol, close, feats),
-        "levels": _levels_text(symbol, bars, feats, settings),
+        "levels": _levels_text(symbol, bars, feats, settings, window_start),
         "stops": _stops_text(symbol, bars, feats["atr_14"], settings),
     }
     return [

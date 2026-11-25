@@ -1,0 +1,14 @@
+Slice of 503 symbol(s) at 2024-05-01
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┓
+┃ table             ┃   rows ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━┩
+│ corporate_actions │   4022 │
+│ index_membership  │    511 │
+│ instruments       │    503 │
+│ prices_daily      │ 320863 │
+└───────────────────┴────────┘
+325899 row(s) written to 
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-30-planning-audit-d30ece/tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake
+
+fixture lake: 10.05 MB
+uv run python $A/record_fixture.py fixture  3.68s user 0.40s system 65% cpu 6.195 total
