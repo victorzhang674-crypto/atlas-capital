@@ -534,6 +534,14 @@ agents:
       # ... unless it holds one of these (ASU 2014-15 wording, hypotheticals, other parties, negations; reviewed on every main-lake MD&A: 10-Ks 2026-11-18, 10-Qs 2026-11-22)
       going_concern_exclusions: ["whether there", "an entity", "the entity", "a company's", "ASU", "FASB", "Subtopic", "no longer", "no conditions", "no substantial doubt", "not raise substantial doubt", "if such substantial doubt", "their ability", "as disclosed by", "does not exist", "provide certain disclosure", "borrower's"]
       mda_max_age_days: 460  # the latest MD&A (10-K or 10-Q) is read only if its period ended at most this many days before the as-of
+  # Technical analyst tools and report checks (Stage 30, atlas.agents.tools.technical_tools).
+  technical:
+    ohlc_sessions: 10  # sessions in the recent OHLC table of get_price_summary
+    range_sessions: 252  # sessions of the 52-week range (one year of sessions)
+    swing_sessions: [20, 63]  # windows (sessions, ascending) of the swing lows/highs offered as support, resistance and stop levels
+    atr_stop_multiples: [2.0, 3.0]  # multiples k (ascending) of ATR(14) offered as stop distances
+    min_stop_pct: 0.01  # a LONG or SHORT signal's suggested_stop_pct must be at least this (fraction of the last close) ...
+    max_stop_pct: 0.25  # ... and at most this
 
 # Fund graph (Stage 28): LangGraph research fan-out, checkpoints in data/runs/<run_id>/.
 orchestration:

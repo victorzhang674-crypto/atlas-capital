@@ -47,8 +47,11 @@ from atlas.core.types import (
     Side,
     Signal,
     TargetPortfolio,
+    TechnicalReport,
+    TechnicalSignal,
     ThesisStatus,
     TimeInForce,
+    Timing,
     View,
     Violation,
     new_id,
@@ -59,6 +62,14 @@ TS = datetime(2024, 1, 2, 21, 0, 0, 123000, tzinfo=UTC)
 LATER = datetime(2024, 2, 1, 21, 0, tzinfo=UTC)
 DIST = ReturnDistribution(p10=-0.05, p50=0.03, p90=0.11)
 SIGNAL = Signal(name="valuation", direction=Direction.LONG, strength=0.6, evidence_ids=("e:1",))
+TECH_SIGNAL = TechnicalSignal(
+    name="trend",
+    direction=Direction.LONG,
+    strength=0.6,
+    evidence_ids=("e:1",),
+    timing=Timing.WAIT_FOR_PULLBACK,
+    suggested_stop_pct=0.08,
+)
 VIEW = View(ticker="MSFT", exp_return=0.12, confidence=0.55, horizon_days=63)
 ASSET_VIEW = AssetView(etf="TLT", direction=Direction.SHORT, conviction=0.7, horizon_days=40)
 CLAIM = Claim(text="Margins expand", evidence_ids=("news:1",), strength=0.8)
@@ -117,6 +128,16 @@ SAMPLES: list[AtlasModel] = [
         signals=(SIGNAL,),
         risks=("China",),
         confidence=0.7,
+    ),
+    TECH_SIGNAL,
+    TechnicalReport(
+        ticker="AAPL",
+        as_of=D,
+        analyst="technical_analyst",
+        summary="Uptrend",
+        signals=(TECH_SIGNAL, TECH_SIGNAL.model_copy(update={"name": "levels"})),
+        risks=("Breaks the 50-day average",),
+        confidence=0.6,
     ),
     ASSET_VIEW,
     MacroOutlook(

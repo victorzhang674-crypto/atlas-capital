@@ -49,6 +49,28 @@ class Signal(AtlasModel):
     evidence_ids: tuple[NonEmptyStr, ...] = ()
 
 
+class Timing(StrEnum):
+    """When to act on a technical signal's direction (Stage 30): enter `NOW`, `WAIT_FOR_PULLBACK`
+    to a better level, or `AVOID` entering (the only timing of a FLAT signal)."""
+
+    NOW = "NOW"
+    WAIT_FOR_PULLBACK = "WAIT_FOR_PULLBACK"
+    AVOID = "AVOID"
+
+
+StopFraction = Annotated[Real, Field(gt=0, lt=1)]
+"""A stop distance as a fraction of the last close, strictly between 0 and 1 (0.08 = 8%)."""
+
+
+class TechnicalSignal(Signal):
+    """A signal of the technical analyst (Stage 30): a `Signal` plus its `timing` and
+    `suggested_stop_pct`, the stop distance as a fraction of the last close (0.08 = a stop 8%
+    below it for a LONG view, 8% above it for a SHORT view; `None` for a FLAT view)."""
+
+    timing: Timing
+    suggested_stop_pct: StopFraction | None = None
+
+
 class Evidence(AtlasModel):
     """A citable piece of source material. `id` is a stable key from the source (for example
     `news:<article_id>`), not a minted id; `as_of` is when it became public (UTC)."""
@@ -70,6 +92,13 @@ class AnalystReport(AtlasModel):
     signals: tuple[Signal, ...]
     risks: tuple[NonEmptyStr, ...]
     confidence: UnitInterval
+
+
+class TechnicalReport(AnalystReport):
+    """The technical analyst's report (Stage 30): an `AnalystReport` whose signals are
+    `TechnicalSignal`s, so every consumer of an `AnalystReport` takes it."""
+
+    signals: tuple[TechnicalSignal, ...]
 
 
 class AssetView(AtlasModel):

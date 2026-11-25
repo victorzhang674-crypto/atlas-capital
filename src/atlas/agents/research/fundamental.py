@@ -12,13 +12,13 @@ summary or a risk that states a number (ISO dates and evidence tags aside) must 
 run (`DataError`): no report, no new risk.
 """
 
-import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
 from atlas.agents.base import BaseAgent
 from atlas.agents.context import AgentContext
-from atlas.agents.evidence import TAG_RE
+from atlas.agents.research import checks
+from atlas.agents.research.checks import MAX_LISTED, sentences, uncited_numbers
 from atlas.agents.tools.dataview_tools import default_tools
 from atlas.agents.tools.fundamental_tools import FUNDAMENTAL_TOOLS, prefetch
 from atlas.agents.tools.registry import ToolRegistry
@@ -43,63 +43,11 @@ SECTIONS = (
 MEMORY_QUERY = "{symbol} fundamentals: business quality, growth, valuation, balance-sheet risk"
 """What the analyst asks its memory for (Stage 27 recall, bound to the run's as-of)."""
 
-MAX_LISTED = 5
-"""A problem lists at most this many offending sentences."""
-
-_ISO_DATE = re.compile(r"\b\d{4}-\d{2}-\d{2}\b")
-_DIGIT = re.compile(r"\d")
-_SENTENCE_END = re.compile(r"(?<=[.!?])\s+|\n+")
-
-
-def _section_re(label: str) -> re.Pattern[str]:
-    return re.compile(rf"(?:^|\n)[ \t*#_>-]*{re.escape(label)}[ \t*_]*:", re.IGNORECASE)
-
-
-_SECTION_RES = tuple(_section_re(label) for label in SECTIONS)
-
-
-def sentences(text: str) -> list[str]:
-    """`text` split into sentences (after `.`, `!`, `?` and at line breaks); a piece holding
-    only evidence tags is joined to the sentence before it."""
-    out: list[str] = []
-    for piece in _SENTENCE_END.split(text):
-        piece = piece.strip()
-        if not piece:
-            continue
-        if out and not TAG_RE.sub("", piece).strip(" .;,"):
-            out[-1] = f"{out[-1]} {piece}"
-        else:
-            out.append(piece)
-    return out
-
-
-def uncited_numbers(text: str) -> list[str]:
-    """The sentences of `text` that state a number (digits outside evidence tags and ISO
-    dates) without an `[E:<id>]` tag."""
-    return [
-        s
-        for s in sentences(text)
-        if _DIGIT.search(_ISO_DATE.sub("", TAG_RE.sub("", s))) and not TAG_RE.search(s)
-    ]
-
 
 def missing_sections(summary: str) -> list[str]:
     """The `SECTIONS` labels absent from `summary`, or out of order (each must start a line
-    and come after the one before)."""
-    missing, position = [], 0
-    for label, pattern in zip(SECTIONS, _SECTION_RES, strict=True):
-        found = pattern.search(summary, position)
-        if found is None:
-            missing.append(label)
-        else:
-            position = found.end()
-    return missing
-
-
-def _quote(sentences_: Sequence[str]) -> str:
-    shown = "; ".join(f'"{s[:120]}"' for s in sentences_[:MAX_LISTED])
-    more = f" and {len(sentences_) - MAX_LISTED} more" if len(sentences_) > MAX_LISTED else ""
-    return shown + more
+    and come after the one before); `checks.missing_sections` with this analyst's sections."""
+    return checks.missing_sections(summary, SECTIONS)
 
 
 def fundamental_registry() -> ToolRegistry:
@@ -172,12 +120,13 @@ class FundamentalAnalyst(BaseAgent[AnalystReport]):
         if uncited:
             problems.append(
                 "every sentence that states a number needs an [E:<id>] tag of its evidence; "
-                f"these have none: {_quote(uncited)}"
+                f"these have none: {checks.quote(uncited)}"
             )
         return problems
 
 
 __all__ = [
+    "MAX_LISTED",
     "MEMORY_QUERY",
     "SECTIONS",
     "SIGNALS",

@@ -21,6 +21,7 @@ import yaml
 from dotenv import dotenv_values
 from pydantic import (
     BaseModel,
+    BeforeValidator,
     ConfigDict,
     Field,
     SecretStr,
@@ -39,7 +40,7 @@ from pydantic_settings import (
 from pydantic_settings.exceptions import SettingsError
 
 from atlas.core.errors import ConfigError
-from atlas.core.types.base import FrozenDict, FrozenMap
+from atlas.core.types.base import FrozenDict, FrozenMap, reject_bool
 from atlas.core.types.instruments import normalize_symbol
 
 Profile = Literal["dev", "backtest", "paper"]
@@ -1156,6 +1157,53 @@ class FundamentalAnalystConfig(_Frozen):
     red_flags: RedFlagsConfig = Field(default_factory=RedFlagsConfig)
 
 
+_StopFraction = Annotated[float, BeforeValidator(reject_bool), Field(gt=0, lt=1)]
+
+
+class TechnicalAnalystConfig(_Frozen):
+    """The technical analyst's tools and report checks (Stage 30).
+
+    `ohlc_sessions`: sessions in the recent OHLC table of the price summary.
+    `range_sessions`: sessions of the "52-week" range (252 = one year of sessions).
+    `swing_sessions`: windows (sessions, ascending) of the recent swing lows and highs offered
+    as support, resistance and stop levels; each at most `range_sessions`.
+    `atr_stop_multiples`: multiples k (ascending) of ATR(14) offered as stop distances.
+    `min_stop_pct` < `max_stop_pct`: the range a LONG or SHORT signal's `suggested_stop_pct`
+    must fall in (fractions of the last close: 0.01 = 1%).
+    """
+
+    ohlc_sessions: Annotated[int, Field(ge=1, le=63)] = 10
+    range_sessions: Annotated[int, Field(ge=2)] = 252
+    swing_sessions: Annotated[tuple[Annotated[int, Field(ge=2)], ...], Field(min_length=1)] = (
+        20,
+        63,
+    )
+    atr_stop_multiples: Annotated[
+        tuple[Annotated[float, BeforeValidator(reject_bool), Field(gt=0)], ...],
+        Field(min_length=1),
+    ] = (2.0, 3.0)
+    min_stop_pct: _StopFraction = 0.01
+    max_stop_pct: _StopFraction = 0.25
+
+    @model_validator(mode="after")
+    def _consistent(self) -> Self:
+        for name in ("swing_sessions", "atr_stop_multiples"):
+            values = getattr(self, name)
+            if any(b <= a for a, b in pairwise(values)):
+                raise ValueError(f"{name} must be strictly ascending, got {list(values)}")
+        if self.swing_sessions[-1] > self.range_sessions:
+            raise ValueError(
+                f"swing_sessions ({list(self.swing_sessions)}) must not exceed range_sessions "
+                f"({self.range_sessions})"
+            )
+        if self.min_stop_pct >= self.max_stop_pct:
+            raise ValueError(
+                f"min_stop_pct ({self.min_stop_pct}) must be below max_stop_pct "
+                f"({self.max_stop_pct})"
+            )
+        return self
+
+
 class AgentsConfig(_Frozen):
     """The agent framework (Stage 26).
 
@@ -1167,6 +1215,7 @@ class AgentsConfig(_Frozen):
     its citations are still invalid after the repairs (it is then marked `low_quality`).
     `memory`: agent memory (Stage 27).
     `fundamental`: the fundamental analyst's tools (Stage 29).
+    `technical`: the technical analyst's tools and report checks (Stage 30).
     """
 
     max_tool_rounds: Annotated[int, Field(ge=1)] = 4
@@ -1174,6 +1223,7 @@ class AgentsConfig(_Frozen):
     low_quality_confidence_cap: Annotated[float, Field(ge=0, le=1)] = 0.3
     memory: MemoryConfig = Field(default_factory=MemoryConfig)
     fundamental: FundamentalAnalystConfig = Field(default_factory=FundamentalAnalystConfig)
+    technical: TechnicalAnalystConfig = Field(default_factory=TechnicalAnalystConfig)
 
 
 class OrchestrationConfig(_Frozen):
