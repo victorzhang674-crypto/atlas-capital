@@ -38,8 +38,10 @@ Start Stage NN.
 5. **Resolve collisions with the overall plan.** If the brief, the stage plan or the code conflicts with `01-master-roadmap.md` or `00-design-spec.md`, follow the overall plan and log the collision in the Decisions log. Do not edit the overall plan without the owner's approval.
 6. **Use no real network calls in unit tests.** Use recorded fixtures under `tests/fixtures/` (VCR-style JSON/Parquet) or fakes. Live-network tests are marked `@pytest.mark.live` and skipped by default.
 7. **Use no real LLM calls in unit tests.** Use `FakeLLM` (from Stage 24) with scripted responses. Live-LLM tests are marked `@pytest.mark.llm`.
-8. **Do all git work yourself.** Branching, committing, merging `main` in, resolving conflicts and merging the finished stage into `main` are done and verified by the AI (`Project.md` Rule 6A).
-9. **Run every command yourself.** Installs, tests, checks, data syncs, backfills, servers and visual checks are all run and inspected by the AI. Long jobs run in the background. The owner is never asked to run or check something unless a `Project.md` Rule 6 exception applies, and then the AI states the exception, gives the exact command, and keeps the item `BLOCKED` until it sees real output.
+8. **Quality over convenience.** In every task, pick the approach that best serves a correct, point-in-time-honest, robust and well-performing trading system, not the quickest one. Cut no corners. Record meaningful trade-offs in `worklog.md`, and put out-of-scope improvements in the Backlog (`Project.md` Rule 8).
+9. **Hand off before context runs out.** When the context is close to full, stop at a safe boundary, commit, write `handoffs/handoff-<k>.md` and start the new chat yourself, instead of letting the chat be compacted (`Project.md` Rule 7; see §7).
+10. **Do all git work yourself.** Branching, committing, merging `main` in, resolving conflicts and merging the finished stage into `main` are done and verified by the AI (`Project.md` Rule 6A).
+11. **Run every command yourself.** Installs, tests, checks, data syncs, backfills, servers and visual checks are all run and inspected by the AI. Long jobs run in the background. The owner is never asked to run or check something unless a `Project.md` Rule 6 exception applies, and then the AI states the exception, gives the exact command, and keeps the item `BLOCKED` until it sees real output.
 
 ## 3. Definition of Done (every stage)
 
@@ -104,6 +106,16 @@ A stage is `DONE` only when **every** box below is ticked from checks **run in t
 Full evidence: [verification.md](stages/stage-NN-<slug>/verification.md)
 ```
 
-## 7. When a stage is too big
+## 7. When a stage is too big, or the context runs low
 
-If context runs low, stop at a green test boundary, commit `stage-NN (part 1): …`, and write the handoff note marked *partial*, with status `IN PROGRESS`. Note in the stage folder's `worklog.md` exactly where part 1 stopped, so part 2 continues in the same folder. Continue in a new chat with the same kick-off prompt plus "continue from part 1". The stage is `DONE` only after its final part passes full verification. The next stage cannot start before then.
+Do not let the chat be compacted (`Project.md` Rule 7). Instead:
+
+1. Stop at a safe, green test boundary.
+2. Commit `stage-NN (part k): …` on the stage branch, with the Rule 6A checks.
+3. Note in `worklog.md` exactly where part k stopped.
+4. Write `Planning/stages/stage-NN-<slug>/handoffs/handoff-<k>.md` in the format given in Rule 7.3, and commit it.
+5. Mark the `PROGRESS.md` handoff note *partial*, with status `IN PROGRESS`.
+6. **Start the new chat yourself** with the session tools. Its prompt tells it to read `Project.md`, `PROGRESS.md` and the hand-off file, check the recorded state against git and the tests, and continue from "Next steps".
+7. Tell the owner where the hand-off file is, link the new chat, and stop working on the task in this chat.
+
+The stage is `DONE` only after its final part passes full verification in the chat that claims it. The next stage cannot start before then.
