@@ -27,3 +27,6 @@ Output of commands run in this stage's chat (Project.md Rule 1); raw files in [a
 - Waivers: none
 
 **Result:** ALL CRITERIA VERIFIED
+
+- Merge into `main`: fast-forward a2e90f3 → **cd7afbe** (2026-11-26, run in the owner's Terminal panel: the sandbox cannot write the main checkout); trees equal. Merged result: `uv run pytest -q` → 5708 passed, 83 deselected, exit 0 · `make check` → exit 0 (ruff clean, 524 files formatted, mypy clean on 191 files, 5705 + 3 timing passed) · `git branch --merged main` lists the stage branch · raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt)
+- Pushed `main` and the stage branch at cd7afbe (level with `origin`); CI (`make check` + `make test-integration`) success on both runs (45839839608 main, 45839839719 branch) · raw: [artifacts/ci-runs-cd7afbe.json](artifacts/ci-runs-cd7afbe.json)

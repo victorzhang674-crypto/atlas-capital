@@ -1,0 +1,343 @@
+=== before: main a2e90f3
+=== git merge --ff-only claude/stage-30-planning-audit-d30ece
+Updating a2e90f3..cd7afbe
+Fast-forward
+ Planning/PROGRESS.md                               |   38 +-
+ .../artifacts/audit-report.md                      |   73 ++
+ .../artifacts/coverage.txt                         |   26 +
+ .../artifacts/fixture-compare.txt                  |   26 +
+ .../artifacts/fixture-export.txt                   |    4 +
+ .../artifacts/fixture-members.txt                  |    3 +
+ .../artifacts/fixture-regime.txt                   |   33 +
+ .../artifacts/fixture-slice.txt                    |   14 +
+ .../artifacts/gate-pytest.txt                      |  105 ++
+ .../artifacts/live-run.txt                         |   98 ++
+ .../artifacts/live-test.txt                        |    5 +
+ .../artifacts/main-lake-check.txt                  |   99 ++
+ .../artifacts/main_lake_check.py                   |   46 +
+ .../artifacts/make-check.txt                       |  267 +++++
+ .../artifacts/mutation/classify-log.txt            |    1 +
+ .../artifacts/mutation/classify-log2.txt           |    1 +
+ .../artifacts/mutation/classify.sh                 |   25 +
+ .../mutation/edges-on-previous-commit.txt          |    2 +
+ .../mutation/final-survivors-classified.tsv        |   52 +
+ .../artifacts/mutation/final-survivors.txt         |   51 +
+ .../artifacts/mutation/last3-rerun.txt             |    3 +
+ .../artifacts/mutation/last3.txt                   |    3 +
+ .../artifacts/mutation/mutation-summary.md         |   54 +
+ .../artifacts/mutation/mutmut-results.txt          | 1048 ++++++++++++++++++++
+ .../artifacts/mutation/mutmut-run.txt              |   16 +
+ .../artifacts/mutation/mutmut-setup.cfg            |   13 +
+ .../artifacts/mutation/survivor-diffs.txt          |  334 +++++++
+ .../artifacts/mutation/survivors-rerun.txt         |  111 +++
+ .../artifacts/mutation/survivors.txt               |  111 +++
+ .../artifacts/mutation/suspicious-rerun.txt        |  118 +++
+ .../artifacts/mutation/suspicious.txt              |  118 +++
+ .../artifacts/pytest-full.txt                      |  107 ++
+ .../artifacts/record_fixture.py                    |  193 ++++
+ .../artifacts/test-integration.txt                 |   25 +
+ .../artifacts/verify-brief.txt                     |    5 +
+ .../stage-30-technical-analyst/artifacts/verify.sh |   12 +
+ Planning/stages/stage-30-technical-analyst/plan.md |   81 ++
+ .../stage-30-technical-analyst/verification.md     |   29 +
+ .../stages/stage-30-technical-analyst/worklog.md   |   70 ++
+ config/fund.yaml                                   |    8 +
+ docs/agents.md                                     |   47 +
+ src/atlas/agents/prompts/technical_analyst.j2      |   21 +
+ src/atlas/agents/research/__init__.py              |    6 +-
+ src/atlas/agents/research/checks.py                |   81 ++
+ src/atlas/agents/research/fundamental.py           |   63 +-
+ src/atlas/agents/research/technical.py             |  177 ++++
+ src/atlas/agents/tools/technical_tools.py          |  616 ++++++++++++
+ src/atlas/core/config.py                           |   52 +-
+ src/atlas/core/types/__init__.py                   |    8 +
+ src/atlas/core/types/research.py                   |   29 +
+ .../stage-30-technical-aapl-2024-05-01/README.md   |   29 +
+ .../expected_report.json                           |   64 ++
+ .../lake/curated/_meta.json                        |   27 +
+ .../lake/curated/corporate_actions/data.parquet    |  Bin 0 -> 29297 bytes
+ .../lake/curated/index_membership/data.parquet     |  Bin 0 -> 6579 bytes
+ .../lake/curated/instruments/data.parquet          |  Bin 0 -> 16594 bytes
+ .../curated/prices_daily/year=2021/data.parquet    |  Bin 0 -> 1200392 bytes
+ .../curated/prices_daily/year=2022/data.parquet    |  Bin 0 -> 3667083 bytes
+ .../curated/prices_daily/year=2023/data.parquet    |  Bin 0 -> 3627579 bytes
+ .../curated/prices_daily/year=2024/data.parquet    |  Bin 0 -> 1496104 bytes
+ .../lake/slice.json                                |  516 ++++++++++
+ .../llm_cache.jsonl                                |    1 +
+ .../stage-30-technical-aapl-2024-05-01/regime.json |   31 +
+ .../stage-30-technical-aapl-2024-05-01/run.json    |   33 +
+ tests/unit/agents/research/conftest.py             |   10 +-
+ .../research/golden/technical_analyst_prompt.txt   |   40 +
+ tests/unit/agents/research/recorded.py             |   12 +-
+ tests/unit/agents/research/recorded_technical.py   |   23 +
+ tests/unit/agents/research/technical_world.py      |  175 ++++
+ tests/unit/agents/research/test_research_checks.py |   59 ++
+ tests/unit/agents/research/test_technical.py       |  442 +++++++++
+ .../unit/agents/research/test_technical_config.py  |   62 ++
+ tests/unit/agents/research/test_technical_edges.py |  291 ++++++
+ tests/unit/agents/research/test_technical_live.py  |   66 ++
+ tests/unit/agents/research/test_technical_tools.py |  419 ++++++++
+ .../agents/research/test_technical_tools_pit.py    |   45 +
+ tests/unit/core/types/test_types_roundtrip.py      |   21 +
+ tests/unit/core/types/test_types_technical.py      |  120 +++
+ 78 files changed, 6943 insertions(+), 71 deletions(-)
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/audit-report.md
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/coverage.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/fixture-compare.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/fixture-export.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/fixture-members.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/fixture-regime.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/fixture-slice.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/gate-pytest.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/live-run.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/live-test.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/main-lake-check.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/main_lake_check.py
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/make-check.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/classify-log.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/classify-log2.txt
+ create mode 100755 Planning/stages/stage-30-technical-analyst/artifacts/mutation/classify.sh
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/edges-on-previous-commit.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/final-survivors-classified.tsv
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/final-survivors.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/last3-rerun.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/last3.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/mutation-summary.md
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/mutmut-results.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/mutmut-run.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/mutmut-setup.cfg
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/survivor-diffs.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/survivors-rerun.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/survivors.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/suspicious-rerun.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/mutation/suspicious.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/pytest-full.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/record_fixture.py
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/test-integration.txt
+ create mode 100644 Planning/stages/stage-30-technical-analyst/artifacts/verify-brief.txt
+ create mode 100755 Planning/stages/stage-30-technical-analyst/artifacts/verify.sh
+ create mode 100644 Planning/stages/stage-30-technical-analyst/plan.md
+ create mode 100644 Planning/stages/stage-30-technical-analyst/verification.md
+ create mode 100644 Planning/stages/stage-30-technical-analyst/worklog.md
+ create mode 100644 src/atlas/agents/prompts/technical_analyst.j2
+ create mode 100644 src/atlas/agents/research/checks.py
+ create mode 100644 src/atlas/agents/research/technical.py
+ create mode 100644 src/atlas/agents/tools/technical_tools.py
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/README.md
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/expected_report.json
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/curated/_meta.json
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/curated/corporate_actions/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/curated/index_membership/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/curated/instruments/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/curated/prices_daily/year=2021/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/curated/prices_daily/year=2022/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/curated/prices_daily/year=2023/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/curated/prices_daily/year=2024/data.parquet
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/lake/slice.json
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/llm_cache.jsonl
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/regime.json
+ create mode 100644 tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/run.json
+ create mode 100644 tests/unit/agents/research/golden/technical_analyst_prompt.txt
+ create mode 100644 tests/unit/agents/research/recorded_technical.py
+ create mode 100644 tests/unit/agents/research/technical_world.py
+ create mode 100644 tests/unit/agents/research/test_research_checks.py
+ create mode 100644 tests/unit/agents/research/test_technical.py
+ create mode 100644 tests/unit/agents/research/test_technical_config.py
+ create mode 100644 tests/unit/agents/research/test_technical_edges.py
+ create mode 100644 tests/unit/agents/research/test_technical_live.py
+ create mode 100644 tests/unit/agents/research/test_technical_tools.py
+ create mode 100644 tests/unit/agents/research/test_technical_tools_pit.py
+ create mode 100644 tests/unit/core/types/test_types_technical.py
+merge exit 0
+cd7afbe stage-30: Technical analyst agent
+1137434 stage-30 (part 4): mutation testing, audit fixes and edge tests, audit report
+7d9f6da stage-30 (part 3): mypy fixes, audit fixes, first verification records
+tree main: 31144f8ddf84b4a68da44ac0b49c99cd176bb209  tree branch: 31144f8ddf84b4a68da44ac0b49c99cd176bb209
+=== uv run pytest -q
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+.......................................................................
+compute_features: 41 features x 500 symbols x 2000 sessions in 3.54 s (limit 20 s)
+. [ 74%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 85%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+....................                                                     [100%]
+5708 passed, 83 deselected in 440.17s (0:07:20)
+
+pytest exit 0
+=== make check
+uv run ruff check .
+All checks passed!
+uv run ruff format --check .
+524 files already formatted
+uv run mypy src/atlas
+Success: no issues found in 191 source files
+uv run pytest -q -n auto --dist loadfile -m 'not live and not llm and not integration and not timing'
+bringing up nodes...
+bringing up nodes...
+
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+........................................................................ [ 74%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 85%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+5705 passed in 220.49s (0:03:40)
+uv run pytest -q -m timing
+.
+compute_features: 41 features x 500 symbols x 2000 sessions in 3.29 s (limit 20 s)
+..                                                                      [100%]
+3 passed, 5788 deselected in 13.63s
+
+make check exit 0
+=== git branch --merged main
++ claude/stage-30-planning-audit-d30ece
+=== after
+## main...origin/main [ahead 5]

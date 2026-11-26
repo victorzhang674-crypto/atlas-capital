@@ -1506,3 +1506,5 @@ Full block and raw output: [verification.md](stages/stage-30-technical-analyst/v
   - [x] A recorded live fixture (exported cache + lake slice under `tests/fixtures/recorded/`) — evidence: `stage-30-technical-aapl-2024-05-01/`; replay offline with no key (`OfflineProvider`, `replay_only`, 1 call = 1 cache hit, cost 0); slice equal to the main lake on all 11 items
 - Waivers: none
 
+- Merge into `main`: fast-forward a2e90f3 → **cd7afbe** (2026-11-26, run in the owner's Terminal panel: the sandbox cannot write the main checkout); trees equal. Merged result: `uv run pytest -q` → 5708 passed, 83 deselected, exit 0 · `make check` → exit 0 (ruff clean, 524 files formatted, mypy clean on 191 files, 5705 + 3 timing passed) · `git branch --merged main` lists the stage branch · raw: [artifacts/merged-main-check.txt](artifacts/merged-main-check.txt)
+- Pushed `main` and the stage branch at cd7afbe (level with `origin`); CI (`make check` + `make test-integration`) success on both runs (45839839608 main, 45839839719 branch) · raw: [artifacts/ci-runs-cd7afbe.json](artifacts/ci-runs-cd7afbe.json)
