@@ -9,4 +9,4 @@ run verify-brief uv run pytest tests/unit/agents/research/test_technical.py -q -
 run pytest-full uv run pytest -q -p no:cacheprovider
 run make-check make check
 run test-integration make test-integration
-run coverage uv run pytest tests/unit/agents/research tests/unit/core/types/test_types_technical.py -q -p no:cacheprovider --cov=src/atlas/agents/tools/technical_tools.py --cov=src/atlas/agents/research/technical.py --cov=src/atlas/agents/research/checks.py --cov-report=term-missing
+run coverage uv run pytest tests/unit/agents/research tests/unit/core/types/test_types_technical.py -q -p no:cacheprovider --cov=src/atlas/agents/tools --cov=src/atlas/agents/research --cov-report=term-missing

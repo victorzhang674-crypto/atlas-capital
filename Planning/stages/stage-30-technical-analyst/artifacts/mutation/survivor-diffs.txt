@@ -1,0 +1,334 @@
+# atlas.agents.tools.technical_tools.x__at__mutmut_2
+-    values = series.to_numpy(dtype="float64")
++    values = series.to_numpy(dtype=None)
+# atlas.agents.tools.technical_tools.x__value__mutmut_2
+-    return x if x is not None and math.isfinite(x) else None
++    return x if (x is not None and math.isfinite(x)) or True else None
+# atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_12
+-    bars = bars.sort_values("date").reset_index(drop=True)
++    bars = bars.sort_values("date").reset_index(drop=None)
+# atlas.agents.tools.technical_tools.x_fmt_feature__mutmut_1
+-    if value is None or not _finite(value):
++    if value is None and not _finite(value):
+# atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_16
+-    bars = bars.sort_values("date").reset_index(drop=True)
++    bars = bars.sort_values("date").reset_index(drop=False)
+# atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_34
+-    split_on = pd.to_datetime(bars["date"]).map(splits).fillna(1.0).to_numpy()
++    split_on = pd.to_datetime(bars["date"]).map(splits).fillna(2.0).to_numpy()
+# atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_63
+-            "volume": bars["volume"].astype("float64") / split_on,
++            "volume": bars["volume"].astype(None) / split_on,
+# atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_29
+-    split_on = pd.to_datetime(bars["date"]).map(splits).fillna(1.0).to_numpy()
++    split_on = pd.to_datetime(bars["date"]).map(splits).fillna(None).to_numpy()
+# atlas.agents.tools.technical_tools.x__feature_values__mutmut_9
+-    frames = compute_features(view, [symbol], list(names), history=behind + 1)
++    frames = compute_features(view, [symbol], list(names), )
+# atlas.agents.tools.technical_tools.x__feature_values__mutmut_19
+-        out[name] = value if math.isfinite(value) else None
++        out[name] = value if (math.isfinite(value)) or True else None
+# atlas.agents.tools.technical_tools.x__feature_values__mutmut_4
+-    frames = compute_features(view, [symbol], list(names), history=behind + 1)
++    frames = compute_features(view, [symbol], None, history=behind + 1)
+# atlas.agents.tools.technical_tools.x__feature_values__mutmut_8
+-    frames = compute_features(view, [symbol], list(names), history=behind + 1)
++    frames = compute_features(view, [symbol], history=behind + 1)
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_12
+-            strict=True,
++            strict=None,
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_5
+-        f"{d} O {o:.2f} H {h:.2f} L {lo:.2f} C {c:.2f} V {v / 1e6:.2f}M"
++        f"{d} O {o:.2f} H {h:.2f} L {lo:.2f} C {c:.2f} V {v / 1000001.0:.2f}M"
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_22
+-            bars["open"].astype(float),
++            bars["open"].astype(None),
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_19
+-            strict=True,
+-        )
++            )
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_28
+-            bars["low"].astype(float),
++            bars["low"].astype(None),
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_25
+-            bars["high"].astype(float),
++            bars["high"].astype(None),
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_31
+-            bars["close"].astype(float),
++            bars["close"].astype(None),
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_34
+-            bars["volume"].astype(float),
++            bars["volume"].astype(None),
+# atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_37
+-            strict=True,
++            strict=False,
+# atlas.agents.tools.technical_tools.x__range_text__mutmut_11
+-    hi, lo = _at(bars["high"], "max"), _at(bars["low"], "min")
++    hi, lo = _at(bars["high"], "max"), _at(bars["low"], None)
+# atlas.agents.tools.technical_tools.x__range_text__mutmut_16
+-    hi, lo = _at(bars["high"], "max"), _at(bars["low"], "min")
++    hi, lo = _at(bars["high"], "max"), _at(bars["low"], "XXminXX")
+# atlas.agents.tools.technical_tools.x__range_text__mutmut_17
+-    hi, lo = _at(bars["high"], "max"), _at(bars["low"], "min")
++    hi, lo = _at(bars["high"], "max"), _at(bars["low"], "MIN")
+# atlas.agents.tools.technical_tools.x__range_text__mutmut_49
+-    position = (close - low) / (high - low) if high > low else math.nan
++    position = (close - low) / (high - low) if high >= low else math.nan
+# atlas.agents.tools.technical_tools.x__range_text__mutmut_45
+-    position = (close - low) / (high - low) if high > low else math.nan
++    position = (close - low) / (high - low) if (high > low) or True else math.nan
+# atlas.agents.tools.technical_tools.x__range_text__mutmut_52
+-    where = f"at {position * 100:.1f}% of the range" if _finite(position) else "range n/a"
++    where = f"at {position * 100:.1f}% of the range" if (_finite(position)) or True else "range n/a"
+# atlas.agents.tools.technical_tools.x__range_text__mutmut_56
+-    where = f"at {position * 100:.1f}% of the range" if _finite(position) else "range n/a"
++    where = f"at {position * 100:.1f}% of the range" if _finite(position) else "XXrange n/aXX"
+# atlas.agents.tools.technical_tools.x__ma_text__mutmut_27
+-        side = "above" if s50 >= s200 else "below"
++        side = "above" if s50 > s200 else "below"
+# atlas.agents.tools.technical_tools.x__range_text__mutmut_57
+-    where = f"at {position * 100:.1f}% of the range" if _finite(position) else "range n/a"
++    where = f"at {position * 100:.1f}% of the range" if _finite(position) else "RANGE N/A"
+# atlas.agents.tools.technical_tools.x__ma_text__mutmut_37
+-        cross = "SMA50 vs SMA200 n/a"
++        cross = None
+# atlas.agents.tools.technical_tools.x__ma_text__mutmut_38
+-        cross = "SMA50 vs SMA200 n/a"
++        cross = "XXSMA50 vs SMA200 n/aXX"
+# atlas.agents.tools.technical_tools.x__ma_text__mutmut_39
+-        cross = "SMA50 vs SMA200 n/a"
++        cross = "sma50 vs sma200 n/a"
+# atlas.agents.tools.technical_tools.x__ma_text__mutmut_40
+-        cross = "SMA50 vs SMA200 n/a"
++        cross = "SMA50 VS SMA200 N/A"
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_18
+-    notes = []
++    notes = None
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_19
+-        if n < window:
++        if n <= window:
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_21
+-            continue
++            break
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_20
+-            notes.append(f"no {window}-session level (only {n} sessions)")
++            notes.append(None)
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_26
+-        lo, hi = _at(tail["low"], "min"), _at(tail["high"], "max")
++        lo, hi = _at(tail["low"], None), _at(tail["high"], "max")
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_31
+-        lo, hi = _at(tail["low"], "min"), _at(tail["high"], "max")
++        lo, hi = _at(tail["low"], "XXminXX"), _at(tail["high"], "max")
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_61
+-    lo, hi = _at(bars["low"], "min"), _at(bars["high"], "max")
++    lo, hi = _at(bars["low"], "MIN"), _at(bars["high"], "max")
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_55
+-    lo, hi = _at(bars["low"], "min"), _at(bars["high"], "max")
++    lo, hi = _at(bars["low"], None), _at(bars["high"], "max")
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_32
+-        lo, hi = _at(tail["low"], "min"), _at(tail["high"], "max")
++        lo, hi = _at(tail["low"], "MIN"), _at(tail["high"], "max")
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_60
+-    lo, hi = _at(bars["low"], "min"), _at(bars["high"], "max")
++    lo, hi = _at(bars["low"], "XXminXX"), _at(bars["high"], "max")
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_118
+-    support = "; ".join(show(*c) for c in below) or "none"
++    support = "; ".join(show(*c) for c in below) or "XXnoneXX"
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_111
+-    above = sorted((c for c in candidates if c[1] > close), key=lambda c: c[1])
++    above = sorted((c for c in candidates if c[1] >= close), key=lambda c: c[1])
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_119
+-    support = "; ".join(show(*c) for c in below) or "none"
++    support = "; ".join(show(*c) for c in below) or "NONE"
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_101
+-    below = sorted((c for c in candidates if c[1] <= close), key=lambda c: -c[1])
++    below = sorted((c for c in candidates if c[1] < close), key=lambda c: -c[1])
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_125
+-    resistance = "; ".join(show(*c) for c in above) or "none"
++    resistance = "; ".join(show(*c) for c in above) or "NONE"
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_127
+-    extra = f" ({'; '.join(notes)})" if notes else ""
++    extra = f" ({'; '.join(notes)})" if (notes) and False else ""
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_129
+-    extra = f" ({'; '.join(notes)})" if notes else ""
++    extra = f" ({'; '.join(None)})" if notes else ""
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_124
+-    resistance = "; ".join(show(*c) for c in above) or "none"
++    resistance = "; ".join(show(*c) for c in above) or "XXnoneXX"
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_22
+-        multiples = "ATR multiples n/a"
++        multiples = "XXATR multiples n/aXX"
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_21
+-        multiples = "ATR multiples n/a"
++        multiples = None
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_23
+-        multiples = "ATR multiples n/a"
++        multiples = "atr multiples n/a"
+# atlas.agents.tools.technical_tools.x__levels_text__mutmut_130
+-    extra = f" ({'; '.join(notes)})" if notes else ""
++    extra = f" ({'XX; XX'.join(notes)})" if notes else ""
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_28
+-            continue
++            break
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_24
+-        multiples = "ATR multiples n/a"
++        multiples = "ATR MULTIPLES N/A"
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_27
+-        if len(bars) < window:
++        if len(bars) <= window:
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_25
+-        head = f"ATR(14) n/a (last close {close:.2f})"
++        head = None
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_53
+-        f"{'; '.join(swings) or 'no swing levels'}."
++        f"{'; '.join(swings) or 'NO SWING LEVELS'}."
+# atlas.agents.tools.technical_tools.x_price_summary__mutmut_15
+-    latest = view.sessions(1)[-1]
++    latest = view.sessions(2)[-1]
+# atlas.agents.tools.technical_tools.x__stops_text__mutmut_52
+-        f"{'; '.join(swings) or 'no swing levels'}."
++        f"{'; '.join(swings) or 'XXno swing levelsXX'}."
+# atlas.agents.tools.technical_tools.x_price_summary__mutmut_40
+-    window_start = view.sessions(want + behind)[0]
++    window_start = view.sessions(want - behind)[0]
+# atlas.agents.tools.technical_tools.x_technical_snapshot__mutmut_7
+-    names = [name for group in FEATURE_GROUPS.values() for name in group]
++    names = None
+# atlas.agents.tools.technical_tools.x_price_summary__mutmut_46
+-        view, symbol, [name for name, _ in MA_FEATURES] + ["atr_14"], last, behind
++        view, symbol, [name for name, _ in MA_FEATURES] + ["atr_14"], None, behind
+# atlas.agents.tools.technical_tools.x_price_summary__mutmut_68
+-    at = pd.Timestamp(bars["available_at"].max()).tz_convert("UTC").to_pydatetime()
++    at = pd.Timestamp(bars["available_at"].max()).tz_convert("utc").to_pydatetime()
+# atlas.agents.tools.technical_tools.x_price_summary__mutmut_41
+-    window_start = view.sessions(want + behind)[0]
++    window_start = view.sessions(want + behind)[1]
+# atlas.agents.tools.technical_tools.x_technical_snapshot__mutmut_14
+-    snapshots = build_snapshots(view, [symbol], names=names)
++    snapshots = build_snapshots(view, [symbol], )
+# atlas.agents.tools.technical_tools.x_technical_snapshot__mutmut_11
+-    snapshots = build_snapshots(view, [symbol], names=names)
++    snapshots = build_snapshots(view, [symbol], names=None)
+# atlas.agents.tools.technical_tools.x__frac__mutmut_2
+-def _frac(x: float | None, spec: str = "+.2f") -> str:
++def _frac(x: float | None, spec: str = "+.2F") -> str:
+# atlas.agents.tools.technical_tools.x_technical_snapshot__mutmut_16
+-        raise DataError(f"no technical snapshot for {symbol} on {view.day.isoformat()}")
++        raise DataError(None)
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_19
+-            f"{label} {p:.2f}" for label, p in zip(state.hmm_labels, state.hmm_probs, strict=True)
++            f"{label} {p:.2f}" for label, p in zip(state.hmm_labels, state.hmm_probs, strict=None)
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_22
+-            f"{label} {p:.2f}" for label, p in zip(state.hmm_labels, state.hmm_probs, strict=True)
++            f"{label} {p:.2f}" for label, p in zip(state.hmm_labels, state.hmm_probs, )
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_23
+-            f"{label} {p:.2f}" for label, p in zip(state.hmm_labels, state.hmm_probs, strict=True)
++            f"{label} {p:.2f}" for label, p in zip(state.hmm_labels, state.hmm_probs, strict=False)
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_31
+-    credit = _num(state.credit_z, "+.2f")
++    credit = _num(state.credit_z, "+.2F")
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_54
+-        f"{_frac(state.realised_vol, '.2f')} annualised, VIX {_num(state.vix, '.1f')}); "
++        f"{_frac(state.realised_vol, '.2F')} annualised, VIX {_num(state.vix, '.1f')}); "
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_32
+-    if state.credit_source is not None and _finite(state.credit_z):
++    if state.credit_source is not None or _finite(state.credit_z):
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_60
+-        f"{_frac(state.realised_vol, '.2f')} annualised, VIX {_num(state.vix, '.1f')}); "
++        f"{_frac(state.realised_vol, '.2f')} annualised, VIX {_num(state.vix, '.1F')}); "
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_66
+-        f"{_num(state.price_to_sma_200, '.3f')}, {bench} 12-1 momentum "
++        f"{_num(state.price_to_sma_200, '.3F')}, {bench} 12-1 momentum "
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_80
+-        f"(growth score {_num(state.growth_score, '+.2f')}, inflation gap {gap}); stress flag "
++        f"(growth score {_num(state.growth_score, '+.2F')}, inflation gap {gap}); stress flag "
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_73
+-        f"{_frac(state.momentum_12_1)}, breadth {_frac(state.breadth, '.0f')} of members above "
++        f"{_frac(state.momentum_12_1)}, breadth {_frac(state.breadth, '.0F')} of members above "
+# atlas.agents.tools.technical_tools.x_regime_item__mutmut_92
+-        f"{_num(state.nfci, '+.2f')}); risk scalar {state.risk_scalar:.2f} (fraction of normal "
++        f"{_num(state.nfci, '+.2F')}); risk scalar {state.risk_scalar:.2f} (fraction of normal "
+# atlas.agents.tools.technical_tools.x_given_regime__mutmut_8
+-    raise ConfigError(f"inputs['regime'] must be a RegimeState, not {type(value).__name__}")
++    raise ConfigError(f"inputs['regime'] must be a RegimeState, not {type(None).__name__}")
+# atlas.agents.research.technical.xǁTechnicalAnalystǁ__init____mutmut_1
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get(None) is None:
+# atlas.agents.research.technical.xǁTechnicalAnalystǁ__init____mutmut_2
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get("XXtool_registryXX") is None:
+# atlas.agents.research.technical.xǁTechnicalAnalystǁ__init____mutmut_3
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get("TOOL_REGISTRY") is None:
+# atlas.agents.research.technical.xǁTechnicalAnalystǁsymbol__mutmut_9
+-        raise ConfigError("technical_analyst needs inputs['symbol'] (a ticker)")
++        raise ConfigError("XXtechnical_analyst needs inputs['symbol'] (a ticker)XX")
+# atlas.agents.research.technical.xǁTechnicalAnalystǁprompt_inputs__mutmut_7
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=None)
+# atlas.agents.research.technical.xǁTechnicalAnalystǁprompt_inputs__mutmut_10
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), )
+# atlas.agents.research.technical.xǁTechnicalAnalystǁprompt_inputs__mutmut_11
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=None), symbol=symbol)
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_18
+-            "signals must be exactly "
++            "XXsignals must be exactly XX"
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_22
+-            + " (each once); got "
++            + "XX (each once); got XX"
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_21
+-            + ", ".join(SIGNALS)
++            + "XX, XX".join(SIGNALS)
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_23
+-            + " (each once); got "
++            + " (EACH ONCE); GOT "
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_24
+-            + (", ".join(names) or "none")
++            + (", ".join(names) and "none")
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_26
+-            + (", ".join(names) or "none")
++            + ("XX, XX".join(names) or "none")
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_27
+-            + (", ".join(names) or "none")
++            + (", ".join(names) or "XXnoneXX")
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_28
+-            + (", ".join(names) or "none")
++            + (", ".join(names) or "NONE")
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_36
+-            "the summary needs these sections, in order, each starting a line with its "
++            "XXthe summary needs these sections, in order, each starting a line with its XX"
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_37
+-            "the summary needs these sections, in order, each starting a line with its "
++            "THE SUMMARY NEEDS THESE SECTIONS, IN ORDER, EACH STARTING A LINE WITH ITS "
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_38
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "XXlabel and a colon: XX" + ", ".join(f'"{m}:"' for m in missing)
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_39
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "LABEL AND A COLON: " + ", ".join(f'"{m}:"' for m in missing)
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_41
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "label and a colon: " + "XX, XX".join(f'"{m}:"' for m in missing)
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_45
+-        uncited += [f"risks[{i}]: {s}" for s in checks.uncited_numbers(risk)]
++        uncited = [f"risks[{i}]: {s}" for s in checks.uncited_numbers(risk)]
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_49
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "XXevery sentence that states a number needs an [E:<id>] tag of its evidence; XX"
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_50
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "every sentence that states a number needs an [e:<id>] tag of its evidence; "
+# atlas.agents.research.technical.xǁTechnicalAnalystǁcheck_output__mutmut_51
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "EVERY SENTENCE THAT STATES A NUMBER NEEDS AN [E:<ID>] TAG OF ITS EVIDENCE; "
+# atlas.agents.research.checks.x_uncited_numbers__mutmut_13
+-        if _DIGIT.search(_ISO_DATE.sub("", TAG_RE.sub("", s))) and not TAG_RE.search(s)
++        if _DIGIT.search(_ISO_DATE.sub("", TAG_RE.sub("XXXX", s))) and not TAG_RE.search(s)
+# atlas.agents.research.checks.x_uncited_numbers__mutmut_8
+-        if _DIGIT.search(_ISO_DATE.sub("", TAG_RE.sub("", s))) and not TAG_RE.search(s)
++        if _DIGIT.search(_ISO_DATE.sub("XXXX", TAG_RE.sub("", s))) and not TAG_RE.search(s)
+# atlas.agents.tools.technical_tools.x__snapshot_tool__mutmut_6
+-        _regime_or_gap(ctx.view, args.symbol, given_regime(ctx)),
++        _regime_or_gap(ctx.view, None, given_regime(ctx)),

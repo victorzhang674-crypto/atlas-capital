@@ -357,6 +357,19 @@ def test_a_regime_that_cannot_be_computed_is_a_gap(
     )
 
 
+def test_the_snapshot_tool_names_the_requested_symbol_in_a_regime_gap(
+    tmp_path: object, tworld: TechnicalWorld
+) -> None:
+    from technical_world import write_world
+
+    lake = Lake(tmp_path / "nospy-tool", registry=DEFAULT_REGISTRY.copy())  # type: ignore[operator]
+    write_world(lake, tworld.bars[tworld.bars["symbol"] != "SPY"])
+    ctx = AgentContext(DataView(lake, AS_OF, CONFIG), inputs={"symbol": "UPP"})
+    items = list(tt.GET_TECHNICAL_SNAPSHOT.fn(ctx, tt.TechnicalArgs(symbol="M02")))
+    assert items[0].id == "tsnap:M02:2024-02-29:trend"
+    assert items[-1].id == "gap:M02:2024-03-01:market_regime"
+
+
 def test_a_snapshot_failure_is_a_gap(
     tworld: TechnicalWorld, monkeypatch: pytest.MonkeyPatch
 ) -> None:

@@ -116,7 +116,8 @@ def world_bars(seed: int = 30) -> pd.DataFrame:
     return split(pd.concat(frames, ignore_index=True), "SPL", SPLIT_DAY, SPLIT_RATIO)
 
 
-def _write(lake: Lake, bars: pd.DataFrame) -> None:
+def write_world(lake: Lake, bars: pd.DataFrame) -> None:
+    """Write `bars` and the world's reference tables (split, instruments, membership)."""
     lake.write_table("prices_daily", bars, mode="upsert")
     lake.write_table("corporate_actions", actions([("SPL", SPLIT_DAY, SPLIT_RATIO)]), mode="upsert")
     instruments = [
@@ -167,8 +168,8 @@ def build_technical_world(root: Path) -> TechnicalWorld:
     """The clean and the dirty lake under `root`."""
     bars = world_bars()
     clean = Lake(root / "clean", registry=DEFAULT_REGISTRY.copy())
-    _write(clean, bars)
+    write_world(clean, bars)
     dirty = Lake(root / "dirty", registry=DEFAULT_REGISTRY.copy())
-    _write(dirty, bars)
+    write_world(dirty, bars)
     future_rows(dirty, bars)
     return TechnicalWorld(clean=clean, dirty=dirty, bars=bars)

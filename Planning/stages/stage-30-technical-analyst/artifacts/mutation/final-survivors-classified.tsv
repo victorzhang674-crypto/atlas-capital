@@ -1,0 +1,52 @@
+mutant	class	reason
+atlas.agents.tools.technical_tools.x__at__mutmut_2	equivalent	astype/to_numpy dtype None on a float64 column gives float64
+atlas.agents.tools.technical_tools.x__value__mutmut_2	equivalent	NaN passes through, but every caller filters with _value / RegimeState and FeatureReading forbid NaN
+atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_12	equivalent	reset_index(drop=None/False) adds an index column the new frame never reads
+atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_16	equivalent	reset_index(drop=None/False) adds an index column the new frame never reads
+atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_63	equivalent	astype/to_numpy dtype None on a float64 column gives float64
+atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_29	equivalent	fillna value of the split map: every bar date is on the session grid, so no NaN
+atlas.agents.tools.technical_tools.x__adjusted_bars__mutmut_34	equivalent	fillna value of the split map: every bar date is on the session grid, so no NaN
+atlas.agents.tools.technical_tools.x__feature_values__mutmut_19	equivalent	NaN passes through, but every caller filters with _value / RegimeState and FeatureReading forbid NaN
+atlas.agents.tools.technical_tools.x__feature_values__mutmut_8	equivalent	computes every registered feature instead of the four asked for; the four read are the same
+atlas.agents.tools.technical_tools.x__feature_values__mutmut_4	equivalent	computes every registered feature instead of the four asked for; the four read are the same
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_5	equivalent	volume / 1000001 vs / 1e6: same at the two shown decimals for volumes in the data
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_12	equivalent	zip strict flag on equal-length columns of one frame
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_22	equivalent	astype/to_numpy dtype None on a float64 column gives float64
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_19	equivalent	zip strict flag on equal-length columns of one frame
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_25	equivalent	astype/to_numpy dtype None on a float64 column gives float64
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_28	equivalent	astype/to_numpy dtype None on a float64 column gives float64
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_31	equivalent	astype/to_numpy dtype None on a float64 column gives float64
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_34	equivalent	astype/to_numpy dtype None on a float64 column gives float64
+atlas.agents.tools.technical_tools.x__range_text__mutmut_11	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__ohlc_text__mutmut_37	equivalent	zip strict flag on equal-length columns of one frame
+atlas.agents.tools.technical_tools.x__range_text__mutmut_16	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__range_text__mutmut_17	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__levels_text__mutmut_26	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__levels_text__mutmut_31	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__levels_text__mutmut_61	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__levels_text__mutmut_55	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__levels_text__mutmut_32	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__levels_text__mutmut_60	equivalent	_at treats any value other than "max" as min
+atlas.agents.tools.technical_tools.x__levels_text__mutmut_118	unreachable	support is never empty: each bar's low is at or below its close, so the window low is at or below the last close
+atlas.agents.tools.technical_tools.x__levels_text__mutmut_119	unreachable	support is never empty: each bar's low is at or below its close, so the window low is at or below the last close
+atlas.agents.tools.technical_tools.x__stops_text__mutmut_28	equivalent	swing windows are ascending: once one lacks bars every later one does, so break == continue
+atlas.agents.tools.technical_tools.x_price_summary__mutmut_15	equivalent	sessions(2)[-1] is the latest session, as sessions(1)[-1]
+atlas.agents.tools.technical_tools.x_technical_snapshot__mutmut_7	equivalent	names=None means every registered feature, which FEATURE_GROUPS covers exactly (tested)
+atlas.agents.tools.technical_tools.x_price_summary__mutmut_68	equivalent	tz_convert("utc") equals tz_convert("UTC")
+atlas.agents.tools.technical_tools.x_price_summary__mutmut_46	code removed	the unused `on` argument of _feature_values was deleted in the audit
+atlas.agents.tools.technical_tools.x_technical_snapshot__mutmut_14	equivalent	names=None means every registered feature, which FEATURE_GROUPS covers exactly (tested)
+atlas.agents.tools.technical_tools.x_technical_snapshot__mutmut_11	equivalent	names=None means every registered feature, which FEATURE_GROUPS covers exactly (tested)
+atlas.agents.tools.technical_tools.x_technical_snapshot__mutmut_16	unreachable	build_snapshots returns every requested unblocked symbol (a symbol without bars as n/a values, now refused by the audit fix), so this defensive branch never runs
+atlas.agents.tools.technical_tools.x__frac__mutmut_2	equivalent	format code F vs f differs only for NaN/inf, which RegimeState forbids
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_23	equivalent	zip strict flag: RegimeState validates hmm_probs and hmm_labels to equal length
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_31	equivalent	format code F vs f differs only for NaN/inf, which RegimeState forbids
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_22	equivalent	zip strict flag: RegimeState validates hmm_probs and hmm_labels to equal length
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_19	equivalent	zip strict flag: RegimeState validates hmm_probs and hmm_labels to equal length
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_66	equivalent	format code F vs f differs only for NaN/inf, which RegimeState forbids
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_60	equivalent	format code F vs f differs only for NaN/inf, which RegimeState forbids
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_54	equivalent	format code F vs f differs only for NaN/inf, which RegimeState forbids
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_80	equivalent	format code F vs f differs only for NaN/inf, which RegimeState forbids
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_92	equivalent	format code F vs f differs only for NaN/inf, which RegimeState forbids
+atlas.agents.tools.technical_tools.x_regime_item__mutmut_73	equivalent	format code F vs f differs only for NaN/inf, which RegimeState forbids
+atlas.agents.research.checks.x_uncited_numbers__mutmut_8	equivalent	replacing tags or dates by XXXX instead of nothing adds no digit
+atlas.agents.research.checks.x_uncited_numbers__mutmut_13	equivalent	replacing tags or dates by XXXX instead of nothing adds no digit

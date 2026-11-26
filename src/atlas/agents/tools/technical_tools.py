@@ -232,10 +232,10 @@ def _sessions_behind(view: DataView, last: date, window: int) -> int:
 
 
 def _feature_values(
-    view: DataView, symbol: str, names: Sequence[str], on: date, behind: int
+    view: DataView, symbol: str, names: Sequence[str], behind: int
 ) -> dict[str, float | None]:
-    """Stage 15 features `names` of `symbol` on session `on`, its last bar, `behind`
-    sessions before the view's latest session (`None` where undefined)."""
+    """Stage 15 features `names` of `symbol` on its last bar, `behind` sessions before the
+    view's latest session (`None` where undefined)."""
     frames = compute_features(view, [symbol], list(names), history=behind + 1)
     out: dict[str, float | None] = {}
     for name in names:
@@ -405,9 +405,7 @@ def price_summary(view: DataView, symbol: str) -> list[Evidence]:
     if behind:  # a stale last bar: the window is the `want` sessions that end at it
         bars = _adjusted_bars(view, symbol, want + behind)
     window_start = view.sessions(want + behind)[0]
-    feats = _feature_values(
-        view, symbol, [name for name, _ in MA_FEATURES] + ["atr_14"], last, behind
-    )
+    feats = _feature_values(view, symbol, [name for name, _ in MA_FEATURES] + ["atr_14"], behind)
     close = float(bars["close"].iloc[-1])
     at = pd.Timestamp(bars["available_at"].max()).tz_convert("UTC").to_pydatetime()
     texts = {
@@ -433,7 +431,8 @@ def price_summary(view: DataView, symbol: str) -> list[Evidence]:
 
 def technical_snapshot(view: DataView, symbol: str) -> list[Evidence]:
     """The snapshot evidence of `symbol`: one item per `FEATURE_GROUPS` group (Stage 15
-    `build_snapshots`). `DataError` for a blocked symbol or one without bars."""
+    `build_snapshots`). `DataError` for a blocked symbol or one with no feature value (no bars
+    in the window: `build_snapshots` would return a snapshot of n/a values)."""
     symbol = normalize_symbol(symbol)
     _require(view, symbol)
     names = [name for group in FEATURE_GROUPS.values() for name in group]
@@ -441,6 +440,11 @@ def technical_snapshot(view: DataView, symbol: str) -> list[Evidence]:
     if symbol not in snapshots:
         raise DataError(f"no technical snapshot for {symbol} on {view.day.isoformat()}")
     snap = snapshots[symbol]
+    if all(r.value is None for r in snap.readings):  # no bar in the window: nothing to show
+        raise DataError(
+            f"no technical features for {symbol} on {snap.session.isoformat()}: no bars known "
+            "in the window"
+        )
     settings = view.config.quant.features.snapshot
     at = _computed_at(view)
     head = (

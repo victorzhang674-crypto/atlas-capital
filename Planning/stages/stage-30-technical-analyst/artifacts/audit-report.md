@@ -43,4 +43,31 @@ test-first in this chat or recorded with its reason.
 
 ## 4. Findings
 
-(filled in below)
+| # | Finding | Kind | Resolution |
+|---|---|---|---|
+| A1 | `make check` failed on the first verification run: 13 mypy errors in `technical_tools.py` (pandas label indexing typed `Hashable`; `float \| None` not narrowed) | defect (type check) | Fixed: positional indexing (`_at`), narrowing with `_value`; no `type: ignore` left except one on `pd.Timestamp(...)`. mypy clean on 191 files |
+| A2 | The 52-week window of a stale symbol ended at the latest session, so ATVI after delisting read "only 248 sessions of history" | defect (found on the main lake) | Fixed test-first: the window ends at the symbol's last bar; short history vs missing bars told apart |
+| A3 | `get_technical_snapshot` for a symbol with no bars returned all n/a instead of an error | defect (found by mutation testing) | Fixed: `DataError`; the test fails on the previous commit |
+| A4 | A symbol whose bars are older than the window failed with "no bars known for X on D", which reads as if it never traded | message | Now "no bars known for X in the 252 sessions to D" |
+| A5 | `_feature_values` took an argument it never used | dead code | Deleted |
+| A6 | A peer `get_technical_snapshot` call returns the regime item again (same id) | checked | The evidence ledger ignores an identical repeat; test `test_a_peer_snapshot_repeats_the_regime_item_without_conflict` |
+| A7 | Without `inputs["regime"]`, each run computes `regime_at` (15 s on the main lake) and so does each peer snapshot call | performance | Kept (correct, deterministic); DataView has no public memo and reaching into its private cache would be worse. Backlog → 35: pass `FundState.regime` |
+| A8 | The checkpoint allow-list (`state_types()`) is built from annotations naming `AnalystReport` only | latent (Stage 35) | Backlog → 35 with the fix and the test to add |
+| A9 | The first live recording needed a repair turn (a SHORT signal without a stop) | prompt | The prompt now says every LONG/SHORT signal carries a stop; re-recorded in one call. A later live test run still needed one repair: the model is not deterministic, and the repair turn exists for that |
+| A10 | For a stale symbol the Stage 15 snapshot reads the latest session, so most features are n/a | limitation (Stage 15) | Fail-safe; documented in `docs/agents.md`; Backlog → 15 |
+| A11 | Mutation testing: 111 survivors after the first runs | test gaps | 11 edges closed by new tests; 997 of 1,048 killed (95.1%), the other 51 classified (47 equivalent, 3 unreachable, 1 deleted code): [mutation-summary.md](mutation/mutation-summary.md) |
+| A12 | The first gate run read `config/fund.yaml` while I edited it | process | Discarded; gate re-run on a clean extract of `a2e90f3` (5571 passed) |
+| A13 | Tasks 5–7's tests were written before the code but not run red on their own | process (recorded honestly) | Mutation testing (A11) shows they bite |
+
+## 5. Real data
+
+On the main lake (read-only, [main-lake-check.txt](main-lake-check.txt)): NVDA after its 10:1
+split (levels on the post-split basis), GEV and KVUE (young), JPM in the March 2020 crash
+(CRISIS, risk scalar 0.25), ATVI after delisting and SNDK (stale last bar named), AAPL today.
+AAPL on 2024-05-01: the fixture slice and the main lake give the same 11 items.
+
+## 6. Verdict
+
+Every acceptance criterion is met with evidence (section 1); the defects found are fixed with
+tests; what is left is recorded in the Backlog with its expected impact. The final verification
+run on the audited code is in [verification.md](../verification.md).

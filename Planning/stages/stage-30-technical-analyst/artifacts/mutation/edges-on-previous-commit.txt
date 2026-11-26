@@ -1,0 +1,2 @@
+FAILED tests/unit/agents/research/test_technical_edges.py::test_a_snapshot_of_a_symbol_without_bars_fails
+1 failed, 15 passed in 1.79s
