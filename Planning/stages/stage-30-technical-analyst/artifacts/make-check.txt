@@ -2,54 +2,266 @@ $ make check
 uv run ruff check .
 All checks passed!
 uv run ruff format --check .
-523 files already formatted
+524 files already formatted
 uv run mypy src/atlas
-src/atlas/agents/tools/technical_tools.py:235: error: Unsupported operand types for / ("str" and "float")  [operator]
-src/atlas/agents/tools/technical_tools.py:235: error: Unsupported operand types for / ("bytes" and "float")  [operator]
-src/atlas/agents/tools/technical_tools.py:235: error: Unsupported operand types for / ("date" and "float")  [operator]
-src/atlas/agents/tools/technical_tools.py:235: error: Unsupported operand types for / ("datetime" and "float")  [operator]
-src/atlas/agents/tools/technical_tools.py:235: error: Unsupported operand types for / ("datetime64[Any]" and "float")  [operator]
-src/atlas/agents/tools/technical_tools.py:235: error: Unsupported operand types for / ("Timestamp" and "float")  [operator]
-src/atlas/agents/tools/technical_tools.py:235: note: Left operand is of type "str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]"
-src/atlas/agents/tools/technical_tools.py:256: error: No overload variant of "__getitem__" of "Series" matches argument type "Hashable"  [call-overload]
-src/atlas/agents/tools/technical_tools.py:256: note: Possible overload variants:
-src/atlas/agents/tools/technical_tools.py:256: note:     def __getitem__(self, int | signedinteger[_32Bit | _64Bit] | integer[Any] | unsignedinteger[Any] | signedinteger[Any] | signedinteger[_8Bit], /) -> Any
-src/atlas/agents/tools/technical_tools.py:256: note:     def __getitem__(self, Index[Any] | Series[Any] | slice[Any, Any, Any] | ndarray[tuple[Any, ...], dtype[integer[Any]]], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:256: note:     def __getitem__(self, str | bytes | date | datetime | timedelta | <12 more items>, /) -> Any
-src/atlas/agents/tools/technical_tools.py:256: note:     def __getitem__(self, Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | Index[Any] | Series[Any] | SequenceNotStr[float | str | Timestamp] | slice[Any, Any, Any] | tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...] | Sequence[tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...]] | Callable[..., Any], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:268: error: No overload variant of "__getitem__" of "Series" matches argument type "Hashable"  [call-overload]
-src/atlas/agents/tools/technical_tools.py:268: note: Possible overload variants:
-src/atlas/agents/tools/technical_tools.py:268: note:     def __getitem__(self, int | signedinteger[_32Bit | _64Bit] | integer[Any] | unsignedinteger[Any] | signedinteger[Any] | signedinteger[_8Bit], /) -> Any
-src/atlas/agents/tools/technical_tools.py:268: note:     def __getitem__(self, Index[Any] | Series[Any] | slice[Any, Any, Any] | ndarray[tuple[Any, ...], dtype[integer[Any]]], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:268: note:     def __getitem__(self, str | bytes | date | datetime | timedelta | <12 more items>, /) -> Any
-src/atlas/agents/tools/technical_tools.py:268: note:     def __getitem__(self, Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | Index[Any] | Series[Any] | SequenceNotStr[float | str | Timestamp] | slice[Any, Any, Any] | tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...] | Sequence[tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...]] | Callable[..., Any], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:279: error: Unsupported operand types for / ("float" and "None")  [operator]
-src/atlas/agents/tools/technical_tools.py:279: note: Right operand is of type "float | None"
-src/atlas/agents/tools/technical_tools.py:313: error: No overload variant of "__getitem__" of "Series" matches argument type "Hashable"  [call-overload]
-src/atlas/agents/tools/technical_tools.py:313: note: Possible overload variants:
-src/atlas/agents/tools/technical_tools.py:313: note:     def __getitem__(self, int | signedinteger[_32Bit | _64Bit] | integer[Any] | unsignedinteger[Any] | signedinteger[Any] | signedinteger[_8Bit], /) -> Any
-src/atlas/agents/tools/technical_tools.py:313: note:     def __getitem__(self, Index[Any] | Series[Any] | slice[Any, Any, Any] | ndarray[tuple[Any, ...], dtype[integer[Any]]], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:313: note:     def __getitem__(self, str | bytes | date | datetime | timedelta | <12 more items>, /) -> Any
-src/atlas/agents/tools/technical_tools.py:313: note:     def __getitem__(self, Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | Index[Any] | Series[Any] | SequenceNotStr[float | str | Timestamp] | slice[Any, Any, Any] | tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...] | Sequence[tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...]] | Callable[..., Any], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:314: error: No overload variant of "__getitem__" of "Series" matches argument type "Hashable"  [call-overload]
-src/atlas/agents/tools/technical_tools.py:314: note: Possible overload variants:
-src/atlas/agents/tools/technical_tools.py:314: note:     def __getitem__(self, int | signedinteger[_32Bit | _64Bit] | integer[Any] | unsignedinteger[Any] | signedinteger[Any] | signedinteger[_8Bit], /) -> Any
-src/atlas/agents/tools/technical_tools.py:314: note:     def __getitem__(self, Index[Any] | Series[Any] | slice[Any, Any, Any] | ndarray[tuple[Any, ...], dtype[integer[Any]]], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:314: note:     def __getitem__(self, str | bytes | date | datetime | timedelta | <12 more items>, /) -> Any
-src/atlas/agents/tools/technical_tools.py:314: note:     def __getitem__(self, Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | Index[Any] | Series[Any] | SequenceNotStr[float | str | Timestamp] | slice[Any, Any, Any] | tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...] | Sequence[tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...]] | Callable[..., Any], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:316: error: No overload variant of "__getitem__" of "Series" matches argument type "Hashable"  [call-overload]
-src/atlas/agents/tools/technical_tools.py:316: note: Possible overload variants:
-src/atlas/agents/tools/technical_tools.py:316: note:     def __getitem__(self, int | signedinteger[_32Bit | _64Bit] | integer[Any] | unsignedinteger[Any] | signedinteger[Any] | signedinteger[_8Bit], /) -> Any
-src/atlas/agents/tools/technical_tools.py:316: note:     def __getitem__(self, Index[Any] | Series[Any] | slice[Any, Any, Any] | ndarray[tuple[Any, ...], dtype[integer[Any]]], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:316: note:     def __getitem__(self, str | bytes | date | datetime | timedelta | <12 more items>, /) -> Any
-src/atlas/agents/tools/technical_tools.py:316: note:     def __getitem__(self, Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | Index[Any] | Series[Any] | SequenceNotStr[float | str | Timestamp] | slice[Any, Any, Any] | tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...] | Sequence[tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...]] | Callable[..., Any], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:317: error: No overload variant of "__getitem__" of "Series" matches argument type "Hashable"  [call-overload]
-src/atlas/agents/tools/technical_tools.py:317: note: Possible overload variants:
-src/atlas/agents/tools/technical_tools.py:317: note:     def __getitem__(self, int | signedinteger[_32Bit | _64Bit] | integer[Any] | unsignedinteger[Any] | signedinteger[Any] | signedinteger[_8Bit], /) -> Any
-src/atlas/agents/tools/technical_tools.py:317: note:     def __getitem__(self, Index[Any] | Series[Any] | slice[Any, Any, Any] | ndarray[tuple[Any, ...], dtype[integer[Any]]], /) -> Series[Any]
-src/atlas/agents/tools/technical_tools.py:317: note:     def __getitem__(self, str | bytes | date | datetime | timedelta | <12 more items>, /) -> Any
-src/atlas/agents/tools/technical_tools.py:317: note:     def __getitem__(self, Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | Index[Any] | Series[Any] | SequenceNotStr[float | str | Timestamp] | slice[Any, Any, Any] | tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...] | Sequence[tuple[IndexOpsMixin[Any, Any] | Series[builtins.bool] | ndarray[tuple[Any, ...], dtype[numpy.bool[builtins.bool]]] | list[builtins.bool] | str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any] | Sequence[str | bytes | date | datetime | timedelta | <7 more items> | complex | integer[Any] | floating[Any] | complexfloating[Any, Any]] | slice[Any, Any, Any], ...]] | Callable[..., Any], /) -> Series[Any]
-Found 13 errors in 1 file (checked 191 source files)
-make: *** [type] Error 1
+Success: no issues found in 191 source files
+uv run pytest -q -n auto --dist loadfile -m 'not live and not llm and not integration and not timing'
+bringing up nodes...
+bringing up nodes...
 
-exit 2
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  3%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+........................................................................ [  8%]
+........................................................................ [ 10%]
+........................................................................ [ 11%]
+........................................................................ [ 12%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................................................ [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 40%]
+........................................................................ [ 41%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+........................................................................ [ 65%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 69%]
+........................................................................ [ 70%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+........................................................................ [ 74%]
+........................................................................ [ 75%]
+........................................................................ [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 85%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+.................                                                        [100%]nanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_register_source"
+ - leaked function "install_extension"
+ - leaked function "_prepare_script"
+ - leaked function "fetchall"
+ - leaked function "list_filesystems"
+ - leaked function "enum_type"
+ - leaked function "interrupt"
+ - leaked function "_table_kind"
+ - leaked function "appender"
+ - leaked function "df"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function ""
+ - leaked function "tf"
+ - leaked function "complete"
+ - leaked function "df"
+ - leaked function "register"
+ - leaked function "__init__"
+ - leaked function "close"
+ - leaked function "__new__"
+ - leaked function "extract_statements"
+ - leaked function "_register_source"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "fetchnumpy"
+ - leaked function "_register_filelike"
+ - leaked function "_create_view"
+ - leaked function "query_appender"
+ - leaked function "executemany"
+ - leaked function "__new__"
+ - leaked function "append"
+ - leaked function ""
+ - leaked function "unregister"
+ - leaked function "remove_function"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "fetchone"
+ - leaked function ""
+ - leaked function "unregister"
+ - leaked function "__repr__"
+ - leaked function ""
+ - leaked function "_bind"
+ - leaked function "fetchdf"
+ - leaked function "remove_function"
+ - leaked function "string_type"
+ - leaked function "_create_view"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "commit"
+ - leaked function "__init__"
+ - leaked function "__hash__"
+ - leaked function "_result_as_arrow"
+ - leaked function "_submit"
+ - leaked function "_table_kind"
+ - leaked function "remove_function"
+ - leaked function "__new__"
+ - leaked function "checkpoint"
+ - leaked function "close"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_catalog_version"
+ - leaked function "fetch_df"
+ - leaked function "rollback"
+ - leaked function "_result_as_arrow"
+ - leaked function "type"
+ - leaked function "fetchmany"
+ - leaked function "fetchnumpy"
+ - leaked function "_statement_count"
+ - leaked function "_table_kind"
+ - leaked function "row_type"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function "_register_arrow_source"
+ - leaked function "__getattr__"
+ - leaked function "_register_source"
+ - leaked function "map_type"
+ - leaked function "appender"
+ - leaked function "list_type"
+ - leaked function "__init__"
+ - leaked function "array_type"
+ - leaked function "query_progress"
+ - leaked function "fetchnumpy"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.htmlnanobind: leaked 27 instances!
+nanobind: leaked 6 types!
+ - leaked type "_duckdb._sqltypes.DuckDBPyType"
+ - leaked type "FunctionNullHandling"
+ - leaked type "PythonExceptionHandling"
+ - leaked type "PythonUDFType"
+ - leaked type "_duckdb.DuckDBPyConnection"
+ - leaked type "ExplainType"
+nanobind: leaked 84 functions!
+ - leaked function ""
+ - leaked function "__exit__"
+ - leaked function "query_appender"
+ - leaked function "cursor"
+ - leaked function "create_function"
+ - leaked function "__getattr__"
+ - leaked function "_statement_count"
+ - leaked function "tf"
+ - leaked function "__repr__"
+ - leaked function "fetchmany"
+ - ... skipped remainder
+nanobind: this is likely caused by a reference counting issue in the binding code.
+See https://nanobind.readthedocs.io/en/latest/refleaks.html
+5705 passed in 287.23s (0:04:47)
+uv run pytest -q -m timing
+.
+compute_features: 41 features x 500 symbols x 2000 sessions in 3.33 s (limit 20 s)
+..                                                                      [100%]
+3 passed, 5788 deselected in 23.47s
+
+exit 0
