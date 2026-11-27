@@ -61,10 +61,17 @@ def test_ic_known_values() -> None:
         columns=list("ABCD"),
         dtype="float64",
     )
-    labels = pd.DataFrame(
-        [[0.1, 0.2, 0.3, 0.4], [0.4, 0.3, 0.2, 0.1], [0.1, 0.3, 0.2, 0.9], [0.5, np.nan, 0.1, 0.3]],
-        index=index,
-        columns=list("ABCD"),
+    labels = tag_label(
+        pd.DataFrame(
+            [
+                [0.1, 0.2, 0.3, 0.4],
+                [0.4, 0.3, 0.2, 0.1],
+                [0.1, 0.3, 0.2, 0.9],
+                [0.5, np.nan, 0.1, 0.3],
+            ],
+            index=index,
+            columns=list("ABCD"),
+        )
     )
     pearson = ic_series(signal, labels, method="pearson", min_names=3)
     spearman = ic_series(signal, labels, method="spearman", min_names=3)
@@ -82,6 +89,7 @@ def test_ic_known_values() -> None:
 def test_planted_ic_recovered_within_tolerance() -> None:
     # Acceptance: a planted IC of 0.05 is recovered within +-0.01 (500 names x 400 dates)
     signal, labels = _planted(400, 500, 0.05, seed=1701)
+    labels = tag_label(labels)
     pearson = ic_series(signal, labels, method="pearson").mean()
     spearman = ic_series(signal, labels, method="spearman").mean()
     assert abs(pearson - 0.05) <= 0.01
@@ -108,6 +116,7 @@ def test_planted_ic_end_to_end_through_the_lake(tmp_path: Path) -> None:
 def test_ic_min_names_gives_nan() -> None:
     signal, labels = _planted(3, 10, 0.3, seed=3)
     labels.iloc[1, 2:] = np.nan  # only 2 names left on date 1
+    labels = tag_label(labels)
     out = ic_series(signal, labels, method="pearson", min_names=5)
     assert math.isnan(out.iloc[1])
     assert out.drop(out.index[1]).notna().all()
@@ -116,9 +125,10 @@ def test_ic_min_names_gives_nan() -> None:
 
 def test_ic_aligns_dates_and_names() -> None:
     signal, labels = _planted(5, 30, 0.3, seed=4)
-    shuffled = labels[labels.columns[::-1]].iloc[::-1]
+    shuffled = tag_label(labels[labels.columns[::-1]].iloc[::-1])
+    labels = tag_label(labels)
     pd.testing.assert_series_equal(ic_series(signal, labels), ic_series(signal, shuffled))
-    partial = labels.iloc[:3]
+    partial = tag_label(labels.iloc[:3])
     out = ic_series(signal, partial)
     assert out.iloc[3:].isna().all() and out.iloc[:3].notna().all()
 
@@ -126,6 +136,7 @@ def test_ic_aligns_dates_and_names() -> None:
 def test_ic_constant_cross_section_is_nan() -> None:
     signal, labels = _planted(2, 30, 0.3, seed=5)
     signal.iloc[0] = 0.1  # its float mean is not exactly 0.1: a variance test would see ~1e-34
+    labels = tag_label(labels)
     for method in ("pearson", "spearman"):  # Pearson is the one rounding can fool
         out = ic_series(signal, labels, method=method)
         assert math.isnan(out.iloc[0]) and not math.isnan(out.iloc[1])
@@ -133,10 +144,17 @@ def test_ic_constant_cross_section_is_nan() -> None:
 
 def test_ic_rejects_label_as_signal() -> None:
     _, labels = _planted(5, 30, 0.3, seed=6)
+    tagged = tag_label(labels)
     with pytest.raises(LookAheadError, match="forward-return label"):
-        ic_series(tag_label(labels), labels)
+        ic_series(tagged, tagged)
     with pytest.raises(LookAheadError):
-        ic_series(tag_label(labels).shift(1) * 2, labels)
+        ic_series(tag_label(labels).shift(1) * 2, tagged)
+
+
+def test_ic_series_rejects_an_untagged_frame() -> None:
+    signal, labels = _planted(20, 8, 0.4, seed=1)
+    with pytest.raises(LookAheadError, match="tag_label"):
+        ic_series(signal, labels)
 
 
 # --- Newey-West, lags, summary -------------------------------------------------------------------
@@ -214,7 +232,7 @@ def test_ic_by_sector_excludes_names_without_sector() -> None:
     y[:, a] = 0.6 * s[:, a] + 0.8 * y[:, a]
     y[:, b] = -0.6 * s[:, b] + 0.8 * y[:, b]
     signal = pd.DataFrame(s, index=DAYS[:n_dates], columns=cols)
-    labels = pd.DataFrame(y, index=DAYS[:n_dates], columns=cols)
+    labels = tag_label(pd.DataFrame(y, index=DAYS[:n_dates], columns=cols))
     out = ic_by_group(signal, labels, sectors, lags=0, method="pearson", min_names=10)
     assert list(out.index) == ["A", "B"]
     assert out.loc["A", "mean"] > 0.45 and out.loc["B", "mean"] < -0.45

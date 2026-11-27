@@ -82,7 +82,7 @@ def compound_forward(
     for row, p in enumerate(positions):
         if p + horizon < n_rows:
             out[row] = growth[p + 1 : p + 1 + horizon].prod(axis=0) - 1.0
-    return pd.DataFrame(out, index=wanted, columns=daily.columns)
+    return tag_label(pd.DataFrame(out, index=wanted, columns=daily.columns))
 
 
 class ForwardReturns:

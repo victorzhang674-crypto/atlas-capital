@@ -29,7 +29,8 @@ import pandas as pd
 
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
-from atlas.core.pit import guard_not_label
+from atlas.core.errors import LookAheadError
+from atlas.core.pit import guard_not_label, is_label
 from atlas.quant.research.labels import ForwardReturns
 
 Method = Literal["pearson", "spearman"]
@@ -94,8 +95,15 @@ def ic_series(
     and symbol; dates or names missing from `labels` count as missing) on each date of
     `signal`: a Series named `ic_<method>` (NaN where undefined, see the module docstring).
     `min_names` defaults to `quant.research.min_names`. A label as `signal` raises
-    `LookAheadError`."""
+    `LookAheadError`. `labels` must be a tagged forward-return frame
+    (`ForwardReturns.horizon` or `tag_label`); an untagged frame raises `LookAheadError`,
+    because a same-day return matrix lines up with the signal and would inflate the IC."""
     guard_not_label(signal, "signal")
+    if not is_label(labels):
+        raise LookAheadError(
+            "labels must be a forward-return frame (ForwardReturns.horizon or tag_label); "
+            "an untagged frame aligned with the signal can be that day's own return"
+        )
     k = _min_names(min_names, config)
     x = signal.to_numpy(dtype="float64")
     y = labels.reindex(index=signal.index, columns=signal.columns).to_numpy(dtype="float64")
