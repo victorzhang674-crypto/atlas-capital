@@ -907,8 +907,9 @@ class DataView:
 
     def ciks(self, symbols: Sequence[str]) -> pd.Series:
         """The SEC CIK of the issuer of each unblocked symbol of `symbols` (int, index symbol,
-        request order), from the `fundamentals_facts` rows known at `as_of`; a symbol with no
-        known fact is left out. Share classes of one company (GOOGL / GOOG) have the same CIK."""
+        request order): the CIK on the fact with the latest `available_at` known at `as_of`.
+        A symbol with no known fact is left out. Share classes of one company (GOOGL / GOOG)
+        have the same CIK when both stored the same filings."""
         wanted = self._allowed(symbols)
 
         def compute() -> pd.Series:
@@ -922,6 +923,7 @@ class DataView:
             )
             known = pit_filter(facts, self._as_of)
             assert_no_lookahead(known, self._as_of)
+            known = known.sort_values(AVAILABLE_AT, kind="stable")
             last = known.groupby("symbol", sort=False)["cik"].last()
             out = last.reindex([s for s in wanted if s in last.index]).astype("int64")
             out.index.name = "symbol"
