@@ -1245,7 +1245,13 @@ def test_quant_research_defaults() -> None:  # Stage 17 D1
         "universe": "sp500", "horizons": (1, 5, 21, 63), "frequency": "monthly",
         "n_quantiles": 5, "min_names": 20, "min_group_names": 10,
         "autocorr_lags": (1, 2, 3, 6, 12), "rolling_ic_window": 12, "out_dir": "runs/research",
-        "backtest": {"rebalance": "monthly", "weighting": "equal", "cost_bps": 5.0, "gross": 2.0},
+        "backtest": {
+            "rebalance": "monthly",
+            "weighting": "equal",
+            "cost_bps": 5.0,
+            "gross": 2.0,
+            "max_missing_return_share": 0.0,
+        },
     }  # fmt: skip
 
 
@@ -1283,6 +1289,9 @@ def test_quant_research_validation(field: str, value: object) -> None:  # Stage 
         ("cost_bps", float("nan")),
         ("gross", 0.0),
         ("gross", float("inf")),
+        ("max_missing_return_share", -0.01),
+        ("max_missing_return_share", 1.01),
+        ("max_missing_return_share", float("nan")),
     ],
 )
 def test_quant_research_backtest_validation(field: str, value: object) -> None:  # Stage 17 D1

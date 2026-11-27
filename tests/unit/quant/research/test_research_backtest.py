@@ -1,20 +1,27 @@
 """Stage 17 Task 8 (brief task 4): the vectorised long-short backtest and its costs."""
 
+import io
+import json
 import math
 from datetime import date
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
 from atlas.core.calendar import TradingCalendar
+from atlas.core.config import ResearchBacktestConfig
 from atlas.core.errors import BacktestError, LookAheadError
+from atlas.core.logging import configure_logging, reset_logging
 from atlas.core.pit import tag_label
+from atlas.core.run_context import run_context
 from atlas.quant.research import (
     BacktestResult,
     long_short_weights,
     rebalance_dates,
     vector_backtest,
+    weights_backtest,
 )
 
 DAYS = pd.DatetimeIndex(
@@ -293,3 +300,58 @@ def test_weights_backtest_runs_just_above_a_total_loss() -> None:
     out = weights_backtest(targets, daily, cost_bps=0.0, sessions_per_year=252)
     assert out.gross_returns.iloc[2] == pytest.approx(-0.98)
     assert np.isfinite(out.returns.to_numpy()).all()
+
+
+def _book(daily: pd.DataFrame, targets: pd.DataFrame, **kwargs: float) -> BacktestResult:
+    return weights_backtest(targets, daily, cost_bps=0.0, sessions_per_year=252, **kwargs)
+
+
+def test_a_missing_return_on_a_held_name_is_counted(tmp_path: Path) -> None:
+    idx = DAYS[:4]
+    daily = pd.DataFrame({"A": [0.0, 0.10, np.nan, 0.02], "B": [0.0, 0.0, 0.0, 0.0]}, index=idx)
+    targets = pd.DataFrame({"A": [0.5], "B": [-0.5]}, index=idx[:1])
+    configure_logging(log_file=tmp_path / "atlas.log", console=io.StringIO())
+    try:
+        with run_context() as ctx:
+            out = _book(daily, targets, max_missing_return_share=1.0)
+    finally:
+        reset_logging()
+    assert out.missing_held_returns == 1
+    assert out.gross_returns.iloc[2] == pytest.approx(0.0)  # the hole still counts as 0%
+    lines = [
+        json.loads(line)
+        for line in (tmp_path / "atlas.log").read_text(encoding="utf-8").splitlines()
+    ]
+    warnings = [ln for ln in lines if ln.get("event") == "backtest.missing_held_returns"]
+    assert len(warnings) == 1
+    assert warnings[0]["run_id"] == ctx.run_id
+    assert warnings[0]["missing_held_returns"] == 1
+
+
+def test_a_missing_return_on_a_flat_name_is_not_counted() -> None:
+    idx = DAYS[:3]
+    daily = pd.DataFrame({"A": [0.0, 0.10, -0.05], "B": [np.nan, np.nan, np.nan]}, index=idx)
+    targets = pd.DataFrame({"A": [1.0], "B": [0.0]}, index=idx[:1])
+    out = _book(daily, targets)
+    assert out.missing_held_returns == 0
+    assert out.gross_returns.iloc[1] == pytest.approx(0.10)
+
+
+def test_too_many_missing_held_returns_raise() -> None:
+    idx = DAYS[:3]
+    daily = pd.DataFrame({"A": [0.0, np.nan, 0.02], "B": [0.0, 0.0, 0.0]}, index=idx)
+    targets = pd.DataFrame({"A": [1.0], "B": [0.0]}, index=idx[:1])
+    with pytest.raises(BacktestError, match="missing_held_returns"):
+        _book(daily, targets)  # the default share allows none
+    assert ResearchBacktestConfig().max_missing_return_share == 0.0
+
+
+def test_complete_data_matches_the_filled_book() -> None:
+    idx = DAYS[:4]
+    daily = pd.DataFrame({"A": [0.0, 0.10, -0.05, 0.02], "B": [0.0, 0.0, 0.0, 0.0]}, index=idx)
+    targets = pd.DataFrame({"A": [0.5, 0.5], "B": [-0.5, -0.5]}, index=idx[[0, 2]])
+    out = weights_backtest(targets, daily, cost_bps=10.0, sessions_per_year=252)
+    assert out.missing_held_returns == 0
+    assert out.gross_returns.iloc[1] == pytest.approx(0.05)
+    wa, wb = 0.55 / 1.05, -0.5 / 1.05
+    assert out.gross_returns.iloc[2] == pytest.approx(wa * -0.05 + wb * 0.0)

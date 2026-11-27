@@ -10,7 +10,10 @@ from the median rank. Either leg empty (too few names, a constant signal) means 
 Timing: a decision on day `t` trades at the close of `t`, so the book earns the daily returns
 of `t+1` onwards; the return of the rebalance session itself is earned by the previous book.
 Between rebalances the weights drift with returns, `w <- w (1 + r) / (1 + R)` (a missing daily
-return counts as 0: the position is held at its last price). Turnover = sum |target - drifted
+return counts as 0: the position is held at its last price). Each such hole on a held name is
+counted on `BacktestResult.missing_held_returns` and logged; when those holes are more than
+`quant.research.backtest.max_missing_return_share` of the held position-days, the backtest
+raises `BacktestError`. Turnover = sum |target - drifted
 weight| (the first book counts in full, from cash); its cost, `turnover * cost_bps / 10^4`, is
 charged on the rebalance session. Weights are fractions of NAV (shorts negative); returns are
 simple daily fractions; no financing or borrow costs. A session on which the book returns
@@ -28,7 +31,9 @@ import pandas as pd
 
 from atlas.core.config import AtlasConfig
 from atlas.core.errors import BacktestError
+from atlas.core.logging import get_logger
 from atlas.core.pit import guard_not_label
+from atlas.core.run_context import current_run_context
 from atlas.quant.metrics.performance import (
     annualised_mean,
     annualised_vol,
@@ -42,6 +47,8 @@ Rebalance = Literal["signal", "weekly", "monthly", "quarterly"]
 Weighting = Literal["equal", "signal"]
 REBALANCES: tuple[str, ...] = get_args(Rebalance)
 WEIGHTINGS: tuple[str, ...] = get_args(Weighting)
+
+_log = get_logger(__name__)
 
 
 def rebalance_dates(dates: Sequence[date | pd.Timestamp], rebalance: Rebalance) -> pd.DatetimeIndex:
@@ -99,7 +106,9 @@ def long_short_weights(
 class BacktestResult:
     """Daily `returns` (net of costs), `gross_returns`, `costs` (fractions of NAV, from the
     first rebalance session to the last session), `turnover` (per rebalance date), `weights`
-    (rebalance date x symbol targets) and `summary` (module docstring of `vector_backtest`)."""
+    (rebalance date x symbol targets) and `summary` (module docstring of `vector_backtest`).
+    `missing_held_returns` is how many (session, symbol) cells earned a return while the name
+    was held and that return was missing (counted as 0 in the P&L)."""
 
     returns: pd.Series
     gross_returns: pd.Series
@@ -107,6 +116,7 @@ class BacktestResult:
     turnover: pd.Series
     weights: pd.DataFrame
     summary: dict[str, Any]
+    missing_held_returns: int = 0
 
 
 def _summary(
@@ -184,9 +194,23 @@ def vector_backtest(
         daily,
         cost_bps=bps,
         sessions_per_year=periods,
+        config=cfg,
     )
     result.summary.update({"rebalance": reb, "weighting": wgt, "cost_bps": bps, "gross": grs})
     return result
+
+
+def _missing_share_limit(limit: float | None, config: AtlasConfig | None) -> float:
+    """`limit` when given, otherwise `quant.research.backtest.max_missing_return_share`."""
+    if limit is None:
+        cfg = config if config is not None else AtlasConfig()
+        return cfg.quant.research.backtest.max_missing_return_share
+    if isinstance(limit, bool) or not isinstance(limit, int | float) or not 0 <= float(limit) <= 1:
+        raise ValueError(
+            "max_missing_return_share must be a fraction from 0 to 1 "
+            f"(0 = any hole fails), got {limit!r}"
+        )
+    return float(limit)
 
 
 def weights_backtest(
@@ -195,17 +219,25 @@ def weights_backtest(
     *,
     cost_bps: float,
     sessions_per_year: int,
+    max_missing_return_share: float | None = None,
+    config: AtlasConfig | None = None,
 ) -> BacktestResult:
     """Backtest given target weights (Stage 23, extracted from `vector_backtest`): `targets`
     (rebalance dates x symbols, fractions of NAV, shorts negative; dates increasing, each a
     session of `daily`) on `daily` (sessions x symbols, simple daily returns). Timing, drift,
     turnover and costs as in the module docstring; the summary is `vector_backtest`'s
     without the quantile-book settings, plus `cost_bps`. A label as `targets` raises
-    `LookAheadError`; a session's book return of -100% or worse raises `BacktestError`."""
+    `LookAheadError`; a session's book return of -100% or worse raises `BacktestError`.
+
+    A missing return on a held name counts as 0 and is included in
+    `missing_held_returns`. When that count divided by the held position-days exceeds
+    `max_missing_return_share` (default `config`, else `AtlasConfig()`), this raises
+    `BacktestError`."""
     guard_not_label(targets, "targets")
     bps = cost_bps
     if bps < 0:
         raise ValueError(f"cost_bps must be >= 0, got {bps}")
+    limit = _missing_share_limit(max_missing_return_share, config)
     dates = pd.DatetimeIndex(pd.to_datetime(list(targets.index)), name="date")
     if len(dates) == 0:
         raise ValueError("no rebalance dates: targets is empty")
@@ -218,7 +250,9 @@ def weights_backtest(
         raise ValueError(f"rebalance dates {missing} are not sessions of the daily returns")
     symbols = targets.columns
     weights = targets.to_numpy(dtype="float64")
-    r = np.nan_to_num(daily.reindex(columns=symbols).to_numpy(dtype="float64"), nan=0.0)
+    raw = daily.reindex(columns=symbols).to_numpy(dtype="float64")
+    hole = np.isnan(raw)
+    r = np.nan_to_num(raw, nan=0.0)
     first = int(positions[0])
     span = sessions[first:]
     gross_ret = np.zeros(len(span))
@@ -226,8 +260,13 @@ def weights_backtest(
     turnover = np.zeros(len(dates))
     target_at = {int(p): i for i, p in enumerate(positions)}
     w = np.zeros(len(symbols))
+    held_missing = 0
+    held_days = 0
     for j, session in enumerate(range(first, len(sessions))):
         if j > 0:
+            held = w != 0.0
+            held_days += int(held.sum())
+            held_missing += int((held & hole[session]).sum())
             day_ret = float(w @ r[session])
             if not day_ret > -1.0:
                 raise BacktestError(
@@ -242,6 +281,22 @@ def weights_backtest(
             cost[j] = turnover[i] * bps / 1e4
             w = weights[i].copy()
     net = gross_ret - cost
+    share = held_missing / held_days if held_days else 0.0
+    if held_missing:
+        ctx = current_run_context()
+        _log.warning(
+            "backtest.missing_held_returns",
+            missing_held_returns=held_missing,
+            held_position_days=held_days,
+            missing_share=share,
+            run_id=None if ctx is None else ctx.run_id,
+        )
+    if share > limit:
+        raise BacktestError(
+            f"missing_held_returns {held_missing} of {held_days} held position-days "
+            f"({share:.2%}) exceeds quant.research.backtest.max_missing_return_share "
+            f"({limit:.2%})"
+        )
     summary = _summary(net, turnover, cost, sessions_per_year)
     summary["cost_bps"] = bps
     return BacktestResult(
@@ -251,4 +306,5 @@ def weights_backtest(
         turnover=pd.Series(turnover, index=dates, name="turnover"),
         weights=pd.DataFrame(weights, index=dates, columns=symbols),
         summary=summary,
+        missing_held_returns=held_missing,
     )
