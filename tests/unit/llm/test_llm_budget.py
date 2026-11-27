@@ -10,6 +10,7 @@ from llm_helpers import OFF_PEAK, FixedClock
 from atlas.core.config import AtlasConfig, LLMBudgets, LLMConfig
 from atlas.core.errors import BudgetExceeded, LLMError, LLMTransientError
 from atlas.core.run_context import run_context
+from atlas.core.storage import Lake
 from atlas.llm import FakeLLM, FakeReply, LLMGateway
 from atlas.llm.budget import BudgetGuard
 from atlas.llm.cost import CostLedger
@@ -189,6 +190,28 @@ def test_in_flight_calls_reserve_budget(make_gateway: MakeGateway) -> None:  # r
     assert outcomes == ["ok", "ok"]
     # The reservations are released: the tiny real cost leaves room for more calls.
     assert gateway.complete([Message.user("hi")], tier="deep").content == "ok"
+
+
+def test_two_gateways_on_one_database_share_the_in_flight_reserve(
+    make_gateway: MakeGateway, tmp_lake: Lake
+) -> None:
+    # build_gateway gives each gateway its own CostLedger on the lake's database.
+    # Their reservations must still share one cap: one in-flight deep call fills 0.02 USD.
+    from atlas.core.storage import get_database
+
+    database = get_database(tmp_lake)
+    holding = BlockingProvider()
+    cfg = config(daily_usd=0.02)
+    first = make_gateway(holding, cfg, ledger=CostLedger(database))
+    second = make_gateway(FakeLLM(default="ok"), cfg, ledger=CostLedger(database))
+    started = threading.Thread(target=lambda: first.complete([Message.user("hi")], tier="deep"))
+    started.start()
+    assert holding.entered.acquire(timeout=5)
+    with pytest.raises(BudgetExceeded, match="daily_usd"):
+        second.complete([Message.user("hi")], tier="deep")
+    holding.release.set()
+    started.join(timeout=5)
+    assert second.complete([Message.user("hi")], tier="deep").content == "ok"
 
 
 def test_reservation_is_released_when_the_call_fails(make_gateway: MakeGateway) -> None:

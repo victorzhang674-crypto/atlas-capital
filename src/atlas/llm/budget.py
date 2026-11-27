@@ -6,6 +6,7 @@ Callers treat `BudgetExceeded` like any `LLMError`: fail safe, no new research.
 
 import math
 import threading
+import weakref
 from collections import defaultdict
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -17,19 +18,50 @@ from atlas.llm.cost import TOKENS_PER_PRICE_UNIT, CostLedger, rates_at
 from atlas.llm.schemas import ProviderRequest
 
 
+class _ReservationBook:
+    """In-flight USD reservations shared by every guard on one ledger."""
+
+    def __init__(self) -> None:
+        self.lock = threading.Lock()
+        self.pending_day: defaultdict[date, float] = defaultdict(float)
+        self.pending_run: defaultdict[str | None, float] = defaultdict(float)
+
+
+_BOOKS_LOCK = threading.Lock()
+_MEMORY_BOOKS: weakref.WeakKeyDictionary[CostLedger, _ReservationBook] = weakref.WeakKeyDictionary()
+_DATABASE_BOOKS: dict[str, _ReservationBook] = {}
+
+
+def _reservation_book(ledger: CostLedger) -> _ReservationBook:
+    """The reservation book for `ledger`: one per database file, or one per in-memory ledger."""
+    database = ledger.database
+    with _BOOKS_LOCK:
+        if database is None:
+            book = _MEMORY_BOOKS.get(ledger)
+            if book is None:
+                book = _ReservationBook()
+                _MEMORY_BOOKS[ledger] = book
+            return book
+        key = str(database.path.resolve())
+        book = _DATABASE_BOOKS.get(key)
+        if book is None:
+            book = _ReservationBook()
+            _DATABASE_BOOKS[key] = book
+        return book
+
+
 class BudgetGuard:
     """Enforces `budgets` against the spend in `ledger` plus the calls still in flight.
 
     `reserve` holds a call's estimated worst-case cost (USD) until the call has been
-    recorded, so parallel calls cannot jointly overshoot a cap. Thread-safe.
+    recorded, so parallel calls cannot jointly overshoot a cap. Guards that share a
+    database, or one in-memory ledger, share those in-flight holds. Thread-safe.
     """
 
     def __init__(self, budgets: LLMBudgets, ledger: CostLedger) -> None:
         self._budgets = budgets
         self._ledger = ledger
-        self._lock = threading.Lock()
-        self._pending_day: defaultdict[date, float] = defaultdict(float)
-        self._pending_run: defaultdict[str | None, float] = defaultdict(float)
+        self._book = _reservation_book(ledger)
 
     def check_max_tokens(self, max_tokens: int) -> None:
         """Raise `BudgetExceeded` if `max_tokens` is above `per_agent_call_max_tokens`."""
@@ -62,19 +94,20 @@ class BudgetGuard:
         when spend + reservations in flight + this estimate would exceed a cap. Record the
         call's real cost in the ledger before leaving the block.
         """
-        with self._lock:
+        book = self._book
+        with book.lock:
             day_spent, run_spent = self._ledger.spent_on(day), self._ledger.spent_in_run(run_id)
             day_cap, run_cap = self._budgets.daily_usd, self._budgets.per_run_usd
-            self._check("daily_usd", day_cap, day_spent, self._pending_day[day], estimate_usd)
-            self._check("per_run_usd", run_cap, run_spent, self._pending_run[run_id], estimate_usd)
-            self._pending_day[day] += estimate_usd
-            self._pending_run[run_id] += estimate_usd
+            self._check("daily_usd", day_cap, day_spent, book.pending_day[day], estimate_usd)
+            self._check("per_run_usd", run_cap, run_spent, book.pending_run[run_id], estimate_usd)
+            book.pending_day[day] += estimate_usd
+            book.pending_run[run_id] += estimate_usd
         try:
             yield
         finally:
-            with self._lock:
-                self._release(self._pending_day, day, estimate_usd)
-                self._release(self._pending_run, run_id, estimate_usd)
+            with book.lock:
+                self._release(book.pending_day, day, estimate_usd)
+                self._release(book.pending_run, run_id, estimate_usd)
 
     @staticmethod
     def _check(scope: str, limit: float, spent: float, pending: float, estimate: float) -> None:

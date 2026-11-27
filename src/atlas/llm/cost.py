@@ -194,6 +194,11 @@ class CostLedger:
         self._lock = threading.Lock()
         self._records: list[UsageRecord] = []
 
+    @property
+    def database(self) -> Database | None:
+        """The DuckDB database this ledger writes to, or `None` for an in-memory ledger."""
+        return self._database
+
     def record(self, record: UsageRecord) -> None:
         """Append one billed response."""
         if self._database is not None:
