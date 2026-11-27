@@ -1250,7 +1250,7 @@ def test_quant_research_defaults() -> None:  # Stage 17 D1
             "weighting": "equal",
             "cost_bps": 5.0,
             "gross": 2.0,
-            "max_missing_return_share": 0.0,
+            "max_missing_return_share": 0.05,
         },
     }  # fmt: skip
 

@@ -342,8 +342,8 @@ def test_too_many_missing_held_returns_raise() -> None:
     daily = pd.DataFrame({"A": [0.0, np.nan, 0.02], "B": [0.0, 0.0, 0.0]}, index=idx)
     targets = pd.DataFrame({"A": [1.0], "B": [0.0]}, index=idx[:1])
     with pytest.raises(BacktestError, match="missing_held_returns"):
-        _book(daily, targets)  # the default share allows none
-    assert ResearchBacktestConfig().max_missing_return_share == 0.0
+        _book(daily, targets)  # one of two held days is missing: 50% > the 5% default
+    assert ResearchBacktestConfig().max_missing_return_share == 0.05
 
 
 def test_complete_data_matches_the_filled_book() -> None:

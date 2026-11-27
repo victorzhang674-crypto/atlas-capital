@@ -12,8 +12,8 @@ of `t+1` onwards; the return of the rebalance session itself is earned by the pr
 Between rebalances the weights drift with returns, `w <- w (1 + r) / (1 + R)` (a missing daily
 return counts as 0: the position is held at its last price). Each such hole on a held name is
 counted on `BacktestResult.missing_held_returns` and logged; when those holes are more than
-`quant.research.backtest.max_missing_return_share` of the held position-days, the backtest
-raises `BacktestError`. Turnover = sum |target - drifted
+`quant.research.backtest.max_missing_return_share` of the held position-days (default 0.05),
+the backtest raises `BacktestError`. Turnover = sum |target - drifted
 weight| (the first book counts in full, from cash); its cost, `turnover * cost_bps / 10^4`, is
 charged on the rebalance session. Weights are fractions of NAV (shorts negative); returns are
 simple daily fractions; no financing or borrow costs. A session on which the book returns

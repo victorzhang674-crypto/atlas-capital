@@ -249,7 +249,7 @@ quant:
       weighting: equal  # equal | signal (weights grow with the rank's distance from the median)
       cost_bps: 5.0  # basis points per unit of one-side turnover (cf. backtest.costs.half_spread_bps)
       gross: 2.0  # long leg + |short leg| as a fraction of NAV (2.0 = 100% long, 100% short)
-      max_missing_return_share: 0.0  # share of held position-days with no return above which the backtest stops (0 = any hole fails; 1 = never)
+      max_missing_return_share: 0.05  # share of held position-days with no return above which the backtest stops (0 = any hole fails; 1 = never)
   # Covariance and volatility forecasting (Stage 18, atlas.quant.risk_model); daily returns in, daily units out.
   risk_model:
     min_history: 63  # fewest returns of a name (and common sessions of a pair, pairwise) to estimate it; fewer drops it
