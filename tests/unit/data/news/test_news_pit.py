@@ -18,8 +18,9 @@ from news_helpers import FIXTURES, REPO_ROOT, FakeNewsProvider, article, article
 from pydantic import SecretStr
 
 import atlas.data.news.pit as pit_module
+from atlas.core.clock import SimClock, use_clock
 from atlas.core.config import AtlasConfig, CalendarConfig, NewsConfig
-from atlas.core.errors import DataError, LookAheadError
+from atlas.core.errors import AtlasError, DataError, LookAheadError
 from atlas.core.pit import AsOf
 from atlas.core.storage import DEFAULT_REGISTRY, Lake
 from atlas.core.types.research import Evidence
@@ -398,9 +399,62 @@ def test_data_limitations_doc_covers_news() -> None:
         assert word in section
 
 
+def test_a_revised_headline_is_hidden_until_the_update(tmp_path: Path) -> None:
+    # A later sync that corrects the headline or the ticker tags must keep the original row.
+    # The correction is known at its `updated_at`, not at the original publish time.
+    lake = _lake(tmp_path)
+    published = utc(2020, 3, 2, 15)
+    updated = utc(2020, 3, 2, 18)
+    window = (utc(2020, 3, 1), utc(2020, 3, 4))
+    original = articles_frame(
+        [article(published_at=published, headline="Apple misses", symbols=["AAPL"])]
+    )
+    revised = articles_frame(
+        [
+            article(
+                published_at=published,
+                updated_at=updated,
+                headline="Apple beats",
+                symbols=["AAPL", "MSFT"],
+            )
+        ]
+    )
+    ingest_news(lake, FakeNewsProvider("alpaca", original), None, *window)
+    ingest_news(lake, FakeNewsProvider("alpaca", revised), None, *window)
+    stored = lake.read_table("news")
+    assert len(stored) == 2
+    assert set(stored["headline"]) == {"Apple misses", "Apple beats"}
+    early = AsOf(day=date(2020, 3, 2), cutoff=utc(2020, 3, 2, 16))
+    before = News(lake).pit("AAPL", early)
+    assert [(e.text, e.as_of) for e in before] == [("Apple misses", published)]
+    assert News(lake).pit("MSFT", early) == []
+    after = News(lake).pit("AAPL", AT_0303)
+    assert [(e.id, e.text) for e in after] == [("news:alpaca-1", "Apple beats")]
+    assert [e.text for e in News(lake).pit("MSFT", AT_0303)] == ["Apple beats"]
+
+
+def test_a_revision_without_updated_at_is_known_at_the_clock(tmp_path: Path) -> None:
+    lake = _lake(tmp_path)
+    published = utc(2020, 3, 2, 15)
+    window = (utc(2020, 3, 1), utc(2020, 3, 4))
+    original = articles_frame([article(published_at=published, headline="Apple misses")])
+    revised = articles_frame([article(published_at=published, headline="Apple beats")])
+    ingest_news(lake, FakeNewsProvider("alpaca", original), None, *window)
+    with pytest.raises(AtlasError, match="no clock"):
+        ingest_news(lake, FakeNewsProvider("alpaca", revised), None, *window)
+    assert list(lake.read_table("news")["headline"]) == ["Apple misses"]
+    when = utc(2020, 3, 2, 18)
+    with use_clock(SimClock(when)):
+        ingest_news(lake, FakeNewsProvider("alpaca", revised), None, *window)
+    early = AsOf(day=date(2020, 3, 2), cutoff=utc(2020, 3, 2, 16))
+    assert News(lake).pit("AAPL", early)[0].text == "Apple misses"
+    assert News(lake).pit("AAPL", AT_0303)[0].text == "Apple beats"
+
+
 def test_same_article_id_twice_cited_once(tmp_path: Path) -> None:
-    # Review fix: a vendor that re-dates an article (same id, new publish time) leaves two rows
-    # under the (article_id, published_at) key; the earliest-known row is the one cited.
+    # A vendor that re-dates an article (same id, new publish time) leaves two rows. Before
+    # the new publish time the original text is cited; once the new row is public, that text
+    # is the one cited, still under the one evidence id.
     lake = _lake(tmp_path)
     first = articles_frame([article(published_at=utc(2020, 3, 2, 15), headline="Apple up")])
     redated = articles_frame([article(published_at=utc(2020, 3, 2, 17), headline="Apple jumps 4%")])
@@ -408,8 +462,12 @@ def test_same_article_id_twice_cited_once(tmp_path: Path) -> None:
     ingest_news(lake, FakeNewsProvider("alpaca", first), None, *window)
     ingest_news(lake, FakeNewsProvider("alpaca", redated), None, *window)
     assert len(lake.read_table("news")) == 2
+    between = AsOf(day=date(2020, 3, 2), cutoff=utc(2020, 3, 2, 16))
+    assert [(e.id, e.text) for e in News(lake).pit("AAPL", between)] == [
+        ("news:alpaca-1", "Apple up")
+    ]
     cited = News(lake).pit("AAPL", AT_0303)
-    assert [(e.id, e.text) for e in cited] == [("news:alpaca-1", "Apple up")]
+    assert [(e.id, e.text) for e in cited] == [("news:alpaca-1", "Apple jumps 4%")]
     market = articles_frame([article(published_at=utc(2020, 3, 2, 15), symbols=[])])
     both = pd.concat(
         [market, market.assign(published_at=market["published_at"] + timedelta(hours=1))]

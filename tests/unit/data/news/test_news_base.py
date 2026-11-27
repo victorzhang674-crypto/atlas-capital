@@ -37,7 +37,8 @@ def test_news_table_declaration() -> None:
         "symbols",
         "content_hash",
     )
-    assert NEWS.primary_key == ("article_id", "published_at")
+    assert NEWS.primary_key == ("article_id", "published_at", "available_at")
+    assert NEWS.version == 2
     assert NEWS.partition_by == (YEAR,)
     assert NEWS.year_column == "published_at"
     assert NEWS.column("symbols").dtype is ColumnType.STRING_LIST

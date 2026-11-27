@@ -6,8 +6,8 @@ Article frame (`ARTICLE_COLUMNS`, the columns of `news`), one row per vendor art
 |---|---|---|
 | `article_id` | `str` | `<provider>-<vendor id>` (`alpaca-24843171`, `yahoo-<uuid>`) |
 | `published_at` | UTC timestamp | the vendor's publish time |
-| `available_at` | UTC timestamp | equal to `published_at` (known from publication) |
-| `updated_at` | UTC timestamp or NaT | the vendor's last edit (audit only) |
+| `available_at` | UTC timestamp | publish time, or the time a later edit became known |
+| `updated_at` | UTC timestamp or NaT | when the vendor last edited the article |
 | `provider` | `str` | adapter that served the row (`alpaca`, `yahoo`) |
 | `source` | `str` | publisher (`benzinga`, `Reuters`, ...) |
 | `headline` | `str` | non-empty, stripped |
@@ -69,13 +69,18 @@ NEWS = DEFAULT_REGISTRY.register(
             Column(name="symbols", dtype=ColumnType.STRING_LIST),
             Column(name="content_hash", dtype=ColumnType.STRING),
         ),
-        primary_key=("article_id", "published_at"),
+        primary_key=("article_id", "published_at", "available_at"),
+        version=2,
         partition_by=(YEAR,),
         year_column="published_at",
         description="News headlines and summaries, one row per vendor article (Stage 11)",
     )
 )
-"""The curated `news` table (registered in `DEFAULT_REGISTRY` on import)."""
+"""The curated `news` table (registered in `DEFAULT_REGISTRY` on import).
+
+Version 2 adds `available_at` to the primary key, so a corrected headline or ticker list is
+stored beside the original instead of replacing it.
+"""
 
 _log = get_logger(__name__)
 
@@ -213,3 +218,12 @@ def _tags(value: Any) -> tuple[str, ...]:
         except ValueError:
             _log.debug("news.bad_symbol", tag=str(item))
     return tuple(sorted(tags))
+
+
+def _news_version_2(frame: pd.DataFrame) -> pd.DataFrame:
+    """Version 1 to 2: the rows stay as they are. `available_at` joins the primary key, so a
+    later edit can be stored beside the original instead of replacing it."""
+    return frame
+
+
+DEFAULT_REGISTRY.add_migration(NEWS.name, 1, _news_version_2)

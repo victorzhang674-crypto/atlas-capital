@@ -1,7 +1,8 @@
 """Point-in-time news queries: what an agent could read at `as_of`, as citable `Evidence`.
 
-An article is known at `as_of` iff its `available_at` (its publish time) is strictly before
-`as_of.cutoff` (`pit_filter`, checked again with `assert_no_lookahead`). For one ticker
+An article is known at `as_of` iff its `available_at` (its publish time, or the time of a
+later edit) is strictly before `as_of.cutoff` (`pit_filter`, checked again with
+`assert_no_lookahead`). For one ticker
 (`news_pit_detail`): the known articles tagged with it, roundups dropped (`score_relevance`),
 re-published copies dropped (`mark_duplicates`, over the window plus `dedup_window_hours` of
 earlier context, so a copy of an article just before the window stays hidden), then the
@@ -42,12 +43,13 @@ def _check_window(lookback_days: int, limit: int) -> None:
 
 
 def _known(articles: pd.DataFrame, as_of: AsOf) -> pd.DataFrame:
-    """Rows known at `as_of`, one per `article_id` (the earliest known, should a vendor have
-    re-dated an article), so an evidence id is never cited twice."""
+    """Rows known at `as_of`, one per `article_id`: the latest version whose `available_at`
+    is strictly before the cutoff. A correction is cited only once it is public, and an
+    earlier cutoff still sees the previous text. One evidence id is cited once."""
     known = pit_filter(articles, as_of)
     assert_no_lookahead(known, as_of)
-    first = known.sort_values(["available_at", "article_id"], kind="stable")
-    return first.drop_duplicates(subset=["article_id"], keep="first")
+    ordered = known.sort_values(["available_at", "article_id"], kind="stable")
+    return ordered.drop_duplicates(subset=["article_id"], keep="last")
 
 
 def _originals(
