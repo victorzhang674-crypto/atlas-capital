@@ -86,8 +86,8 @@ tools: `news`, `market_news`, `fundamentals` (`fund:<SYM>:<period end>:<metric>`
 2. Tool loop: up to `agents.max_tool_rounds` turns may ask for tools; if the model still asks,
    a wrap-up turn without tools follows, and a wrap-up that asks again fails the run.
 3. Citation check: a claim is any nested model with `evidence_ids` and must cite at least one
-   id; ids in `evidence_ids`, an `evidence` list or inline `[E:<id>]` tags must be ids the
-   run showed; an output that could cite but cites nothing at all is uncited too. An agent
+   id; ids in `evidence_ids`, a string `evidence_id` (one id; empty is uncited, Stage 31), an
+   `evidence` list or inline `[E:<id>]` tags must be ids the run showed; an output that could cite but cites nothing at all is uncited too. An agent
    may also override `check_output(ctx, output) -> problems` (default: none) for checks of
    its own (a value range, numbers equal to the tool numbers, p10 <= p50 <= p90); they must be
    deterministic. Problems of both kinds share `agents.evidence_repair_retries` repair turns
@@ -96,7 +96,10 @@ tools: `news`, `market_news`, `fundamentals` (`fund:<SYM>:<period end>:<metric>`
    found) and its top-level `confidence` and `conviction` are capped at
    `agents.low_quality_confidence_cap` (0.3). When the run showed no evidence at all (a
    symbol with no news), bad citations cannot be repaired, so there is no repair turn: the
-   output goes straight to `low_quality`.
+   output goes straight to `low_quality`. After the low-quality cap, an agent may override
+   `finalize(ctx, output) -> output` (default: the identity) for a last deterministic
+   adjustment, such as a confidence ceiling that must hold even when the repair failed
+   (Stage 31); it runs before the trace is written, so the trace holds what is returned.
 4. Trace: one `agent_runs` row (status `ok`, `low_quality` or `failed`; prompt version and
    digest, inputs digest, tool calls, evidence ids, output, tokens, cost) and, with an
    `AuditLog`, an `AGENT_REPORT` event.
@@ -270,3 +273,58 @@ none and timing `AVOID`. Problems get one repair turn.
 run on AAPL for 2024-05-01: the lake slice (the S&P 500 members on the day and SPY, prices
 since 2021-10-01), the day's regime computed on the main lake (`regime.json`), the exported
 LLM cache and the report. Its test replays it with no lake, no key and no provider call.
+
+## The news analyst
+
+Stage 31, `atlas.agents.research.NewsAnalyst` (quick tier, `NewsReport`). It reads the last
+weeks of news about one stock, its sector peers' news, its upcoming events and its past
+earnings reactions; it decides which news is material and which is noise and writes the
+catalysts, the risk events and what the market may be missing, every item cited.
+
+```python
+analyst = NewsAnalyst(build_gateway(cfg, lake=lake), config=cfg)
+out = analyst.run(AgentContext(DataView(lake, day, cfg), inputs={"symbol": "AAPL"}))
+out.output  # NewsReport: signals news_flow, catalysts, event_risk; catalysts[...]
+```
+
+**Output.** `NewsReport` is an `AnalystReport` (spec §7) plus `catalysts`: each a
+`NewsCatalyst` with an optional `date`, a `description`, the one `evidence_id` it rests on and
+its `expected_impact` on the price (`POSITIVE`, `NEGATIVE`, `MIXED`). Every consumer of an
+`AnalystReport` takes it. The summary has six sections (material vs noise, catalysts, risk
+events, narrative shifts, what the market may be missing, event calendar).
+
+**Tools** (`agents/tools/news_tools.py`; settings `agents.news`):
+
+| Tool | Evidence ids | What it shows |
+|---|---|---|
+| `get_company_news` | `ncov:<SYM>:<day>:company`, `news:<article_id>` | The articles of the last `lookback_days` (21), at most `max_articles` (25), newest first, copies and roundups removed (Stage 11), and a coverage item with their count |
+| `get_upcoming_events` | `evt:<SYM>:<type>:<date>`, `evt:<SYM>:<day>:none` | The stock's own events in the next `events_horizon_days` (30): earnings before the open or after the close, scheduled (Yahoo) or only **estimated** (last report plus 52 weeks), and the ex-dividend date; macro releases are the macro economist's |
+| `get_past_earnings_reactions` | `rx:<SYM>:<event day>`, `rxs:<SYM>:<day>:summary` | The last `reactions` (8): gap, open-to-close, abnormal open-to-close and 3-session abnormal return against SPY, in percent, and their count, mean absolute return, number positive and extremes, computed by the tool |
+| `get_sector_news` | `ncov:<SYM>:<day>:sector`, `news:<article_id>` | Articles about the `sector_peers` (8) highest-volume members of the stock's GICS sector, `sector_articles_per_peer` (3) each, `sector_articles` (10) in all, newest first, without the stock's own articles; the coverage item names the peers and their counts |
+
+There is no sector-level news feed: sector news is the news of the largest peers, read through
+the same point-in-time path as the stock's. Articles are the vendor's headline and summary only
+(Stage 11), and their text still holds HTML entities (`&#39;`), as the vendor sent it.
+
+The run prefetches all four tools and still offers them for a peer. A tool that cannot be
+computed leaves a `gap:` item; a blocked symbol fails the run. `check_output` holds the report
+to the six sections, the three signals, "every number cited" and grounded in the item it cites
+(Stage 29's rule, `atlas.agents.research.checks`) and the catalyst rules: at most
+`max_catalysts` (8); a `date` on or after the as-of day; the event's own date when the
+catalyst rests on an `evt:` item; evidence that is an article, an event or a reaction (never
+a coverage, summary, none or gap item); every number of a description stated by its evidence.
+A catalyst's `evidence_id` is a citation: an id the run never showed is repaired, then
+`low_quality`.
+
+**No news.** When there is no company article in the window (the coverage item says 0), or the
+news table was never written (a `gap:` item), the report must say so, its `news_flow` must be
+FLAT and its confidence at most `empty_news_confidence_cap` (0.2). The checks ask for it with
+the repair turn; `finalize` enforces the ceiling whatever the model answered, below the
+framework's 0.3 low-quality cap. Upcoming events and past reactions are still reported and can
+still be catalysts.
+
+**Recorded run.** `tests/fixtures/recorded/stage-31-news-aapl-2024-05-01/` holds a live run on
+AAPL for 2024-05-01: the lake slice (the 65 Information Technology members and SPY: news since
+2024-04-01, events and reactions since 2022, prices since 2024-03-01), the exported LLM cache
+and the report. Its test replays it with no lake, no key and no provider call. The next
+earnings date it shows is an estimate: the lake holds no Yahoo schedule from 2024.

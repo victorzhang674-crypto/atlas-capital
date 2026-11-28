@@ -543,6 +543,17 @@ agents:
     atr_stop_multiples: [2.0, 3.0]  # multiples k (ascending) of ATR(14) offered as stop distances
     min_stop_pct: 0.01  # a LONG or SHORT signal's suggested_stop_pct must be at least this (fraction of the last close) ...
     max_stop_pct: 0.25  # ... and at most this
+  # News and event analyst tools and report checks (Stage 31, atlas.agents.tools.news_tools).
+  news:
+    lookback_days: 21  # calendar days of company news read (the brief's 14-30)
+    max_articles: 25  # most articles in the company news list (most relevant first, then shown newest first)
+    events_horizon_days: 30  # calendar days ahead in which the symbol's own events (earnings, ex-dividend) are listed
+    reactions: 8  # past earnings reactions listed
+    sector_peers: 8  # GICS-sector peers whose news is read (highest average dollar volume first)
+    sector_articles_per_peer: 3  # most articles taken from one peer
+    sector_articles: 10  # most sector articles in all
+    max_catalysts: 8  # most catalysts in a report
+    empty_news_confidence_cap: 0.2  # highest confidence (0-1) of a report written without any company article
 
 # Fund graph (Stage 28): LangGraph research fan-out, checkpoints in data/runs/<run_id>/.
 orchestration:

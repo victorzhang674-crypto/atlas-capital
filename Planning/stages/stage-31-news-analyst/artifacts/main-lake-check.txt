@@ -1,0 +1,80 @@
+
+=== AAPL on 2024-05-01: the recorded fixture's day (earnings tomorrow)
+  47 items in 1.9 s: {'ncov': 2, 'news': 35, 'evt': 1, 'rxs': 1, 'rx': 8}; company articles 25
+  [ncov:AAPL:2024-05-01:company] AAPL company news on 2024-05-01: 25 articles in the 21 calendar days to 2024-05-01 (duplicates and roundups removed); newest published 2024-05-01; more articles exist than the 25 shown (the least relevant are left out)
+  [evt:AAPL:earnings:2024-05-02] AAPL earnings estimated for 2024-05-02 after the market close (AMC), 1 calendar day ahead: no date is scheduled yet, so this is the last report date plus 52 weeks (an estimate, not a confirmed date)
+  [rxs:AAPL:2024-05-01:summary] AAPL last 8 earnings reactions (2022-04-28 to 2024-02-01): mean absolute 3-session abnormal return 2.1%, 7 of 8 positive; largest +2.9% (2023-02-02), smallest -5.9% (2023-08-03)
+  [ncov:AAPL:2024-05-01:sector] AAPL sector news on 2024-05-01: Information Technology peers read by dollar volume: NVDA (3 articles), AMD (3 articles), MSFT (3 articles), SMCI (3 articles), AVGO (3 articles), MU (3 articles), INTC (3 articles), CRM (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []
+
+=== AAPL on 2020-03-16: a crash day
+  47 items in 2.2 s: {'ncov': 2, 'news': 35, 'evt': 1, 'rxs': 1, 'rx': 8}; company articles 25
+  [ncov:AAPL:2020-03-16:company] AAPL company news on 2020-03-16: 25 articles in the 21 calendar days to 2020-03-16 (duplicates and roundups removed); newest published 2020-03-16; more articles exist than the 25 shown (the least relevant are left out)
+  [evt:AAPL:2020-03-16:none] No earnings or ex-dividend event of AAPL is known within the 30 calendar days from 2020-03-16.
+  [rxs:AAPL:2020-03-16:summary] AAPL last 8 earnings reactions (2018-07-31 to 2020-01-28): mean absolute 3-session abnormal return 5.3%, 5 of 8 positive; largest +8.5% (2018-07-31), smallest -8.9% (2018-11-01)
+  [ncov:AAPL:2020-03-16:sector] AAPL sector news on 2020-03-16: Information Technology peers read by dollar volume: MSFT (3 articles), NVDA (3 articles), AMD (3 articles), INTC (3 articles), CSCO (3 articles), MU (3 articles), ADBE (3 articles), CRM (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []
+
+=== AAPL on 2015-01-05: the first days of the news history
+  23 items in 0.6 s: {'ncov': 2, 'news': 19, 'evt': 1, 'rxs': 1}; company articles 9
+  [ncov:AAPL:2015-01-05:company] AAPL company news on 2015-01-05: 9 articles in the 21 calendar days to 2015-01-05 (duplicates and roundups removed); newest published 2015-01-05
+  [evt:AAPL:2015-01-05:none] No earnings or ex-dividend event of AAPL is known within the 30 calendar days from 2015-01-05.
+  [rxs:AAPL:2015-01-05:summary] AAPL: no earnings reaction is known on 2015-01-05 (0 reactions)
+  [ncov:AAPL:2015-01-05:sector] AAPL sector news on 2015-01-05: Information Technology peers read by dollar volume: MSFT (3 articles), IBM (2 articles), INTC (2 articles), ORCL (0 articles), CSCO (1 article), MU (1 article), QCOM (0 articles), HPQ (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []
+
+=== AAPL on 2025-05-01: a later year (a scheduled Yahoo date may exist)
+  47 items in 2.3 s: {'ncov': 2, 'news': 35, 'evt': 1, 'rxs': 1, 'rx': 8}; company articles 25
+  [ncov:AAPL:2025-05-01:company] AAPL company news on 2025-05-01: 25 articles in the 21 calendar days to 2025-05-01 (duplicates and roundups removed); newest published 2025-05-01; more articles exist than the 25 shown (the least relevant are left out)
+  [evt:AAPL:earnings:2025-05-01] AAPL earnings estimated for 2025-05-01 after the market close (AMC), today: no date is scheduled yet, so this is the last report date plus 52 weeks (an estimate, not a confirmed date)
+  [rxs:AAPL:2025-05-01:summary] AAPL last 8 earnings reactions (2023-05-04 to 2025-01-30): mean absolute 3-session abnormal return 2.2%, 4 of 8 positive; largest +3.0% (2024-05-02), smallest -5.9% (2023-08-03)
+  [ncov:AAPL:2025-05-01:sector] AAPL sector news on 2025-05-01: Information Technology peers read by dollar volume: NVDA (3 articles), PLTR (3 articles), MSFT (3 articles), AVGO (3 articles), AMD (3 articles), INTC (3 articles), MU (3 articles), NOW (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []
+
+=== AAPL on 2026-11-24: the lake's last session
+  47 items in 2.3 s: {'ncov': 2, 'news': 35, 'evt': 1, 'rxs': 1, 'rx': 8}; company articles 25
+  [ncov:AAPL:2026-11-24:company] AAPL company news on 2026-11-24: 25 articles in the 21 calendar days to 2026-11-24 (duplicates and roundups removed); newest published 2026-11-24; more articles exist than the 25 shown (the least relevant are left out)
+  [evt:AAPL:2026-11-24:none] No earnings or ex-dividend event of AAPL is known within the 30 calendar days from 2026-11-24.
+  [rxs:AAPL:2026-11-24:summary] AAPL last 8 earnings reactions (2025-01-30 to 2026-11-02): mean absolute 3-session abnormal return 4.3%, 4 of 8 positive; largest +5.0% (2026-01-29), smallest -11.2% (2026-07-30)
+  [ncov:AAPL:2026-11-24:sector] AAPL sector news on 2026-11-24: Information Technology peers read by dollar volume: NVDA (3 articles), MU (3 articles), AMD (3 articles), MSFT (3 articles), SNDK (3 articles), AVGO (3 articles), INTC (3 articles), MRVL (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []
+
+=== KVUE on 2023-06-01: a young listing
+  22 items in 1.9 s: {'ncov': 2, 'news': 18, 'evt': 1, 'rxs': 1}; company articles 8
+  [ncov:KVUE:2023-06-01:company] KVUE company news on 2023-06-01: 8 articles in the 21 calendar days to 2023-06-01 (duplicates and roundups removed); newest published 2023-05-30
+  [evt:KVUE:2023-06-01:none] No earnings or ex-dividend event of KVUE is known within the 30 calendar days from 2023-06-01.
+  [rxs:KVUE:2023-06-01:summary] KVUE: no earnings reaction is known on 2023-06-01 (0 reactions)
+  [ncov:KVUE:2023-06-01:sector] KVUE sector news on 2023-06-01: Consumer Staples peers read by dollar volume: COST (3 articles), WMT (3 articles), PEP (3 articles), PG (3 articles), KO (3 articles), TGT (3 articles), EL (3 articles), CL (1 article); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []
+
+=== SMCI on 2024-03-01: a volatile mid-cap
+  47 items in 2.7 s: {'ncov': 2, 'news': 35, 'evt': 1, 'rxs': 1, 'rx': 8}; company articles 25
+  [ncov:SMCI:2024-03-01:company] SMCI company news on 2024-03-01: 25 articles in the 21 calendar days to 2024-03-01 (duplicates and roundups removed); newest published 2024-02-29; more articles exist than the 25 shown (the least relevant are left out)
+  [evt:SMCI:2024-03-01:none] No earnings or ex-dividend event of SMCI is known within the 30 calendar days from 2024-03-01.
+  [rxs:SMCI:2024-03-01:summary] SMCI last 8 earnings reactions (2023-01-31 to 2024-01-29): mean absolute 3-session abnormal return 18.8%, 5 of 8 positive; largest +45.1% (2024-01-18), smallest -26.1% (2023-08-08)
+  [ncov:SMCI:2024-03-01:sector] SMCI sector news on 2024-03-01: Information Technology peers read by dollar volume: NVDA (3 articles), AMD (3 articles), AAPL (3 articles), MSFT (3 articles), AVGO (3 articles), PANW (3 articles), ADBE (3 articles), INTC (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out
+  items timed at or after the cutoff: []
+
+=== SIVB on 2023-03-09: a failing bank (a former member)
+  27 items in 1.9 s: {'ncov': 2, 'news': 15, 'evt': 1, 'rxs': 1, 'rx': 8}; company articles 5
+  [ncov:SIVB:2023-03-09:company] SIVB company news on 2023-03-09: 5 articles in the 21 calendar days to 2023-03-09 (duplicates and roundups removed); newest published 2023-03-09
+  [evt:SIVB:2023-03-09:none] No earnings or ex-dividend event of SIVB is known within the 30 calendar days from 2023-03-09.
+  [rxs:SIVB:2023-03-09:summary] SIVB last 8 earnings reactions (2021-04-22 to 2023-01-19): mean absolute 3-session abnormal return 11.3%, 4 of 8 positive; largest +12.4% (2023-01-19), smallest -26.2% (2022-10-20)
+  [ncov:SIVB:2023-03-09:sector] SIVB sector news on 2023-03-09: Financials peers read by dollar volume: JPM (3 articles), BAC (3 articles), V (3 articles), BRK.B (3 articles), PYPL (3 articles), GS (3 articles), MA (3 articles), C (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []
+
+=== GEHC on 2023-01-05: before the listing
+  16 items in 2.0 s: {'ncov': 2, 'news': 12, 'evt': 1, 'rxs': 1}; company articles 2
+  [ncov:GEHC:2023-01-05:company] GEHC company news on 2023-01-05: 2 articles in the 21 calendar days to 2023-01-05 (duplicates and roundups removed); newest published 2023-01-04
+  [evt:GEHC:2023-01-05:none] No earnings or ex-dividend event of GEHC is known within the 30 calendar days from 2023-01-05.
+  [rxs:GEHC:2023-01-05:summary] GEHC: no earnings reaction is known on 2023-01-05 (0 reactions)
+  [ncov:GEHC:2023-01-05:sector] GEHC sector news on 2023-01-05: Health Care peers read by dollar volume: MRNA (3 articles), UNH (3 articles), JNJ (3 articles), PFE (3 articles), MRK (3 articles), LLY (3 articles), ABBV (3 articles), TMO (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []
+
+=== MSFT on 2022-12-30: a holiday week
+  47 items in 2.0 s: {'ncov': 2, 'news': 35, 'evt': 1, 'rxs': 1, 'rx': 8}; company articles 25
+  [ncov:MSFT:2022-12-30:company] MSFT company news on 2022-12-30: 25 articles in the 21 calendar days to 2022-12-30 (duplicates and roundups removed); newest published 2022-12-29; more articles exist than the 25 shown (the least relevant are left out)
+  [evt:MSFT:earnings:2023-01-24] MSFT earnings estimated for 2023-01-24 after the market close (AMC), 25 calendar days ahead: no date is scheduled yet, so this is the last report date plus 52 weeks (an estimate, not a confirmed date)
+  [rxs:MSFT:2022-12-30:summary] MSFT last 8 earnings reactions (2021-01-26 to 2022-10-25): mean absolute 3-session abnormal return 4.5%, 5 of 8 positive; largest +6.2% (2021-10-26), smallest -7.0% (2022-10-25)
+  [ncov:MSFT:2022-12-30:sector] MSFT sector news on 2022-12-30: Information Technology peers read by dollar volume: AAPL (3 articles), NVDA (3 articles), AMD (3 articles), CRM (3 articles), AVGO (3 articles), ADBE (3 articles), ENPH (3 articles), INTC (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+  items timed at or after the cutoff: []

@@ -4,6 +4,7 @@ Probabilities, confidences, convictions and strengths are in [0, 1]. Returns are
 returns over the stated horizon; horizons are in trading days.
 """
 
+import datetime as dt
 from datetime import date
 from enum import StrEnum
 from typing import Annotated, Self
@@ -99,6 +100,34 @@ class TechnicalReport(AnalystReport):
     `TechnicalSignal`s, so every consumer of an `AnalystReport` takes it."""
 
     signals: tuple[TechnicalSignal, ...]
+
+
+class Impact(StrEnum):
+    """The direction of a catalyst's expected effect on the stock's price (Stage 31):
+    `POSITIVE`, `NEGATIVE`, or `MIXED` (could go either way, or both)."""
+
+    POSITIVE = "POSITIVE"
+    NEGATIVE = "NEGATIVE"
+    MIXED = "MIXED"
+
+
+class NewsCatalyst(AtlasModel):
+    """An event or story expected to move the stock, as the news analyst reports it
+    (Stage 31): its expected `date` if known (a day on or after the report's `as_of`), a
+    `description`, the one `evidence_id` it rests on (an `Evidence.id` the run showed) and the
+    `expected_impact` on the price. Distinct from the thesis's `Catalyst` (Stage 36's shape)."""
+
+    date: dt.date | None = None
+    description: NonEmptyStr
+    evidence_id: NonEmptyStr
+    expected_impact: Impact
+
+
+class NewsReport(AnalystReport):
+    """The news analyst's report (Stage 31): an `AnalystReport` plus its `catalysts`, so every
+    consumer of an `AnalystReport` takes it."""
+
+    catalysts: tuple[NewsCatalyst, ...] = ()
 
 
 class AssetView(AtlasModel):

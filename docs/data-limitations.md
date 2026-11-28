@@ -338,6 +338,9 @@ in `news`, keyed by `<provider>-<vendor id>`, and an agent cites it as `news:<ar
    reports of one event (below 92) count as separate articles.
 7. **Market-wide news** is untagged news or news tagged with SPY or QQQ (`market_symbols`); it
    is only as broad as the vendor's tagging.
+8. **Stored text holds HTML entities.** Alpaca sends headlines and summaries with entities
+   (`&#39;`, `&#34;`, `&amp;`) and they are stored as sent; an agent reads them as they are
+   (found in Stage 31's AAPL fixture). Decoding them at ingest is in the Backlog.
 
 ## Events and sentiment (Stage 12)
 

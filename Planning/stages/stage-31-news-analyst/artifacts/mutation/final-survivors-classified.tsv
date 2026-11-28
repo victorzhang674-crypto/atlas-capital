@@ -1,0 +1,11 @@
+mutant	class	reason
+news_tools.x__instant__mutmut_4	equivalent	tz_convert("utc") is the same zone as "UTC"
+news_tools.x__reaction_summary__mutmut_6	equivalent	zip strict=None: rows["car"] and days have the same length by construction (both from the same frame)
+news_tools.x__reaction_summary__mutmut_9	equivalent	zip without strict: same reason
+news_tools.x__reaction_summary__mutmut_13	equivalent	zip strict=False: same reason
+news_tools.x__sector_peers__mutmut_34	equivalent	volume.get(p, None): p is always in the ADV frame (reindexed on the peers), the default is never used
+news_tools.x__sector_peers__mutmut_36	equivalent	volume.get(p): same reason
+news_tools.x_company_news__mutmut_2	equivalent	_require(view, None): a blocked symbol still fails in view.news with the same DataError ("<SYM> is blocked on ...")
+news_tools.x_past_reactions__mutmut_2	equivalent	same: view.earnings_reactions refuses the blocked symbol
+news_tools.x_sector_news__mutmut_2	equivalent	same: view.instrument refuses the blocked symbol
+news_tools.x_upcoming_events__mutmut_8	equivalent	view.events(None, ...) reads every company's events; the rows are then filtered to the symbol: same result, more work

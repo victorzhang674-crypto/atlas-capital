@@ -3,6 +3,14 @@
 share live in `checks`."""
 
 from atlas.agents.research.fundamental import FundamentalAnalyst, fundamental_registry
+from atlas.agents.research.news import NewsAnalyst, news_registry
 from atlas.agents.research.technical import TechnicalAnalyst, technical_registry
 
-__all__ = ["FundamentalAnalyst", "TechnicalAnalyst", "fundamental_registry", "technical_registry"]
+__all__ = [
+    "FundamentalAnalyst",
+    "NewsAnalyst",
+    "TechnicalAnalyst",
+    "fundamental_registry",
+    "news_registry",
+    "technical_registry",
+]

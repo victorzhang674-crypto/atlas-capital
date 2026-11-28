@@ -214,6 +214,13 @@ class BaseAgent[OutT: BaseModel]:
         as `check_output`, whose problems it follows in the repair turn."""
         return ()
 
+    def finalize(self, ctx: AgentContext, output: OutT) -> OutT:
+        """The last deterministic adjustment of `output` (default: none; Stage 31's ceiling on
+        an empty-news report's confidence). Runs once, after the checks and the low-quality
+        cap and before the trace is written, so the trace holds what is returned. An
+        exception fails the run."""
+        return output
+
     # --- the run --------------------------------------------------------------------------------
 
     def run(self, ctx: AgentContext) -> AgentOutput[OutT]:
@@ -230,14 +237,16 @@ class BaseAgent[OutT: BaseModel]:
             state.ledger.add(guard_evidence(list(self.gather(ctx)), ctx.as_of))
             rendered = self._render(ctx, state)
             output, citations, problems = self._converse(ctx, rendered, state)
+            low_quality = not citations.ok or bool(problems)
+            if low_quality:
+                output = cap_confidence(output, self._settings.low_quality_confidence_cap)
+            output = self.finalize(ctx, output)
         except Exception as exc:  # traced as failed, then re-raised: never swallowed
             error = str(exc) if isinstance(exc, AtlasError) else f"{type(exc).__name__}: {exc}"
             self._finish(ctx, agent_run_id, started, state, status="failed", error=error)
             raise
-        low_quality = not citations.ok or bool(problems)
         status: TraceStatus = "low_quality" if low_quality else "ok"
         if low_quality:
-            output = cap_confidence(output, self._settings.low_quality_confidence_cap)
             _log.warning(
                 "agent.low_quality",
                 agent=self.name,

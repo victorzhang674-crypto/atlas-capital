@@ -6,10 +6,11 @@ sees it as one line `[E:<id>] <published UTC> <text>` and cites it by that id.
 
 The citation check (`check_citations`) walks a structured output: a *claim* is any nested
 model with an `evidence_ids` field and must cite at least one id; *citations* are the ids in
-`evidence_ids` fields, in an `evidence` field holding strings, and every inline `[E:<id>]` tag
-in a string. Cited ids the run never showed the model are *unknown*. An output whose schema
-can cite (it has a claim or an `evidence` field somewhere) but that cites nothing at all is
-itself an uncited claim (path `<root>`).
+`evidence_ids` fields, the one id in a string `evidence_id` field (Stage 31's catalysts; an
+empty one is an uncited claim), in an `evidence` field holding strings, and every inline
+`[E:<id>]` tag in a string. Cited ids the run never showed the model are *unknown*. An output
+whose schema can cite (it has a claim, an `evidence_id` or an `evidence` field somewhere) but
+that cites nothing at all is itself an uncited claim (path `<root>`).
 """
 
 import re
@@ -64,6 +65,9 @@ def evidence_lines(items: Iterable[Evidence]) -> str:
 
 CLAIM_FIELD = "evidence_ids"
 """A nested model with this field is a claim and must cite at least one evidence id."""
+
+SINGLE_FIELD = "evidence_id"
+"""A nested model with a string field of this name cites that one id (empty: uncited)."""
 
 LIST_FIELD = "evidence"
 """A field of this name holding strings lists cited evidence ids."""
@@ -159,7 +163,9 @@ def _schema_cites(node: object) -> bool:
     """Whether a JSON Schema (or part of one) has a property named like a citation field."""
     if isinstance(node, Mapping):
         props = node.get("properties")
-        if isinstance(props, Mapping) and (CLAIM_FIELD in props or LIST_FIELD in props):
+        if isinstance(props, Mapping) and (
+            CLAIM_FIELD in props or SINGLE_FIELD in props or LIST_FIELD in props
+        ):
             return True
         return any(_schema_cites(value) for value in node.values())
     if isinstance(node, list):
@@ -183,12 +189,18 @@ def check_citations(output: BaseModel, known: Collection[str]) -> CitationReport
     def walk(value: Any, path: str) -> None:
         if isinstance(value, BaseModel):
             fields = type(value).model_fields
-            if CLAIM_FIELD in fields and not getattr(value, CLAIM_FIELD):
+            single = getattr(value, SINGLE_FIELD) if SINGLE_FIELD in fields else None
+            if (CLAIM_FIELD in fields and not getattr(value, CLAIM_FIELD)) or (
+                isinstance(single, str) and not single.strip()
+            ):
                 uncited.append(path or ROOT)
             for name in fields:
                 item = getattr(value, name)
                 if name in (CLAIM_FIELD, LIST_FIELD) and _is_strings(item):
                     cited.update(dict.fromkeys(item))
+                elif name == SINGLE_FIELD and isinstance(item, str):
+                    if item.strip():
+                        cited[item] = None
                 else:
                     walk(item, _child(path, name))
         elif isinstance(value, str):

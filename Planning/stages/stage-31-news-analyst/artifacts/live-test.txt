@@ -1,0 +1,4 @@
+
+LIVE news: status=ok llm_calls=2 tools=[] cited=24 problems=[] tokens=6081+3536 cost_usd=0.003059 catalysts=[(datetime.date(2024, 5, 2), 'evt:AAPL:earnings:2024-05-02', <Impact.MIXED: 'MIXED'>), (datetime.date(2024, 5, 7), 'news:alpaca-38491531', <Impact.POSITIVE: 'POSITIVE'>), (None, 'news:alpaca-38483234', <Impact.POSITIVE: 'POSITIVE'>), (None, 'news:alpaca-38490439', <Impact.MIXED: 'MIXED'>), (None, 'news:alpaca-38526799', <Impact.POSITIVE: 'POSITIVE'>), (None, 'news:alpaca-38511556', <Impact.NEGATIVE: 'NEGATIVE'>), (None, 'news:alpaca-38490910', <Impact.NEGATIVE: 'NEGATIVE'>), (None, 'news:alpaca-38540655', <Impact.MIXED: 'MIXED'>)]
+.
+1 passed in 19.01s

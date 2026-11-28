@@ -1204,6 +1204,41 @@ class TechnicalAnalystConfig(_Frozen):
         return self
 
 
+class NewsAnalystConfig(_Frozen):
+    """The news analyst's tools and report checks (Stage 31).
+
+    `lookback_days`: calendar days of company news read (the brief's 14-30). `max_articles`:
+    most articles in the company news list. `events_horizon_days`: calendar days ahead of the
+    as-of day in which the symbol's own events are listed. `reactions`: past earnings
+    reactions listed. `sector_peers`: sector peers whose news is read (the highest ADV
+    first); `sector_articles_per_peer` and `sector_articles`: most articles taken from one
+    peer and from all of them. `max_catalysts`: most catalysts in a report.
+    `empty_news_confidence_cap`: the highest `confidence` (in [0, 1]) of a report written
+    without any company article.
+    """
+
+    lookback_days: Annotated[int, BeforeValidator(reject_bool), Field(ge=1, le=90)] = 21
+    max_articles: Annotated[int, BeforeValidator(reject_bool), Field(ge=1, le=100)] = 25
+    events_horizon_days: Annotated[int, BeforeValidator(reject_bool), Field(ge=1, le=365)] = 30
+    reactions: Annotated[int, BeforeValidator(reject_bool), Field(ge=1, le=40)] = 8
+    sector_peers: Annotated[int, BeforeValidator(reject_bool), Field(ge=1, le=50)] = 8
+    sector_articles_per_peer: Annotated[int, BeforeValidator(reject_bool), Field(ge=1, le=20)] = 3
+    sector_articles: Annotated[int, BeforeValidator(reject_bool), Field(ge=1, le=100)] = 10
+    max_catalysts: Annotated[int, BeforeValidator(reject_bool), Field(ge=1, le=50)] = 8
+    empty_news_confidence_cap: Annotated[float, BeforeValidator(reject_bool), Field(ge=0, le=1)] = (
+        0.2
+    )
+
+    @model_validator(mode="after")
+    def _consistent(self) -> Self:
+        if self.sector_articles_per_peer > self.sector_articles:
+            raise ValueError(
+                f"sector_articles_per_peer ({self.sector_articles_per_peer}) must not exceed "
+                f"sector_articles ({self.sector_articles})"
+            )
+        return self
+
+
 class AgentsConfig(_Frozen):
     """The agent framework (Stage 26).
 
@@ -1216,6 +1251,7 @@ class AgentsConfig(_Frozen):
     `memory`: agent memory (Stage 27).
     `fundamental`: the fundamental analyst's tools (Stage 29).
     `technical`: the technical analyst's tools and report checks (Stage 30).
+    `news`: the news analyst's tools and report checks (Stage 31).
     """
 
     max_tool_rounds: Annotated[int, Field(ge=1)] = 4
@@ -1224,6 +1260,7 @@ class AgentsConfig(_Frozen):
     memory: MemoryConfig = Field(default_factory=MemoryConfig)
     fundamental: FundamentalAnalystConfig = Field(default_factory=FundamentalAnalystConfig)
     technical: TechnicalAnalystConfig = Field(default_factory=TechnicalAnalystConfig)
+    news: NewsAnalystConfig = Field(default_factory=NewsAnalystConfig)
 
 
 class OrchestrationConfig(_Frozen):

@@ -1,0 +1,289 @@
+##### atlas.agents.research.news.x_catalyst_problems__mutmut_11
+@@ -10,7 +10,7 @@
+-            "an event or a reaction), not a coverage, summary, none or gap item"
++            "XXan event or a reaction), not a coverage, summary, none or gap itemXX"
+##### atlas.agents.research.news.x_catalyst_problems__mutmut_12
+@@ -10,7 +10,7 @@
+-            "an event or a reaction), not a coverage, summary, none or gap item"
++            "AN EVENT OR A REACTION), NOT A COVERAGE, SUMMARY, NONE OR GAP ITEM"
+##### atlas.agents.research.news.xǁNewsAnalystǁ__init____mutmut_1
+@@ -1,4 +1,4 @@
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get(None) is None:
+##### atlas.agents.research.news.xǁNewsAnalystǁ__init____mutmut_2
+@@ -1,4 +1,4 @@
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get("XXtool_registryXX") is None:
+##### atlas.agents.research.news.xǁNewsAnalystǁ__init____mutmut_3
+@@ -1,4 +1,4 @@
+-    if kwargs.get("tool_registry") is None:
++    if kwargs.get("TOOL_REGISTRY") is None:
+##### atlas.agents.research.news.xǁNewsAnalystǁ_empty_news_problems__mutmut_11
+@@ -6,7 +6,7 @@
+-            'articles about this stock in the last weeks")'
++            'XXarticles about this stock in the last weeks")XX'
+##### atlas.agents.research.news.xǁNewsAnalystǁ_empty_news_problems__mutmut_12
+@@ -6,7 +6,7 @@
+-            'articles about this stock in the last weeks")'
++            'ARTICLES ABOUT THIS STOCK IN THE LAST WEEKS")'
+##### atlas.agents.research.news.xǁNewsAnalystǁ_empty_news_problems__mutmut_16
+@@ -14,7 +14,7 @@
+-        if signal.name == "news_flow" and signal.direction is not Direction.FLAT:
++        if signal.name != "news_flow" and signal.direction is not Direction.FLAT:
+##### atlas.agents.research.news.xǁNewsAnalystǁ_empty_news_problems__mutmut_6
+@@ -4,7 +4,7 @@
+-            "there is no company news in the window (its coverage item says 0 articles): "
++            "XXthere is no company news in the window (its coverage item says 0 articles): XX"
+##### atlas.agents.research.news.xǁNewsAnalystǁ_empty_news_problems__mutmut_7
+@@ -4,7 +4,7 @@
+-            "there is no company news in the window (its coverage item says 0 articles): "
++            "THERE IS NO COMPANY NEWS IN THE WINDOW (ITS COVERAGE ITEM SAYS 0 ARTICLES): "
+##### atlas.agents.research.news.xǁNewsAnalystǁ_empty_news_problems__mutmut_8
+@@ -5,7 +5,7 @@
+-            'say so plainly in "Material vs noise:" (for example "There are no news '
++            'XXsay so plainly in "Material vs noise:" (for example "There are no news XX'
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_19
+@@ -11,7 +11,7 @@
+-            "signals must be exactly "
++            "XXsignals must be exactly XX"
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_22
+@@ -12,7 +12,7 @@
+-            + ", ".join(SIGNALS)
++            + "XX, XX".join(SIGNALS)
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_23
+@@ -13,7 +13,7 @@
+-            + " (each once); got "
++            + "XX (each once); got XX"
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_24
+@@ -13,7 +13,7 @@
+-            + " (each once); got "
++            + " (EACH ONCE); GOT "
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_25
+@@ -14,7 +14,7 @@
+-            + (", ".join(names) or "none")
++            + (", ".join(names) and "none")
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_27
+@@ -14,7 +14,7 @@
+-            + (", ".join(names) or "none")
++            + ("XX, XX".join(names) or "none")
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_28
+@@ -14,7 +14,7 @@
+-            + (", ".join(names) or "none")
++            + (", ".join(names) or "XXnoneXX")
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_29
+@@ -14,7 +14,7 @@
+-            + (", ".join(names) or "none")
++            + (", ".join(names) or "NONE")
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_37
+@@ -19,7 +19,7 @@
+-            "the summary needs these sections, in order, each starting a line with its "
++            "XXthe summary needs these sections, in order, each starting a line with its XX"
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_38
+@@ -19,7 +19,7 @@
+-            "the summary needs these sections, in order, each starting a line with its "
++            "THE SUMMARY NEEDS THESE SECTIONS, IN ORDER, EACH STARTING A LINE WITH ITS "
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_39
+@@ -20,7 +20,7 @@
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "XXlabel and a colon: XX" + ", ".join(f'"{m}:"' for m in missing)
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_40
+@@ -20,7 +20,7 @@
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "LABEL AND A COLON: " + ", ".join(f'"{m}:"' for m in missing)
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_42
+@@ -20,7 +20,7 @@
+-            "label and a colon: " + ", ".join(f'"{m}:"' for m in missing)
++            "label and a colon: " + "XX, XX".join(f'"{m}:"' for m in missing)
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_46
+@@ -24,7 +24,7 @@
+-        uncited += [f"risks[{i}]: {s}" for s in checks.uncited_numbers(risk)]
++        uncited = [f"risks[{i}]: {s}" for s in checks.uncited_numbers(risk)]
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_50
+@@ -27,7 +27,7 @@
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "XXevery sentence that states a number needs an [E:<id>] tag of its evidence; XX"
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_51
+@@ -27,7 +27,7 @@
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "every sentence that states a number needs an [e:<id>] tag of its evidence; "
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_52
+@@ -27,7 +27,7 @@
+-            "every sentence that states a number needs an [E:<id>] tag of its evidence; "
++            "EVERY SENTENCE THAT STATES A NUMBER NEEDS AN [E:<ID>] TAG OF ITS EVIDENCE; "
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_56
+@@ -33,7 +33,7 @@
+-            "keep the ones that matter most"
++            "XXkeep the ones that matter mostXX"
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_57
+@@ -33,7 +33,7 @@
+-            "keep the ones that matter most"
++            "KEEP THE ONES THAT MATTER MOST"
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_64
+@@ -36,7 +36,7 @@
+-        problems += catalyst_problems(catalyst, i, ctx.day, settings)
++        problems += catalyst_problems(catalyst, i, ctx.day, None)
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_70
+@@ -38,5 +38,5 @@
+-        problems += self._empty_news_problems(output, settings)
++        problems = self._empty_news_problems(output, settings)
+##### atlas.agents.research.news.xǁNewsAnalystǁfinalize__mutmut_3
+@@ -2,6 +2,6 @@
+-    if output.confidence > cap and self._no_news(ctx):
++    if output.confidence >= cap and self._no_news(ctx):
+##### atlas.agents.research.news.xǁNewsAnalystǁprompt_inputs__mutmut_10
+@@ -1,7 +1,7 @@
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), )
+##### atlas.agents.research.news.xǁNewsAnalystǁprompt_inputs__mutmut_11
+@@ -1,7 +1,7 @@
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=None), symbol=symbol)
+##### atlas.agents.research.news.xǁNewsAnalystǁprompt_inputs__mutmut_7
+@@ -1,7 +1,7 @@
+-    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=symbol)
++    memories = ctx.recall(self.name, MEMORY_QUERY.format(symbol=symbol), symbol=None)
+##### atlas.agents.research.news.xǁNewsAnalystǁsymbol__mutmut_9
+@@ -3,5 +3,5 @@
+-        raise ConfigError("news_analyst needs inputs['symbol'] (a ticker)")
++        raise ConfigError("XXnews_analyst needs inputs['symbol'] (a ticker)XX")
+##### atlas.agents.tools.news_tools.x__ahead__mutmut_3
+@@ -3,5 +3,5 @@
+-        return "today"
++        return "XXtodayXX"
+##### atlas.agents.tools.news_tools.x__ahead__mutmut_4
+@@ -3,5 +3,5 @@
+-        return "today"
++        return "TODAY"
+##### atlas.agents.tools.news_tools.x__company_articles__mutmut_11
+@@ -5,5 +5,5 @@
+-    found = view.news(symbol, settings.lookback_days, settings.max_articles + 1)
++    found = view.news(symbol, settings.lookback_days, settings.max_articles + 2)
+##### atlas.agents.tools.news_tools.x__company_articles__mutmut_12
+@@ -6,4 +6,4 @@
+-    return found[: settings.max_articles], len(found) > settings.max_articles
++    return found[: settings.max_articles], len(found) >= settings.max_articles
+##### atlas.agents.tools.news_tools.x__company_articles__mutmut_6
+@@ -5,5 +5,5 @@
+-    found = view.news(symbol, settings.lookback_days, settings.max_articles + 1)
++    found = view.news(symbol, settings.lookback_days, None)
+##### atlas.agents.tools.news_tools.x__company_articles__mutmut_9
+@@ -5,5 +5,5 @@
+-    found = view.news(symbol, settings.lookback_days, settings.max_articles + 1)
++    found = view.news(symbol, settings.lookback_days, )
+##### atlas.agents.tools.news_tools.x__event_item__mutmut_21
+@@ -3,7 +3,7 @@
+-    when = WHEN.get(str(row["time_of_day"]), WHEN["unknown"])
++    when = WHEN.get(str(row["time_of_day"]), None)
+##### atlas.agents.tools.news_tools.x__event_item__mutmut_23
+@@ -3,7 +3,7 @@
+-    when = WHEN.get(str(row["time_of_day"]), WHEN["unknown"])
++    when = WHEN.get(str(row["time_of_day"]), )
+##### atlas.agents.tools.news_tools.x__event_item__mutmut_80
+@@ -28,7 +28,7 @@
+-        source="events",
++        source="XXeventsXX",
+##### atlas.agents.tools.news_tools.x__event_item__mutmut_81
+@@ -28,7 +28,7 @@
+-        source="events",
++        source="EVENTS",
+##### atlas.agents.tools.news_tools.x__instant__mutmut_4
+@@ -1,2 +1,2 @@
+-    return pd.Timestamp(value).tz_convert("UTC").to_pydatetime()  # type: ignore[arg-type]
++    return pd.Timestamp(value).tz_convert("utc").to_pydatetime()  # type: ignore[arg-type]
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_13
+@@ -4,7 +4,7 @@
+-    pairs = list(zip((float(c) for c in rows["car"]), days, strict=True))
++    pairs = list(zip((float(c) for c in rows["car"]), days, strict=False))
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_33
+@@ -11,7 +11,7 @@
+-        f"{sum(c > 0 for c, _ in pairs)} of {k} positive; "
++        f"{sum(c >= 0 for c, _ in pairs)} of {k} positive; "
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_43
+@@ -13,6 +13,6 @@
+-        f"smallest {fmt_pct(low[0], signed=True)} ({low[1]})"
++        f"smallest {fmt_pct(low[0], signed=None)} ({low[1]})"
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_45
+@@ -13,6 +13,6 @@
+-        f"smallest {fmt_pct(low[0], signed=True)} ({low[1]})"
++        f"smallest {fmt_pct(low[0], )} ({low[1]})"
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_47
+@@ -13,6 +13,6 @@
+-        f"smallest {fmt_pct(low[0], signed=True)} ({low[1]})"
++        f"smallest {fmt_pct(low[0], signed=False)} ({low[1]})"
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_6
+@@ -4,7 +4,7 @@
+-    pairs = list(zip((float(c) for c in rows["car"]), days, strict=True))
++    pairs = list(zip((float(c) for c in rows["car"]), days, strict=None))
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_9
+@@ -4,7 +4,7 @@
+-    pairs = list(zip((float(c) for c in rows["car"]), days, strict=True))
++    pairs = list(zip((float(c) for c in rows["car"]), days, ))
+##### atlas.agents.tools.news_tools.x__sector_peers__mutmut_11
+@@ -13,7 +13,7 @@
+-            _log.warning("news.peer_skipped", symbol=other, reason=str(exc))
++            _log.warning("news.peer_skipped", symbol=other, reason=None)
+##### atlas.agents.tools.news_tools.x__sector_peers__mutmut_14
+@@ -13,7 +13,7 @@
+-            _log.warning("news.peer_skipped", symbol=other, reason=str(exc))
++            _log.warning("news.peer_skipped", symbol=other, )
+##### atlas.agents.tools.news_tools.x__sector_peers__mutmut_17
+@@ -13,7 +13,7 @@
+-            _log.warning("news.peer_skipped", symbol=other, reason=str(exc))
++            _log.warning("news.peer_skipped", symbol=other, reason=str(None))
+##### atlas.agents.tools.news_tools.x__sector_peers__mutmut_29
+@@ -20,7 +20,7 @@
+-            -volume[p] if math.isfinite(float(volume.get(p, math.nan))) else math.inf,
++            -volume[p] if (math.isfinite(float(volume.get(p, math.nan)))) or True else math.inf,
+##### atlas.agents.tools.news_tools.x__sector_peers__mutmut_34
+@@ -20,7 +20,7 @@
+-            -volume[p] if math.isfinite(float(volume.get(p, math.nan))) else math.inf,
++            -volume[p] if math.isfinite(float(volume.get(p, None))) else math.inf,
+##### atlas.agents.tools.news_tools.x__sector_peers__mutmut_36
+@@ -20,7 +20,7 @@
+-            -volume[p] if math.isfinite(float(volume.get(p, math.nan))) else math.inf,
++            -volume[p] if math.isfinite(float(volume.get(p, ))) else math.inf,
+##### atlas.agents.tools.news_tools.x_company_news__mutmut_2
+@@ -1,7 +1,7 @@
+-    _require(view, symbol)
++    _require(view, None)
+##### atlas.agents.tools.news_tools.x_past_reactions__mutmut_2
+@@ -1,7 +1,7 @@
+-    _require(view, symbol)
++    _require(view, None)
+##### atlas.agents.tools.news_tools.x_prefetch__mutmut_10
+@@ -10,7 +10,7 @@
+-        ("get_upcoming_events", upcoming_events),
++        ("XXget_upcoming_eventsXX", upcoming_events),
+##### atlas.agents.tools.news_tools.x_prefetch__mutmut_11
+@@ -10,7 +10,7 @@
+-        ("get_upcoming_events", upcoming_events),
++        ("GET_UPCOMING_EVENTS", upcoming_events),
+##### atlas.agents.tools.news_tools.x_prefetch__mutmut_12
+@@ -11,7 +11,7 @@
+-        ("get_past_earnings_reactions", past_reactions),
++        ("XXget_past_earnings_reactionsXX", past_reactions),
+##### atlas.agents.tools.news_tools.x_prefetch__mutmut_13
+@@ -11,7 +11,7 @@
+-        ("get_past_earnings_reactions", past_reactions),
++        ("GET_PAST_EARNINGS_REACTIONS", past_reactions),
+##### atlas.agents.tools.news_tools.x_sector_news__mutmut_2
+@@ -1,7 +1,7 @@
+-    _require(view, symbol)
++    _require(view, None)
+##### atlas.agents.tools.news_tools.x_sector_news__mutmut_46
+@@ -31,7 +31,7 @@
+-            peer, settings.lookback_days, settings.sector_articles_per_peer + len(own)
++            peer, settings.lookback_days, None
+##### atlas.agents.tools.news_tools.x_sector_news__mutmut_49
+@@ -31,8 +31,7 @@
+-            peer, settings.lookback_days, settings.sector_articles_per_peer + len(own)
+-        )
++            peer, settings.lookback_days, )
+##### atlas.agents.tools.news_tools.x_upcoming_events__mutmut_2
+@@ -2,7 +2,7 @@
+-    _require(view, symbol)
++    _require(view, None)
+##### atlas.agents.tools.news_tools.x_upcoming_events__mutmut_8
+@@ -4,7 +4,7 @@
+-    frame = view.events([symbol], settings.events_horizon_days)
++    frame = view.events(None, settings.events_horizon_days)

@@ -1,0 +1,142 @@
+main: 47 items in 2.0 s; blocked []
+fixture: 47 items in 0.3 s; blocked []
+equal items: 47 of 47
+
+[ncov:AAPL:2024-05-01:company] 2024-05-01 11:59Z AAPL company news on 2024-05-01: 25 articles in the 21 calendar days to 2024-05-01 (duplicates and roundups removed); newest published 2024-05-01; more articles exist than the 25 shown (the least relevant are left out)
+
+[news:alpaca-38542253] 2024-05-01 08:08Z iPhone Alarms On Mute Again: Apple Acknowledges Issue, But No Fix Timeline Yet
+
+In 2017, a bug in iOS 11 caused alarms to switch to silent mode, and similar complaints arose with iOS 17 updates last year.
+
+[news:alpaca-38540655] 2024-05-01 04:53Z Wall Street Braces For Brutal Apple Earnings, But Top Analyst Gives 6 Reasons To Stay Bullish On iPhone Maker
+
+Apple may not see a growth inflection until the end of the June quarter, says an analyst.
+
+[news:alpaca-38533634] 2024-04-30 20:13Z China Stock Ideas For Tech Resurgence: Tesla, Apple Make Strategic Moves; Goldman Sachs Projects 40% Upside Potential
+
+&#34;There&#39;s only two companies able to thread the needle in terms of China-US. It&#39;s Cook in Cupertino, and Musk and Tesla,&#34; said Wedbush&#39;s Dan Ives.
+
+[news:alpaca-38530062] 2024-04-30 17:45Z Apple's Glass Supplier Corning Outperforms in Tough Market, Eyes $3B Sales Boost in Three Years
+
+Corning Inc reported Q1 2024 core sales decline of 3% YoY to $3.26B, beating consensus of $3.12B. Core EPS of $0.38 also beat consensus of $0.35.
+
+[news:alpaca-38526799] 2024-04-30 16:07Z Apple's Secret AI Lab in Zurich Poised to Enhance iPhone Capabilities, Poach Google Staff
+
+Apple intensifies AI efforts, poaches experts from Google to lead secretive AI lab in Zurich, plans to showcase new generative AI features at WWDC.
+
+[news:alpaca-38520908] 2024-04-30 13:33Z PayPal Raises Annual Outlook, Expands Q1 Margins Amid Competitive Pressure from Apple
+
+PayPal (PYPL) reported Q1 revenue of $7.7B, beating estimates. Total payment volumes increased 14% and operating margin expanded. Q2 and FY24 outlook positive.
+
+[news:alpaca-38520025] 2024-04-30 13:13Z Apple's iPads Playing Crucial Role In Russia-Ukraine War: Kyiv Is Using Them To Control Western Weapons, Says US Defense Undersecretary
+
+Apple&#39;s iPads are being retrofitted in Ukraine Air Force&#39;s fighter jets. This allows iPads to be used to control Western weapons in the ongoing Russia-Ukraine war.
+
+[news:alpaca-38512134] 2024-04-30 09:22Z Financial Times Reported Earlier, Apple Has Poached Dozens Of AI Experts From Google; Created European Lab In Zurich
+
+[news:alpaca-38511556] 2024-04-30 08:29Z What Is Going On With Apple? iPhone Sales Drop By Staggering 9.3M Units Globally In Q1 2024 Because Of This Even As Industry Grows 10%: Report
+
+Apple iPhone sales have plummeted 16% in the first three months of 2024, starting the year on a bad note for the Tim Cook-led company.
+
+[news:alpaca-38510121] 2024-04-30 06:13Z Investor Sentiment Improves Further, Dow Jumps Over 100 Points
+
+[news:alpaca-38509852] 2024-04-30 05:42Z Apple's Stock Rally May Not Be Sustainable, Warns Jim Cramer: 'That's A Much Less Inspiring Kind Of Rally'
+
+Jim Cramer expressed his doubts about the longevity of Apple&#39;s stock rally, which was fueled by an analyst&#39;s upgrade. He cautioned investors to hold off on purchasing Apple shares
+
+[news:alpaca-38498638] 2024-04-29 17:35Z 10 Information Technology Stocks With Whale Alerts In Today's Session
+
+[news:alpaca-38493597] 2024-04-29 15:06Z BofA Says These 4 Companies Could Benefit From The Next Apple Product Cycle
+
+BofA Securities released a research note based on the list of Apple&#39;s suppliers which named companies that could potentially benefit from an Apple product cycle. BofA named electronics manufacturers Jabil and Flex as potential beneficiaries and noted Apple accounted for 17% of Jabil&#39;s revenue in 2023.
+
+[news:alpaca-38491899] 2024-04-29 14:15Z Market Clubhouse Morning Memo - April 29th, 2024 (Trade Strategy For SPY, QQQ, AAPL, MSFT, NVDA, GOOGL, META, And TSLA)
+
+Good Morning Traders! In today&#39;s Market Clubhouse Morning Memo, we will discuss SPY, QQQ, AAPL, MSFT, NVDA, GOOGL, META, and TSLA.
+
+[news:alpaca-38491531] 2024-04-29 14:03Z Apple's Imminent Product Launches Aims to Revitalize Its Stock After a 12% Decline in 2024, Potentially Setting a New Course for Investors
+
+Apple has planned a digital launch event for May 7.
+	Investors are closely watching to see if the upcoming product launches will provide the momentum needed for Apple&#39;s stock to rebound.
+
+[news:alpaca-38491219] 2024-04-29 13:52Z Apple And Tesla 'Only Two Companies Able To Thread The Needle In Terms Of China-US', Says Top Analyst After Tim Cook And Elon Musk's Recent China Visits
+
+Wedbush&#39;s Dan Ives sounded an optimistic note on Apple and Tesla after recent China visits by Tim Cook and Elon Musk.
+
+[news:alpaca-38490910] 2024-04-29 13:45Z Apple's iPad OS Among 22 Services Labeled 'Gatekeepers' By European Commission
+
+The Commission also pointed out that both business and end users are tied to iPadOS due to its comprehensive ecosystem.
+
+[news:alpaca-38490667] 2024-04-29 13:35Z Benzinga Opening Bell Update: Tesla Rises On Baidu FSD Mapping Partnership, Bernstein Upgrades Apple, SoFi Reverses From Earlier Gains
+
+[news:alpaca-38490439] 2024-04-29 13:26Z Citigroup Maintains Buy on Apple, Lowers Price Target to $210
+
+[news:alpaca-38489891] 2024-04-29 13:14Z Top 10 Trending Stocks On WallStreetBets As Of April 29, 2024 (Via Swaggy Stocks)
+
+[news:alpaca-38487419] 2024-04-29 12:01Z Analyst Scoreboard: 22 Ratings For Apple
+
+[news:alpaca-38483234] 2024-04-29 09:41Z Bernstein Upgrades Apple to Outperform, Announces $195 Price Target
+
+[news:alpaca-38481178] 2024-04-29 04:57Z How Apple's Arch Rivals Meta And Google Are Revamping Their Plans To Take On The Might Of iPhone And Vision Pro
+
+Mark Gurman said that Meta&#39;s decision to open up its virtual reality operating system to all headset manufacturers can be seen as a direct challenge to Apple&#39;s closed ecosystem.
+
+[news:alpaca-38358078] 2024-04-22 14:13Z Market Clubhouse Morning Memo - April 22nd, 2024 (Trade Strategy For SPY, QQQ, AAPL, MSFT, NVDA, GOOGL, META, And TSLA)
+
+Good Morning Traders! In today&#39;s Market Clubhouse Morning Memo, we will discuss SPY, QQQ, AAPL, MSFT, NVDA, GOOGL, META, and TSLA.
+
+[news:alpaca-38249729] 2024-04-15 14:23Z Market Clubhouse Morning Memo - April 15th, 2024 (Trade Strategy For SPY, QQQ, AAPL, MSFT, NVDA, GOOGL, META, And TSLA)
+
+Good Morning Traders! In today&#39;s Market Clubhouse Morning Memo, we will discuss SPY, QQQ, AAPL, MSFT, NVDA, GOOGL, META, and TSLA.
+
+[evt:AAPL:earnings:2024-05-02] 2024-02-01 21:30Z AAPL earnings estimated for 2024-05-02 after the market close (AMC), 1 calendar day ahead: no date is scheduled yet, so this is the last report date plus 52 weeks (an estimate, not a confirmed date)
+
+[rxs:AAPL:2024-05-01:summary] 2024-05-01 11:59Z AAPL last 8 earnings reactions (2022-04-28 to 2024-02-01): mean absolute 3-session abnormal return 2.1%, 7 of 8 positive; largest +2.9% (2023-02-02), smallest -5.9% (2023-08-03)
+
+[rx:AAPL:2024-02-01] 2024-02-06 21:15Z AAPL earnings of 2024-02-01 (reaction session 2024-02-02): gap -3.7%, open-to-close +3.3%, abnormal open-to-close +2.4% and 3-session abnormal return +0.3% against SPY
+
+[rx:AAPL:2023-11-02] 2023-11-07 21:15Z AAPL earnings of 2023-11-02 (reaction session 2023-11-03): gap -1.9%, open-to-close +1.4%, abnormal open-to-close +1.0% and 3-session abnormal return +1.0% against SPY
+
+[rx:AAPL:2023-08-03] 2023-08-08 20:15Z AAPL earnings of 2023-08-03 (reaction session 2023-08-04): gap -3.0%, open-to-close -1.9%, abnormal open-to-close -1.0% and 3-session abnormal return -5.9% against SPY
+
+[rx:AAPL:2023-05-04] 2023-05-09 20:15Z AAPL earnings of 2023-05-04 (reaction session 2023-05-05): gap +3.1%, open-to-close +1.5%, abnormal open-to-close +0.6% and 3-session abnormal return +2.2% against SPY
+
+[rx:AAPL:2023-02-02] 2023-02-07 21:15Z AAPL earnings of 2023-02-02 (reaction session 2023-02-03): gap -1.8%, open-to-close +4.4%, abnormal open-to-close +4.2% and 3-session abnormal return +2.9% against SPY
+
+[rx:AAPL:2022-10-27] 2022-11-01 20:15Z AAPL earnings of 2022-10-27 (reaction session 2022-10-28): gap +2.3%, open-to-close +5.1%, abnormal open-to-close +2.7% and 3-session abnormal return +2.8% against SPY
+
+[rx:AAPL:2022-07-28] 2022-08-02 20:15Z AAPL earnings of 2022-07-28 (reaction session 2022-07-29): gap +2.5%, open-to-close +0.8%, abnormal open-to-close -0.3% and 3-session abnormal return +1.2% against SPY
+
+[rx:AAPL:2022-04-28] 2022-05-03 20:15Z AAPL earnings of 2022-04-28 (reaction session 2022-04-29): gap -1.1%, open-to-close -2.6%, abnormal open-to-close +0.1% and 3-session abnormal return +0.1% against SPY
+
+[ncov:AAPL:2024-05-01:sector] 2024-05-01 11:59Z AAPL sector news on 2024-05-01: Information Technology peers read by dollar volume: NVDA (3 articles), AMD (3 articles), MSFT (3 articles), SMCI (3 articles), AVGO (3 articles), MU (3 articles), INTC (3 articles), CRM (3 articles); 10 articles shown from the last 21 calendar days (articles already in the company list left out)
+
+[news:alpaca-38546083] 2024-05-01 11:14Z Why Are AMD, Nvidia And SMCI Stocks Falling Sharply Premarket Today?
+
+While AMD&#39;s year-over-year revenue and earnings increased, they fell short of the previous quarter.
+
+[news:alpaca-38545693] 2024-05-01 11:06Z Microsoft, OpenAI Sued By Newspaper Publishers For Copyright Infringement Over Allegedly Generating 'Near-Verbatim Copies'
+
+Eight U.S. newspaper publishers have filed a lawsuit against Microsoft and OpenAI in a New York federal court.
+
+[news:alpaca-38544746] 2024-05-01 10:44Z Wall Street Set To Open Lower After AMD Earnings Disappoint As Traders Look To Fed's Powell For Relief: Why This Analyst Sees Incoming Summer Rally
+
+A negative sentiment might linger on Wall Street on Wednesday, as evidenced by stock futures, after Advanced Micro Devices, Inc.‘s (NASDAQ:AMD)
+
+[news:alpaca-38544568] 2024-05-01 10:34Z Brookfield Asset Management Together With Brookfield Renewable And Microsoft Announced The Signing Of A Global Renewable Energy Framework Agreement To Contribute To Microsoft's Goal Of Having 100% Of Its Electricity Consumption
+
+[news:alpaca-38543247] 2024-05-01 09:57Z Starbucks Reports Downbeat Earnings, Joins Skyworks Solutions, Super Micro Computer And Other Big Stocks Moving Lower In Wednesday's Pre-Market Session
+
+[news:alpaca-38540318] 2024-05-01 03:44Z Nvidia's AI Leadership Challenged As AMD Claims Superior Inference Performance With MI300 Chip: 'Partners Are Seeing Very Strong Performance'
+
+Su claimed that AMD&#39;s MI300X GPUs offer better inferencing performance and significant total cost of ownership advantages compared to Nvidia&#39;s H100 GPUs.
+
+[news:alpaca-38535435] 2024-04-30 20:46Z Salesforce's Options: A Look at What the Big Money is Thinking
+
+[news:alpaca-38529770] 2024-04-30 18:45Z Trading Strategies For Advanced Micro Devices Before And After Q1 Earnings
+
+Advanced Micro Devices, Inc (NASDAQ: AMD) was trading flat Tuesday ahead of its first-quarter earnings print set to take place after the market closes.
+
+[news:alpaca-38525211] 2024-04-30 15:25Z UBS Maintains Buy on NVIDIA, Raises Price Target to $1150
+
+[news:alpaca-38523763] 2024-04-30 15:00Z Performance Comparison: Broadcom And Competitors In Semiconductors &amp; Semiconductor Equipment Industry

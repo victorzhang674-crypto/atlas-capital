@@ -1,0 +1,148 @@
+{
+  "symbol": "AAPL",
+  "as_of": "2024-05-01",
+  "recorded_on": "2026-11-28",
+  "provider": "openai_compatible",
+  "model": "deepseek-flash",
+  "prompt_version": "news_analyst.j2@v1|get_company_news@v1,get_past_earnings_reactions@v1,get_sector_news@v1,get_upcoming_events@v1",
+  "status": "ok",
+  "llm_calls": 1,
+  "tool_calls": [],
+  "evidence_items": 47,
+  "cited": [
+    "news:alpaca-38483234",
+    "news:alpaca-38490439",
+    "news:alpaca-38511556",
+    "news:alpaca-38526799",
+    "news:alpaca-38512134",
+    "news:alpaca-38491531",
+    "news:alpaca-38490910",
+    "news:alpaca-38491899",
+    "news:alpaca-38358078",
+    "news:alpaca-38249729",
+    "news:alpaca-38542253",
+    "news:alpaca-38520025",
+    "news:alpaca-38530062",
+    "news:alpaca-38520908",
+    "news:alpaca-38498638",
+    "news:alpaca-38489891",
+    "evt:AAPL:earnings:2024-05-02",
+    "news:alpaca-38540655",
+    "news:alpaca-38509852",
+    "news:alpaca-38481178",
+    "news:alpaca-38491219",
+    "rxs:AAPL:2024-05-01:summary",
+    "rx:AAPL:2024-02-01"
+  ],
+  "problems": [],
+  "usage": {
+    "input_tokens": 6684,
+    "cached_input_tokens": 0,
+    "cache_write_tokens": 0,
+    "output_tokens": 1763,
+    "reasoning_tokens": 0
+  },
+  "cost_usd": 0.0020603999999999996,
+  "seconds": 11.1
+}
+{
+  "ticker": "AAPL",
+  "as_of": "2024-05-01",
+  "analyst": "news_analyst",
+  "summary": "Material vs noise: The material items are the Bernstein upgrade to Outperform with a $195 target [E:news:alpaca-38483234], the Citigroup Buy with a lowered $210 target [E:news:alpaca-38490439], the reported 16% Q1 iPhone decline with 9.3M units lost while the industry grew 10% [E:news:alpaca-38511556], the Zurich AI lab and Google poaching story [E:news:alpaca-38526799] [E:news:alpaca-38512134], the May 7 launch event framed against a 12% 2024 decline [E:news:alpaca-38491531], and the iPadOS gatekeeper designation by the European Commission [E:news:alpaca-38490910]. Noise is the repeated Market Clubhouse morning memo [E:news:alpaca-38491899] [E:news:alpaca-38358078] [E:news:alpaca-38249729], the alarm bug with no fix timeline [E:news:alpaca-38542253], the iPad-in-Ukraine story [E:news:alpaca-38520025], the Corning and PayPal read-throughs [E:news:alpaca-38530062] [E:news:alpaca-38520908] and the whale-alert and trending-stock roundups [E:news:alpaca-38498638] [E:news:alpaca-38489891].\nCatalysts: The estimated 2024-05-02 after-close earnings print is the dominant near-term catalyst [E:evt:AAPL:earnings:2024-05-02], with the May 7 product launch event a second dated one [E:news:alpaca-38491531]; the Bernstein upgrade and the analyst view that growth may not inflect until the end of the June quarter set expectations low [E:news:alpaca-38483234] [E:news:alpaca-38540655].\nRisk events: The earnings print is binary and comes after a rally that Jim Cramer already calls unsustainable [E:news:alpaca-38509852], and the iPhone unit decline is a concrete demand risk into the report [E:news:alpaca-38511556]. The iPadOS gatekeeper label adds a regulatory overhang [E:news:alpaca-38490910], and Meta opening its VR OS challenges the closed ecosystem [E:news:alpaca-38481178].\nNarrative shifts: The story moved from a 12% 2024 decline and weak iPhone data to an upgrade-driven rally and an AI narrative built on the Zurich lab and WWDC features [E:news:alpaca-38491531] [E:news:alpaca-38483234] [E:news:alpaca-38526799]. China exposure is being reframed positively after Tim Cook's visit, with one analyst calling Apple and Tesla the only two companies able to thread the China-US needle [E:news:alpaca-38491219].\nWhat the market may be missing: Hypothesis: with 7 of 8 past earnings reactions positive and a mean absolute 3-session abnormal move of 2.1% [E:rxs:AAPL:2024-05-01:summary], the setup into an estimated 2024-05-02 print is asymmetric to the upside if expectations are as low as the bearish previews suggest [E:news:alpaca-38540655]; the offsetting evidence is the -5.9% worst case in that same history [E:rxs:AAPL:2024-05-01:summary] and the -3.7% gap at the last report [E:rx:AAPL:2024-02-01].\nEvent calendar: Earnings estimated for 2024-05-02 after the close [E:evt:AAPL:earnings:2024-05-02], the May 7 launch event [E:news:alpaca-38491531], and no ex-dividend date was provided in the data.",
+  "signals": [
+    {
+      "name": "news_flow",
+      "direction": "LONG",
+      "strength": 0.45,
+      "evidence_ids": [
+        "news:alpaca-38483234",
+        "news:alpaca-38490439",
+        "news:alpaca-38526799",
+        "news:alpaca-38511556",
+        "news:alpaca-38509852",
+        "news:alpaca-38490910"
+      ]
+    },
+    {
+      "name": "catalysts",
+      "direction": "LONG",
+      "strength": 0.4,
+      "evidence_ids": [
+        "evt:AAPL:earnings:2024-05-02",
+        "news:alpaca-38491531",
+        "news:alpaca-38483234",
+        "news:alpaca-38540655"
+      ]
+    },
+    {
+      "name": "event_risk",
+      "direction": "SHORT",
+      "strength": 0.5,
+      "evidence_ids": [
+        "evt:AAPL:earnings:2024-05-02",
+        "rxs:AAPL:2024-05-01:summary",
+        "rx:AAPL:2024-02-01",
+        "news:alpaca-38509852"
+      ]
+    }
+  ],
+  "risks": [
+    "The estimated 2024-05-02 earnings print is binary and follows an upgrade-driven rally that Jim Cramer calls unsustainable [E:news:alpaca-38509852].",
+    "Past earnings have produced a worst 3-session abnormal return of -5.9% and a -3.7% gap at the last report [E:rxs:AAPL:2024-05-01:summary] [E:rx:AAPL:2024-02-01].",
+    "iPhone unit declines of 16% in Q1 2024 point to demand weakness into guidance [E:news:alpaca-38511556].",
+    "The iPadOS gatekeeper designation adds EU regulatory constraints [E:news:alpaca-38490910].",
+    "Meta opening its VR operating system to all headset makers challenges Apple's closed ecosystem [E:news:alpaca-38481178]."
+  ],
+  "confidence": 0.55,
+  "catalysts": [
+    {
+      "date": "2024-05-02",
+      "description": "AAPL earnings estimated for 2024-05-02 after the market close, an estimate rather than a confirmed date.",
+      "evidence_id": "evt:AAPL:earnings:2024-05-02",
+      "expected_impact": "MIXED"
+    },
+    {
+      "date": "2024-05-07",
+      "description": "Apple has planned a digital launch event for May 7, watched as a possible catalyst after a 12% decline in 2024.",
+      "evidence_id": "news:alpaca-38491531",
+      "expected_impact": "POSITIVE"
+    },
+    {
+      "date": null,
+      "description": "Bernstein upgraded Apple to Outperform with a $195 price target.",
+      "evidence_id": "news:alpaca-38483234",
+      "expected_impact": "POSITIVE"
+    },
+    {
+      "date": null,
+      "description": "Citigroup maintained Buy on Apple while lowering its price target to $210.",
+      "evidence_id": "news:alpaca-38490439",
+      "expected_impact": "MIXED"
+    },
+    {
+      "date": null,
+      "description": "Apple is poaching AI experts from Google for a secretive Zurich lab and plans to showcase generative AI features at WWDC.",
+      "evidence_id": "news:alpaca-38526799",
+      "expected_impact": "POSITIVE"
+    },
+    {
+      "date": null,
+      "description": "Apple iPhone sales fell 16% in the first three months of 2024, a 9.3M unit drop globally while the industry grew 10%.",
+      "evidence_id": "news:alpaca-38511556",
+      "expected_impact": "NEGATIVE"
+    },
+    {
+      "date": null,
+      "description": "The European Commission labeled iPadOS among 22 services as gatekeepers under its rules.",
+      "evidence_id": "news:alpaca-38490910",
+      "expected_impact": "NEGATIVE"
+    },
+    {
+      "date": null,
+      "description": "An analyst says Apple may not see a growth inflection until the end of the June quarter even as he gives reasons to stay bullish.",
+      "evidence_id": "news:alpaca-38540655",
+      "expected_impact": "MIXED"
+    }
+  ]
+}

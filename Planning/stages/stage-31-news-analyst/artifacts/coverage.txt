@@ -1,0 +1,32 @@
+$ uv run pytest tests/unit/agents/research tests/unit/agents/test_agents_finalize.py tests/unit/agents/test_agents_single_evidence_id.py tests/unit/core/types/test_types_news.py -q -p no:cacheprovider --cov=src/atlas/agents/tools --cov=src/atlas/agents/research --cov=src/atlas/agents/evidence.py --cov-report=term-missing
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 39%]
+........................................................................ [ 52%]
+........................................................................ [ 65%]
+........................................................................ [ 78%]
+........................................................................ [ 91%]
+................................................./Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/stage-31-planning-audit-b487ce/.venv/lib/python3.12/site-packages/coverage/inorout.py:558: CoverageWarning: Module src/atlas/agents/evidence.py was never imported. (module-not-imported); see https://coverage.readthedocs.io/en/7.17.0/messages.html#warning-module-not-imported
+  self.warn(f"Module {pkg} was never imported.", slug="module-not-imported")
+                        [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.12.13-final-0 _______________
+
+Name                                          Stmts   Miss  Cover   Missing
+---------------------------------------------------------------------------
+src/atlas/agents/research/__init__.py             4      0   100%
+src/atlas/agents/research/checks.py              77      2    97%   89-90
+src/atlas/agents/research/fundamental.py         70      0   100%
+src/atlas/agents/research/news.py               117      0   100%
+src/atlas/agents/research/technical.py           87      0   100%
+src/atlas/agents/tools/__init__.py                3      0   100%
+src/atlas/agents/tools/dataview_tools.py         66     26    61%   68, 72, 76-77, 82, 86-102, 106-123
+src/atlas/agents/tools/fundamental_tools.py     533      5    99%   359, 428, 455, 504, 811
+src/atlas/agents/tools/news_tools.py            176      0   100%
+src/atlas/agents/tools/registry.py               99      7    93%   57, 59, 61, 107, 127-128, 148
+src/atlas/agents/tools/technical_tools.py       251      1    99%   441
+---------------------------------------------------------------------------
+TOTAL                                          1483     41    97%
+553 passed, 3 deselected in 73.87s (0:01:13)
+
+exit 0

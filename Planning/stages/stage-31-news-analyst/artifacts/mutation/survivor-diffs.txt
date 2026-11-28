@@ -1,0 +1,52 @@
+##### atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_27
+-            + (", ".join(names) or "none")
++            + ("XX, XX".join(names) or "none")
+##### atlas.agents.research.news.xǁNewsAnalystǁsymbol__mutmut_9
+-        raise ConfigError("news_analyst needs inputs['symbol'] (a ticker)")
++        raise ConfigError("XXnews_analyst needs inputs['symbol'] (a ticker)XX")
+##### atlas.agents.tools.news_tools.x__company_articles__mutmut_11
+-    found = view.news(symbol, settings.lookback_days, settings.max_articles + 1)
++    found = view.news(symbol, settings.lookback_days, settings.max_articles + 2)
+##### atlas.agents.tools.news_tools.x__company_articles__mutmut_6
+-    found = view.news(symbol, settings.lookback_days, settings.max_articles + 1)
++    found = view.news(symbol, settings.lookback_days, None)
+##### atlas.agents.tools.news_tools.x__company_articles__mutmut_9
+-    found = view.news(symbol, settings.lookback_days, settings.max_articles + 1)
++    found = view.news(symbol, settings.lookback_days, )
+##### atlas.agents.tools.news_tools.x__instant__mutmut_4
+-    return pd.Timestamp(value).tz_convert("UTC").to_pydatetime()  # type: ignore[arg-type]
++    return pd.Timestamp(value).tz_convert("utc").to_pydatetime()  # type: ignore[arg-type]
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_13
+-    pairs = list(zip((float(c) for c in rows["car"]), days, strict=True))
++    pairs = list(zip((float(c) for c in rows["car"]), days, strict=False))
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_6
+-    pairs = list(zip((float(c) for c in rows["car"]), days, strict=True))
++    pairs = list(zip((float(c) for c in rows["car"]), days, strict=None))
+##### atlas.agents.tools.news_tools.x__reaction_summary__mutmut_9
+-    pairs = list(zip((float(c) for c in rows["car"]), days, strict=True))
++    pairs = list(zip((float(c) for c in rows["car"]), days, ))
+##### atlas.agents.tools.news_tools.x__sector_peers__mutmut_34
+-            -volume[p] if math.isfinite(float(volume.get(p, math.nan))) else math.inf,
++            -volume[p] if math.isfinite(float(volume.get(p, None))) else math.inf,
+##### atlas.agents.tools.news_tools.x__sector_peers__mutmut_36
+-            -volume[p] if math.isfinite(float(volume.get(p, math.nan))) else math.inf,
++            -volume[p] if math.isfinite(float(volume.get(p, ))) else math.inf,
+##### atlas.agents.tools.news_tools.x_company_news__mutmut_2
+-    _require(view, symbol)
++    _require(view, None)
+##### atlas.agents.tools.news_tools.x_past_reactions__mutmut_2
+-    _require(view, symbol)
++    _require(view, None)
+##### atlas.agents.tools.news_tools.x_sector_news__mutmut_2
+-    _require(view, symbol)
++    _require(view, None)
+##### atlas.agents.tools.news_tools.x_sector_news__mutmut_46
+-            peer, settings.lookback_days, settings.sector_articles_per_peer + len(own)
++            peer, settings.lookback_days, None
+##### atlas.agents.tools.news_tools.x_sector_news__mutmut_49
+-            peer, settings.lookback_days, settings.sector_articles_per_peer + len(own)
+-        )
++            peer, settings.lookback_days, )
+##### atlas.agents.tools.news_tools.x_upcoming_events__mutmut_8
+-    frame = view.events([symbol], settings.events_horizon_days)
++    frame = view.events(None, settings.events_horizon_days)

@@ -1,0 +1,17 @@
+    atlas.agents.tools.news_tools.x__instant__mutmut_4: suspicious
+    atlas.agents.tools.news_tools.x__company_articles__mutmut_6: suspicious
+    atlas.agents.tools.news_tools.x__company_articles__mutmut_9: suspicious
+    atlas.agents.tools.news_tools.x__company_articles__mutmut_11: suspicious
+    atlas.agents.tools.news_tools.x_company_news__mutmut_2: suspicious
+    atlas.agents.tools.news_tools.x__sector_peers__mutmut_34: suspicious
+    atlas.agents.tools.news_tools.x__sector_peers__mutmut_36: suspicious
+    atlas.agents.tools.news_tools.x_sector_news__mutmut_2: suspicious
+    atlas.agents.tools.news_tools.x_sector_news__mutmut_46: suspicious
+    atlas.agents.tools.news_tools.x_sector_news__mutmut_49: suspicious
+    atlas.agents.tools.news_tools.x_upcoming_events__mutmut_8: suspicious
+    atlas.agents.tools.news_tools.x__reaction_summary__mutmut_6: suspicious
+    atlas.agents.tools.news_tools.x__reaction_summary__mutmut_9: suspicious
+    atlas.agents.tools.news_tools.x__reaction_summary__mutmut_13: suspicious
+    atlas.agents.tools.news_tools.x_past_reactions__mutmut_2: suspicious
+    atlas.agents.research.news.xǁNewsAnalystǁsymbol__mutmut_9: suspicious
+    atlas.agents.research.news.xǁNewsAnalystǁcheck_output__mutmut_27: suspicious

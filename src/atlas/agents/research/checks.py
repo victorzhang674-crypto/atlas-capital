@@ -113,13 +113,19 @@ def ungrounded_numbers(text: str, evidence: Mapping[str, str]) -> list[str]:
 
 
 def grounding_problems(
-    summary: str, risks: Sequence[str], evidence: Mapping[str, str]
+    summary: str,
+    risks: Sequence[str],
+    evidence: Mapping[str, str],
+    others: Mapping[str, Sequence[str]] | None = None,
 ) -> list[str]:
-    """The `ungrounded_numbers` problem of a report (its `summary` and each of its `risks`) as
-    the repair-turn text, or no problem."""
+    """The `ungrounded_numbers` problem of a report (its `summary`, each of its `risks` and
+    each text of `others`, a label such as `catalysts` to the texts under it) as the
+    repair-turn text, or no problem."""
     bad = ungrounded_numbers(summary, evidence)
-    for i, risk in enumerate(risks):
-        bad += [f"risks[{i}]: {s}" for s in ungrounded_numbers(risk, evidence)]
+    labelled = {"risks": risks, **(others or {})}
+    for label, texts in labelled.items():
+        for i, text in enumerate(texts):
+            bad += [f"{label}[{i}]: {s}" for s in ungrounded_numbers(text, evidence)]
     if not bad:
         return []
     return [

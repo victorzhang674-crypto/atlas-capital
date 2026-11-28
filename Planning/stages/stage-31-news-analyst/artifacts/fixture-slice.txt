@@ -1,0 +1,6 @@
+news: {'news': 2269} in 0.6 s
+events: {'events': 2564, 'macro_events': 322, 'earnings_reactions': 2468} in 0.4 s
+prices: {'prices_daily': 2730} in 0.1 s
+actions: {'corporate_actions': 192} in 0.0 s
+static: {'instruments': 66, 'index_membership': 70} in 0.0 s
+fixture lake: 1.15 MB; rows {'news': 2269, 'events': 2564, 'macro_events': 322, 'earnings_reactions': 2468, 'prices_daily': 2730, 'corporate_actions': 192, 'instruments': 66, 'index_membership': 70}
