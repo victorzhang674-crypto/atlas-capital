@@ -1551,4 +1551,4 @@ Full block and raw output: [verification.md](stages/stage-31-news-analyst/verifi
 - Waivers: none
 
 - Merge: stage commit `38c8203`; `origin/main` (`207243a`) merged into the branch as `e6dfcea` (no conflict). Merged result: `uv run pytest -q` → 5930 passed, 84 deselected, exit 0 · `make check` → exit 0 (5927 + 3 timing passed) · `make test-integration` → 48 passed, 15 skipped, exit 0 · raw: [artifacts/merged-pytest.txt](stages/stage-31-news-analyst/artifacts/merged-pytest.txt)
-
+- Pushed `main` and the stage branch at `6eaecd9` (level with `origin`; `main` fast-forwarded in the owner's Terminal panel: the sandbox cannot write the main checkout); `git branch --merged main` lists the stage branch; CI (`make check` + `make test-integration`) success on both runs (46180673592 main, 46180601300 branch) · raw: [stages/stage-31-news-analyst/artifacts/ci-runs-6eaecd9.json](stages/stage-31-news-analyst/artifacts/ci-runs-6eaecd9.json)

@@ -29,4 +29,4 @@ Output of commands run in this stage's chat (Project.md Rule 1); raw files in [a
 **Result:** ALL CRITERIA VERIFIED
 
 - Stage commit `38c8203`; `origin/main` (`207243a`) merged into the branch as **`e6dfcea`** (no conflict). Merged result: `uv run pytest -q` → 5930 passed, 84 deselected, exit 0 · `make check` → exit 0 (ruff clean, 544 files formatted, mypy clean on 194 files, 5927 + 3 timing passed) · `make test-integration` → 48 passed, 15 skipped, exit 0 · raw: [artifacts/merged-pytest.txt](artifacts/merged-pytest.txt), [artifacts/merged-make-check.txt](artifacts/merged-make-check.txt), [artifacts/merged-integration.txt](artifacts/merged-integration.txt)
-
+- Pushed `main` and the stage branch at `6eaecd9` (level with `origin`; `main` fast-forwarded in the owner's Terminal panel: the sandbox cannot write the main checkout); `git branch --merged main` lists the stage branch; CI (`make check` + `make test-integration`) success on both runs (46180673592 main, 46180601300 branch) · raw: [artifacts/ci-runs-6eaecd9.json](artifacts/ci-runs-6eaecd9.json)
