@@ -1,0 +1,95 @@
+{
+  "symbol": "AAPL",
+  "as_of": "2024-05-01",
+  "recorded_on": "2026-11-28",
+  "provider": "openai_compatible",
+  "model": "deepseek-flash",
+  "prompt_version": "technical_analyst.j2@v2|get_price_summary@v2,get_technical_snapshot@v1",
+  "status": "ok",
+  "llm_calls": 2,
+  "tool_calls": [],
+  "evidence_items": 11,
+  "cited": [
+    "pxs:AAPL:2024-04-30:ma",
+    "tsnap:AAPL:2024-04-30:trend",
+    "tsnap:AAPL:2024-04-30:momentum",
+    "pxs:AAPL:2024-04-30:range",
+    "tsnap:AAPL:2024-04-30:volatility",
+    "pxs:AAPL:2024-04-30:stops",
+    "regime:2024-05-01:market",
+    "pxs:AAPL:2024-04-30:levels",
+    "tsnap:AAPL:2024-04-30:levels"
+  ],
+  "problems": [],
+  "usage": {
+    "input_tokens": 5828,
+    "cached_input_tokens": 5120,
+    "cache_write_tokens": 0,
+    "output_tokens": 3181,
+    "reasoning_tokens": 0
+  },
+  "cost_usd": 0.00279816,
+  "seconds": 19.0
+}
+{
+  "ticker": "AAPL",
+  "as_of": "2024-05-01",
+  "analyst": "technical_analyst",
+  "summary": "Trend: AAPL is in a corrective downtrend: the last close 170.33 sits +0.42% above SMA20 169.62 but -1.45% below SMA50 172.84 and -5.99% below SMA200 181.18, with SMA50 4.60% below SMA200 [E:pxs:AAPL:2024-04-30:ma]. Price-to-SMA200 at 0.940 ranks in only the 11th own percentile and 16th universe percentile, and the 63-day return of -9.30% is in the 16th own percentile, so the medium-term trend is weak [E:tsnap:AAPL:2024-04-30:trend] [E:tsnap:AAPL:2024-04-30:momentum]. The stock is -14.56% from its 52-week high and only +4.22% off its low, at 19.2% of the range [E:pxs:AAPL:2024-04-30:range].\nMomentum: Short-term momentum is improving against the trend: ret_5d +2.06% (74th own percentile) and MACD histogram +0.57 (84th own percentile) with MACD -0.86 above its signal -1.43 [E:tsnap:AAPL:2024-04-30:momentum] [E:tsnap:AAPL:2024-04-30:trend]. RSI 14 at 49.3 is neutral, and the longer horizons stay poor (ret_252d +0.92% at the 2nd own percentile, momentum_12_1 +0.74% at the 1st), so this is a bounce inside a weak trend rather than a confirmed reversal [E:tsnap:AAPL:2024-04-30:momentum]. The -1.83% last session (6th own percentile) shows the bounce is fragile [E:tsnap:AAPL:2024-04-30:momentum].\nVolatility regime: Realised volatility is elevated against the stock's own history: vol_21d 24.06% annualised (85th own percentile), vol_63d 21.09% (75th) and ATR(14) 3.41 USD = 2.00% of the last close (89th own percentile) [E:tsnap:AAPL:2024-04-30:volatility] [E:pxs:AAPL:2024-04-30:stops]. Against the index it is only moderate (58th universe percentile on vol_21d, beta 1.029), and the market regime is NORMAL volatility with an UP trend and risk scalar 1.00 [E:tsnap:AAPL:2024-04-30:volatility] [E:regime:2024-05-01:market].\nLevels: Support is close: SMA20 169.62 (-0.42%), then the 20- and 63-session low 164.08 (-3.67%) and the 52-week low 163.44 (-4.05%) [E:pxs:AAPL:2024-04-30:levels]. Resistance overhead: SMA50 172.84 (+1.47%), the 20-session high 178.36 (+4.71%) and SMA200 181.18 (+6.37%) [E:pxs:AAPL:2024-04-30:levels]. Bollinger %B 0.562 leaves the price mid-band with no edge [E:tsnap:AAPL:2024-04-30:levels].\nTiming and entry: The setup is a range trade at best, so wait for a pullback toward the 164.08-163.44 support shelf rather than buying into resistance at the SMA50 172.84 [E:pxs:AAPL:2024-04-30:levels]. A close back above SMA50 172.84 would be the alternative trigger, but the weak 63-day return of -9.30% and 252-day return of +0.92% argue against chasing [E:pxs:AAPL:2024-04-30:levels] [E:tsnap:AAPL:2024-04-30:momentum].\nInvalidation: A daily close below the 52-week low 163.44 (-4.05% from the last close) breaks the range floor and voids any long bias [E:pxs:AAPL:2024-04-30:levels].",
+  "signals": [
+    {
+      "name": "trend",
+      "direction": "SHORT",
+      "strength": 0.55,
+      "evidence_ids": [
+        "pxs:AAPL:2024-04-30:ma",
+        "tsnap:AAPL:2024-04-30:trend",
+        "tsnap:AAPL:2024-04-30:momentum",
+        "pxs:AAPL:2024-04-30:range"
+      ],
+      "timing": "AVOID",
+      "suggested_stop_pct": 0.06
+    },
+    {
+      "name": "momentum",
+      "direction": "FLAT",
+      "strength": 0.35,
+      "evidence_ids": [
+        "tsnap:AAPL:2024-04-30:momentum",
+        "tsnap:AAPL:2024-04-30:trend"
+      ],
+      "timing": "AVOID",
+      "suggested_stop_pct": null
+    },
+    {
+      "name": "volatility",
+      "direction": "SHORT",
+      "strength": 0.45,
+      "evidence_ids": [
+        "tsnap:AAPL:2024-04-30:volatility",
+        "pxs:AAPL:2024-04-30:stops",
+        "regime:2024-05-01:market"
+      ],
+      "timing": "AVOID",
+      "suggested_stop_pct": 0.06
+    },
+    {
+      "name": "levels",
+      "direction": "FLAT",
+      "strength": 0.4,
+      "evidence_ids": [
+        "pxs:AAPL:2024-04-30:levels",
+        "tsnap:AAPL:2024-04-30:levels"
+      ],
+      "timing": "AVOID",
+      "suggested_stop_pct": null
+    }
+  ],
+  "risks": [
+    "A close above SMA50 172.84 (+1.47%) would flip the short-term trend and squeeze the corrective view [E:pxs:AAPL:2024-04-30:levels].",
+    "The 5-day return +2.06% and MACD histogram +0.57 show momentum already turning up, so a short could be late [E:tsnap:AAPL:2024-04-30:momentum] [E:tsnap:AAPL:2024-04-30:trend].",
+    "ATR(14) at 2.00% of the last close (89th own percentile) means wide daily swings can stop out positions before the trend resolves [E:tsnap:AAPL:2024-04-30:volatility] [E:pxs:AAPL:2024-04-30:stops].",
+    "The market regime is UP with breadth 73% above the 200-session average, which can lift AAPL against its own weak trend [E:regime:2024-05-01:market]."
+  ],
+  "confidence": 0.5
+}

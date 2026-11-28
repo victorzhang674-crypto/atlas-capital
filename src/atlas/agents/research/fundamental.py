@@ -17,8 +17,14 @@ from typing import Any
 
 from atlas.agents.base import BaseAgent
 from atlas.agents.context import AgentContext
+from atlas.agents.evidence import EvidenceLedger
 from atlas.agents.research import checks
-from atlas.agents.research.checks import MAX_LISTED, sentences, uncited_numbers
+from atlas.agents.research.checks import (
+    MAX_LISTED,
+    sentences,
+    uncited_numbers,
+    ungrounded_numbers,
+)
 from atlas.agents.tools.dataview_tools import default_tools
 from atlas.agents.tools.fundamental_tools import FUNDAMENTAL_TOOLS, prefetch
 from atlas.agents.tools.registry import ToolRegistry
@@ -124,6 +130,13 @@ class FundamentalAnalyst(BaseAgent[AnalystReport]):
             )
         return problems
 
+    def check_evidence(
+        self, ctx: AgentContext, output: AnalystReport, evidence: EvidenceLedger
+    ) -> Sequence[str]:
+        return checks.grounding_problems(
+            output.summary, output.risks, {item.id: item.text for item in evidence.items}
+        )
+
 
 __all__ = [
     "MAX_LISTED",
@@ -135,4 +148,5 @@ __all__ = [
     "missing_sections",
     "sentences",
     "uncited_numbers",
+    "ungrounded_numbers",
 ]

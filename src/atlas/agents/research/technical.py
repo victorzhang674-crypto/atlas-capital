@@ -24,6 +24,7 @@ from typing import Any
 
 from atlas.agents.base import BaseAgent
 from atlas.agents.context import AgentContext
+from atlas.agents.evidence import EvidenceLedger
 from atlas.agents.research import checks
 from atlas.agents.tools.dataview_tools import default_tools
 from atlas.agents.tools.registry import ToolRegistry
@@ -165,6 +166,13 @@ class TechnicalAnalyst(BaseAgent[TechnicalReport]):
         for signal in output.signals:
             problems += stop_problems(signal, settings)
         return problems
+
+    def check_evidence(
+        self, ctx: AgentContext, output: TechnicalReport, evidence: EvidenceLedger
+    ) -> Sequence[str]:
+        return checks.grounding_problems(
+            output.summary, output.risks, {item.id: item.text for item in evidence.items}
+        )
 
 
 __all__ = [

@@ -1,12 +1,12 @@
 {
   "symbol": "AAPL",
   "as_of": "2024-05-01",
-  "recorded_on": "2026-11-25",
+  "recorded_on": "2026-11-28",
   "provider": "openai_compatible",
   "model": "deepseek-flash",
-  "prompt_version": "technical_analyst.j2@v1|get_price_summary@v1,get_technical_snapshot@v1",
+  "prompt_version": "technical_analyst.j2@v2|get_price_summary@v2,get_technical_snapshot@v1",
   "status": "ok",
-  "llm_calls": 1,
+  "llm_calls": 2,
   "tool_calls": [],
   "evidence_items": 11,
   "cited": [
@@ -15,19 +15,19 @@
     "tsnap:AAPL:2024-04-30:momentum",
     "pxs:AAPL:2024-04-30:range",
     "tsnap:AAPL:2024-04-30:volatility",
+    "pxs:AAPL:2024-04-30:stops",
     "regime:2024-05-01:market",
     "pxs:AAPL:2024-04-30:levels",
-    "tsnap:AAPL:2024-04-30:levels",
-    "pxs:AAPL:2024-04-30:stops"
+    "tsnap:AAPL:2024-04-30:levels"
   ],
   "problems": [],
   "usage": {
-    "input_tokens": 4352,
-    "cached_input_tokens": 512,
+    "input_tokens": 5828,
+    "cached_input_tokens": 5120,
     "cache_write_tokens": 0,
-    "output_tokens": 1662,
+    "output_tokens": 3181,
     "reasoning_tokens": 0
   },
-  "cost_usd": 0.0016515359999999999,
-  "seconds": 37.3
+  "cost_usd": 0.00279816,
+  "seconds": 19.0
 }

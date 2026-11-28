@@ -46,7 +46,7 @@ def report(
     confidence: float = 0.7,
 ) -> AnalystReport:
     tag = f"[E:{ids[0]}]"
-    text = summary or "\n".join(f"{s}: The latest TTM figure is 1.0 {tag}." for s in SECTIONS)
+    text = summary or "\n".join(f"{s}: The latest TTM figure is solid {tag}." for s in SECTIONS)
     return AnalystReport(
         ticker=ticker or symbol,
         as_of=as_of,
@@ -113,7 +113,7 @@ def test_the_four_tools_are_offered_and_versioned(fworld: FundamentalWorld) -> N
         "get_red_flags",
     ]
     assert agent.prompt_version == (
-        "fundamental_analyst.j2@v1|get_factor_ranks@v1,get_fundamentals_summary@v1,"
+        "fundamental_analyst.j2@v2|get_factor_ranks@v1,get_fundamentals_summary@v1,"
         "get_red_flags@v1,get_valuation@v1"
     )
 
@@ -168,6 +168,29 @@ def test_a_report_problem_gets_a_repair_turn(
     assert out.trace.status == "ok" and out.output == report()
     repair = fake.calls[1].messages[-1].content
     assert problem in repair
+
+
+def test_a_number_the_cited_evidence_does_not_hold_gets_a_repair_turn(
+    fworld: FundamentalWorld,
+) -> None:
+    """Audit M4: a tag covers only the numbers its own evidence states."""
+    bad = report(risks=("Margins fell to 987654.3% last year [E:fsum:AAA:2023-12-31:margins].",))
+    fake = FakeLLM({STEP: bad, ("fundamental_analyst", "output_repair"): report()})
+    out = analyst(fake).run(ctx(fworld))
+    assert out.trace.status == "ok" and out.output == report()
+    repair = fake.calls[1].messages[-1].content
+    assert "every number must be stated by an evidence item cited in the same sentence" in repair
+    assert "risks[0]: Margins fell to 987654.3%" in repair
+
+
+def test_a_number_still_ungrounded_after_the_repair_is_low_quality(
+    fworld: FundamentalWorld,
+) -> None:
+    bad = report(risks=("Margins fell to 987654.3% last year [E:fsum:AAA:2023-12-31:margins].",))
+    fake = FakeLLM({STEP: bad, ("fundamental_analyst", "output_repair"): bad})
+    out = analyst(fake).run(ctx(fworld))
+    assert out.low_quality and out.trace.status == "low_quality"
+    assert "987654.3%" in out.problems[0]
 
 
 def _uncited_line(fworld: FundamentalWorld, risks: tuple[str, ...]) -> str:

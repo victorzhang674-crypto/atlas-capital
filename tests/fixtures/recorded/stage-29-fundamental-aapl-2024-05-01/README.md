@@ -18,6 +18,14 @@ folder's `fixture-compare.txt` and `live-run.txt`): DeepSeek `deepseek-flash` (q
 `openai_compatible`), prompt `fundamental_analyst.j2@v1` with the four tools at v1; status
 `ok`, one LLM call, 6,433 input + 1,730 output tokens, USD 0.0020.
 
+**Re-recorded** 2026-11-28 (audit M4, the `live` and `export` steps; output in
+`artifacts/live-run-m4.txt` and `fixture-export-m4.txt`) because the report check now also
+requires each number to be stated by an evidence item cited in its own sentence
+(`checks.ungrounded_numbers`) and the prompt says so (`fundamental_analyst.j2@v2`, tools
+unchanged at v1): the earlier report put four numbers (100.9, 385.7, 40.76 and, in the
+technical run, 170.33) under tags whose items do not state them. Status `ok`, one LLM call,
+6,467 input + 1,651 output tokens, USD 0.0020. Everything above about the lake slice is unchanged.
+
 **Source rows.** Sliced from the main lake (S&P 500 since 2015, Stage 14) read-only. The
 main lake was ingested before Stage 29 added the `accounts_receivable` concept, and only mapped
 tags are stored, so the slice's `fundamentals_facts` were re-parsed offline (archive only, no

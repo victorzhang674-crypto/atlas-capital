@@ -136,3 +136,52 @@ def test_the_citation_repair_text_is_unchanged_without_check_problems() -> None:
         "Every claim needs at least one of them; drop a claim you cannot support. Answer again "
         "with the corrected JSON object only."
     )
+
+
+# --- the evidence-aware check (audit M4) -------------------------------------------------------
+
+
+class GroundedAnalyst(EchoAnalyst):
+    """The echo analyst with an evidence check: it sees each item's text by id."""
+
+    name = "grounded_analyst"
+    seen: list[dict[str, str]]
+
+    def check_evidence(
+        self, ctx: AgentContext, output: AnalystReport, evidence: EvidenceLedger
+    ) -> Sequence[str]:
+        self.seen.append({e.id: e.text for e in evidence.items})
+        return [PROBLEM] if output.confidence > 0.5 else []
+
+
+def test_check_evidence_sees_the_ledger_and_shares_the_repair_turn(
+    world: World, fake_llm: FakeLLM
+) -> None:
+    fake_llm.add(
+        "grounded_analyst",
+        None,
+        report("news:alpaca-2", confidence=0.9),
+        report("news:alpaca-2", confidence=0.4),
+    )
+    cfg = AtlasConfig()
+    agent = GroundedAnalyst(
+        LLMGateway(fake_llm, cfg), config=cfg, prompts=PromptRegistry([AGENT_PROMPTS])
+    )
+    agent.seen = []
+    out = agent.run(world.ctx(inputs={"symbol": "AAA"}))
+    assert steps(fake_llm) == ["round-1", "output_repair"]
+    assert PROBLEM in fake_llm.calls[1].messages[-1].content
+    assert out.low_quality is False and out.problems == ()
+    assert len(agent.seen) == 2 and "news:alpaca-2" in agent.seen[0]
+    assert all(isinstance(text, str) and text for text in agent.seen[0].values())
+
+
+def test_by_default_there_is_no_evidence_check(world: World, fake_llm: FakeLLM) -> None:
+    cfg = AtlasConfig()
+    agent = EchoAnalyst(
+        LLMGateway(fake_llm, cfg), config=cfg, prompts=PromptRegistry([AGENT_PROMPTS])
+    )
+    assert (
+        agent.check_evidence(world.ctx(inputs={"symbol": "AAA"}), report("x"), EvidenceLedger())
+        == ()
+    )

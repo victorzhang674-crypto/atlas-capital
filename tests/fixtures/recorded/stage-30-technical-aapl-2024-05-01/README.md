@@ -19,6 +19,15 @@ helpers `tests/unit/agents/research/recorded.py` and `recorded_technical.py`).
 `openai_compatible`), prompt `technical_analyst.j2@v1` with both tools at v1; status `ok`, one
 LLM call, 4,352 input + 1,662 output tokens, USD 0.0017.
 
+**Re-recorded** 2026-11-28 (audit M4, the `live` and `export` steps; output in
+`artifacts/live-run-m4.txt` and `fixture-export-m4.txt`) because the report check now also
+requires each number to be stated by an evidence item cited in its own sentence
+(`checks.ungrounded_numbers`): the prompt says so (`technical_analyst.j2@v2`) and the
+moving-average item now states the last close it compares with (`get_price_summary@v2`; the
+first report cited that item for the close 170.33, which only the range and levels items
+state). Status `ok`, two LLM calls (the first answer had one such number; the repair turn fixed
+it), 5,828 input + 3,181 output tokens, USD 0.0028.
+
 **Source rows.** Sliced read-only from the main lake (S&P 500 since 2015, Stage 14; prices
 synced to 2026-11-24). AAPL's prefetch gives the same 11 evidence items on the main lake and on
 this slice (`fixture-compare.txt`: 11 of 11 equal, with the same regime).

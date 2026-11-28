@@ -1,0 +1,4 @@
+Exported 2 entries to 
+/Users/zzjsmacbookair/Projects/atlas-capital/.claude/worktrees/cursor-code-audit-prompt-1c0a3a/tests/fixtures/recorded/stage-30-technical-aapl-2024-05-01/llm_ca
+che.jsonl.
+

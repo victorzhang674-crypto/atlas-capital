@@ -393,7 +393,8 @@ def test_a_price_summary_failure_fails_prefetch(tworld: TechnicalWorld) -> None:
 
 def test_the_tools(tworld: TechnicalWorld) -> None:
     assert [t.name for t in tt.TECHNICAL_TOOLS] == ["get_technical_snapshot", "get_price_summary"]
-    assert all(t.version == 1 and t.args is tt.TechnicalArgs for t in tt.TECHNICAL_TOOLS)
+    assert [t.version for t in tt.TECHNICAL_TOOLS] == [1, 2]  # v2: the ma item states the close
+    assert all(t.args is tt.TechnicalArgs for t in tt.TECHNICAL_TOOLS)
     snapshot_tool, summary_tool = tt.TECHNICAL_TOOLS
     view = tworld.view()
     ctx = AgentContext(view, inputs={"symbol": "UPP", "regime": regime()})

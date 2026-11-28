@@ -206,6 +206,14 @@ class BaseAgent[OutT: BaseModel]:
         turn, so into the LLM cache key); an exception fails the run."""
         return ()
 
+    def check_evidence(
+        self, ctx: AgentContext, output: OutT, evidence: EvidenceLedger
+    ) -> Sequence[str]:
+        """Problems with `output` that need the text of the evidence the run showed the model
+        (default: none), such as a number that the evidence it cites does not state. Same rules
+        as `check_output`, whose problems it follows in the repair turn."""
+        return ()
+
     # --- the run --------------------------------------------------------------------------------
 
     def run(self, ctx: AgentContext) -> AgentOutput[OutT]:
@@ -290,7 +298,11 @@ class BaseAgent[OutT: BaseModel]:
     def _review(
         self, ctx: AgentContext, output: OutT, state: _Run
     ) -> tuple[CitationReport, tuple[str, ...]]:
-        return check_citations(output, state.ledger.ids), tuple(self.check_output(ctx, output))
+        problems = (
+            *self.check_output(ctx, output),
+            *self.check_evidence(ctx, output, state.ledger),
+        )
+        return check_citations(output, state.ledger.ids), problems
 
     def _converse(
         self, ctx: AgentContext, rendered: RenderedPrompt, state: _Run

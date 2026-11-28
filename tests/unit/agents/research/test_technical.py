@@ -64,7 +64,7 @@ def report(
     confidence: float = 0.7,
 ) -> TechnicalReport:
     tag = f"[E:{ids[0]}]"
-    text = summary or "\n".join(f"{s}: The level is 1.0 {tag}." for s in SECTIONS)
+    text = summary or "\n".join(f"{s}: The level is holding {tag}." for s in SECTIONS)
     return TechnicalReport(
         ticker=ticker or symbol,
         as_of=as_of,
@@ -144,7 +144,7 @@ def test_the_two_tools_are_offered_and_versioned(tworld: TechnicalWorld) -> None
         "get_price_summary",
     ]
     assert agent.prompt_version == (
-        "technical_analyst.j2@v1|get_price_summary@v1,get_technical_snapshot@v1"
+        "technical_analyst.j2@v2|get_price_summary@v2,get_technical_snapshot@v1"
     )
     assert set(technical_registry().names) >= {"get_technical_snapshot", "get_price_summary"}
 
@@ -246,6 +246,19 @@ def test_a_report_problem_gets_a_repair_turn(
     assert out.trace.status == "ok" and out.output == report()
     repair = fake.calls[1].messages[-1].content
     assert problem in repair
+
+
+def test_a_number_the_cited_evidence_does_not_hold_gets_a_repair_turn(
+    tworld: TechnicalWorld,
+) -> None:
+    """Audit M4: a tag covers only the numbers its own evidence states."""
+    bad = report(risks=(f"A close below 987654.3 breaks the trend [E:{TAG}].",))
+    fake = FakeLLM({STEP: bad, (AGENT, "output_repair"): report()})
+    out = analyst(fake).run(ctx(tworld))
+    assert out.trace.status == "ok" and out.output == report()
+    repair = fake.calls[1].messages[-1].content
+    assert "every number must be stated by an evidence item cited in the same sentence" in repair
+    assert "risks[0]: A close below 987654.3" in repair
 
 
 def test_stop_problems() -> None:

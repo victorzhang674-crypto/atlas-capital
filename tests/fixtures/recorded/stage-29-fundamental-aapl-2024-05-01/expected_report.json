@@ -2,7 +2,7 @@
   "ticker": "AAPL",
   "as_of": "2024-05-01",
   "analyst": "fundamental_analyst",
-  "summary": "Business quality: Exceptional profitability with TTM gross margin 45.0%, operating margin 30.8%, net margin 26.2% and FCF margin 27.7% [E:fsum:AAPL:2023-12-30:margins], and a quality style composite at percentile 99 of 65 IT peers [E:frank:AAPL:2024-05-01:quality]. Cash conversion is strong: TTM operating cash flow USD 116.4B against net income USD 100.9B [E:fsum:AAPL:2023-12-30:operating_cash_flow], with accruals at -4.4% of assets [E:rflag:AAPL:2024-05-01:accruals].\nGrowth trajectory: Growth has stalled at the top line, with TTM revenue -0.5% year on year to USD 385.7B [E:fsum:AAPL:2023-12-30:growth], though operating income +4.1%, net income +6.0% and EPS +9.0% show margin and buyback support [E:fsum:AAPL:2023-12-30:growth]. The growth composite sits at percentile 42 of 65 peers [E:frank:AAPL:2024-05-01:growth], and the 3-year revenue CAGR of +9.5% a year [E:fsum:AAPL:2023-12-30:growth] is only mid-pack.\nValuation: At P/E 26.1 the stock sits at percentile 48 of its own 19-quarter history (median 26.5) and below the IT median of 33.6 [E:val:AAPL:2024-05-01:pe]; EV/EBITDA 20.7 is at percentile 42 of history and below the sector median 22.4 [E:val:AAPL:2024-05-01:ev_ebitda]. FCF yield of 4.1% is at percentile 52 of history and above the sector median 3.3% [E:val:AAPL:2024-05-01:fcf_yield], while P/B 35.5 is far above the sector median 7.0 [E:val:AAPL:2024-05-01:pb]. Overall the value composite is percentile 56 of 65 peers [E:frank:AAPL:2024-05-01:value], i.e. mildly cheap but not a bargain.\nBalance-sheet risk: Debt is modest in absolute terms at USD 108B against USD 40.76B of cash [E:fsum:AAPL:2023-12-30:total_debt], with net debt/EBITDA of 0.52 [E:frank:AAPL:2024-05-01:leverage], but debt/equity of 1.46 (percentile 82) reflects a thin USD 74.1B equity base [E:fsum:AAPL:2023-12-30:stockholders_equity]. All four evaluated red-flag checks are CLEAR, including dilution at -2.4% share count [E:rflag:AAPL:2024-05-01:dilution] and positive TTM FCF of USD 106.9B [E:rflag:AAPL:2024-05-01:fcf_debt].\nRed flags: No accounting red flags: accruals CLEAR [E:rflag:AAPL:2024-05-01:accruals], receivables CLEAR with excess of -1.9 points [E:rflag:AAPL:2024-05-01:receivables], FCF/debt CLEAR [E:rflag:AAPL:2024-05-01:fcf_debt] and dilution CLEAR [E:rflag:AAPL:2024-05-01:dilution]. The going-concern check is NOT EVALUATED because no MD&A text is available [E:rflag:AAPL:2024-05-01:going_concern], so that item is unknown rather than clean.\nWhat would change my mind: A return to revenue growth above the current -0.5% [E:fsum:AAPL:2023-12-30:growth] or a P/E re-rating toward the sector median 33.6 [E:val:AAPL:2024-05-01:pe] would make me more positive; a margin reversal from the 45.0% gross level [E:fsum:AAPL:2023-12-30:margins], a leverage-driven equity squeeze, or any red flag turning FLAG would make me negative.",
+  "summary": "Business quality: Apple's TTM margins to 2023-12-30 are gross 45.0%, operating 30.8%, net 26.2% and free cash flow 27.7% [E:fsum:AAPL:2023-12-30:margins], with ROE of 136.2% and ROA of 28.5% ranking at the 96th percentile of Information Technology peers and a quality composite at percentile 99 [E:frank:AAPL:2024-05-01:quality]. Cash conversion is strong: TTM operating cash flow of USD 116.4B against capex of only USD 9.564B [E:fsum:AAPL:2023-12-30:operating_cash_flow][E:fsum:AAPL:2023-12-30:capex].\nGrowth trajectory: TTM revenue slipped -0.5% year on year while operating income rose +4.1%, net income +6.0%, EPS +9.0% and free cash flow +9.6% [E:fsum:AAPL:2023-12-30:growth], and the 3-year revenue CAGR of +9.5% a year sits only at percentile 45 with a growth composite at percentile 42 [E:frank:AAPL:2024-05-01:growth]. The latest quarter was the strongest of the series at USD 119.6B revenue and USD 2.18 diluted EPS [E:fsum:AAPL:2023-12-30:revenue][E:fsum:AAPL:2023-12-30:eps_diluted], so the trajectory is stabilising rather than compounding.\nValuation: at USD 2.63T market cap the stock trades at P/E 26.1 versus a sector median of 33.6 and its own median of 26.5 (percentile 48 of its history) [E:val:AAPL:2024-05-01:market][E:val:AAPL:2024-05-01:pe], with EV/EBITDA 20.7 below the sector median 22.4 and FCF yield 4.1% above the sector median 3.3% [E:val:AAPL:2024-05-01:ev_ebitda][E:val:AAPL:2024-05-01:fcf_yield]. P/S of 6.8 is modestly above both its own median of 6.6 and the sector median of 5.7 [E:val:AAPL:2024-05-01:ps], and the value composite at percentile 56 is only mildly cheap [E:frank:AAPL:2024-05-01:value].\nBalance-sheet risk: total debt of USD 108B against cash of USD 40.76B and equity of USD 74.1B gives debt/equity of 1.46 (percentile 82) but net debt/EBITDA of only 0.52 (percentile 42) [E:fsum:AAPL:2023-12-30:total_debt][E:fsum:AAPL:2023-12-30:cash_and_equivalents][E:fsum:AAPL:2023-12-30:stockholders_equity][E:frank:AAPL:2024-05-01:leverage]. TTM free cash flow of USD 106.9B comfortably covers the debt load [E:rflag:AAPL:2024-05-01:fcf_debt].\nRed flags: accruals, receivables, FCF-versus-debt and dilution checks are all CLEAR, with accruals at -4.4% of assets, receivables excess of -1.9 points and share count down -2.4% year on year [E:rflag:AAPL:2024-05-01:accruals][E:rflag:AAPL:2024-05-01:receivables][E:rflag:AAPL:2024-05-01:dilution]; the going-concern check is NOT EVALUATED for lack of MD&A text [E:rflag:AAPL:2024-05-01:going_concern].\nWhat would change my mind: a return to revenue decline with margin compression, a P/E moving back toward its own high of 70.4 [E:val:AAPL:2024-05-01:pe], or any accruals or receivables flag turning negative would flip the quality and valuation views; conversely, evidence of reaccelerating revenue growth would raise the growth signal.",
   "signals": [
     {
       "name": "quality",
@@ -12,28 +12,29 @@
         "fsum:AAPL:2023-12-30:margins",
         "frank:AAPL:2024-05-01:quality",
         "fsum:AAPL:2023-12-30:operating_cash_flow",
-        "rflag:AAPL:2024-05-01:accruals"
+        "fsum:AAPL:2023-12-30:capex"
       ]
     },
     {
       "name": "valuation",
-      "direction": "FLAT",
+      "direction": "LONG",
       "strength": 0.35,
       "evidence_ids": [
         "val:AAPL:2024-05-01:pe",
         "val:AAPL:2024-05-01:ev_ebitda",
         "val:AAPL:2024-05-01:fcf_yield",
-        "val:AAPL:2024-05-01:pb",
+        "val:AAPL:2024-05-01:ps",
         "frank:AAPL:2024-05-01:value"
       ]
     },
     {
       "name": "growth",
       "direction": "FLAT",
-      "strength": 0.4,
+      "strength": 0.3,
       "evidence_ids": [
         "fsum:AAPL:2023-12-30:growth",
-        "frank:AAPL:2024-05-01:growth"
+        "frank:AAPL:2024-05-01:growth",
+        "fsum:AAPL:2023-12-30:revenue"
       ]
     },
     {
@@ -44,18 +45,18 @@
         "fsum:AAPL:2023-12-30:total_debt",
         "fsum:AAPL:2023-12-30:cash_and_equivalents",
         "frank:AAPL:2024-05-01:leverage",
-        "rflag:AAPL:2024-05-01:dilution",
         "rflag:AAPL:2024-05-01:fcf_debt",
+        "rflag:AAPL:2024-05-01:dilution",
         "rflag:AAPL:2024-05-01:going_concern"
       ]
     }
   ],
   "risks": [
-    "Revenue is flat to slightly down at -0.5% TTM [E:fsum:AAPL:2023-12-30:growth], so earnings growth depends on margins and buybacks rather than the top line.",
-    "Gross margin of 45.0% [E:fsum:AAPL:2023-12-30:margins] could compress on mix or pricing pressure, hitting the quality premium.",
-    "Debt/equity of 1.46 [E:frank:AAPL:2024-05-01:leverage] on a USD 74.1B equity base [E:fsum:AAPL:2023-12-30:stockholders_equity] leaves little book cushion if earnings fall.",
-    "The going-concern check is NOT EVALUATED [E:rflag:AAPL:2024-05-01:going_concern], so an unknown risk remains unassessed.",
-    "Valuation is only mid-range versus history (P/E percentile 48) [E:val:AAPL:2024-05-01:pe], leaving little margin of safety if growth stays negative."
+    "Revenue is flat to slightly down (-0.5% TTM) [E:fsum:AAPL:2023-12-30:growth], so earnings growth depends on margin expansion that may not persist.",
+    "Gross margin stability is imperfect (margin_stability -1.2%) [E:frank:AAPL:2024-05-01:quality], leaving room for mix-driven margin disappointment.",
+    "Debt/equity of 1.46 at percentile 82 [E:frank:AAPL:2024-05-01:leverage] leaves less room if cash generation weakens.",
+    "The going-concern check is NOT EVALUATED [E:rflag:AAPL:2024-05-01:going_concern], so that risk is unknown rather than cleared.",
+    "Valuation is only mid-range versus its own history (P/E percentile 48) [E:val:AAPL:2024-05-01:pe], so there is little margin of safety if growth stalls."
   ],
   "confidence": 0.72
 }

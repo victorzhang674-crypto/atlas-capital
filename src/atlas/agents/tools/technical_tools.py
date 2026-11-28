@@ -310,8 +310,8 @@ def _ma_text(symbol: str, close: float, mas: dict[str, float | None]) -> str:
     else:
         cross = "SMA50 vs SMA200 n/a"
     return (
-        f"{symbol} simple moving averages of the adjusted close (USD, Stage 15 features): "
-        f"{'; '.join(parts)}. {cross}."
+        f"{symbol} simple moving averages of the adjusted close (USD, Stage 15 features; last "
+        f"close {close:.2f}): {'; '.join(parts)}. {cross}."
     )
 
 
@@ -593,6 +593,7 @@ GET_PRICE_SUMMARY = Tool(
     ),
     args=TechnicalArgs,
     fn=_summary_tool,
+    version=2,  # v2 (audit M4): the moving-average item states the last close it compares with
 )
 
 TECHNICAL_TOOLS = (GET_TECHNICAL_SNAPSHOT, GET_PRICE_SUMMARY)
