@@ -133,11 +133,12 @@ def test_etf_exposures_on_real_data(built, year_end) -> None:
     assert set(etfs.betas.index) == {"SPY", "XLE", "XLK"}
     assert etfs.betas.loc["SPY", "market"] == pytest.approx(1.0, abs=0.15)
     assert etfs.r2["SPY"] > 0.95
-    # An ETF loads on its own sector more than on any other sector. Not a fixed level: with 20
-    # correlated factors on 252 sessions one coefficient is poorly identified (XLK's IT loading
-    # moves 0.50 -> 0.42 and XLE's IT loading 0.76 -> 0.19 as the ridge goes 1e-3 -> 1e-2 while
-    # R2 stays 0.95-0.96; Planning/PROGRESS.md Backlog, 2026-11-28), and the old `> 0.5` bound
-    # failed at 0.498 on a lake that had only had data added.
+    # An ETF loads on its own sector more than on any other sector. Not a fixed level: the
+    # cap-weighted sector constraint leaves each ETF's betas free along one direction (the
+    # ridge picks the minimum-norm one; risk numbers are unchanged), so a single raw loading is
+    # not identified (XLE's IT loading is 0.76 at ridge 1e-3 and 0.19 at 1e-2, but its loading
+    # with that direction projected out is -0.08 at both). The old `> 0.5` bound on XLK failed
+    # at 0.498 on a lake that had only had data added. Planning/PROGRESS.md Backlog, 2026-11-28.
     sectors = list(FactorSet.from_config(built[0].quant.risk_model.factor_model).sectors)
     for etf, sector in (("XLE", "Energy"), ("XLK", "Information Technology")):
         loadings = etfs.betas.loc[etf, sectors]
