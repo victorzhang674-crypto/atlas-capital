@@ -9,6 +9,11 @@ every risk number unchanged (the factor covariance has no variance along that di
 The residual variance (degrees of freedom `n - K - 1`, floored at the model's specific-vol
 floor) is the ETF's specific variance.
 
+A raw beta is therefore not an exposure: it can carry any multiple of the constraint direction.
+`EtfExposures.identified` is the betas with that direction projected out (the direction is the
+smallest right singular vector of the window's demeaned factor matrix, the same for every ETF);
+read exposures from it, and use `betas` for risk (they give the same fit and variance).
+
 Units: daily simple returns; betas dimensionless; variances daily return**2.
 """
 
@@ -27,14 +32,17 @@ _log = get_logger(__name__)
 
 @dataclass(frozen=True)
 class EtfExposures:
-    """`betas` (ETFs x factors), `specific_var` (daily), `r2` and `n_obs` per ETF, and
-    `dropped` (ETF -> `history`: fewer than `etf.min_obs` observations in the window)."""
+    """`betas` (ETFs x factors), `specific_var` (daily), `r2` and `n_obs` per ETF, `dropped`
+    (ETF -> `history`: fewer than `etf.min_obs` observations in the window) and `identified`
+    (`betas` with the constraint direction projected out: the exposures; `None` when the
+    object was built by hand)."""
 
     betas: pd.DataFrame
     specific_var: pd.Series
     r2: pd.Series
     n_obs: pd.Series
     dropped: dict[str, str] = field(default_factory=dict)
+    identified: pd.DataFrame | None = None
 
 
 def etf_exposures(
@@ -56,6 +64,8 @@ def etf_exposures(
         raise ValueError("etf_returns and factor_returns share no dates")
     f_all = factors.loc[common]
     k = f_all.shape[1]
+    centred = f_all.to_numpy() - f_all.to_numpy().mean(axis=0)
+    null = np.linalg.svd(centred, full_matrices=False)[2][-1]  # the constraint direction
     betas: dict[str, np.ndarray] = {}
     spec: dict[str, float] = {}
     r2: dict[str, float] = {}
@@ -90,9 +100,11 @@ def etf_exposures(
     if dropped:
         _log.warning("risk_model.etf_dropped", dropped=dropped)
     idx = pd.Index(list(betas), name="symbol")
+    raw = np.array(list(betas.values()))
     return EtfExposures(
-        betas=pd.DataFrame(
-            np.array(list(betas.values())), index=idx, columns=list(factor_returns.columns)
+        betas=pd.DataFrame(raw, index=idx, columns=list(factor_returns.columns)),
+        identified=pd.DataFrame(
+            raw - np.outer(raw @ null, null), index=idx, columns=list(factor_returns.columns)
         ),
         specific_var=pd.Series(spec, index=idx, name="specific_var"),
         r2=pd.Series(r2, index=idx, name="r2"),

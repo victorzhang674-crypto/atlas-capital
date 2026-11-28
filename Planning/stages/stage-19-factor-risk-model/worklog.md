@@ -148,3 +148,21 @@ Re-read the brief, the plan and every module line by line against Project.md and
 
 - Backlog: a requested ETF the view withholds is in `dropped` (`blocked ...`) and logged (`risk_model.etf_withheld`). Backlog (multi-class double counting): `CrossSection.classes` / `build_risk_model(classes=)` / `listed_classes` (same CIK): each listing carries `cap / n` in the cap-weighted sums and `sqrt(cap) / n` as its regression weight.
 - Rebuilt on the scratch copy and swapped in (Stage 23 entry).
+
+## 2026-11-28 — follow-up: ETF exposure study (owner: "Yes, run it"), pre-registration
+
+Why: the real-lake test of ETF exposures (`test_etf_exposures_on_real_data`) failed at XLK's Information Technology loading 0.498 against a bound of 0.5; investigation (PROGRESS.md Decisions log and Backlog, 2026-11-28) found (1) raw ETF betas are free along the cap-weighted sector constraint's null direction (the ridge picks a point on it; risk numbers unchanged), and (2) style betas are shrunk heavily and unevenly by the uniform ridge `ridge * tr(F'F) / K`. This follow-up decides, from out-of-sample evidence, whether to change the ridge or its scaling, and adds identified exposures. Fixed here BEFORE any result is looked at (Rule 8.3: no tuning to the confirmation period).
+
+**Data (read only).** Stored `factor_returns` of the main lake (config hash `62592c37a19c`, 20 factors, 2017-01-03 to 2026-11-24) and the `adj_close` returns of the `macro_etfs` tickers in `prices_daily`.
+
+**Rolling design.** For each month-end `t` with at least 252 factor-return sessions up to `t` and 21 sessions after it: fit on the last 252 sessions (as `etf_exposures`: demeaned, no intercept), then score the next 21 sessions.
+
+**Candidates (10).** Ridge in {0 (minimum-norm least squares), 1e-4, 1e-3 (current), 1e-2, 1e-1} x penalty in {`uniform` (current: `ridge * tr(F'F)/K * I`), `scaled` (`ridge * n` on factors standardised to unit variance, i.e. a penalty proportional to each factor's own variance)}. `uniform` at 1e-3 is the incumbent.
+
+**Metrics.** (a) Out-of-sample error: pooled mean squared error of `F_next @ beta` against the ETF's realised daily returns (factor-conditional fit). (b) Volatility bias: the standard deviation of `y / sigma_hat` over all ETF-days, `sigma_hat^2 = beta' Cov(F_window) beta + specific variance` (same floor as the model); target 1. (c) Stability: mean cosine similarity between an ETF's identified betas (the betas with the window's null direction, the smallest right singular vector of the demeaned factor matrix, projected out) in consecutive months.
+
+**Samples.** Selection: month-ends 2018-01 to 2022-12. Confirmation: 2023-01 to the last month-end with 21 sessions after it. Confirmation numbers are computed only for the candidate the rule picks and for the incumbent.
+
+**Rule.** On the selection sample, take the candidates whose MSE is within one standard error of the lowest (standard error from the month-level differences to the lowest, paired). Among them pick the highest stability; ties go to the incumbent. Change production only if the pick is not the incumbent AND on the confirmation sample its MSE is no higher than the incumbent's, its |vol bias - 1| is at most the incumbent's + 0.02, and its stability is no lower. Otherwise the incumbent stays and the result is recorded as "no change".
+
+**Deliverables either way.** Identified exposures (betas with the null direction projected out) as `EtfExposures.identified`, test-first; the study script and raw output under `artifacts/etf-study/`; this section completed with the outcome.
