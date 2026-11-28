@@ -40,6 +40,7 @@ from atlas.core.logging import configure_logging, get_logger, reset_logging
 from atlas.core.pit import AsOf
 from atlas.core.run_context import run_context, run_dir
 from atlas.core.storage import Lake, get_database
+from atlas.data.migrate import backup_tables
 from atlas.data.providers.base import check_request
 from atlas.data.quality import blocked_symbols, quality_report
 from atlas.data.slice import slice_lake
@@ -481,6 +482,75 @@ def _print_quality(console: Console, day: date, issues: pd.DataFrame, limit: int
     console.print(listing)
     blocked = ", ".join(sorted(blocked_symbols(issues))) or "none"
     console.print(f"Blocked symbols (critical issues): {blocked}")
+
+
+@data_app.command()
+def migrate(
+    ctx: typer.Context,
+    tables: Annotated[
+        str | None,
+        typer.Option("--tables", help="Comma-separated tables (default: every pending one)."),
+    ] = None,
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="List the pending migrations and change nothing.")
+    ] = False,
+    backup_dir: Annotated[
+        Path | None,
+        typer.Option(
+            "--backup-dir",
+            help="New folder for the backup (default: <lake>/cache/backup-migrate-<UTC time>).",
+        ),
+    ] = None,
+) -> None:
+    """Bring stored tables up to their registered schema version (a table behind the code's
+    schema cannot be read or written until then). Copies the tables it will rewrite, with the
+    lake's `_meta.json`, into a new backup folder first; nothing is rewritten if the backup
+    fails."""
+    console = _console()
+    config = _config(ctx, console)
+    lake = Lake(config.data.lake_path)
+    pending = lake.pending_migrations()
+    if tables is not None:
+        wanted = [t.strip() for t in tables.split(",") if t.strip()]
+        unknown = [t for t in wanted if t not in pending and not lake.has_table(t)]
+        if unknown:
+            raise typer.BadParameter(
+                f"not stored in the lake: {', '.join(unknown)}", param_hint="--tables"
+            )
+        pending = {t: v for t, v in pending.items() if t in wanted}
+    if not pending:
+        console.print("Nothing to migrate: every stored table is at its registered version.")
+        return
+    listing = Table()
+    for column in ("table", "stored version", "registered version"):
+        listing.add_column(column, justify="right" if column != "table" else "left")
+    for name, (old, new) in pending.items():
+        listing.add_row(name, str(old), str(new))
+    console.print(listing)
+    if dry_run:
+        console.print("Dry run: nothing was changed.")
+        return
+    stamp = make_clock().now().strftime("%Y%m%dT%H%M%SZ")
+    target = backup_dir if backup_dir is not None else lake.cache_dir / f"backup-migrate-{stamp}"
+    if target.exists():
+        console.print(f"[red]Backup folder already exists:[/red] {target}")
+        raise typer.Exit(1)
+    try:
+        backup_tables(lake, tuple(pending), target)
+    except OSError as exc:
+        console.print(f"[red]Backup failed, nothing was migrated:[/red] {exc}")
+        raise typer.Exit(1) from None
+    console.print(f"Backup of {len(pending)} table(s) and _meta.json written to {target}")
+    for name in pending:
+        try:
+            version = lake.migrate(name)
+        except (DataError, OSError) as exc:
+            console.print(
+                f"[red]Migration of {name} failed:[/red] {exc}. The backup is in {target}; "
+                "restore it by copying the table folder and _meta.json back."
+            )
+            raise typer.Exit(1) from None
+        console.print(f"Migrated {name} to version {version}")
 
 
 __all__ = ["RichProgress", "build_sources", "data_app", "make_clock"]

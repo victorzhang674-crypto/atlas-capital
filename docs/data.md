@@ -8,7 +8,15 @@ uv run atlas data sync --from 2015-01-01   # backfill (resumable)
 uv run atlas data update                   # fetch only what is new
 uv run atlas data status                   # rows, date ranges, last sync, coverage, quality
 uv run atlas data quality --as-of 2024-05-01
+uv run atlas data migrate --dry-run        # tables whose stored schema is behind the code's
 ```
+
+When a release changes a table's schema (for example `news` and `news_sentiment` v2, which add
+`available_at` to the primary key so an edited article is stored beside the original), the
+code refuses to read or write the old table until it is migrated: `uv run atlas data migrate`
+copies the tables it will rewrite and `_meta.json` into `<lake>/cache/backup-migrate-<UTC
+time>`, then migrates them (rows unchanged). Restore a backup by copying the table folder and
+`_meta.json` back.
 
 Strategy and agent code never reads the lake directly: it goes through `DataView`
 (Stage 13), which answers only with what was known at the decision time. The per-dataset

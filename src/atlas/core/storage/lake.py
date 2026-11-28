@@ -222,6 +222,21 @@ class Lake:
             )
         return stored
 
+    def pending_migrations(self) -> dict[str, tuple[int, int]]:
+        """The stored tables whose recorded schema version is behind the registry's, as
+        `name: (stored version, registered version)` in name order. A stored table the registry
+        does not know is left out (`table_schema` would raise for it); a newer stored version is
+        not pending (`migrate` raises for it)."""
+        pending = {}
+        for name, stored in sorted(self._meta.tables().items()):
+            try:
+                registered = self._registry.get(name).version
+            except DataError:
+                continue
+            if stored.version < registered:
+                pending[name] = (stored.version, registered)
+        return pending
+
     def migrate(self, name: str) -> int:
         """Bring table `name` up to its registered schema version; return that version.
 
