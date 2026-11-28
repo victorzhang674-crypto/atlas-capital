@@ -1,0 +1,8 @@
+=== swap into /Users/zzjsmacbookair/Projects/atlas-capital/data from /tmp/claude-501/rm-rebuild, 2026-11-28T18:05:31Z
+backed up factor_returns: 584K digest 7381554594bed8f1
+backed up risk_model_snapshots: 6.0M digest 8dacb46377d3074a
+_meta.json entries of both tables are identical in the lake and the scratch copy
+replaced factor_returns: digest now ee859766b9ac3cc7 (scratch ee859766b9ac3cc7)
+replaced risk_model_snapshots: digest now 3d50b2435887c6db (scratch 3d50b2435887c6db)
+build log kept: runs/risk_model/build-etf-ridge-2026-11-28.log
+swap exit 0
