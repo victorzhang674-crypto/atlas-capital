@@ -202,3 +202,41 @@ def test_extend_model_reports_dropped_etfs(world: FactorWorld, model: RiskModel)
     ext = extend_model(model, out)
     assert ext.dropped["YOUNG"] == "history" and "YOUNG" not in ext.symbols
     assert {k: v for k, v in ext.dropped.items() if k != "YOUNG"} == dict(model.dropped)
+
+
+# --- identified exposures (Stage 19 follow-up, ETF study 2026-11-28) -----------------------------
+
+
+def test_identified_betas_have_no_component_along_the_constraint(world: FactorWorld) -> None:
+    """The factor returns satisfy the cap-weighted sector constraint, so a raw beta is free along
+    that direction; `identified` is the part orthogonal to it."""
+    rng = np.random.default_rng(5)
+    free = _null_free(world, rng.normal(scale=0.5, size=len(world.factor_names)))
+    c = sector_constraint(world.exposures, world.caps, SECTORS).to_numpy()
+    shifted = free + 0.8 * c  # the same fit: F @ c == 0
+    etf = pd.DataFrame({"A": _planted(world, shifted, 0.002, 3)})
+    out = etf_exposures(etf, world.factor_returns, CFG)
+    assert out.identified is not None
+    assert list(out.identified.index) == list(out.betas.index)
+    assert list(out.identified.columns) == list(out.betas.columns)
+    np.testing.assert_allclose(out.identified.loc["A"].to_numpy(), free, atol=0.06)
+    v = c / np.linalg.norm(c)
+    assert abs(float(out.identified.loc["A"].to_numpy() @ v)) < 0.02
+
+
+def test_identified_betas_do_not_move_with_the_ridge(world: FactorWorld) -> None:
+    """What the ridge changes is mainly the along-constraint part; the identified part is the
+    exposure and moves only by the ordinary shrinkage of the ridge (a few percent here)."""
+    etf = pd.DataFrame({"A": _planted(world, np.random.default_rng(6).normal(size=20), 0.003, 4)})
+    lo = etf_exposures(etf, world.factor_returns, _ridge(1e-4))
+    hi = etf_exposures(etf, world.factor_returns, _ridge(1e-2))
+    assert lo.identified is not None and hi.identified is not None
+    np.testing.assert_allclose(
+        lo.identified.to_numpy(), hi.identified.to_numpy(), rtol=0.05, atol=0.03
+    )
+
+
+def _ridge(value: float) -> AtlasConfig:
+    return AtlasConfig.model_validate(
+        {"quant": {"risk_model": {"factor_model": {"etf": {"ridge": value}}}}}
+    )

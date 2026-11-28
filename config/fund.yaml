@@ -287,7 +287,7 @@ quant:
         universe: macro_etfs  # ETF universe whose exposures are estimated by default
         window: 252  # sessions of returns in each ETF regression
         min_obs: 126  # fewest observed returns to estimate an ETF (fewer drops it)
-        ridge: 1.0e-3  # ridge penalty relative to the mean diagonal of F'F
+        ridge: 1.0e-2  # ridge penalty relative to the mean diagonal of F'F (1e-3 before the 2026-11-28 ETF study)
   # Risk and performance metrics library (Stage 20, atlas.quant.metrics). VaR/CVaR confidence, ADV participation and window come from limits.yaml.
   metrics:
     risk_free_annual: 0.0  # default risk-free rate for Sharpe, alpha and beta, annual fraction (converted geometrically per session)

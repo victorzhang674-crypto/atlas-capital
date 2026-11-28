@@ -1457,7 +1457,7 @@ def test_quant_factor_model_defaults() -> None:  # Stage 19 D1
         "min_cross_section": 100, "style_winsor_lower": 0.01, "style_winsor_upper": 0.99,
         "max_missing_styles": 2, "shrinkage_q": 1.0, "specific_floor_vol": 0.002,
         "anchor_months": 1, "max_stale_sessions": 5,
-        "etf": {"universe": "macro_etfs", "window": 252, "min_obs": 126, "ridge": 1.0e-3},
+        "etf": {"universe": "macro_etfs", "window": 252, "min_obs": 126, "ridge": 1.0e-2},
     }  # fmt: skip
 
 

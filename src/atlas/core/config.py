@@ -1552,12 +1552,18 @@ class EtfConfig(_Frozen):
     """ETF exposures by time-series regression on the factor returns (Stage 19): the last
     `window` sessions, at least `min_obs` of them observed, with a ridge penalty `ridge`
     relative to the mean diagonal of `FᵀF` (the sector constraint makes the factor returns
-    nearly collinear). `universe` names the ETF list read by default from real data."""
+    nearly collinear). `universe` names the ETF list read by default from real data.
+
+    `ridge` 1e-2 (was 1e-3): the rolling out-of-sample study of 2026-11-28 (30 macro ETFs,
+    month-ends 2018 to 2026, 252-session fits scored on the next 21 sessions;
+    `Planning/stages/stage-19-factor-risk-model/artifacts/etf-study/`) found it 2.3% (2018-2022)
+    and 1.5% (2023-2026) lower in squared error, better in 88% / 80% of months, and more stable
+    month to month; a penalty scaled to each factor's variance was clearly worse."""
 
     universe: Annotated[str, Field(min_length=1)] = "macro_etfs"
     window: Annotated[int, Field(ge=30)] = 252
     min_obs: Annotated[int, Field(ge=30)] = 126
-    ridge: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 1.0e-3
+    ridge: Annotated[float, Field(ge=0, allow_inf_nan=False)] = 1.0e-2
 
     @model_validator(mode="after")
     def _min_obs_within_window(self) -> Self:
