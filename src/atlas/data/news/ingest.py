@@ -29,11 +29,13 @@ _log = get_logger(__name__)
 
 @dataclass(frozen=True)
 class NewsIngestReport:
-    """Outcome of `ingest_news`: `rows` upserted into `news`, and how many each provider
-    (the `provider` column) served."""
+    """Outcome of `ingest_news`: `rows` upserted into `news`, how many each provider
+    (the `provider` column) served, and `edits_skipped` (an edit whose known-time would
+    not be after the stored copy; that row is not written)."""
 
     rows: int
     rows_by_provider: FrozenDict[str, int] = field(default_factory=lambda: FrozenDict({}))
+    edits_skipped: int = 0
 
 
 class FallbackNewsProvider:
@@ -101,28 +103,39 @@ def ingest_news(
     `DataError` propagates and nothing is written. A repeat of an article already stored with
     the same headline, summary and tickers writes nothing. A change is a new row, known at the
     vendor's `updated_at` when that is after the stored copy, otherwise at `get_clock().now()`
-    (which must be after the stored copy). The original row stays.
+    when the clock is after the stored copy. A replay whose clock is not after the stored copy
+    skips that edit, logs `news.edit_skipped`, and counts it on `NewsIngestReport.edits_skipped`:
+    a row known before the stored copy is never written. With no clock installed the edit still
+    raises, because it has no honest known-time. The original row stays.
     """
     wanted = check_news_window(symbols, start, end)
     articles = provider.fetch_news(wanted, start, end)
     if articles.empty:
         _log.info("news.ingest", rows=0, provider=provider.name)
         return NewsIngestReport(rows=0)
-    fresh = _revisions(lake, articles)
+    fresh, skipped = _revisions(lake, articles)
     if fresh.empty:
-        _log.info("news.ingest", rows=0, provider=provider.name)
-        return NewsIngestReport(rows=0)
+        _log.info("news.ingest", rows=0, provider=provider.name, edits_skipped=skipped)
+        return NewsIngestReport(rows=0, edits_skipped=skipped)
     lake.write_table(NEWS.name, fresh, mode="upsert")
     counts = {str(k): int(v) for k, v in fresh["provider"].value_counts().sort_index().items()}
-    _log.info("news.ingest", rows=len(fresh), provider=provider.name, by_provider=counts)
-    return NewsIngestReport(rows=len(fresh), rows_by_provider=FrozenDict(counts))
+    _log.info(
+        "news.ingest",
+        rows=len(fresh),
+        provider=provider.name,
+        by_provider=counts,
+        edits_skipped=skipped,
+    )
+    return NewsIngestReport(
+        rows=len(fresh), rows_by_provider=FrozenDict(counts), edits_skipped=skipped
+    )
 
 
-def _revisions(lake: Lake, incoming: pd.DataFrame) -> pd.DataFrame:
-    """The rows of `incoming` that are not already stored: first copies unchanged, and edits
-    with `available_at` set to when the edit became known."""
+def _revisions(lake: Lake, incoming: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    """The rows of `incoming` that are not already stored, and how many edits were skipped
+    because their known-time would not be after the stored copy."""
     if not lake.has_table(NEWS.name):
-        return incoming
+        return incoming, 0
     ids = list(dict.fromkeys(str(i) for i in incoming["article_id"]))
     stored = lake.read_table(NEWS.name, filters=[("article_id", "in", ids)])
     latest = _latest_stored(stored)
@@ -130,6 +143,7 @@ def _revisions(lake: Lake, incoming: pd.DataFrame) -> pd.DataFrame:
     rows = out.to_dict(orient="records")
     stamps = [_ts(row["available_at"]) for row in rows]
     keep: list[int] = []
+    skipped = 0
     for position, row in enumerate(rows):
         article_id = str(row["article_id"])
         key = (article_id, _ts(row["published_at"]))
@@ -139,13 +153,17 @@ def _revisions(lake: Lake, incoming: pd.DataFrame) -> pd.DataFrame:
             continue
         if previous[0] == str(row["content_hash"]) and previous[1] == tuple(row["symbols"]):
             continue
-        stamps[position] = _edit_known_at(row["updated_at"], previous[2], article_id)
+        known = _edit_known_at(row["updated_at"], previous[2], article_id)
+        if known is None:
+            skipped += 1
+            continue
+        stamps[position] = known
         keep.append(position)
     if not keep:
-        return incoming.iloc[0:0]
+        return incoming.iloc[0:0], skipped
     out = out.iloc[keep].copy()
     out["available_at"] = pd.to_datetime([stamps[i] for i in keep], utc=True).as_unit("us")
-    return out
+    return out, skipped
 
 
 _Stored = tuple[str, tuple[str, ...], pd.Timestamp]
@@ -172,9 +190,12 @@ def _ts(value: Any) -> pd.Timestamp:
     return pd.Timestamp(value)
 
 
-def _edit_known_at(updated_at: Any, stored_at: pd.Timestamp, article_id: str) -> pd.Timestamp:
+def _edit_known_at(
+    updated_at: Any, stored_at: pd.Timestamp, article_id: str
+) -> pd.Timestamp | None:
     """When an edit of `article_id` is known: `updated_at` if it is after the stored copy,
-    otherwise the clock. A clock that is not after the stored copy raises `DataError`."""
+    otherwise the clock. A clock that is not after the stored copy returns None (the caller
+    skips the edit). No clock installed still raises from `get_clock`."""
     if updated_at is not None and not pd.isna(updated_at):
         vendor = _ts(updated_at)
         if vendor.tzinfo is None:
@@ -187,7 +208,10 @@ def _edit_known_at(updated_at: Any, stored_at: pd.Timestamp, article_id: str) ->
     now = pd.Timestamp(get_clock().now()).tz_convert("UTC")
     if now > stored_at:
         return now
-    raise DataError(
-        f"news: the edit of {article_id} is not after the stored copy "
-        f"({stored_at.isoformat()}); the clock reads {now.isoformat()}"
+    _log.warning(
+        "news.edit_skipped",
+        article_id=article_id,
+        stored_at=stored_at.isoformat(),
+        clock=now.isoformat(),
     )
+    return None

@@ -14,7 +14,15 @@ import httpx
 import pandas as pd
 import pytest
 import respx
-from news_helpers import FIXTURES, REPO_ROOT, FakeNewsProvider, article, articles_frame, utc
+from news_helpers import (
+    FIXTURES,
+    REPO_ROOT,
+    FakeNewsProvider,
+    article,
+    articles_frame,
+    logged_events,
+    utc,
+)
 from pydantic import SecretStr
 
 import atlas.data.news.pit as pit_module
@@ -449,6 +457,27 @@ def test_a_revision_without_updated_at_is_known_at_the_clock(tmp_path: Path) -> 
     early = AsOf(day=date(2020, 3, 2), cutoff=utc(2020, 3, 2, 16))
     assert News(lake).pit("AAPL", early)[0].text == "Apple misses"
     assert News(lake).pit("AAPL", AT_0303)[0].text == "Apple beats"
+
+
+def test_an_earlier_clock_skips_the_edit_and_counts_it(tmp_path: Path) -> None:
+    # A replay whose clock is not after the stored copy must not write a row known earlier
+    # than that copy. The edit is skipped, logged, and counted; the stored row stays.
+    lake = _lake(tmp_path)
+    published = utc(2020, 3, 2, 15)
+    window = (utc(2020, 3, 1), utc(2020, 3, 4))
+    original = articles_frame([article(published_at=published, headline="Apple misses")])
+    revised = articles_frame([article(published_at=published, headline="Apple beats")])
+    ingest_news(lake, FakeNewsProvider("alpaca", original), None, *window)
+
+    def _replay() -> Any:
+        with use_clock(SimClock(utc(2020, 3, 2, 14))):
+            return ingest_news(lake, FakeNewsProvider("alpaca", revised), None, *window)
+
+    report, events = logged_events(tmp_path / "news.log", _replay)
+    assert report.rows == 0
+    assert report.edits_skipped == 1
+    assert list(lake.read_table("news")["headline"]) == ["Apple misses"]
+    assert any(event.get("event") == "news.edit_skipped" for event in events)
 
 
 def test_same_article_id_twice_cited_once(tmp_path: Path) -> None:
