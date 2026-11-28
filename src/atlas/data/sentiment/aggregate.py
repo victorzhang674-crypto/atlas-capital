@@ -17,9 +17,14 @@ import pandas as pd
 from atlas.core.calendar import TradingCalendar
 from atlas.core.config import AtlasConfig
 from atlas.core.pit import AsOf, assert_no_lookahead
-from atlas.core.storage import Lake
+from atlas.core.storage import AVAILABLE_AT, Lake
 from atlas.data.news import News, news_pit_detail
-from atlas.data.sentiment.lexicon import Lexicon, load_lexicon, score_articles
+from atlas.data.sentiment.lexicon import (
+    NEWS_SENTIMENT,
+    Lexicon,
+    load_lexicon,
+    score_articles,
+)
 
 _DAY_SECONDS = 86_400.0
 
@@ -85,13 +90,33 @@ class Sentiment:
             raise TypeError("pass a trading day (date) or an AsOf, not a datetime")
         return AsOf.for_session(as_of, config=self._cfg.calendar)
 
-    def _scored(self, start: datetime, end: datetime) -> tuple[pd.DataFrame, dict[str, float]]:
+    def _scored(
+        self, start: datetime, end: datetime
+    ) -> tuple[pd.DataFrame, dict[tuple[str, pd.Timestamp], float]]:
+        """News in `[start, end)` and the score of each `(article_id, available_at)`.
+
+        A stored `news_sentiment` row wins over a freshly computed score for that same
+        version, so an edit's score is not applied to the original text."""
         frame = News(self._lake, self._cfg).articles(start, end)
-        scores = score_articles(frame, self.lexicon, self._settings)
-        return frame, dict(zip(scores["article_id"], scores["score"], strict=True))
+        live = score_articles(frame, self.lexicon, self._settings)
+        scores = {
+            (str(i), pd.Timestamp(t)): float(s)
+            for i, t, s in zip(live["article_id"], live[AVAILABLE_AT], live["score"], strict=True)
+        }
+        if frame.empty or not self._lake.has_table(NEWS_SENTIMENT.name):
+            return frame, scores
+        ids = list(dict.fromkeys(str(i) for i in frame["article_id"]))
+        stored = self._lake.read_table(NEWS_SENTIMENT.name, filters=[("article_id", "in", ids)])
+        for row in stored.to_dict(orient="records"):
+            scores[(str(row["article_id"]), pd.Timestamp(row[AVAILABLE_AT]))] = float(row["score"])
+        return frame, scores
 
     def _aggregate(
-        self, frame: pd.DataFrame, scores: dict[str, float], symbol: str, point: AsOf
+        self,
+        frame: pd.DataFrame,
+        scores: dict[tuple[str, pd.Timestamp], float],
+        symbol: str,
+        point: AsOf,
     ) -> SentimentAggregate:
         chosen = news_pit_detail(
             frame,
@@ -101,7 +126,12 @@ class Sentiment:
             limit=self._settings.max_articles,
             settings=self._cfg.data.news,
         )
-        chosen = chosen.assign(score=[scores[a] for a in chosen["article_id"]])
+        chosen = chosen.assign(
+            score=[
+                scores[(str(a), pd.Timestamp(t))]
+                for a, t in zip(chosen["article_id"], chosen["available_at"], strict=True)
+            ]
+        )
         return decayed_sentiment(chosen, point, half_life_days=self._settings.half_life_days)
 
     def _span(self) -> timedelta:

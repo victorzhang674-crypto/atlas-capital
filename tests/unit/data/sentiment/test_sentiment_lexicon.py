@@ -169,7 +169,8 @@ def test_score_articles_empty(lexicon: Lexicon) -> None:
 def test_news_sentiment_table_declaration() -> None:
     assert NEWS_SENTIMENT.name == "news_sentiment" and "news_sentiment" in DEFAULT_REGISTRY.names()
     assert NEWS_SENTIMENT.column_names == SCORE_COLUMNS
-    assert NEWS_SENTIMENT.primary_key == ("article_id", "published_at")
+    assert NEWS_SENTIMENT.primary_key == ("article_id", "published_at", "available_at")
+    assert NEWS_SENTIMENT.version == 2
     assert NEWS_SENTIMENT.partition_by == (YEAR,)
 
 
@@ -187,8 +188,8 @@ def test_ingest_news_sentiment_roundtrip(tmp_lake: Lake, lexicon: Lexicon) -> No
     stored = tmp_lake.read_table(NEWS_SENTIMENT.name)
     expected = score_articles(frame.iloc[:2].reset_index(drop=True), lexicon)
     pd.testing.assert_frame_equal(stored, expected, check_dtype=False)
-    assert ingest_news_sentiment(tmp_lake, lexicon, utc(2024, 3, 1), utc(2024, 4, 1)) == 2
-    assert len(tmp_lake.read_table(NEWS_SENTIMENT.name)) == 2  # idempotent
+    assert ingest_news_sentiment(tmp_lake, lexicon, utc(2024, 3, 1), utc(2024, 4, 1)) == 0
+    assert len(tmp_lake.read_table(NEWS_SENTIMENT.name)) == 2  # unchanged: nothing written
 
 
 def test_download_lm_lexicon(tmp_path: Path) -> None:

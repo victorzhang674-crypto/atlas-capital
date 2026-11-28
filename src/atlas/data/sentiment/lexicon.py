@@ -31,6 +31,7 @@ import pandas as pd
 from atlas.core.config import AtlasConfig, SentimentConfig
 from atlas.core.errors import DataError
 from atlas.core.logging import get_logger
+from atlas.core.pit import AsOf, assert_no_lookahead, pit_filter
 from atlas.core.storage import (
     AVAILABLE_AT,
     DEFAULT_REGISTRY,
@@ -85,13 +86,18 @@ NEWS_SENTIMENT = DEFAULT_REGISTRY.register(
             Column(name="words", dtype=ColumnType.INT64),
             Column(name="lexicon_version", dtype=ColumnType.STRING),
         ),
-        primary_key=("article_id", "published_at"),
+        primary_key=("article_id", "published_at", AVAILABLE_AT),
         partition_by=(YEAR,),
         year_column="published_at",
-        description="Lexicon sentiment per news article (score in [-1, 1], word counts); Stage 12",
+        description="Lexicon sentiment per news article version (score in [-1, 1]); Stage 12",
+        version=2,
     )
 )
-"""The curated `news_sentiment` table (registered in `DEFAULT_REGISTRY` on import)."""
+"""The curated `news_sentiment` table (registered in `DEFAULT_REGISTRY` on import).
+
+Version 2 adds `available_at` to the primary key, so the score of an edited article is a
+new row known at the edit, and the original score stays.
+"""
 
 
 Span = tuple[str, str, int | None, int | None]
@@ -298,6 +304,26 @@ def score_articles(
     return out[list(SCORE_COLUMNS)]
 
 
+def _sentiment_version_2(frame: pd.DataFrame) -> pd.DataFrame:
+    """Version 1 to 2: the rows stay. `available_at` joins the primary key, so an edit's
+    score can sit beside the original."""
+    return frame
+
+
+DEFAULT_REGISTRY.add_migration(NEWS_SENTIMENT.name, 1, _sentiment_version_2)
+
+
+def pit_scores(scores: pd.DataFrame, as_of: AsOf) -> pd.DataFrame:
+    """One row per `article_id` known at `as_of`: the latest `available_at` strictly before
+    the cutoff. Rows not yet known are left out."""
+    known = pit_filter(scores, as_of)
+    assert_no_lookahead(known, as_of)
+    if known.empty:
+        return known
+    ordered = known.sort_values(["available_at", "article_id"], kind="stable")
+    return ordered.drop_duplicates("article_id", keep="last").reset_index(drop=True)
+
+
 def ingest_news_sentiment(
     lake: Lake,
     lexicon: Lexicon,
@@ -306,16 +332,52 @@ def ingest_news_sentiment(
     *,
     config: AtlasConfig | None = None,
 ) -> int:
-    """Score the stored articles with `available_at` in `[start, end)` (aware) and upsert them
-    into `news_sentiment` (idempotent); returns the rows written. An unwritten `news` table
-    raises `DataError`."""
+    """Score the stored articles with `available_at` in `[start, end)` (aware) and upsert the
+    versions that are new or whose score changed. An unchanged article writes nothing.
+    Returns the rows written. An unwritten `news` table raises `DataError`."""
     cfg = config if config is not None else AtlasConfig()
     frame = News(lake, cfg).articles(start, end)
     if frame.empty:
         return 0
-    scored = score_articles(frame, lexicon, cfg.data.sentiment)
+    scored = _unscored(lake, score_articles(frame, lexicon, cfg.data.sentiment))
+    if scored.empty:
+        _log.info("sentiment.ingest", rows=0, lexicon=lexicon.version)
+        return 0
     lake.write_table(
         NEWS_SENTIMENT.name, scored, mode="upsert", keys=list(NEWS_SENTIMENT.primary_key)
     )
     _log.info("sentiment.ingest", rows=len(scored), lexicon=lexicon.version)
     return len(scored)
+
+
+def _unscored(lake: Lake, scored: pd.DataFrame) -> pd.DataFrame:
+    """`scored` rows that are not already stored with the same counts and lexicon version."""
+    if scored.empty or not lake.has_table(NEWS_SENTIMENT.name):
+        return scored
+    ids = list(dict.fromkeys(str(i) for i in scored["article_id"]))
+    stored = lake.read_table(NEWS_SENTIMENT.name, filters=[("article_id", "in", ids)])
+    have: dict[tuple[str, pd.Timestamp], tuple[float, int, int, int, int, str]] = {}
+    for row in stored.to_dict(orient="records"):
+        have[(str(row["article_id"]), pd.Timestamp(row[AVAILABLE_AT]))] = (
+            float(row["score"]),
+            int(row["pos"]),
+            int(row["neg"]),
+            int(row["uncertainty"]),
+            int(row["words"]),
+            str(row["lexicon_version"]),
+        )
+    keep: list[int] = []
+    for position, row in enumerate(scored.to_dict(orient="records")):
+        key = (str(row["article_id"]), pd.Timestamp(row[AVAILABLE_AT]))
+        current = (
+            float(row["score"]),
+            int(row["pos"]),
+            int(row["neg"]),
+            int(row["uncertainty"]),
+            int(row["words"]),
+            str(row["lexicon_version"]),
+        )
+        if have.get(key) == current:
+            continue
+        keep.append(position)
+    return scored.iloc[keep].reset_index(drop=True)
