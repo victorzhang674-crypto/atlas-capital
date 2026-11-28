@@ -1549,3 +1549,6 @@ Full block and raw output: [verification.md](stages/stage-31-news-analyst/verifi
   - [x] The empty-news path is tested — evidence: `test_with_no_news_*`, `test_the_cap_holds_even_when_the_repair_fails`, `test_a_missing_news_table_is_the_empty_path_with_a_citable_gap`
   - [x] Offline replay works, recorded as Stage 29's fixtures are — evidence: `test_the_recorded_aapl_run_replays_offline` on `stage-31-news-aapl-2024-05-01/` (exported cache + lake slice; no key, no lake, 1 cache hit, cost 0; slice equal to the main lake on 47 of 47 items)
 - Waivers: none
+
+- Merge: stage commit `38c8203`; `origin/main` (`207243a`) merged into the branch as `e6dfcea` (no conflict). Merged result: `uv run pytest -q` → 5930 passed, 84 deselected, exit 0 · `make check` → exit 0 (5927 + 3 timing passed) · `make test-integration` → 48 passed, 15 skipped, exit 0 · raw: [artifacts/merged-pytest.txt](stages/stage-31-news-analyst/artifacts/merged-pytest.txt)
+
