@@ -1397,7 +1397,7 @@ class ResearchBacktestConfig(_Frozen):
     On the first evaluation date of each `rebalance` period (`signal` = every evaluation
     date) it goes long the top quantile and short the bottom one, each leg `gross / 2` of NAV
     (fractions: 2.0 = 100% long and 100% short), with `equal` weights or `signal` weights
-    (proportional to the distance of the name's rank from the median).     Each rebalance costs
+    (proportional to the distance of the name's rank from the median). Each rebalance costs
     `cost_bps` basis points per unit of one-side turnover (sum of |weight change|).
     A missing return on a held name still counts as 0 in the P&L. `max_missing_return_share`
     is the largest share of held position-days that may be missing before the backtest

@@ -355,3 +355,8 @@ def test_complete_data_matches_the_filled_book() -> None:
     assert out.gross_returns.iloc[1] == pytest.approx(0.05)
     wa, wb = 0.55 / 1.05, -0.5 / 1.05
     assert out.gross_returns.iloc[2] == pytest.approx(wa * -0.05 + wb * 0.0)
+
+
+def test_backtest_config_docstring_has_single_spaces() -> None:
+    doc = ResearchBacktestConfig.__doc__ or ""
+    assert "from the median). Each rebalance costs" in doc
